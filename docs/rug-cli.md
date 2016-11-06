@@ -22,7 +22,7 @@ Right now Windows and Linux are supported via zip and tar.gz archives.
 In order to use the CLI the following file named `cli.yml` needs to be placed
 in `~/.atomist` ensuring you provide your own credentials where indicated.
 
-Please reach out on the slack `pre-release-users` on the community-slack to obtain the required credentials.
+Please reach out on via the `pre-release-users` channel on the atomist-community slack team to obtain the required credentials.
 
 The CLI will install a default `cli.yml` if none is found.
 
