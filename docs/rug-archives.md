@@ -3,7 +3,7 @@
 This page describes the nature, structure and lifecycle of a Rug archive.
 
 If you haven't done so and you want to follow along, please install the CLI from
-[atomisthq/rug-cli](https://github.com/atomisthq/rug-cli/blob/master/README.md).
+[atomisthq/homebrew-tap](https://github.com/atomisthq/homebrew-tap/blob/master/README.md).
 
 ## Inception
 
@@ -125,14 +125,14 @@ which the packaging step considers when packing the archive.
 ## Publishing
 
 Publishing is the process of uploading an archive to `private-templates-dev` from
-where it can only be used by users of a slack team that is enrolled to the sample
+where it can only be used by users of a slack team that is enrolled to the same
 GitHub org the project was published from.
 
 Open source CLI users will not have access to the `private-templates-dev`.
 
-There are two way for publishing a Rug Archive:
+There are two ways for publishing a Rug Archive:
 
-### Publishing via the CLI (Atomist only)
+### Publishing via the CLI (Pre-Release Only)
 
 Publishing into our Artifactory is only possible if you have write access to it.
 
@@ -181,8 +181,7 @@ remote-repositories:
 
 ### Publishing via the Bot
 
-The following bot command can be used to publish a Rug Archive straight out of
-GitHub.
+The following bot command can be used to publish a Rug Archive straight out of GitHub.
 
 ```
 @atomist publish archive --repo my-new-template --version 1.0.0
@@ -216,14 +215,3 @@ This command will promote or copy the archive from `private-templates-dev` to
 `public-templates-dev`. The GitHub org will be inferred from the enrolled GitHub
 org of the user running the command. `repo` is optional and defaults for the
 name of the service channel the command is invoked from.
-
-
-_Note_
-
-If you published from the CLI and/or don't have an org connected to a specific
-GitHub org, you can use the following command to release an archive:
-
-```
-@atomist promote artifact --group atomist-project-templates --artifact my-new-template
-  --version 0.0.1 --from_repo private-templates-dev --target_repo public-templates-dev
-```
