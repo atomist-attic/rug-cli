@@ -12,12 +12,18 @@ brew tap atomisthq/tap
 brew install rug-cli
 ```
 
+Detailed instructions can be found at: 
+[atomisthq/homebrew-tap](https://github.com/atomisthq/homebrew-tap/blob/master/README.md)
+
 Right now Windows and Linux are supported via zip and tar.gz archives.
 
 ### Post-Install: Repository Settings
 
 In order to use the CLI the following file named `cli.yml` needs to be placed
 in `~/.atomist` ensuring you provide your own credentials where indicated.
+
+Please reach out on the slack `pre-release-users` on the community-slack to obtain the required credentials.
+
 The CLI will install a default `cli.yml` if none is found.
 
 ```
@@ -168,7 +174,9 @@ Therefore running above commands is a two step process:
      or until the `manifest.yml` is changed
   2. Start up `rug-lib` passing parameters over to run the editor or generator
 
-## Turning on Verbose output for Debugging
+## Advanced Topics
+
+### Turning on Verbose output for Debugging
 
 If you want a more verbose output that includes any exceptions that Rug command
 may have encountered, please add `-X` to your command.
