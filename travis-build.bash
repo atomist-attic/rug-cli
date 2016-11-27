@@ -11,7 +11,7 @@ else
     $mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.incrementalVersion}-\${timestamp} versions:commit
     project_version=$(mvn help:evaluate -Dexpression=project.version | grep -v "^\[")
 fi
-$mvn install -Dmaven.javadoc.skip=true
+$mvn install -Dmaven.javadoc.skip=true -U
 
 echo "Branch is ${TRAVIS_BRANCH}"
 
