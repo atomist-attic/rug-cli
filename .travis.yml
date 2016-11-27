@@ -1,6 +1,6 @@
 language: java
 install: true
-script: bash build/travis-build.bash
+script: bash ./travis-build.bash
 jdk:
 - oraclejdk8
 branches:
