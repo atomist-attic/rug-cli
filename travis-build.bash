@@ -3,7 +3,7 @@
 set -eu
 set -o pipefail
 
-mvn="mvn --settings .settings.xml -B -V"
+mvn="mvn --settings .settings.xml -B -V -U"
 if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     $mvn build-helper:parse-version versions:set -DnewVersion="$TRAVIS_TAG" versions:commit
     project_version="$TRAVIS_TAG"
@@ -11,7 +11,7 @@ else
     $mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.incrementalVersion}-\${timestamp} versions:commit
     project_version=$(mvn help:evaluate -Dexpression=project.version | grep -v "^\[")
 fi
-$mvn install -Dmaven.javadoc.skip=true -U
+$mvn install -Dmaven.javadoc.skip=true
 
 echo "Branch is ${TRAVIS_BRANCH}"
 
