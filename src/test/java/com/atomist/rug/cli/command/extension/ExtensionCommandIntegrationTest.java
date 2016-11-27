@@ -11,19 +11,19 @@ public class ExtensionCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testASuccessfullInstall() throws Exception {
-        assertSuccess("Successfully installed extension com.atomist:source-lib", "extension",
-                "install", "com.atomist:source-lib", "-a", "0.2.9-20161030094410");
+        assertSuccess("Successfully installed extension com.atomist:artifact-source", "extension",
+                "install", "com.atomist:artifact-source", "-a", "0.2.0");
     }
 
     @Test
     public void testBSuccessfullList() throws Exception {
-        assertSuccess("source-lib-0.2.9-20161030094410.jar", "extension", "list");
+        assertSuccess("artifact-source-0.2.0.jar", "extension", "list");
     }
 
     @Test
     public void testCSuccessfullUninstall() throws Exception {
-        assertSuccess("Successfully uninstalled extension com.atomist:source-lib", "extension",
-                "uninstall", "com.atomist:source-lib");
+        assertSuccess("Successfully uninstalled extension com.atomist:artifact-source", "extension",
+                "uninstall", "com.atomist:artifact-source");
     }
 
     @Test
