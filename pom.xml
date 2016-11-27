@@ -15,7 +15,7 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
-		<rug-lib.version>0.1.0-20161127111632</rug-lib.version>
+		<rug.version>0.1.0-20161127111632</rug.version>
 		<rug-resolver.version>0.1.0-20161127110512</rug-resolver.version>
 	</properties>
 	<organization>
@@ -59,8 +59,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.atomist</groupId>
-			<artifactId>rug-lib</artifactId>
-			<version>${rug-lib.version}</version>
+			<artifactId>rug</artifactId>
+			<version>${rug.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
