@@ -321,6 +321,14 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>atomist-release</id>
+			<name>Atomist Release</name>
+			<url>https://sforzando.artifactoryonline.com/sforzando/libs-release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	<distributionManagement>
 		<repository>
