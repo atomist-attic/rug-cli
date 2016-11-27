@@ -1,0 +1,40 @@
+language: java
+install: true
+script: bash build/travis-build.bash
+jdk:
+- oraclejdk8
+branches:
+  except:
+  - /\+travis[0-9]+$/
+env:
+  global:
+  - ATOMIST_CI_DEPLOY_USERNAME=travis-mvn-deploy
+  - secure: NhtYlqCbyCQWpTkg86snT2Redq9Evztf2SWJgVb1RVWVPinqkJBGA5TpzzL2OIH4HkH0i1qhGIGMJpa9peL+SrfqN03VRc0m5BjwjDMZzSFNKg3OhlHX3e7dRJAC0B7c3yV9Pluud9CvAuABxU+gR9DVZKP2VdNWk8cjkk78LLABQ2qUw9F8KIRP34hL9zq+EhxNVhVpJwrpZXDhd5DpU2Ossd+dxOYRJ8btyBfU4xJ0C8HxhWDejHDGxe68lHEAch35jx/Mrfc1y/JISWz+kRwmvlo6mKKNTQvhTo/nbZxbxTafMVTv279yIPtdWRTefHgW6IRZj4/nddUvRBudMDOcW5E4FITNaDixyBk9Us/sTnelEVlcPRq1i4ijLSEchw1PQ+0dg1fIyCtq5J9VrqFI95+G2aSBwBBua1+sWilMcA24xib+65ZGySXBtk7lX4lO4obWn/IkI8QHe7jcPU4Et6fMoJmXKFUwmiJob7NS+ILxAwan4gm7BjcB6JQ3p20rG4JCQR36szAY/SqGS8wcc675sKAt+UbmIV3yAOQoQD+14zI5Fb+KnhuRWMPIzEyIe3N1tBL7fQmkTj9v7JBavkUKHn9tHu4LI+5KBKGJbZuWCxmLzsF3/q8aeEIh9kS1Rg1kYaivdwvXEz4Tc5elmJHdcqmKu2euPK0k1dU=
+  - HOMEBREW_TAP=atomisthq/homebrew-tap
+  - secure: OTePPgHW0/gKJZburrtqd7MhB42nvXPRdkwkUDuTsBV/e9lZZbsvPLxnrOhau5C9IAE1ZdBBRMjiEGbvdE4deNXWMImaYcjmhLF0s/nhElci56S1j7XbU29cX3XKA6YxA06go/CC/XfALPmvBagNdsTtBQVM6QNBQZshIhfh0w9QQW0VWheLDfuxLRy7W6uqj0Gj253lE8sixxJKD22eY+HFS0qlMgOXDnSFkzBFWiXMh3Mf/u/r712gQXPKEBsI6inzqvmeL7OV22LA63+VyEsMoLZTuP9vsyEKLYo+tFLPJidEeqGLSsLAIZSp7Qbc0I++9PmXGe8++VVFZUeU0UlL1Qlupjp2RPJvxbCLjpDYiEN18FXkC+cGYBe2HXfo4xuRMLpkj+GL6K5dfyYGu1vbExsu3z68HFK0D41eViP81ciyr8+7KyXIx0+70i59glgAHI78gPy70x9E/1rpdYoOb8AmdjOORWXWXPpFOkNRhae4ZvXFqnjHBp+YJvInJPWvZM0HEfqalGtl7J8AvJsD/WijG3UDUxEyJx4VJ9jtDPRk9eOth5Y24mnZOELUGA4GJhzNnN3llzVkRbViD+HYtg2LAhh05nndBYaz45TGUdlnvwCWhlZIMmKX380iv+x8+ivS3JryJ9t1cLHmhOSMspzWNk/6aQJc1F7pKXg=
+notifications:
+  email: false
+  webhooks:
+    on_success: always
+    on_failure: always
+    on_start: always
+    urls:
+    - https://webhook.atomist.com/travis
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.atomist
+deploy:
+  provider: releases
+  api_key:
+    secure: aqTpRPuCYcU2MfczTnkJ0zKgOjDkDfW/+7WYb12vcsvld0cru/GQgZ7NGehFT0TZiiAzgIJccgQi9ZJdM8gblUPyn9SDMq/bMRLF/llVorqEL+pwIjZmmKjjMfdHG5BgoKSMz4fz3KzpewMxML4nxTmSQM7SYYqUHywD+gunrYKntdAMh+oAoPdsTkKpY+U1XaFgnNFF0OBiB6I4thZKfvlf8kTfWRuj+Ye72E/L+/JSYo4EtVqQ4u+nPfTF8GFwm21DIq4m6VzOjc8fFTS4H0dxVFEvP+xXu6WubXlvddxfyaACLpaMbIh7pJkYnmCo/X/gnfpD0+hTaEDFFEusUn1EHEOYom8xEj9KTvWgr3zvtjOHX/KIkfYjbFwI0i/fqg9pCx/jddgdL6WYgw17laYLf8Brxn1Bwd9Fp/Oe8AT0DISIxDfc5MgCsoH1InXI0QOVJ81lEQNyVYUUoNMY6L5N6ZMfN7+f2b9m2ANIJfL9c0xrAZ+gXiglnD4z0XJxW8kLt50JnsjFD+neF1s5/rBhnR/VNl3suADdY6W3R9xQ+dh9w7cPKyE6sFFaZdU3Tc9FE3ksrAMUam3Kl4u7WDA7bJ5HQ5QwRMqmjfKfx7BXQC6HrLgyM4ezRTtV/Mzl3rstggr/PYLe+6w+oqZmTO269C3nErDhtghJF69Mzms=
+  file:
+  - target/rug-cli-$TRAVIS_TAG-bin.tar.gz
+  - target/rug-cli-$TRAVIS_TAG-bin.zip
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$
+after_deploy:
+- bash build/update-brew.bash $HOMEBREW_TAP $GITHUB_TOKEN
+- bash build/update-brew.bash atomisthq/s3-images $GITHUB_TOKEN images/Formula

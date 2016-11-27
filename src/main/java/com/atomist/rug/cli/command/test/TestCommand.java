@@ -1,0 +1,136 @@
+package com.atomist.rug.cli.command.test;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.atomist.project.archive.DefaultAtomistConfig$;
+import com.atomist.project.archive.Operations;
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
+import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.cli.command.CommandUtils;
+import com.atomist.rug.cli.command.annotation.Argument;
+import com.atomist.rug.cli.command.annotation.Command;
+import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
+import com.atomist.rug.cli.tree.LogVisitor;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.test.ParserCombinatorTestScriptParser;
+import com.atomist.rug.test.TestLoader;
+import com.atomist.rug.test.TestReport;
+import com.atomist.rug.test.TestRunner;
+import com.atomist.rug.test.TestScenario;
+import com.atomist.source.ArtifactSource;
+import com.atomist.source.FileArtifact;
+import com.atomist.source.file.FileSystemArtifactSource;
+import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
+
+import scala.collection.JavaConversions;
+import scala.collection.Seq;
+
+public class TestCommand extends AbstractAnnotationBasedCommand {
+
+    private Log log = new Log(getClass());
+
+    @Command
+    public void run(Operations operations, ArtifactDescriptor artifact,
+            @Argument(index = 1) String testName) {
+
+        ArtifactSource source = new FileSystemArtifactSource(
+                new SimpleFileSystemArtifactSourceIdentifier(
+                        CommandUtils.getRequiredWorkingDirectory()));
+
+        TestLoader testLoader = new TestLoader(DefaultAtomistConfig$.MODULE$);
+        Seq<TestScenario> scenarios = testLoader.loadTestScenarios(source);
+        TestReport report = null;
+
+        // run all tests
+        if (testName == null) {
+            report = runTests(scenarios, source, artifact, operations);
+        }
+        else {
+            // search for one scenario
+            Optional<TestScenario> scenario = JavaConversions.asJavaCollection(scenarios).stream()
+                    .filter(s -> s.name().equals(testName)).findFirst();
+            if (scenario.isPresent()) {
+                report = runTests(
+                        JavaConversions.asScalaBuffer(Collections.singletonList(scenario.get())),
+                        source, artifact, operations);
+            }
+            else {
+                // search for scenarios from a given file
+                List<FileArtifact> testFiles = JavaConversions.asJavaCollection(source.allFiles())
+                        .stream()
+                        .filter(f -> DefaultAtomistConfig$.MODULE$.isRugTest(f) && f.name()
+                                .equals(testName + DefaultAtomistConfig$.MODULE$.testExtension()))
+                        .collect(Collectors.toList());
+
+                if (!testFiles.isEmpty()) {
+                    List<TestScenario> fileScenarios = testFiles.stream()
+                            .flatMap(f -> JavaConversions
+                                    .asJavaCollection(ParserCombinatorTestScriptParser.parse(f))
+                                    .stream())
+                            .collect(Collectors.toList());
+                    report = runTests(JavaConversions.asScalaBuffer(fileScenarios), source,
+                            artifact, operations);
+
+                }
+                else {
+                    throw new CommandException(String.format(
+                            "Specified test scenario or test file %s could not be found.",
+                            testName));
+                }
+            }
+        }
+
+        log.newline();
+        if ((report != null) && (report.passed())) {
+            log.info(Style
+                    .green(String.format("Successfully executed %s of %s scenarios: Test SUCCESS",
+                            report.passedTests().size(), report.tests().size())));
+        }
+        else {
+            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Failed Scenarios"));
+            JavaConversions.asJavaCollection(report.failures()).forEach(t -> {
+                log.info(Style.yellow("  %s", t.name())
+                        + String.format(" (%s of %s assertions failed)", t.failures().size(),
+                                t.assertions().size()));
+                log.info("   " + Style.underline("Failed Assertions"));
+                JavaConversions.asJavaCollection(t.failures()).forEach(a -> log.info("    %s", a.message()));
+                if (t.eventLog().input().isDefined()) {
+                    log.info("   " + Style.underline("Input"));
+                    ArtifactSourceTreeCreator.visitTree(t.eventLog().input().getOrElse(null),
+                            new LogVisitor(log, "  "));
+                }
+                if (t.eventLog().output().isDefined()) {
+                    log.info("   " + Style.underline("Ouput"));
+                    ArtifactSourceTreeCreator.visitTree(t.eventLog().output().getOrElse(null),
+                            new LogVisitor(log, "  "));
+                }
+            });
+            throw new CommandException(
+                    String.format("Unsuccessfully executed %s of %s scenarios: Test FAILED",
+                            "" + report.failures().size(), "" + report.tests().size()));
+        }
+    }
+
+    private TestReport runTests(Seq<TestScenario> scenarios, ArtifactSource source,
+            ArtifactDescriptor artifact, Operations operations) {
+        return new ProgressReportingOperationRunner<TestReport>(String.format(
+                "Running test scenarios in %s", ArtifactDescriptorUtils.coordinates(artifact)))
+                        .run(indicator -> {
+                            TestRunner testRunner = new TestRunner(indicator::report);
+
+                            return testRunner.run(scenarios, source, operations.allOperations(),
+                                    scala.Option
+                                            .apply(artifact.group() + "." + artifact.artifact()));
+
+                        });
+
+    }
+}

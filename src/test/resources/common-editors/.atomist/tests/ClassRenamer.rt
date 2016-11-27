@@ -1,0 +1,58 @@
+/*
+ * Copyright 2002-2016 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+scenario ClassRenamer should rename simple class
+
+given
+  src/main/java/Dog.java = "class Dog {}"
+
+  ClassRenamer old_class = "Dog", new_class = "Cat"
+
+then
+  fileCount = 1
+  and fileContains "src/main/java/Cat.java" "class Cat"
+
+
+scenario ClassRenamer should rename class and leave no references to old name
+
+let oldclass = "SpringRestApplication"
+let newclass = "WeirdAndWonderful"
+
+given
+  ArchiveRoot
+
+  ClassRenamer old_class= oldclass, new_class = newclass
+
+then
+  fileExists "src/main/java/com/atomist/springrest/WeirdAndWonderful.java"
+  and { !result.anyFileContains(".java", oldclass) }
+
+scenario ClassRenamer should rename class but leave any additional characters on the class name
+
+let old_class = "SpringRest"
+let new_class = "WeirdAndWonderful"
+
+given
+  ArchiveRoot
+
+  ClassRenamer
+
+then
+  fileExists "src/main/java/com/atomist/springrest/WeirdAndWonderfulConfiguration.java"
+  and fileExists "src/main/java/com/atomist/springrest/WeirdAndWonderfulApplication.java"
+  and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulApplicationTests.java"
+  and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulOutOfContainerIntegrationTests.java"
+  and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulWebIntegrationTests.java"
+  and { !result.anyFileContains(".java", "SpringRest") }

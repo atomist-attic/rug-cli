@@ -1,0 +1,35 @@
+/*
+ * Copyright 2002-2016 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@tag "java"
+@description "Rename a class, replacing one literal pattern with another"
+editor ClassRenamer
+
+@description "Name of Java class to rename"
+@validInput "Java class names may contain alphanumeric characters, $ and _"
+param old_class: @java_class
+
+@description "New name for the class"
+@validInput "Java class names may contain alphanumeric characters, $ and _"
+param new_class: @java_class
+
+with java.class c when { c.name().contains(old_class) }
+  do renameByReplace old_class new_class
+
+# Pick up and change all remaining references
+# TODO shouldn't really need to do this: Calls to Rug methods should do it all
+# It's inefficient and fragile (what if the class name is a common string)
+with project p
+  do replace old_class new_class

@@ -1,0 +1,5 @@
+editor ExampleEditor
+
+with file when { f.name().contains("README.md") } begin
+  do append "Hello Rug World"
+end
