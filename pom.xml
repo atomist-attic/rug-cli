@@ -45,7 +45,7 @@
 			<exclusions>
 				<exclusion>
 					<groupId>com.atomist</groupId>
-					<artifactId>rug-lib</artifactId>
+					<artifactId>rug</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>

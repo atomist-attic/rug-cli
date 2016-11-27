@@ -16,7 +16,7 @@ import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 public abstract class AbstractRugEnabledCommandInfo extends AbstractCommandInfo
         implements ArtifactDescriptorProvider {
 
-    private static final String RUG_LIB_VERSION = ".*<rug-lib.version>(.*)<\\/rug-lib.version>.*";
+    private static final String RUG_VERSION = ".*<rug.version>(.*)<\\/rug.version>.*";
 
     public AbstractRugEnabledCommandInfo(Class<? extends Command> commandClass,
             String commandName) {
@@ -26,18 +26,17 @@ public abstract class AbstractRugEnabledCommandInfo extends AbstractCommandInfo
     @Override
     public ArtifactDescriptor artifactDescriptor(CommandLine commandLine) {
         String version = readRugVersionFromPom();
-        return new DefaultArtifactDescriptor("com.atomist", "rug-lib", version, Extension.JAR);
+        return new DefaultArtifactDescriptor("com.atomist", "rug", version, Extension.JAR);
     }
 
     protected String readRugVersionFromPom() {
         String version = "latest";
-        Pattern pattern = Pattern.compile(RUG_LIB_VERSION);
+        Pattern pattern = Pattern.compile(RUG_VERSION);
         try (InputStream is = AbstractRugEnabledCommandInfo.class.getClassLoader()
                 .getResourceAsStream("META-INF/maven/com.atomist/rug-cli/pom.xml")) {
-
             if (is != null) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));
-                String line = null;
+                String line;
                 while ((line = in.readLine()) != null) {
                     Matcher matcher = pattern.matcher(line);
                     if (matcher.matches()) {
