@@ -48,6 +48,6 @@ public class ListCommandIntegrationTest extends AbstractCommandTest {
                     .contains("atomist-project-templates:common-editors"));
             assertFalse(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("atomist-project-templates:spring-rest-service"));
-        }, "list", "-f", "version=[1.0,2.6)");
+        }, "list", "-f", "version=[1.0,3.3)");
     }
 }
