@@ -1,0 +1,7 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: rug-cli
+Source: https://github.com/atomist/rug-cli/blob/master/LICENSE
+
+Files: *
+Copyright: 2016 Atomist, Inc.
+License: GPL-3.0
