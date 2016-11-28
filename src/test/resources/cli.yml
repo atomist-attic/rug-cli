@@ -25,7 +25,7 @@ remote-repositories:
     url: "https://sforzando.artifactoryonline.com/sforzando/rug-deps-dev"
   rug-types-jfrog:
     authentication:
-      password: "${ATOMIST_CI_DEPLOY_USERNAME}"
-      username: "${ATOMIST_CI_DEPLOY_PASSWORD}"
+      password: "${ATOMIST_CI_DEPLOY_PASSWORD}"
+      username: "${ATOMIST_CI_DEPLOY_USERNAME}"
     publish: false
     url: "https://atomist.jfrog.io/atomist/libs-release"    
