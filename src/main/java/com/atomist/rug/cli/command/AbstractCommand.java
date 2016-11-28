@@ -79,29 +79,31 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
                 .format("Loading %s into runtime", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run(indicator -> {
 
-                            try {
-                                return loader.load(artifact);
-                            }
-                            catch (Exception e) {
-                                if (e instanceof BadRugException) {
-                                    throw new CommandException(
-                                            "Failed to load archive: \n" + e.getMessage());
-                                }
-                                else if (e instanceof OperationsLoaderException) {
-                                    if (e.getCause() instanceof BadRugException) {
-                                        throw new CommandException(
-                                                "Failed to load archive: \n"
-                                                        + e.getCause().getMessage());
-                                    }
-                                    else if (e.getCause() instanceof RugRuntimeException) {
-                                        throw new CommandException(
-                                                "Failed to load archive: \n"
-                                                        + e.getCause().getMessage());
-                                    }
-                                }
-                                throw e;
-                            }
+                            return doLoadOperations(artifact, loader);
                         });
+    }
+
+    private Operations doLoadOperations(ArtifactDescriptor artifact, OperationsLoader loader)
+            throws Exception {
+        try {
+            return loader.load(artifact);
+        }
+        catch (Exception e) {
+            if (e instanceof BadRugException) {
+                throw new CommandException("Failed to load archive: \n" + e.getMessage(), e);
+            }
+            else if (e instanceof OperationsLoaderException) {
+                if (e.getCause() instanceof BadRugException) {
+                    throw new CommandException(
+                            "Failed to load archive: \n" + e.getCause().getMessage(), e);
+                }
+                else if (e.getCause() instanceof RugRuntimeException) {
+                    throw new CommandException(
+                            "Failed to load archive: \n" + e.getCause().getMessage(), e);
+                }
+            }
+            throw e;
+        }
     }
 
     private void loadOperationsAndInvokeRun(URI[] uri, ArtifactDescriptor artifact,
@@ -122,10 +124,8 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
                     .filter(c -> c.className().equals(getClass().getName())).findFirst();
             if (commandInfo.isPresent()) {
                 Options options = new Options();
-                commandInfo.get().options().getOptions().stream()
-                        .forEach(options::addOption);
-                commandInfo.get().globalOptions().getOptions().stream()
-                        .forEach(options::addOption);
+                commandInfo.get().options().getOptions().stream().forEach(options::addOption);
+                commandInfo.get().globalOptions().getOptions().stream().forEach(options::addOption);
                 commandLine = parser.parse(options, args);
                 CommandLineOptions.set(commandLine);
             }

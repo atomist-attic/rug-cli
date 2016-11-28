@@ -10,6 +10,10 @@ public class CommandException extends RuntimeException {
         super(msg);
     }
 
+    public CommandException(String msg, Throwable e) {
+        super(msg, e);
+    }
+
     public CommandException(String msg, String command) {
         super(msg + getHelpText(command));
     }

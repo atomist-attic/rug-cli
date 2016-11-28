@@ -39,7 +39,7 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
         }
         else {
             throw new CommandException(
-                    String.format("%s is not a recognized command.", commandName), null);
+                    String.format("%s is not a recognized command.", commandName), (String) null);
         }
     }
 

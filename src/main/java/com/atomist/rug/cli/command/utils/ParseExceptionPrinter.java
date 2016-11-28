@@ -27,14 +27,14 @@ public class ParseExceptionPrinter {
         }
         else if (e instanceof MissingArgumentException) {
             throw new CommandException(String.format("%s is missing a required argument.",
-                    ((MissingArgumentException) e).getOption()), null);
+                    ((MissingArgumentException) e).getOption()), e);
         }
         else if (e instanceof UnrecognizedOptionException) {
             throw new CommandException(String.format("%s is not a valid option.",
-                    ((UnrecognizedOptionException) e).getOption()), null);
+                    ((UnrecognizedOptionException) e).getOption()), e);
         }
         else {
-            throw new CommandException(String.format("%s.", e.getMessage()), null);
+            throw new CommandException(String.format("%s.", e.getMessage()), e);
         }
     }
 
