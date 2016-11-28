@@ -1,0 +1,11 @@
+scenario ExampleEditorTest should make something do something interesting with Rug
+
+given
+ README.md = ""
+
+when
+
+  ExampleEditor
+
+then
+ fileContains "README.md" "Hello Rug World"

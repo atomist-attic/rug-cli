@@ -1,0 +1,10 @@
+com.atomist.rug.cli.command.list.ListCommandInfo
+com.atomist.rug.cli.command.describe.DescribeCommandInfo
+com.atomist.rug.cli.command.generate.GenerateCommandInfo
+com.atomist.rug.cli.command.edit.EditCommandInfo
+com.atomist.rug.cli.command.test.TestCommandInfo
+com.atomist.rug.cli.command.install.InstallCommandInfo
+com.atomist.rug.cli.command.publish.PublishCommandInfo
+com.atomist.rug.cli.command.config.ConfigCommandInfo
+
+com.atomist.rug.cli.command.extension.ExtensionCommandInfo

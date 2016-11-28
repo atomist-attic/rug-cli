@@ -1,0 +1,95 @@
+/*
+ * Copyright 2002-2016 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@tag "java"
+@tag "spring"
+@tag "boot"
+@description "Looks for usages of the newly renamed Spring Starters: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#renamed-starters"
+reviewer RenamedStarters
+
+with file f when path = "pom.xml" begin
+  do contains "spring-boot-starter-ws"
+  do contains "spring-boot-starter-redis"
+end
+
+
+@tag "java"
+@tag "spring"
+@tag "boot"
+@description "Looks for usages of the newly renamed DataSourceProperties get methods: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods"
+reviewer DatasourcePropertiesGetMethodsChanged
+
+with file f when f.name.endsWith ".java" and f.contains "getDriverClassName"
+  do minorProblem
+  { "getDriverClassName found in " + f.path() + " and may need to be changed to `determineDriverClassName` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods" }
+
+with file f when f.name.endsWith ".java" and f.contains "getUrl"
+  do minorProblem
+  { "getUrl found in " + f.path() + " and may need to be changed to `determineUrl` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods" }
+
+with file f when f.name.endsWith ".java" and f.contains "getUsername"
+  do minorProblem
+  { "getUsername found in " + f.path() + " and may need to be changed to `determineUsername` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods" }
+
+with file f when f.name.endsWith ".java" and f.contains "getPassword"
+  do minorProblem
+  { "getPassword found in " + f.path() + " and may need to be changed to `determinePassword` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods" }
+
+
+@tag "java"
+@tag "spring"
+@tag "boot"
+@description "Looks for Entity Scan on the old packaging approach: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#entityscan"
+reviewer EntityScanFromOldPackage
+
+with file f when { f.name().contains(".java") }
+  do contains "import org.springframework.boot.orm.jpa.EntityScan"
+
+@tag "java"
+@tag "spring"
+@tag "boot"
+@description "Test Utilities and Classes Repackaged: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes"
+reviewer TestUtilitiesAndClassesRepackaged
+
+with file f when { f.name().contains(".java") } begin
+  do contains "org.springframework.boot.test.ConfigFileApplicationContextInitializer"
+  do contains "org.springframework.boot.test.EnvironmentTestUtils"
+  do contains "org.springframework.boot.test.OutputCapture"
+  do contains "org.springframework.boot.test.SpringApplicationContextLoader"
+  do contains "org.springframework.boot.test.SpringBootMockServletContext"
+  do contains "org.springframework.boot.test.TestRestTemplate"
+end
+
+with java.source j when { j.path().startsWith("src/test/java") }
+  with java.class c when c.hasAnnotation "WebIntegrationTest"
+    do minorProblem { "File `" + c.pkg() + "." + c.name() + "`: Consider using `@SpringBootTest(webEnvironment=WebEnvironment.DEFINED_PORT)` (or `RANDOM_PORT`) instead of `@WebIntegrationTest` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes" }
+  with java.class c when c.hasAnnotation "ContextConfiguration"
+    do minorProblem { "File `" + c.pkg() + "." + c.name() + "`: Consider using `@SpringBootTest(classes=MyConfig.class)` instead of `@ContextConfiguration` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes" }
+  with java.class c when c.hasAnnotation "IntegrationTest" and c.hasAnnotation "WebAppConfiguration"
+    do minorProblem { "File `" + c.pkg() + "." + c.name() + "`: Consider using `@SpringBootTest(webEnvironment=WebEnvironment.DEFINED_PORT)` (or `RANDOM_PORT`) instead of `@WebIntegrationTest` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes" }
+  with java.class c when c.hasAnnotation "IntegrationTest"
+    do minorProblem { "File `" + c.pkg() + "." + c.name() + "`: Consider using `@SpringBootTest(webEnvironment=WebEnvironment.DEFINED_PORT)` instead of `@IntegrationTest` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes" }
+
+
+@tag "java"
+@tag "spring"
+@tag "boot"
+@description "Reviewers what's needed to upgrade to Spring Boot 1.4 according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes"
+reviewer SpringBoot14Upgrade
+
+RenamedStarters
+DatasourcePropertiesGetMethodsChanged
+EntityScanFromOldPackage
+TestUtilitiesAndClassesRepackaged

@@ -1,0 +1,25 @@
+---
+local-repository:
+  path: "${HOME}/.atomist/repository"
+remote-repositories:
+  maven-central:
+    publish: false
+    url: "https://repo.maven.apache.org/maven2/"
+  private-templates:
+    authentication:
+      password: "${ARTIFACTORY_PASSWORD}"
+      username: "${ARTIFACTORY_USER}"
+    publish: true
+    url: "https://sforzando.artifactoryonline.com/sforzando/private-templates-dev"
+  public-templates:
+    authentication:
+      password: "${ARTIFACTORY_PASSWORD}"
+      username: "${ARTIFACTORY_USER}"
+    publish: false
+    url: "https://sforzando.artifactoryonline.com/sforzando/public-templates-dev"
+  rug-types:
+    authentication:
+      password: "${ARTIFACTORY_PASSWORD}"
+      username: "${ARTIFACTORY_USER}"
+    publish: false
+    url: "https://sforzando.artifactoryonline.com/sforzando/rug-deps-dev"

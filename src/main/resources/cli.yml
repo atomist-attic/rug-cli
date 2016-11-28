@@ -1,0 +1,28 @@
+# Set up the path to the local repository
+local-repository:
+  path: "${HOME}/.atomist/repository"
+
+# Set up remote repositories to query for Rug archives. Additionally one of the
+# repositories can also be enabled for publication (publish: true).
+remote-repositories:
+  maven-central:
+    publish: false
+    url: "http://repo.maven.apache.org/maven2/"
+  public-templates:
+    publish: false
+    url: "https://sforzando.artifactoryonline.com/sforzando/public-templates-dev"
+    authentication:
+      username: "${ARTIFACTORY_USER}"
+      password: "${ARTIFACTORY_PASSWORD}"
+  private-templates:
+    publish: true
+    url: "https://sforzando.artifactoryonline.com/sforzando/private-templates-dev"
+    authentication:
+      username: "${ARTIFACTORY_USER}"
+      password: "${ARTIFACTORY_PASSWORD}"
+  rug-types:
+    publish: false
+    url: "https://sforzando.artifactoryonline.com/sforzando/rug-deps-dev"
+    authentication:
+      username: "${ARTIFACTORY_USER}"
+      password: "${ARTIFACTORY_PASSWORD}"

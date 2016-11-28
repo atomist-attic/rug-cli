@@ -1,0 +1,136 @@
+#!/bin/bash
+# bash completion for rug
+
+_rug() {
+    local cur prev words cword split=false
+
+    COMPREPLY=()
+    _get_comp_words_by_ref -n := cur prev words cword
+
+    _split_longopt && split=true
+
+    case $prev in
+        -C|--change-dir)
+            _filedir -d
+            return 0
+            ;;
+        -f|--filter)
+            if [[ $cur != *= ]]; then
+                COMPREPLY=( $( compgen -W "group= artifact= version=" -- "$cur" ) )
+                compopt -o nospace
+            fi
+            return 0
+            ;;
+        -s|--settings)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    $split && return 0
+
+    local global_options=(
+        -? -h --help
+        -X --error
+        -o --offline
+        -r --resolver-report
+        -t --timer
+        -s --settings
+        -q --quiet
+    )
+    local commands=(
+        describe
+        generate
+        edit
+        list
+        test
+        install
+        publish
+        default
+    )
+
+    local i command_re special special_index
+    command_re=$(IFS='|'; echo "${commands[*]}")
+    for (( i=0; i < ${#words[@]}-1; i++ )); do
+        if [[ ${words[i]} == @($command_re) ]]; then
+            special=${words[i]}
+            special_index=$i
+        elif [[ ${words[i]} == @(-h|--help|-v|--version) ]]; then
+            return 0
+        fi
+    done
+
+    if [[ ! $special ]]; then
+        if [[ $cur == -* ]]; then
+            COMPREPLY=( $( compgen -W "${global_options[*]}" -- "$cur") )
+        else
+            COMPREPLY=( $( compgen -W "${commands[*]}" -- "$cur") )
+        fi
+        return 0
+    fi
+
+    local command_options=(
+        -? -h --help
+        -X --error
+        -o --offline
+        -r --resolver-report
+        -t --timer
+       	-s --settings
+       	-q --quiet
+    )
+    if [[ $special == @(describe|edit|generate) ]]; then
+        command_options+=( -a --archive-version )
+        command_options+=( -l --local )
+    fi
+    if [[ $special == @(edit|generate|test) ]]; then
+       command_options+=( -C --change-dir )
+    fi
+    if [[ $special == edit ]]; then
+        command_options+=( -d --dry-run )
+    fi
+    if [[ $special == @(edit|generate) ]]; then
+        command_options+=( -p --parameter )
+    fi
+    if [[ $special == list ]]; then
+        command_options+=( -f --filter )
+    fi
+    if [[ $special == generate ]]; then
+        command_options+=( -R --repo )
+        command_options+=( -F --overwrite )
+    fi
+    if [[ $special == default ]]; then
+        command_options+=( -g --global )
+        command_options+=( -d --delete )
+    fi
+    if [[ $special == publish ]]; then
+        command_options+=( -i --repository-id )
+    fi
+
+    local command_args=()
+    local describe_args=(
+        editor
+        generator
+    )
+    local describe_re describe_arg_found=
+    describe_re=$(IFS='|'; echo "${describe_args[*]}")
+    if [[ $special == describe ]]; then
+        for (( i=$special_index+1; i < ${#words[@]}-1; i++ )); do
+            if [[ ${words[i]} == @($describe_re) ]]; then
+                describe_arg_found=true
+            fi
+        done
+        if [[ ! $describe_arg_found ]]; then
+            command_args+=( "${describe_args[@]}" )
+        fi
+    fi
+
+    if [[ $cur == -* ]]; then
+        COMPREPLY=( $( compgen -W "${command_options[*]}" -- "$cur" ) )
+    else
+        COMPREPLY=( $( compgen -W "${command_args[*]}" -- "$cur" ) )
+    fi
+
+    return 0
+}
+
+complete -F _rug rug

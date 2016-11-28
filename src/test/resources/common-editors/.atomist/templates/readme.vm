@@ -1,0 +1,15 @@
+
+$project_name
+===========================
+
+Originally created on {{creation_date}}.
+
+$description
+
+To run tests
+--------------
+
+To build locally simply execute the following from the command line:
+
+```shell
+> ./mvn test

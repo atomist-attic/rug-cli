@@ -1,0 +1,9 @@
+artifact: spring-rest-service
+group: atomist-project-templates
+version: "3.5.0"
+requires: "1.1.1-20161015011603"
+
+dependencies:
+  - "atomist-project-templates:common-editors:2.1.0"
+#extensions:
+#  - "atomist:clj-rug:1.1.1"
