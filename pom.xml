@@ -156,8 +156,7 @@
 						<configuration>
 							<filters>
 								<filter>
-									<artifact>com.atomist:rug-lib</artifact>
-									<artifact>com.atomist:github-lib</artifact>
+									<artifact>com.atomist:rug</artifact>
 									<includes>
 										<include>com/atomist/project/archive/AtomistConfig**</include>
 										<include>com/atomist/project/archive/DefaultAtomistConfig**</include>
