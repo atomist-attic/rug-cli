@@ -22,7 +22,7 @@ public abstract class CommandUtils {
     public static File getRequiredWorkingDirectory() {
         Optional<File> projectDir = getWorkingDirectory(System.getProperty("user.dir"));
         return projectDir.orElseThrow(() -> new CommandException(
-                "Current directory is not a valid archive directory. Couldn't find manifest.yml in .atomist folder."));
+                "Current directory is not a valid archive directory. Couldn't find .atomist folder."));
     }
 
     public static Optional<File> getWorkingDirectory() {

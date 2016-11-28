@@ -30,7 +30,7 @@ import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.manifest.ManifestException;
-import com.atomist.rug.manifest.ManifestReader;
+import com.atomist.rug.manifest.ManifestFactory;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.file.FileSystemArtifactSource;
@@ -90,7 +90,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         ArtifactSource source = createArtifactSource(artifact);
         try {
             log.newline();
-            Manifest manifest = new ManifestReader().read(source);
+            Manifest manifest = ManifestFactory.read(source);
             describeName(manifest);
             describeProvenanceInfo(manifest);
             describeContents(artifact, source);

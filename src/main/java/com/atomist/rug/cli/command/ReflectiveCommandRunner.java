@@ -51,7 +51,7 @@ public class ReflectiveCommandRunner extends AbstractCommandLineRunner {
                     .findFirst().orElse(rootArtifact);
 
             // Setup the new classloader for the command to execute in
-            createClassLoader(dependencies);
+            createClassLoader(artifact, dependencies, info);
         }
 
         try {
@@ -72,7 +72,8 @@ public class ReflectiveCommandRunner extends AbstractCommandLineRunner {
         }
     }
 
-    private void createClassLoader(List<ArtifactDescriptor> dependencies) {
+    private void createClassLoader(ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies, CommandInfo commandInfo) {
         List<URL> urls = getDependencies(dependencies);
 
         // Add the url to the enclosing JAR
@@ -80,6 +81,7 @@ public class ReflectiveCommandRunner extends AbstractCommandLineRunner {
         urls.add(codeLocation);
 
         addExtensionsToClasspath(urls);
+        addCommandExtensionsToClasspath(artifact, commandInfo, urls);
 
         ClassLoader cls = null;
         if (codeLocation.toString().endsWith("jar")) {
@@ -91,6 +93,13 @@ public class ReflectiveCommandRunner extends AbstractCommandLineRunner {
             cls = new URLClassLoader(urls.toArray(new URL[urls.size()]));
         }
         Thread.currentThread().setContextClassLoader(cls);
+    }
+
+    protected void addCommandExtensionsToClasspath(ArtifactDescriptor artifact,
+            CommandInfo commandInfo, List<URL> urls) {
+        if (commandInfo instanceof ClasspathEntryProvider) {
+            urls.addAll(((ClasspathEntryProvider) commandInfo).classpathEntries(artifact));
+        }
     }
 
     private void addExtensionsToClasspath(List<URL> urls) {
@@ -145,7 +154,8 @@ public class ReflectiveCommandRunner extends AbstractCommandLineRunner {
         public Class<?> loadClass(String name) throws ClassNotFoundException {
             // Nashorn and some of the scripting classes need to come from the system classloader;
             // everything else we need to isolate and not delegate to the parent class loader
-            if (name.startsWith("org.slf4j") || name.startsWith("jdk.nashorn") || name.startsWith("javax.scripting") ) {
+            if (name.startsWith("org.slf4j") || name.startsWith("jdk.nashorn")
+                    || name.startsWith("javax.scripting")) {
                 return parent.loadClass(name);
             }
             else {
