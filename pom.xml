@@ -15,8 +15,8 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
-		<rug.version>0.1.0-20161127220159</rug.version>
-		<rug-resolver.version>0.1.0-20161128084527</rug-resolver.version>
+		<rug.version>0.1.0-20161128203345</rug.version>
+		<rug-resolver.version>0.1.0-20161128203659</rug-resolver.version>
 	</properties>
 	<organization>
 		<name>Atomist, Inc.</name>
@@ -157,6 +157,8 @@
 							<filters>
 								<filter>
 									<artifact>com.atomist:rug</artifact>
+									<artifact>com.atomist:rug-compiler</artifact>
+									<artifact>com.atomist:rug-typescript-compiler</artifact>
 									<includes>
 										<include>com/atomist/project/archive/AtomistConfig**</include>
 										<include>com/atomist/project/archive/DefaultAtomistConfig**</include>
