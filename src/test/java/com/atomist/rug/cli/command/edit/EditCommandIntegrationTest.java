@@ -22,29 +22,29 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
             FileUtils.deleteQuietly(new File("./README.backup"));
             FileUtils.deleteQuietly(new File("./.provenance.txt"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("README.md updated"));
-        }, "edit", "atomist-project-templates:common-editors:UpdateReadme", "projectName=TheName",
-                "description=SomeDescription", "-a", "2.5.0");
+                    .contains("README.md created"));
+        }, "edit", "atomist-project-templates:common-editors:AddReadme", "projectName=TheName",
+                "description=SomeDescription", "-a", "3.2.2");
 
     }
 
     @Test
     public void testUnSuccessfulEditWithInvalidParameter() throws Exception {
         assertFailure("Invalid parameter value\n  projectName = $#%$#%$#^$%$W...@432", "edit",
-                "atomist-project-templates:common-editors:UpdateReadme",
-                "projectName=$#%$#%$#^$%$W...@432", "description=Some", "-a", "2.5.0");
+                "atomist-project-templates:common-editors:AddReadme",
+                "projectName=$#%$#%$#^$%$W...@432", "description=Some", "-a", "3.2.2");
     }
 
     @Test
     public void testUnSuccessfulEditWithMissingParameters() throws Exception {
         assertFailure("Missing parameter value\n  projectName", "edit",
-                "atomist-project-templates:common-editors:UpdateReadme", "description=Some", "-a",
-                "2.5.0");
+                "atomist-project-templates:common-editors:AddReadme", "description=Some", "-a",
+                "3.2.2");
     }
 
     @Test
     public void testUnSuccessfulEditWithMultipleMissingParameters() throws Exception {
         assertFailure("Missing parameter values\n  projectName\n  description", "edit",
-                "atomist-project-templates:common-editors:UpdateReadme", "-a", "2.5.0");
+                "atomist-project-templates:common-editors:AddReadme", "-a", "3.2.2");
     }
 }

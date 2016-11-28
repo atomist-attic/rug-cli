@@ -28,7 +28,7 @@ with services s
 
 editor Walter
 with project p
-  do addFile "walter" @"shut the fuck up $target"
+  do addFile "walter" { "shut the fuck up " + $target }
 
 
 

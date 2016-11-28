@@ -31,9 +31,9 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulGeneratorDescribe() throws Exception {
         assertSuccess(
-                "rug generate \"atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice\"",
+                "rug generate \"atomist-project-templates:spring-rest-service:SpringBootRestMicroservice\"",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice");
+                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice");
     }
 
     @Test
@@ -44,29 +44,29 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersion() throws Exception {
-        assertSuccess("atomist-project-templates:spring-rest-service:3.5.2", "describe",
+        assertSuccess("atomist-project-templates:spring-rest-service:3.6.1", "describe",
                 "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-a",
-                "3.5.2");
+                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", "-a",
+                "3.6.1");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionAndResolverReport() throws Exception {
         // delete the resolver plan file
         File file = new File(System.getProperty("user.home"),
-                ".atomist/repository/atomist-project-templates/spring-rest-service/3.5.2/_resolver.plan");
+                ".atomist/repository/atomist-project-templates/spring-rest-service/3.6.1/_resolver.plan");
         file.delete();
-        assertSuccess("Dependency report for atomist-project-templates:spring-rest-service:3.5.2",
+        assertSuccess("Dependency report for atomist-project-templates:spring-rest-service:3.6.1",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-a",
-                "3.5.2", "-r");
+                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", "-a",
+                "3.6.1", "-r");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionOffline() throws Exception {
         assertCommandLine(0, () -> assertFalse(systemOutRule.getLog().contains("Downloading ")), "describe", "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-a",
-                "3.5.2", "-o");
+                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", "-a",
+                "3.6.1", "-o");
     }
 
     @Test
@@ -99,15 +99,15 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testUnSuccessfulGeneratorDescribe() throws Exception {
-        assertFailure("Specified generator Spring Boot Rest Microservice1 could not be found",
+        assertFailure("Specified generator SpringBootRestMicroservice1 could not be found",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice1");
+                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice1");
     }
 
     @Test
     public void testUnSuccessfulGeneratorDescribeForNonExistingArchive() throws Exception {
         assertFailure("No version found for atomist-project-templates:i-do-not-exist", "describe",
                 "generator",
-                "atomist-project-templates:i-do-not-exist:Spring Boot Rest Microservice");
+                "atomist-project-templates:i-do-not-exist:SpringBootRestMicroservice");
     }
 }
