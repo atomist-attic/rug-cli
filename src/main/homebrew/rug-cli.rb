@@ -1,9 +1,9 @@
 class RugCli < Formula
   desc "Atomist rug command-line interface."
-  homepage "https://github.com/atomisthq/rug-cli"
-  url "https://#{ENV["ARTIFACTORY_USER"]}:#{ENV["ARTIFACTORY_TOKEN"]}@sforzando.artifactoryonline.com/sforzando/libs-release-local/com/atomist/rug-cli/${project.version}/rug-cli-${project.version}-bin.tar.gz"
+  homepage "https://github.com/atomist/rug-cli"
+  url "https://#{ENV["ATOMIST_REPO_USER"]}:#{ENV["ATOMIST_REPO_TOKEN"]}@atomist.jfrog.io/atomist/libs-release/com/atomist/rug-cli/${project.version}/rug-cli-${project.version}-bin.tar.gz"
   sha256 "${checksum}"
-  head "https://github.com/atomisthq/rug-cli.git"
+  head "https://github.com/atomist/rug-cli.git"
 
   bottle :unneeded
 

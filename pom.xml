@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomist</groupId>
 	<artifactId>rug-cli</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.10.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>rug-cli</name>
 	<description>CLI for working with Rug</description>
@@ -313,14 +313,6 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>public-atomist-snapshots</id>
-			<name>Atomist Snapshots</name>
-			<url>https://atomist.jfrog.io/atomist/libs-snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
 			<id>atomist-release</id>
 			<name>Atomist Release</name>
 			<url>https://sforzando.artifactoryonline.com/sforzando/libs-release</url>
@@ -335,10 +327,5 @@
 			<name>Atomist Release</name>
 			<url>https://atomist.jfrog.io/atomist/libs-release-local</url>
 		</repository>
-		<snapshotRepository>
-			<id>public-atomist-snapshots</id>
-			<name>Atomist Snapshots</name>
-			<url>https://atomist.jfrog.io/atomist/libs-snapshot-local</url>
-		</snapshotRepository>
 	</distributionManagement>
 </project>
