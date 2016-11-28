@@ -16,7 +16,7 @@
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
 		<rug.version>0.1.0-20161127220159</rug.version>
-		<rug-resolver.version>0.1.0-20161127110512</rug-resolver.version>
+		<rug-resolver.version>0.1.0-20161128002947</rug-resolver.version>
 	</properties>
 	<organization>
 		<name>Atomist, Inc.</name>
