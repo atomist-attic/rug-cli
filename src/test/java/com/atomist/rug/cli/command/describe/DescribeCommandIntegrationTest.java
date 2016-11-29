@@ -65,8 +65,8 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionOffline() throws Exception {
         assertCommandLine(0, () -> assertFalse(systemOutRule.getLog().contains("Downloading ")), "describe", "generator",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", "-a",
-                "3.6.1", "-o");
+                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", "-o", "-a",
+                "3.6.1");
     }
 
     @Test
