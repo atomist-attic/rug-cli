@@ -64,8 +64,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
     }
 
     protected void printNoExtensionsInstalled() {
-        log.newline();
-        log.info(Style.yellow("No extensions installed"));
+        log.info("  " + Style.yellow("No extensions installed"));
         log.newline();
     }
 
