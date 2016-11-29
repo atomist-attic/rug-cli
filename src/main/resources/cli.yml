@@ -8,6 +8,9 @@ remote-repositories:
   maven-central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"
+  rug-types-jfrog:
+    publish: false
+    url: "https://atomist.jfrog.io/atomist/libs-release"
   public-templates:
     publish: false
     url: "https://sforzando.artifactoryonline.com/sforzando/public-templates-dev"
