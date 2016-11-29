@@ -16,7 +16,7 @@
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
 		<rug.version>0.1.0-20161128203345</rug.version>
-		<rug-resolver.version>0.1.0-20161129084530</rug-resolver.version>
+		<rug-resolver.version>0.2.0</rug-resolver.version>
 	</properties>
 	<licenses>
 		<license>
@@ -166,10 +166,6 @@
 									<artifact>com.atomist:rug</artifact>
 									<artifact>com.atomist:rug-compiler</artifact>
 									<artifact>com.atomist:rug-typescript-compiler</artifact>
-									<includes>
-										<include>com/atomist/project/archive/AtomistConfig**</include>
-										<include>com/atomist/project/archive/DefaultAtomistConfig**</include>
-									</includes>
 								</filter>
 							</filters>
 							<transformers>
@@ -324,8 +320,9 @@
 						<configuration>
 							<includedScopes>compile</includedScopes>
 							<licenseMerges>
-								<licenseMerge>The Apache Software License, Version 2.0|Apache License, Version 2.0|Apache Public License 2.0|Apache 2|Apache 2.0|Apache 2.0 License|The Apache License, Version 2.0</licenseMerge>
-								<licenseMerge>Eclipse Public License, Version 1.0|Eclipse Public License - v 1.0</licenseMerge>
+								<licenseMerge>Apache Software License, Version 2.0|Apache License, Version 2.0|Apache Public License 2.0|Apache 2|Apache 2.0|Apache 2.0 License|The Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache License 2.0</licenseMerge>
+								<licenseMerge>Eclipse Public License, Version 1.0|Eclipse Public License - v 1.0|The Eclipse Public License, Version 1.0</licenseMerge>
+								<licenseMerge>BSD License|The BSD License|BSD</licenseMerge>
 							</licenseMerges>
 						</configuration>
 					</execution>

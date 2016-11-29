@@ -11,7 +11,7 @@ import org.eclipse.aether.artifact.Artifact;
 
 import com.atomist.project.ProvenanceInfo;
 import com.atomist.project.SimpleProvenanceInfo;
-import com.atomist.project.archive.DefaultAtomistConfig$;
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Command;
@@ -44,8 +44,7 @@ public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand
         String zipFileName = artifact.artifact() + "-" + fullVersion + "."
                 + artifact.extension().toString().toLowerCase();
         File projectRoot = CommandUtils.getRequiredWorkingDirectory();
-        File archive = new File(projectRoot,
-                DefaultAtomistConfig$.MODULE$.atomistRoot() + "/target/" + zipFileName);
+        File archive = new File(projectRoot, Constants.ATOMIST_ROOT + "/target/" + zipFileName);
 
         prepareTargetDirectory(archive);
         ArtifactSource source = createArtifactSource(projectRoot);

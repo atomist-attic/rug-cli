@@ -150,7 +150,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
     private void listExtension() {
         new ProgressReportingOperationRunner<Void>("Listing extensions").run((indicator) -> {
             File extensionRoot = new File(FileUtils.getUserDirectory(),
-                    Constants.DOT_ATOMIST + File.separator + "ext");
+                    Constants.ATOMIST_ROOT + File.separator + "ext");
             log.newline();
             log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Extensions"));
 

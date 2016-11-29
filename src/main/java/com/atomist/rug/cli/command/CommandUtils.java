@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.apache.commons.cli.Options;
 
-import com.atomist.project.archive.DefaultAtomistConfig$;
+import com.atomist.rug.cli.Constants;
 
 public abstract class CommandUtils {
 
@@ -61,16 +61,16 @@ public abstract class CommandUtils {
 
     private static File searchFromProjectRoot(File root) {
         // inside project root with a child .atomist
-        File dir = new File(root, DefaultAtomistConfig$.MODULE$.atomistRoot());
+        File dir = new File(root, Constants.ATOMIST_ROOT);
         if (dir.exists()) {
             return root;
         }
         // inside .atomist folder
-        if (root.getName().equals(DefaultAtomistConfig$.MODULE$.atomistRoot())) {
+        if (root.getName().equals(Constants.ATOMIST_ROOT)) {
             return root.getParentFile();
         }
         // inside any sub-folder of .atomist
-        if (root.getParentFile().getName().equals(DefaultAtomistConfig$.MODULE$.atomistRoot())) {
+        if (root.getParentFile().getName().equals(Constants.ATOMIST_ROOT)) {
             return root.getParentFile().getParentFile();
         }
         return null;

@@ -10,7 +10,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import com.atomist.project.archive.DefaultAtomistConfig$;
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.settings.Settings.Authentication;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
@@ -20,8 +20,8 @@ import com.atomist.rug.cli.utils.StringUtils;
 
 public class SettingsReader {
 
-    public static final String PATH = System.getProperty("user.home") + File.separator
-            + DefaultAtomistConfig$.MODULE$.atomistRoot() + File.separator + "cli.yml";
+    public static final String PATH = org.apache.commons.io.FileUtils.getUserDirectoryPath()
+            + File.separator + Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME;
 
     private static Log log = new Log(SettingsReader.class);
 
@@ -39,7 +39,8 @@ public class SettingsReader {
         Settings projectSettings = null;
         File userDir = org.apache.commons.io.FileUtils.getUserDirectory();
         if (userDir != null && userDir.exists()) {
-            File projetSettingsFile = new File(userDir, ".atomist/cli.yml");
+            File projetSettingsFile = new File(userDir,
+                    Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
             if (projetSettingsFile.exists()) {
                 projectSettings = settingsFromFile(projetSettingsFile);
                 // now merge both files
@@ -107,7 +108,7 @@ public class SettingsReader {
 
     private void createDefaultSettingsFile(File settingsFile) {
         try {
-            IOUtils.copy(getClass().getClassLoader().getResourceAsStream("cli.yml"),
+            IOUtils.copy(getClass().getClassLoader().getResourceAsStream(Constants.CLI_CONFIG_NAME),
                     new FileOutputStream(settingsFile));
             FileUtils.setPermissionsToOwnerOnly(settingsFile);
             log.info("Created default configuration file at %s", settingsFile.getAbsolutePath());

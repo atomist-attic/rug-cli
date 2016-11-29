@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 
-import com.atomist.project.archive.DefaultAtomistConfig$;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -135,8 +134,8 @@ public class ConfigCommand extends AbstractAnnotationBasedCommand {
             else {
                 File root = FileUtils.getUserDirectory();
                 if (root != null) {
-                    settingsFile = new File(root, DefaultAtomistConfig$.MODULE$.atomistRoot()
-                            + File.separator + "cli.yml");
+                    settingsFile = new File(root,
+                            Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
                     if (!settingsFile.exists()) {
                         settingsFile.getParentFile().mkdirs();
                     }
