@@ -1,3 +1,0 @@
-# Profile to be used inside the Docker container
-
-atomist_workspace=/opt/atomist
