@@ -1,7 +1,7 @@
 class RugCli < Formula
   desc "Atomist rug command-line interface."
   homepage "https://github.com/atomist/rug-cli"
-  url "https://#{ENV["ATOMIST_REPO_USER"]}:#{ENV["ATOMIST_REPO_TOKEN"]}@atomist.jfrog.io/atomist/libs-release/com/atomist/rug-cli/${project.version}/rug-cli-${project.version}-bin.tar.gz"
+  url "https://atomist.jfrog.io/atomist/libs-release/com/atomist/rug-cli/${project.version}/rug-cli-${project.version}-bin.tar.gz"
   sha256 "${checksum}"
   head "https://github.com/atomist/rug-cli.git"
 

@@ -16,6 +16,13 @@
 			<directoryMode>755</directoryMode>
 		</fileSet>
 		<fileSet>
+			<directory>target/generated-sources/license/</directory>
+			<outputDirectory>/legal</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+		</fileSet>
+		<fileSet>
 			<directory>src/main/executablecontent</directory>
 			<outputDirectory>/</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
@@ -36,11 +43,11 @@
 			<outputDirectory>/</outputDirectory>
 			<fileMode>644</fileMode>
 		</file>
-		<file>
-			<source>LICENSE</source>
-			<outputDirectory>/</outputDirectory>
-			<fileMode>644</fileMode>
-		</file>
+<!-- 		<file> -->
+<!-- 			<source>LICENSE</source> -->
+<!-- 			<outputDirectory>/</outputDirectory> -->
+<!-- 			<fileMode>644</fileMode> -->
+<!-- 		</file> -->
 		<file>
 			<source>INSTALL</source>
 			<outputDirectory>/</outputDirectory>
