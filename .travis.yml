@@ -40,3 +40,5 @@ deploy:
 after_deploy:
 - bash src/main/scripts/update-brew.bash $HOMEBREW_TAP $GITHUB_TOKEN
 - bash src/main/scripts/update-brew.bash atomisthq/s3-images $GITHUB_TOKEN images/Formula
+- bash src/main/scripts/deb-package.bash
+- bash src/main/scripts/rpm-package.bash
