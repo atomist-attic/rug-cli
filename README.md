@@ -1,6 +1,7 @@
-# rug-cli
+# Atomist 'rug-cli'
 
-[![Build Status](https://travis-ci.com/atomist/rug-cli.svg?token=YuitiySbpCXZTEZXx1ss&branch=master)](https://travis-ci.com/atomist/rug-cli) [![Slack Status](https://join.atomist.com/badge.svg)](https://join.atomist.com/)
+[![Build Status](https://travis-ci.com/atomist/rug-cli.svg?token=YuitiySbpCXZTEZXx1ss&branch=master)](https://travis-ci.com/atomist/rug-cli)
+[![Slack Status](https://join.atomist.com/badge.svg)](https://join.atomist.com/)
 
 Atomist Rug command-line interface for creating and running rugs.
 
