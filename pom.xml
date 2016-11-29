@@ -16,7 +16,7 @@
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
 		<rug.version>0.1.0-20161128203345</rug.version>
-		<rug-resolver.version>0.2.0</rug-resolver.version>
+		<rug-resolver.version>0.2.1</rug-resolver.version>
 	</properties>
 	<licenses>
 		<license>
