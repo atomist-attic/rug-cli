@@ -18,7 +18,7 @@ import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.deployer.AbstractAetherBasedDeployer;
+import com.atomist.rug.deployer.AbstractMavenBasedDeployer;
 import com.atomist.rug.deployer.Deployer;
 import com.atomist.rug.git.RepositoryDetails;
 import com.atomist.rug.git.RepositoryDetailsProvider;
@@ -49,7 +49,7 @@ public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand
         prepareTargetDirectory(archive);
         ArtifactSource source = createArtifactSource(projectRoot);
 
-        Deployer deployer = new AbstractAetherBasedDeployer(
+        Deployer deployer = new AbstractMavenBasedDeployer(
                 new SettingsReader().read().getLocalRepository().path()) {
 
             @Override
