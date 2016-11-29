@@ -3,9 +3,9 @@ package com.atomist.rug.cli.command.extension;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import com.atomist.rug.cli.command.AbstractCommandInfo;
+import com.atomist.rug.cli.command.AbstractRugEnabledCommandInfo;
 
-public class ExtensionCommandInfo extends AbstractCommandInfo {
+public class ExtensionCommandInfo extends AbstractRugEnabledCommandInfo {
 
     public ExtensionCommandInfo() {
         super(ExtensionCommand.class, "extension");
