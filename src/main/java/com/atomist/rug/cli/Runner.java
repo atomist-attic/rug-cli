@@ -1,5 +1,7 @@
 package com.atomist.rug.cli;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -10,7 +12,7 @@ import com.atomist.rug.cli.command.CommandHelpFormatter;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.ReflectiveCommandRunner;
-import com.atomist.rug.cli.command.utils.ParseExceptionPrinter;
+import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.Timing;
@@ -36,14 +38,31 @@ public class Runner {
             printVersion();
         }
         else {
-            CommandLine commandLine = parseCommandline(args);
-            runCommand(args, commandLine);
+            CommandLine commandLine = null;
+            try {
+                commandLine = parseCommandline(args);
+                runCommand(args, commandLine);
+            }
+            catch (Throwable e) {
+                // Extract root exception; cycle through nested exceptions to extract root cause
+                e = extractRootCause(e);
+
+                // Print stacktraces only if requested from the command line
+                log.newline();
+                if (commandLine != null && commandLine.hasOption('X')) {
+                    log.error(e);
+                }
+                else {
+                    log.error(e.getMessage());
+                }
+                System.exit(1);
+            }
 
             if (versionThread.getVersion().isPresent()) {
                 printNewVersion(versionThread.getVersion().get());
             }
 
-            if (commandLine.hasOption('t')) {
+            if (commandLine != null && commandLine.hasOption('t')) {
                 printTimer(timing);
             }
         }
@@ -58,13 +77,7 @@ public class Runner {
             return commandLine;
         }
         catch (ParseException e) {
-            try {
-                ParseExceptionPrinter.print(e);
-            }
-            catch (CommandException ce) {
-                log.error(ce.getMessage());
-                System.exit(1);
-            }
+            ParseExceptionProcessor.process(e);
         }
         return null;
     }
@@ -108,5 +121,20 @@ public class Runner {
         else if (commandLine.getArgList().size() >= 1) {
             new ReflectiveCommandRunner(registry).runCommand(args, commandLine);
         }
+    }
+
+    private Throwable extractRootCause(Throwable t) {
+        if (t instanceof InvocationTargetException) {
+            return extractRootCause(((InvocationTargetException) t).getTargetException());
+        }
+        else if (t instanceof CommandException) {
+            return t;
+        }
+        else if (t instanceof RuntimeException) {
+            if (t.getCause() != null) {
+                return extractRootCause(t.getCause());
+            }
+        }
+        return t;
     }
 }

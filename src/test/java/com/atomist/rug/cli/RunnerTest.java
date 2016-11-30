@@ -41,8 +41,7 @@ public class RunnerTest extends AbstractCommandTest {
 
     @Test
     public void testInvalidOption() throws Exception {
-        assertFailure("Run the following command for usage help:\n" + 
-                "  rug --help.", "-p");
+        assertFailure("Run the following command for usage help:\n" + "  rug --help.", "-p");
     }
 
     @Test
@@ -53,5 +52,17 @@ public class RunnerTest extends AbstractCommandTest {
     @Test
     public void testTestHelp() throws Exception {
         assertSuccess("Usage: rug test [OPTION]... [TEST]", "test", "-h");
+    }
+
+    @Test
+    public void testInvalidCommand() throws Exception {
+        assertCommandLine(1, new SystemOutAssertion("Did you mean?\n" + 
+                "  rug generate"), false, "generator", "atomist-project-templates:spring-rest-service:SpringBoot", "testprojectname");
+    }
+
+    @Test
+    public void testInvalidCommandWithOption() throws Exception {
+        assertCommandLine(1, new SystemOutAssertion("Did you mean?\n" + 
+                "  rug generate"), false, "generator", "--help");
     }
 }

@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.utils.StringUtils;
+
 public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
 
     private List<CommandInfo> commands = new ArrayList<>();
@@ -39,7 +42,8 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
         }
         else {
             throw new CommandException(
-                    String.format("%s is not a recognized command.", commandName), (String) null);
+                    String.format("%s is not a recognized command.%s", commandName,
+                            getAddtionalHelpMessage(commandName, commandLine)), (String) null);
         }
     }
 
@@ -48,5 +52,20 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
         loader.forEach(c -> commands.add(c));
         commands = commands.stream().sorted((c1, c2) -> Integer.compare(c1.order(), c2.order()))
                 .collect(Collectors.toList());
+    }
+
+    private String getAddtionalHelpMessage(String commandName, CommandLine commandLine) {
+        Optional<String> closestMatch = StringUtils.computeClosestMatch(commandName,
+                commands.stream().map(c -> c.name()).collect(Collectors.toList()));
+        if (closestMatch.isPresent()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n\nDid you mean?\n");
+            sb.append("  " + Constants.COMMAND).append(" ").append(closestMatch.get()).append(" ");
+            sb.append("");
+            return sb.toString();
+        }
+        else {
+            return "";
+        }
     }
 }

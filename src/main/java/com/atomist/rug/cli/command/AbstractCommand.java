@@ -14,7 +14,7 @@ import org.apache.commons.cli.ParseException;
 import com.atomist.project.archive.Operations;
 import com.atomist.rug.BadRugException;
 import com.atomist.rug.RugRuntimeException;
-import com.atomist.rug.cli.command.utils.ParseExceptionPrinter;
+import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
 import com.atomist.rug.cli.output.ConsoleUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
@@ -131,7 +131,7 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
             }
         }
         catch (ParseException e) {
-            ParseExceptionPrinter.print(e);
+            ParseExceptionProcessor.process(e);
         }
         return commandLine;
     }

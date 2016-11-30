@@ -21,7 +21,7 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.rug.resolver.DependencyResolver;
 
-public class ReflectiveCommandRunner extends AbstractCommandLineRunner {
+public class ReflectiveCommandRunner {
 
     private final CommandInfoRegistry registry;
 
@@ -29,7 +29,7 @@ public class ReflectiveCommandRunner extends AbstractCommandLineRunner {
         this.registry = registry;
     }
 
-    protected void doRunCommand(String[] args, CommandLine commandLine) {
+    public void runCommand(String[] args, CommandLine commandLine) {
 
         ArtifactDescriptor artifact = null;
         List<ArtifactDescriptor> dependencies = Collections.emptyList();

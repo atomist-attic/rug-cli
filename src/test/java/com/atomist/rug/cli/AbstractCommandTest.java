@@ -41,7 +41,12 @@ public abstract class AbstractCommandTest {
 
     protected void assertCommandLine(int exitCode, Assertion assertion, String... tokens)
             throws Exception {
-        String[] commandLine = commandLine(tokens);
+        assertCommandLine(exitCode, assertion, true, tokens);
+    }
+
+    protected void assertCommandLine(int exitCode, Assertion assertion, boolean includeConf,
+            String... tokens) throws Exception {
+        String[] commandLine = commandLine(includeConf, tokens);
         System.out.println(">>> " + Constants.COMMAND + " "
                 + StringUtils.arrayToDelimitedString(commandLine, " "));
         System.out.println("");
@@ -65,15 +70,16 @@ public abstract class AbstractCommandTest {
         assertCommandLine(0, requiredContents, tokens);
     }
 
-    protected String[] commandLine(String... tokens) {
+    protected String[] commandLine(boolean includeConf, String... tokens) {
         File config = new File("../cli.yml");
 
         List<String> commandLine = new ArrayList<>(Arrays.asList(tokens));
-        commandLine.add("-q");
-        commandLine.add("-s");
-        commandLine.add(config.getAbsolutePath());
-        commandLine.add("-X");
-
+        if (includeConf) {
+            commandLine.add("-q");
+            commandLine.add("-s");
+            commandLine.add(config.getAbsolutePath());
+            commandLine.add("-X");
+        }
         commandLine = commandLine.stream().filter(c -> c != null).collect(Collectors.toList());
 
         return commandLine.toArray(new String[commandLine.size()]);

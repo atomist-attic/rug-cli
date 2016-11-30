@@ -9,10 +9,10 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 
 import com.atomist.rug.cli.command.CommandException;
 
-public class ParseExceptionPrinter {
+public class ParseExceptionProcessor {
 
     @SuppressWarnings("unchecked")
-    public static void print(ParseException e) {
+    public static void process(ParseException e) {
         if (e instanceof MissingOptionException) {
             StringBuilder sb = new StringBuilder();
             Iterator<String> options = ((MissingOptionException) e).getMissingOptions().iterator();
