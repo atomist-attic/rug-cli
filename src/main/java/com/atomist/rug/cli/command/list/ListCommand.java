@@ -1,6 +1,8 @@
 package com.atomist.rug.cli.command.list;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +34,8 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
+import com.atomist.source.file.ZipFileArtifactSourceReader;
+import com.atomist.source.file.ZipFileInput;
 
 public class ListCommand extends AbstractAnnotationBasedCommand {
 
@@ -41,8 +45,9 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
     public void run(@Option("filter") Properties filter) {
 
         Map<String, List<ArtifactDescriptor>> archives = new ProgressReportingOperationRunner<Map<String, List<ArtifactDescriptor>>>(
-                "Listing local archives").run(indicator -> collectArchives(filter).stream()
-                        .collect(Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
+                "Listing local archives")
+                        .run(indicator -> collectArchives(filter).stream().collect(
+                                Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
 
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives"));
@@ -57,8 +62,8 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
 
     private void printArchive(String groupArtifact, List<ArtifactDescriptor> versions) {
         List<String> versionStrings = versions.stream()
-                .sorted((v1, v2) -> v2.version().compareTo(v1.version())).map(ArtifactDescriptor::version)
-                .collect(Collectors.toList());
+                .sorted((v1, v2) -> v2.version().compareTo(v1.version()))
+                .map(ArtifactDescriptor::version).collect(Collectors.toList());
         // underline the highest version
         versionStrings.set(0, Style.underline(versionStrings.get(0)));
         log.info(Style.yellow("  %s", groupArtifact) + " (%s)",
@@ -70,7 +75,9 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
         URI repoHome = repo.toURI();
         if (repo.exists()) {
             Collection<File> archives = FileUtils.listFiles(repo, new String[] { "zip" }, true)
-                    .stream().sorted((o1, o2) -> o1.getAbsolutePath().compareTo(o2.getAbsolutePath())).collect(Collectors.toList());
+                    .stream()
+                    .sorted((o1, o2) -> o1.getAbsolutePath().compareTo(o2.getAbsolutePath()))
+                    .collect(Collectors.toList());
 
             String group = filter.getProperty("group");
             if (group != null) {
@@ -107,7 +114,17 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                     log.info("Invalid version constraint %s specified in filter", version);
                 }
             }
-            return archives.stream().map(f -> {
+            return archives.stream().filter(f -> {
+                try {
+                    // filter out all non-Rug archives
+                    return ZipFileArtifactSourceReader
+                            .fromZipSource(new ZipFileInput(new FileInputStream(f)))
+                            .findDirectory(".atomist").isDefined();
+                }
+                catch (FileNotFoundException e) {
+                    return false;
+                }
+            }).map(f -> {
                 URI relativeUri = repoHome.relativize(f.toURI());
                 List<String> segments = new ArrayList<>(
                         Arrays.asList(relativeUri.toString().split("/")));
