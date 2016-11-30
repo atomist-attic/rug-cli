@@ -1,6 +1,6 @@
 # Atomist 'rug-cli'
 
-[![Build Status](https://travis-ci.com/atomist/rug-cli.svg?token=YuitiySbpCXZTEZXx1ss&branch=master)](https://travis-ci.com/atomist/rug-cli)
+[![Build Status](https://travis-ci.org/atomist/rug-cli.svg?branch=master)](https://travis-ci.org/atomist/rug-cli)
 [![Slack Status](https://join.atomist.com/badge.svg)](https://join.atomist.com/)
 
 Atomist Rug command-line interface for creating and running rugs.
@@ -10,20 +10,20 @@ Atomist Rug command-line interface for creating and running rugs.
 You can install the Rug command-line interface using standard
 packaging tools for your operating system.
 
-* [CLI Installation for MacOS](https://github.com/atomist/homebrew-tap)
-* [CLI Installation for Linux](https://github.com/atomist/rug-cli/blob/master/docs/install-linux.md)
-* [CLI Intallation for Windows (Work in progress)](https://github.com/atomist/rug-cli/issues/6)
+*   [CLI Installation for MacOS](https://github.com/atomist/homebrew-tap)
+*   [CLI Installation for Linux](https://github.com/atomist/rug-cli/blob/master/docs/install-linux.md)
+*   [CLI Intallation for Windows (Work in progress)](https://github.com/atomist/rug-cli/issues/6)
 
 ## Documentation
 
 The following documentation is available:
 
-* [CLI Commands and Syntax](https://github.com/atomist/rug-cli/blob/master/docs/rug-cli.md)
-* [Documentation on Rug Archives](https://github.com/atomist/rug-cli/blob/master/docs/rug-archives.md)
+*   [CLI Commands and Syntax](https://github.com/atomist/rug-cli/blob/master/docs/rug-cli.md)
+*   [Documentation on Rug Archives](https://github.com/atomist/rug-cli/blob/master/docs/rug-archives.md)
 
 ## Support
 
-General support questions should be discussed in the `#rug-cli`
+General support questions should be discussed in the `#support`
 channel on our community slack team
 at [atomist-community.slack.com](https://join.atomist.com).
 
@@ -49,11 +49,10 @@ appropriate [semantic version][semver] for release.  For example:
 $ git tag -a 1.2.3
 ```
 
-The [Travis CI][travis] build will automatically create a GitHub
-release using the tag name for the release and the comment provided on
-the annotated tag as the contents of the release notes.  It will also
-automatically upload the needed artifacts and update the binary
-packages.
+The Travis CI build (see badge at the top of this page) will
+automatically create a GitHub release using the tag name for the
+release and the comment provided on the annotated tag as the contents
+of the release notes.  It will also automatically upload the needed
+artifacts.
 
 [semver]: http://semver.org
-[travis]: https://travis-ci.com/atomist/rug-cli
