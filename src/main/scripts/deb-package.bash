@@ -14,8 +14,8 @@ function err() {
 }
 
 function install_deps() {
-    apt-get install -y -q ruby-dev build-essential jq curl
-    gem install fpm
+    sudo apt-get install -y -q ruby-dev build-essential jq curl
+    sudo gem install fpm
 }
 
 function gitentry2debentry() {
@@ -158,7 +158,7 @@ function upload_to_repository() {
 
     echo "Package checksum: $checksum"
 
-    local response=$(curl -s -u $ATOMIST_CI_DEPLOY_USERNAME:$ATOMIST_CI_DEPLOY_PASSWORD \
+    local response=$(curl -s -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD \
                           -H "X-Checksum-Sha1:$checksum"\
                           -T $package\
                           -XPUT \
@@ -201,13 +201,13 @@ function main() {
         install_deps
     fi
 
-    if [[ ! $ATOMIST_CI_DEPLOY_USERNAME ]]; then
-        err "missing artifactory user ATOMIST_CI_DEPLOY_USERNAME"
+    if [[ ! $ARTIFACTORY_USER ]]; then
+        err "missing artifactory user ARTIFACTORY_USER"
         return 1
     fi
 
-    if [[ ! $ATOMIST_CI_DEPLOY_PASSWORD ]]; then
-        err "missing artifactory password ATOMIST_CI_DEPLOY_PASSWORD"
+    if [[ ! $ARTIFACTORY_PASSWORD ]]; then
+        err "missing artifactory password ARTIFACTORY_PASSWORD"
         return 1
     fi
 
