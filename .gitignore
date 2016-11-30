@@ -7,3 +7,4 @@ dependency-reduced-pom.xml
 *.iml
 /.atomist
 /README.backup
+/src/test/resources/common-editors/README.backup
