@@ -16,8 +16,6 @@ packaging tools for your operating system.
 
 ## Documentation
 
-![Sample Usage](http://g.recordit.co/tetSHFqApJ.gif)
-
 The following documentation is available:
 
 *   [CLI Commands and Syntax](https://github.com/atomist/rug-cli/blob/master/docs/rug-cli.md)
