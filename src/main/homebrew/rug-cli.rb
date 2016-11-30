@@ -12,7 +12,7 @@ class RugCli < Formula
 
   def install
     if build.head?
-      system "mvn", "--settings", ".settings.xml", "-B", "-V", "package", "-DskipTests"
+      system "mvn", "-B", "-V", "package", "-DskipTests"
       libexec.install Dir["target/rug-cli-*-SNAPSHOT-bin/rug-cli-*-SNAPSHOT/*"]
     else
       libexec.install Dir["*"]
