@@ -204,8 +204,7 @@
 					<verbose>false</verbose>
 					<dateFormat>yyyy-MM-dd</dateFormat>
 					<generateGitPropertiesFile>true</generateGitPropertiesFile>
-					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
-					</generateGitPropertiesFilename>
+					<generateGitPropertiesFilename>${project.build.outputDirectory}/git-rug-cli.properties</generateGitPropertiesFilename>
 				</configuration>
 			</plugin>
 			<plugin>

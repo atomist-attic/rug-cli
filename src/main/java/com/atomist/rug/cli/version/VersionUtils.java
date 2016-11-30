@@ -94,7 +94,7 @@ public abstract class VersionUtils {
     public static VersionInformation readVersionInformation() {
         Properties properties = new Properties();
         readFileIntoProperties("META-INF/maven/com.atomist/rug-cli/pom.properties", properties);
-        readFileIntoProperties("git.properties", properties);
+        readFileIntoProperties("git-rug-cli.properties", properties);
 
         String repo = properties.getProperty("git.remote.origin.url", "n/a");
         if (repo != null) {
