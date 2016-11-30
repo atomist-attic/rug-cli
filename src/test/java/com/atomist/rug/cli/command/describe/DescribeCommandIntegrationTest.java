@@ -78,7 +78,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testUnSuccessfulDescribe() throws Exception {
-        assertFailure("No or invalid TYPE provided.\n"
+        assertFailure("No or invalid TYPE provided.\n\n"
                 + "Run the following command for usage help:\n" + "  rug describe --help.", "-X",
                 "describe", "-l");
     }
@@ -86,7 +86,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulDescribeOffline() throws Exception {
         assertFailure(
-                "No valid ARTIFACT provided, no default artifact defined and not in local mode.\n"
+                "No valid ARTIFACT provided, no default artifact defined and not in local mode.\n\n"
                         + "Run the following command for usage help:\n" + "  rug describe --help.",
                 "-oX", "describe");
     }
