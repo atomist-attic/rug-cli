@@ -10,16 +10,16 @@ Atomist Rug command-line interface for creating and running rugs.
 You can install the Rug command-line interface using standard
 packaging tools for your operating system.
 
-*   [CLI Installation for MacOS](https://github.com/atomist/homebrew-tap)
-*   [CLI Installation for Linux](https://github.com/atomist/rug-cli/blob/master/docs/install-linux.md)
-*   [CLI Intallation for Windows (Work in progress)](https://github.com/atomist/rug-cli/issues/6)
+* [CLI Installation for MacOS](https://github.com/atomist/homebrew-tap)
+* [CLI Installation for Linux](https://github.com/atomist/rug-cli/blob/master/docs/install-linux.md)
+* [CLI Intallation for Windows (Work in progress)](https://github.com/atomist/rug-cli/issues/6)
 
 ## Documentation
 
 The following documentation is available:
 
-*   [CLI Commands and Syntax](https://github.com/atomist/rug-cli/blob/master/docs/rug-cli.md)
-*   [Documentation on Rug Archives](https://github.com/atomist/rug-cli/blob/master/docs/rug-archives.md)
+* [CLI Commands and Syntax](https://github.com/atomist/rug-cli/blob/master/docs/rug-cli.md)
+* [Documentation on Rug Archives](https://github.com/atomist/rug-cli/blob/master/docs/rug-archives.md)
 
 ## Support
 
