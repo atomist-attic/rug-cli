@@ -95,7 +95,7 @@ public class ReflectiveCommandRunner extends AbstractCommandLineRunner {
         Thread.currentThread().setContextClassLoader(cls);
     }
 
-    protected void addCommandExtensionsToClasspath(ArtifactDescriptor artifact,
+    private void addCommandExtensionsToClasspath(ArtifactDescriptor artifact,
             CommandInfo commandInfo, List<URL> urls) {
         if (commandInfo instanceof ClasspathEntryProvider) {
             urls.addAll(((ClasspathEntryProvider) commandInfo).classpathEntries(artifact));

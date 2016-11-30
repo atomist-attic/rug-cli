@@ -1,6 +1,5 @@
 package com.atomist.rug.cli.resolver;
 
-import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -85,7 +84,7 @@ public class DependencyResolverFactory {
     private void addExclusions(MavenBasedDependencyResolver resolver) {
         // This is exclusion is needed to prevent multiple versions of slf4j bindings on the
         // classpath
-        resolver.setExclusions(Collections.singletonList("ch.qos.logback:logback-classic"));
+        //resolver.setExclusions(Collections.singletonList("ch.qos.logback:logback-classic"));
     }
 
     private DependencyResolver wrapDependencyResolver(DependencyResolver resolver,

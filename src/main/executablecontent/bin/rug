@@ -88,7 +88,7 @@ for f in ${RUG_HOME}/lib/*; do
 done
 
 for f in $(find ${HOME}/.atomist/ext -iname '*.jar' 2>/dev/null); do
-     CLASSPATH=$CLASSPATH:$f
+     CLASSPATH=$f:$CLASSPATH
 done
 
 if $cygwin; then

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration packagingData="true">
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -23,24 +23,24 @@
 			<maxFileSize>5MB</maxFileSize>
 		</triggeringPolicy>
 		<encoder>
-			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+			<pattern>%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n
 			</pattern>
 		</encoder>
 	</appender>
 
-	<logger name="com.atomist" level="error" additivity="false">
+	<logger name="com.atomist" level="debug" additivity="false">
 		<appender-ref ref="FILE" />
 	</logger>
 
-	<logger name="com.atomist.rug" level="error" additivity="false">
+	<logger name="com.atomist.rug" level="debug" additivity="false">
 		<appender-ref ref="FILE" />
 	</logger>
 
-	<logger name="com.atomist.project" level="error" additivity="false">
+	<logger name="com.atomist.project" level="debug" additivity="false">
 		<appender-ref ref="FILE" />
 	</logger>
 
-	<root level="error">
+	<root level="debug">
 		<appender-ref ref="FILE" />
 	</root>
 </configuration>
