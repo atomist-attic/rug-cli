@@ -45,7 +45,7 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                         .collect(Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
 
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Local Archives"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives"));
 
         archives.entrySet().stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
                 .forEach(a -> printArchive(a.getKey(), a.getValue()));

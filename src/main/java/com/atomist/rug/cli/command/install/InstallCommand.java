@@ -61,11 +61,11 @@ public class InstallCommand extends AbstractRepoCommand {
                 });
 
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Archive"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
         log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(artifact.getFile())),
                 FileUtils.sizeOf(artifact.getFile()), source.allFiles().size());
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Contents"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
         ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
         log.newline();
         log.info(Style.green("Successfully installed archive for %s:%s:%s", manifest.group(),

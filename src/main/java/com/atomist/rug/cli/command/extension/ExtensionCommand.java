@@ -116,7 +116,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
         File extensionRoot = createPathForExtension(artifact);
 
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Extension"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extension"));
         log.info("  %s", Style
                 .underline(com.atomist.rug.cli.utils.FileUtils.relativize(extensionRoot.toURI())));
 
@@ -151,7 +151,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
             File extensionRoot = new File(FileUtils.getUserDirectory(),
                     Constants.ATOMIST_ROOT + File.separator + "ext");
             log.newline();
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Extensions"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extensions"));
 
             if (extensionRoot.exists()) {
                 List<File> extensions = FileUtils
@@ -189,7 +189,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
         }
 
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Extension"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extension"));
         log.info("  %s", Style
                 .underline(com.atomist.rug.cli.utils.FileUtils.relativize(extensionRoot.toURI())));
 

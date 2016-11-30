@@ -74,7 +74,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
         }
         else {
             log.newline();
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Editors"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
             JavaConversions.asJavaCollection(operations.editors()).forEach(
                     e -> log.info(Style.yellow("  %s", StringUtils.stripName(e.name(), artifact))
                             + " (" + e.description() + ")"));
@@ -109,11 +109,11 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
                     .write(((SuccessfulModification) result).result(), editor, arguments);
 
             log.newline();
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Project"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
             log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
                     FileUtils.sizeOf(root), resultSource.allFiles().size());
             log.newline();
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Changes"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
 
             List<Delta> deltas = JavaConversions.asJavaCollection(resultSource.cachedDeltas())
                     .stream().collect(Collectors.toList());
@@ -129,7 +129,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
         }
         else if (result instanceof NoModificationNeeded) {
             log.newline();
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Project"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
             log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
                     FileUtils.sizeOf(root), source.allFiles().size());
             log.newline();
@@ -137,7 +137,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
         }
         else if (result instanceof FailedModificationAttempt) {
             log.newline();
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Project"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
             log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
                     FileUtils.sizeOf(root), source.allFiles().size());
             log.newline();

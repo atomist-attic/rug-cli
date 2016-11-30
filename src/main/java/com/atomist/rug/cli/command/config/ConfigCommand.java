@@ -73,7 +73,7 @@ public class ConfigCommand extends AbstractAnnotationBasedCommand {
         new SettingsWriter().write(settings, settingsFile);
 
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " "
+        log.info(Style.cyan(Constants.DIVIDER) + " "
                 + Style.bold("Default (%s)", (global ? "global" : "project")));
         log.info("  group: %s", Style.yellow(defaultGroup));
         if (defaultArtifact != null) {
@@ -107,7 +107,7 @@ public class ConfigCommand extends AbstractAnnotationBasedCommand {
         new SettingsWriter().write(settings, settingsFile);
 
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " "
+        log.info(Style.cyan(Constants.DIVIDER) + " "
                 + Style.bold("Default (%s)", (global ? "global" : "project")));
         log.info("  Deleted");
         if (global) {

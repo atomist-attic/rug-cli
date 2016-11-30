@@ -71,7 +71,7 @@ public class DependencyResolverFactory {
 
                 private void firstMessage() {
                     if (firstMessage) {
-                        indicator.report(Style.blue(Constants.DIVIDER) + " "
+                        indicator.report(Style.cyan(Constants.DIVIDER) + " "
                                 + Style.bold("Dependency report for %s:%s:%s", artifact.group(),
                                         artifact.artifact(), artifact.version()));
                         firstMessage = false;

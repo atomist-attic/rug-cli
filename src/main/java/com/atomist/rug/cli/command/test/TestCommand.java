@@ -95,7 +95,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                             report.passedTests().size(), report.tests().size())));
         }
         else {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Failed Scenarios"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Failed Scenarios"));
             JavaConversions.asJavaCollection(report.failures()).forEach(t -> {
                 log.info(Style.yellow("  %s", t.name())
                         + String.format(" (%s of %s assertions failed)", t.failures().size(),

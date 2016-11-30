@@ -104,22 +104,22 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeContents(ArtifactDescriptor artifact, ArtifactSource source) {
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Archive"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
         log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(artifact.uri())),
                 FileUtils.sizeOf(artifact.uri()), source.allFiles().size());
     }
 
     private void describeDependencies(Manifest manifest) {
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Requires"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Requires"));
         log.info(Style.yellow("  %s", manifest.requires()));
         if (manifest.dependencies().size() > 0) {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Dependencies"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Dependencies"));
             manifest.dependencies().forEach(d -> log
                     .info(Style.yellow("  %s:%s:%s", d.group(), d.artifact(), d.version())));
         }
         if (manifest.extensions().size() > 0) {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Extensions"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extensions"));
             manifest.extensions().forEach(d -> log
                     .info(Style.yellow("  %s:%s:%s", d.group(), d.artifact(), d.version())));
         }
@@ -141,7 +141,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
         }
         else {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Editors"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
             JavaConversions.asJavaCollection(operations.editors()).forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
@@ -172,7 +172,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
         }
         else {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Executors"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Executors"));
             JavaConversions.asJavaCollection(operations.executors()).forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
@@ -198,7 +198,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
         }
         else {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Generators"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
             JavaConversions.asJavaCollection(operations.generators())
                     .forEach(e -> log.info("  " + Style.yellow(e.name()) + " " + e.description()));
 
@@ -264,25 +264,25 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 .asJavaCollection(operations.reviewers());
         log.newline();
         if (!generators.isEmpty()) {
-        	log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Generators"));
+        	log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
         	generators.forEach(
         			e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
         			+ " (" + e.description() + ")"));
         }
         if (!editors.isEmpty()) {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Editors"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
             editors.forEach(e -> log
                     .info("  " + Style.yellow("%s", StringUtils.stripName(e.name(), artifact))
                             + " (" + e.description() + ")"));
         }
         if (!executors.isEmpty()) {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Executors"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Executors"));
             executors.forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " (" + e.description() + ")"));
         }
         if (!reviewers.isEmpty()) {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
             reviewers.forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " (" + e.description() + ")"));
@@ -300,7 +300,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                     .collect(Collectors.toList());
 
             if (!required.isEmpty()) {
-                log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Parameters (required)"));
+                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (required)"));
                 required.forEach(p -> log.info(
                         "  " + Style.yellow(p.getName())
                                 + " %s\n    pattern: %s, min length: %s, max length: %s",
@@ -308,7 +308,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                         p.getMaxLength()));
             }
             if (!optional.isEmpty()) {
-                log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Parameters (optional)"));
+                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (optional)"));
                 optional.forEach(p -> log.info(
                         "  " + Style.yellow(p.getName())
                                 + " %s\n    pattern: %s, min length: %s, max length: %s",
@@ -317,7 +317,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             }
         }
         else {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Parameters"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters"));
             log.info("  no parameters needed");
         }
     }
@@ -342,7 +342,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void describeProvenanceInfo(String repo, String branch, String sha) {
         if (repo != null && branch != null && sha != null) {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Origin"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Origin"));
             log.info("  %s#%s (%s)", repo, branch, sha);
         }
     }
@@ -363,7 +363,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
         }
         else {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
             JavaConversions.asJavaCollection(operations.reviewers()).forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
@@ -381,7 +381,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void describeTags(ProjectOperationInfo info) {
         if (!info.tags().isEmpty()) {
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Tags"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Tags"));
             JavaConversions.asJavaCollection(info.tags()).forEach(
                     t -> log.info("  " + Style.yellow(t.name()) + " (" + t.description() + ")"));
         }

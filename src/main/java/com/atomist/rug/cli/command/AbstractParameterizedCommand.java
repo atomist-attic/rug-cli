@@ -28,12 +28,12 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         if (!invalid.isEmpty() || !missing.isEmpty()) {
             log.newline();
             if (!missing.isEmpty()) {
-                log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Missing parameter %s",
+                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Missing parameter %s",
                         StringUtils.puralize("value", missing)));
                 missing.forEach(p -> log.info("  " + Style.yellow(p.getName())));
             }
             if (!invalid.isEmpty()) {
-                log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Invalid parameter %s",
+                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Invalid parameter %s",
                         StringUtils.puralize("value", invalid)));
                 invalid.forEach(p -> log.info("  " + Style.yellow(p.getName()) + " = " + p.getValue()));
             }

@@ -70,7 +70,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         }
         else {
             log.newline();
-            log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Generators"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
             JavaConversions.asJavaCollection(operations.generators()).forEach(
                     e -> log.info(Style.yellow("  %s", e.name()) + " (" + e.description() + ")"));
             log.newline();
@@ -133,11 +133,11 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                 new SimpleSourceUpdateInfo(name));
 
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Project"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
         log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
                 FileUtils.sizeOf(root), result.allFiles().size());
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Changes"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
         ArtifactSourceTreeCreator.visitTree(result, new LogVisitor(log));
         if (createRepo) {
             log.newline();

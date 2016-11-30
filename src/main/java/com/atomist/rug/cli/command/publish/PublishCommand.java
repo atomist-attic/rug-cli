@@ -55,11 +55,11 @@ public class PublishCommand extends AbstractRepoCommand {
                 });
 
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Archive"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
         log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(zip.getFile())),
                 FileUtils.sizeOf(zip.getFile()), source.allFiles().size());
         log.newline();
-        log.info(Style.blue(Constants.DIVIDER) + " " + Style.bold("Contents"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
         ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
         log.newline();
         log.info(Style.green("Successfully published archive for %s:%s:%s", manifest.group(),
