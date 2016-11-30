@@ -5,15 +5,15 @@ remote-repositories:
   maven-central:
     publish: false
     url: "https://repo.maven.apache.org/maven2/"
-  public-rug-types:
-    publish: false
-    url: "https://atomist.jfrog.io/atomist/libs-release"
   private-templates:
     authentication:
       password: "${ARTIFACTORY_PASSWORD}"
       username: "${ARTIFACTORY_USER}"
     publish: true
     url: "https://sforzando.artifactoryonline.com/sforzando/private-templates-dev"
+  public-rug-types:
+    publish: false
+    url: "https://atomist.jfrog.io/atomist/libs-release"
   public-templates:
     authentication:
       password: "${ARTIFACTORY_PASSWORD}"

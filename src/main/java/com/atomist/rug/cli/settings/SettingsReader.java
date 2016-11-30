@@ -36,18 +36,25 @@ public class SettingsReader {
         }
 
         Settings settings = settingsFromFile(settingsFile);
-        Settings projectSettings = null;
-        File userDir = org.apache.commons.io.FileUtils.getUserDirectory();
-        if (userDir != null && userDir.exists()) {
-            File projetSettingsFile = new File(userDir,
-                    Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
-            if (projetSettingsFile.exists()) {
-                projectSettings = settingsFromFile(projetSettingsFile);
-                // now merge both files
-                settings.override(projectSettings);
+        readProjectSettings(settings);
+
+        return settings;
+    }
+
+    private void readProjectSettings(Settings settings) {
+        if (!CommandLineOptions.hasOption("s")) {
+            Settings projectSettings = null;
+            File userDir = org.apache.commons.io.FileUtils.getUserDirectory();
+            if (userDir != null && userDir.exists()) {
+                File projetSettingsFile = new File(userDir,
+                        Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
+                if (projetSettingsFile.exists()) {
+                    projectSettings = settingsFromFile(projetSettingsFile);
+                    // now merge both files
+                    settings.override(projectSettings);
+                }
             }
         }
-        return settings;
     }
 
     @SuppressWarnings("unchecked")
