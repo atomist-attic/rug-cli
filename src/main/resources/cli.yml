@@ -8,6 +8,9 @@ remote-repositories:
   maven-central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"
-  public-rug-types:
+  rug-types:
     publish: false
     url: "https://atomist.jfrog.io/atomist/libs-release"
+  rugs:
+    publish: false
+    url: "https://atomist.jfrog.io/atomist/rugs-release"
