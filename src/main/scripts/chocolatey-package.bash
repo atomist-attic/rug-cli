@@ -12,7 +12,7 @@ function err() {
 }
 
 function install_deps() {
-    sudo apt-get install -y -q zip
+    :
 }
 
 function create_directory_structure() {

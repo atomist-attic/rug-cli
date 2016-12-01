@@ -1,11 +1,20 @@
 language: java
-install: true
-script: bash src/main/scripts/travis-build.bash
 jdk:
 - oraclejdk8
+addons:
+  apt:
+    packages:
+    - build-essential
+    - ruby-dev
+    - curl
+    - jq
+    - rpm
+    - zip
 branches:
   except:
   - /\+travis\d+$/
+install: true
+script: bash src/main/scripts/travis-build.bash
 env:
   global:
   - secure: inokIUMqhIbbeD2iZbWcFiQtdTBE4bDxpOpIbNF0Xhhngj1rrES5EP79S7Yel6I5h5a6XmZhFW7I/jFNYgl6PSdncegw++vBeUtGuPV2Sr5lQHbtY2nbZ0VYJNEQF47EfrqNnOzXycAVP0ifzYJhA2tkgBClZxS0zYu42p7pMB+8DVNYG3m3l1cRAnkQ63IepFxDINV3jusrYxp2EZVBQ9JEHffFA08dI9LTIYVwT/fsoOJE3nvkvWV6A21htEy4buvrwVHkYoUTMhgIlKvaAdXFWFUvjsfp5bKKRpLtf+n3m0McmU4EWIi1tSqX4bg3EC2givRa2gCt/LaUda1fYu0YCuWtWqMsf5RvMSFjqZlnSRAeDNv5H9xQs3vatCN7fizuXQZkO0IkqSvrZpvjZ9JBamwE6FZw77OdIh+DXu/Kz0g+MegkRVaFNJuPvb/ZrfY0pO5bISh/dBuZ3RvSQNPXXBpQ0j+9qfI5ojNFgMpVptygzzfXWBXA5+5S8R1/+JhxLDpbcOa53oOcsfNn0/iAONfZ354oEFAKpvFseZ/qbIBnSBtKHCJLOYEpRcCHYdGoQUDNVFF1YFEGrEsGDJ4T0/Ya+qyYmw8QJZOG7xe2do+5Z6F3Rr9n9tc6pSBAmwIjj8Zy1v2Ju7wOpz5z0QLj/XXWIETlfhQdBu2ObL0=

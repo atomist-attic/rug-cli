@@ -13,7 +13,6 @@ function err() {
 }
 
 function install_deps() {
-    apt-get install -y -q ruby-dev build-essential jq curl rpm
     gem install fpm
 }
 
