@@ -58,7 +58,7 @@ function git2rpm_changelog() {
 
     # iterate over all release tag and generate RPM changelog stanzas
     # borrowed from https://gist.github.com/hfs/0ff1cf243b163bd551ec22604ce702a5/
-    local tags=$(git tag --sort "-version:refname" | grep -E -o "^[0-9]+\.[0-9]+\.[0-9]+$")
+    local tags=$(git tag | sort -r | grep -E -o "^[0-9]+\.[0-9]+\.[0-9]+$")
     if [[ -z "${tags}" ]]; then
         # no tags there yet, so let's pretend
         echo "No tags found"
