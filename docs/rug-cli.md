@@ -4,54 +4,28 @@ This page documents syntax and functionality of the Rug CLI.
 
 ## Installing
 
-The Rug CLI should be installable via Homebrew with support for Windows and Linux
-native installer formats soon after.
+See the [README](../README.md#installation).
 
-```
-brew tap atomisthq/tap
-brew install rug-cli
-```
+### Configuring
 
-Detailed instructions can be found at: 
-[atomisthq/homebrew-tap](https://github.com/atomisthq/homebrew-tap/blob/master/README.md)
+In order to use the CLI the following file named `cli.yml` needs to be
+placed in `~/.atomist`.  The contents of the simplest possible
+`cli.yml` are below.
 
-Right now Windows and Linux are supported via zip and tar.gz archives.
-
-### Post-Install: Repository Settings
-
-In order to use the CLI the following file named `cli.yml` needs to be placed
-in `~/.atomist` ensuring you provide your own credentials where indicated.
-
-Please reach out on via the `pre-release-users` channel on the atomist-community slack team to obtain the required credentials.
-
-The CLI will install a default `cli.yml` if none is found.
-
-```
+```yaml
 # Set up the path to the local repository
 local-repository:
-  path: ${HOME}/.atomist/repository
+  path: "${HOME}/.atomist/repository"
 
 # Set up remote repositories to query for Rug archives. Additionally one of the
 # repositories can also be enabled for publication (publish: true).
 remote-repositories:
-  public-templates:
+  maven-central:
     publish: false
-    url: https://sforzando.artifactoryonline.com/sforzando/public-templates-dev
-    authentication:
-      username: <username>
-      password: <password>
-  private-templates:
-    publish: true
-    url: https://sforzando.artifactoryonline.com/sforzando/private-templates-dev
-    authentication:
-      username: <username>
-      password: <password>
-  rug-types:
+    url: "http://repo.maven.apache.org/maven2/"
+  public-rug-types:
     publish: false
-    url: https://sforzando.artifactoryonline.com/sforzando/rug-deps-dev
-    authentication:
-      username: <username>
-      password: <password>
+    url: "https://atomist.jfrog.io/atomist/libs-release"
 ```
 
 ## Commands
