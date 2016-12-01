@@ -167,13 +167,6 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<filters>
-								<filter>
-									<artifact>com.atomist:rug</artifact>
-									<artifact>com.atomist:rug-compiler</artifact>
-									<artifact>com.atomist:rug-typescript-compiler</artifact>
-								</filter>
-							</filters>
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
