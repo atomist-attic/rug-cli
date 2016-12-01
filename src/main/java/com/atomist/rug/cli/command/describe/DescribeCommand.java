@@ -229,9 +229,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             JavaConversions.asJavaCollection(info.parameters())
                     .forEach(p -> invokeSb.append(p.getName()).append("=VALUE "));
         }
-        log.info("  %s %s \"%s:%s:%s\" -a %s %s %s", Constants.COMMAND, command, artifact.group(),
+        log.info("  %s %s \"%s:%s:%s\" -a %s%s %s", Constants.COMMAND, command, artifact.group(),
                 artifact.artifact(), StringUtils.stripName(info.name(), artifact),
-                artifact.version(), (CommandLineOptions.hasOption("l") ? "-l" : ""),
+                artifact.version(), (CommandLineOptions.hasOption("l") ? " -l" : ""),
                 invokeSb.toString());
     }
 
