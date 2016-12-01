@@ -3,10 +3,9 @@ package com.atomist.rug.cli.utils;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.springframework.util.SystemPropertyUtils;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
@@ -18,10 +17,6 @@ import scala.collection.Seq;
 public abstract class StringUtils {
     
     private static final Log log = new Log(StringUtils.class);
-
-    private static final String ENV_VARIABLE_PATTERN_STRING = "(\\$[{]?([A-Z_a-z]+)[}]?)";
-    private static final Pattern ENV_VARIABLE_PATTERN = Pattern
-            .compile(ENV_VARIABLE_PATTERN_STRING);
 
     public static void printClosestMatch(String name, ArtifactDescriptor artifact,
             Seq<String> nameOptions) {
@@ -52,19 +47,10 @@ public abstract class StringUtils {
     }
 
     public static String expandEnvironmentVars(String text) {
-        if (text != null) {
-            Matcher matcher = ENV_VARIABLE_PATTERN.matcher(text);
-
-            while (matcher.find()) {
-                Properties props = System.getProperties();
-                props.putAll(System.getenv());
-
-                String replaceKey = matcher.group(1);
-                String key = matcher.group(2);
-                text = text.replace(replaceKey, props.getProperty(key, replaceKey));
-            }
+        if (text == null) {
+            return text;
         }
-        return text;
+        return SystemPropertyUtils.resolvePlaceholders(text);
     }
 
     public static String stripName(String name, ArtifactDescriptor artifact) {

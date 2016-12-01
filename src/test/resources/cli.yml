@@ -1,6 +1,6 @@
 ---
 local-repository:
-  path: "${HOME}/.atomist/repository"
+  path: "${user.home}/.atomist/repository"
 remote-repositories:
   maven-central:
     publish: false

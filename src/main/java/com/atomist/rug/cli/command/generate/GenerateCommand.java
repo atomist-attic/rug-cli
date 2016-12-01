@@ -84,7 +84,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
     private File createProjectRoot(String path, String projectName, boolean overwrite) {
         path = FileUtils.createProjectRoot(path).getAbsolutePath();
 
-        File root = new File(path + File.separatorChar + projectName);
+        File root = new File(path + File.separator + projectName);
         if (root.exists() && !overwrite) {
             throw new CommandException(String.format(
                     "Target directory %s already exists. Specify -F to overwrite existing content.",

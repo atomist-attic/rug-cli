@@ -1,5 +1,6 @@
 package com.atomist.rug.cli.settings;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -133,7 +134,7 @@ public class Settings {
         }
 
         public void setPath(String path) {
-            this.path = path;
+            this.path = path.replace("/", File.separator);
         }
     }
 

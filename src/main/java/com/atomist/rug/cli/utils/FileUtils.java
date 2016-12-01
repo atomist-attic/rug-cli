@@ -14,7 +14,7 @@ public abstract class FileUtils {
             path = System.getProperty("user.dir");
         }
         if (path.startsWith("~")) {
-            path = path.replace("~", "${HOME}");
+            path = path.replace("~", "${user.home}");
         }
         path = StringUtils.expandEnvironmentVars(path);
         return new File(path);
