@@ -138,7 +138,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         if (opt.isPresent()) {
             describeProjectOperationInfo(artifact, opt.get(), "editor", "edit");
-
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));

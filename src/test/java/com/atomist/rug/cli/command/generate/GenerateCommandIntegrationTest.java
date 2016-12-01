@@ -28,14 +28,14 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
         assertFailure(
                 "Invalid parameter value\n  project_name = 1234567891234567891212345678912345678912",
                 "generate",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice",
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice",
                 "1234567891234567891212345678912345678912");
     }
 
     @Test
     public void testUnSuccessfulGenerateWithMissingParameter() throws Exception {
         assertFailure("Missing parameter value\n  project_name", "generate",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice");
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice");
     }
 
     private void testGenerationAt(String name, String location) throws Exception {
@@ -47,7 +47,7 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
             assertTrue(new File(root, ".provenance.txt").exists());
             FileUtils.deleteQuietly(root);
         }, "generate",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", name,
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", name,
                 "root_package=my.test", (!location.equals(".") ? "-C" : null),
                 (!location.equals(".") ? location : null));
     }

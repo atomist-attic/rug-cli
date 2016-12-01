@@ -31,9 +31,9 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulGeneratorDescribe() throws Exception {
         assertSuccess(
-                "rug generate \"atomist-project-templates:spring-rest-service:SpringBootRestMicroservice\"",
+                "rug generate \"atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice\"",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice");
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice");
     }
 
     @Test
@@ -46,7 +46,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulGeneratorDescribeWithVersion() throws Exception {
         assertSuccess("atomist-project-templates:spring-rest-service:3.6.1", "describe",
                 "generator",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", "-a",
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-a",
                 "3.6.1");
     }
 
@@ -58,14 +58,14 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
         file.delete();
         assertSuccess("Dependency report for atomist-project-templates:spring-rest-service:3.6.1",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", "-a",
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-a",
                 "3.6.1", "-r");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionOffline() throws Exception {
         assertCommandLine(0, () -> assertFalse(systemOutRule.getLog().contains("Downloading ")), "describe", "generator",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice", "-o", "-a",
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-o", "-a",
                 "3.6.1");
     }
 
