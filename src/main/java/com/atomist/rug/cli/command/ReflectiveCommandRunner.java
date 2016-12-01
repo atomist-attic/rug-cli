@@ -7,11 +7,18 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
+import org.eclipse.aether.version.Version;
+import org.eclipse.aether.version.VersionRange;
+import org.eclipse.aether.version.VersionScheme;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
@@ -45,6 +52,9 @@ public class ReflectiveCommandRunner {
                             ArtifactDescriptorUtils.coordinates(rootArtifact)))
                                     .run(indicator -> resolveDependencies(rootArtifact, indicator));
 
+            // Validate that this CLI version is compatible with declared version of Rug
+            validateCompatibility(dependencies);
+
             artifact = dependencies.stream()
                     .filter(a -> a.group().equals(rootArtifact.group())
                             && a.artifact().equals(rootArtifact.artifact()))
@@ -69,6 +79,29 @@ public class ReflectiveCommandRunner {
         }
         catch (Exception e) {
             throw new RunnerException(e);
+        }
+    }
+
+    private void validateCompatibility(List<ArtifactDescriptor> dependencies) {
+        Optional<ArtifactDescriptor> rugArtifact = dependencies.stream()
+                .filter(f -> f.group().equals(Constants.GROUP)
+                        && f.artifact().equals(Constants.RUG_ARTIFACT))
+                .findAny();
+        if (rugArtifact.isPresent()) {
+            VersionScheme versionScheme = new GenericVersionScheme();
+            try {
+                Version version = versionScheme.parseVersion(rugArtifact.get().version());
+                VersionRange range = versionScheme.parseVersionRange(Constants.RUG_VERSION_RANGE);
+                if (!range.containsVersion(version)) {
+                    throw new CommandException(String.format(
+                            "This version of %s is not compatible with %s:%s %s (supported versions are %s).\nPlease upgrade to a more recent version of the Rug CLI.",
+                            Constants.COMMAND, Constants.GROUP, Constants.RUG_ARTIFACT,
+                            version.toString(), range.toString()));
+                }
+            }
+            catch (InvalidVersionSpecificationException e) {
+                // Since we were able to resolve the version it is impossible for this to happen
+            }
         }
     }
 
