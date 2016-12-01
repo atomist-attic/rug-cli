@@ -99,9 +99,10 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testUnSuccessfulGeneratorDescribe() throws Exception {
-        assertFailure("Specified generator SpringBootRestMicroservice1 could not be found",
+        assertFailure("Did you mean?\n" + 
+                "  Spring Boot Rest Microservice",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:SpringBootRestMicroservice1");
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservic");
     }
 
     @Test

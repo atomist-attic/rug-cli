@@ -16,5 +16,7 @@ public class Constants {
     public static final String DIVIDER = "→";
     public static final String REDIVID = "←";
     public static final String LEFT_PADDING = "  ";
+    
+    public static final String CLOSEST_MATCH_HINT = "Did you mean?";
 
 }

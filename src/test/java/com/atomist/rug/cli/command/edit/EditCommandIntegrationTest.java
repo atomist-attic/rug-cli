@@ -43,6 +43,14 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
     }
 
     @Test
+    public void testUnSuccessfulEditWithInvalidName() throws Exception {
+        assertFailure("Did you mean?\n" + 
+                "  AddReadme", "edit",
+                "atomist-project-templates:common-editors:AddRame", "description=Some", "-a",
+                "3.2.2");
+    }
+
+    @Test
     public void testUnSuccessfulEditWithMultipleMissingParameters() throws Exception {
         assertFailure("Missing parameter values\n  projectName\n  description", "edit",
                 "atomist-project-templates:common-editors:AddReadme", "-a", "3.2.2");

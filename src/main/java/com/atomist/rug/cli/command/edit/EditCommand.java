@@ -59,11 +59,11 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             throw new CommandException("No editor name provided.", "edit");
         }
 
+        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
         Optional<ProjectEditor> opt = JavaConversions.asJavaCollection(operations.editors())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (!opt.isPresent()) {
             // try again with a properly namespaced name
-            String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
             opt = JavaConversions.asJavaCollection(operations.editors()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
@@ -78,10 +78,11 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             JavaConversions.asJavaCollection(operations.editors()).forEach(
                     e -> log.info(Style.yellow("  %s", StringUtils.stripName(e.name(), artifact))
                             + " (" + e.description() + ")"));
-            log.newline();
-            log.error("Specified editor %s could not be found in %s:%s:%s",
-                    StringUtils.stripName(name, artifact), artifact.group(), artifact.artifact(),
-                    artifact.version());
+            StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
+            throw new CommandException(
+                    String.format("Specified editor %s could not be found in %s:%s:%s",
+                            StringUtils.stripName(name, artifact), artifact.group(),
+                            artifact.artifact(), artifact.version()));
         }
     }
 
@@ -183,5 +184,4 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             throw new RunnerException(e);
         }
     }
-
 }

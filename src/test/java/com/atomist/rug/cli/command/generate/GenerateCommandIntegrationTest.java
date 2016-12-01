@@ -37,6 +37,13 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
         assertFailure("Missing parameter value\n  project_name", "generate",
                 "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice");
     }
+    
+    @Test
+    public void testUnSuccessfulGenerateWithInvalidName() throws Exception {
+        assertFailure("Did you mean?\n" + 
+                "  Spring Boot Rest Microservice", "generate",
+                "atomist-project-templates:spring-rest-service:Spring Boot Rest Micoserice");
+    }
 
     private void testGenerationAt(String name, String location) throws Exception {
         assertCommandLine(0, () -> {

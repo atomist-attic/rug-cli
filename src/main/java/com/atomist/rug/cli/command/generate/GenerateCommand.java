@@ -33,6 +33,7 @@ import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.SimpleSourceUpdateInfo;
@@ -73,11 +74,11 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
             JavaConversions.asJavaCollection(operations.generators()).forEach(
                     e -> log.info(Style.yellow("  %s", e.name()) + " (" + e.description() + ")"));
-            log.newline();
-            log.error("Specified generator %s could not be found in %s:%s:%s", name, artifact.group(),
-                    artifact.artifact(), artifact.version());
+            StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
+            throw new CommandException(
+                    String.format("Specified generator %s could not be found in %s:%s:%s", name,
+                            artifact.group(), artifact.artifact(), artifact.version()));
         }
-
     }
 
     private File createProjectRoot(String path, String projectName, boolean overwrite) {
@@ -122,7 +123,8 @@ public class GenerateCommand extends AbstractParameterizedCommand {
 
         ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
                 String.format("Running generator %s of %s", generator.name(),
-                        ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> generator.generate(arguments));
+                        ArtifactDescriptorUtils.coordinates(artifact)))
+                                .run(indicator -> generator.generate(arguments));
         result = ArtifactSourceUtils.filter(result);
 
         // Add provenance info to output
@@ -161,5 +163,4 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                 (arguments != null ? arguments.name() : "parameter"),
                 JavaConversions.asScalaBuffer(pvs));
     }
-
 }

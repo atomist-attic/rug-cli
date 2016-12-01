@@ -125,12 +125,17 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
+    private String describeDescription(Parameter p) {
+        return p.getDescription() != null && p.getDescription().length() > 0
+                ? "(" + p.getDescription() + ")" : "";
+    }
+
     private void describeEditor(ArtifactDescriptor artifact, String name, Operations operations) {
+        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
         Optional<ProjectEditor> opt = JavaConversions.asJavaCollection(operations.editors())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (!opt.isPresent()) {
             // try again with a proper namespaced name
-            String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
             opt = JavaConversions.asJavaCollection(operations.editors()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
@@ -145,6 +150,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
             if (name != null) {
+                StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
                 throw new CommandException(
                         String.format("Specified editor %s could not be found in %s:%s:%s", name,
                                 artifact.group(), artifact.artifact(), artifact.version()));
@@ -158,9 +164,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeExecutor(ArtifactDescriptor artifact, String name, Operations operations) {
         Optional<Executor> opt = JavaConversions.asJavaCollection(operations.executors()).stream()
                 .filter(g -> g.name().equals(name)).findFirst();
+        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
         if (!opt.isPresent()) {
             // try again with a proper namespaced name
-            String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
             opt = JavaConversions.asJavaCollection(operations.executors()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
@@ -176,6 +182,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
             if (name != null) {
+                StringUtils.printClosestMatch(fqName, artifact, operations.executorNames());
                 throw new CommandException(
                         String.format("Specified executor %s could not be found in %s:%s:%s", name,
                                 artifact.group(), artifact.artifact(), artifact.version()));
@@ -200,8 +207,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
             JavaConversions.asJavaCollection(operations.generators())
                     .forEach(e -> log.info("  " + Style.yellow(e.name()) + " " + e.description()));
-
             if (name != null) {
+                StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
                 throw new CommandException(
                         String.format("Specified generator %s could not be found in %s:%s:%s", name,
                                 artifact.group(), artifact.artifact(), artifact.version()));
@@ -263,10 +270,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 .asJavaCollection(operations.reviewers());
         log.newline();
         if (!generators.isEmpty()) {
-        	log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-        	generators.forEach(
-        			e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-        			+ " (" + e.description() + ")"));
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
+            generators.forEach(
+                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
+                            + " (" + e.description() + ")"));
         }
         if (!editors.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
@@ -321,11 +328,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private String describeDescription(Parameter p) {
-        return p.getDescription() != null && p.getDescription().length() > 0
-                ? "(" + p.getDescription() + ")" : "";
-    }
-
     private void describeProjectOperationInfo(ArtifactDescriptor artifact,
             ProjectOperationInfo info, String type, String command) {
         describeName(artifact, info);
@@ -349,9 +351,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeReviewer(ArtifactDescriptor artifact, String name, Operations operations) {
         Optional<ProjectReviewer> opt = JavaConversions.asJavaCollection(operations.reviewers())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
+        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
         if (!opt.isPresent()) {
             // try again with a proper namespaced name
-            String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
             opt = JavaConversions.asJavaCollection(operations.reviewers()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
@@ -366,8 +368,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             JavaConversions.asJavaCollection(operations.reviewers()).forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
-
             if (name != null) {
+                StringUtils.printClosestMatch(fqName, artifact, operations.reviewerNames());
                 throw new CommandException(
                         String.format("Specified reviewer %s could not be found in %s:%s:%s", name,
                                 artifact.group(), artifact.artifact(), artifact.version()));
@@ -385,5 +387,4 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                     t -> log.info("  " + Style.yellow(t.name()) + " (" + t.description() + ")"));
         }
     }
-
 }
