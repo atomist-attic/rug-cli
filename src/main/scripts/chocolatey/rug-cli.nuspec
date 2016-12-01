@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>rug-cli</id>
+    <version>__VERSION__</version>
+    <title>Atomist rug cli (Install)</title>
+    <authors>Atomist, Inc.</authors>
+    <owners>Atomist, Inc.</owners>
+    <licenseUrl>https://github.com/atomist/rug-cli/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://www.atomist.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Aromist rug CLI to consume, build, execute and test rugs</description>
+    <summary>Atomist rug CLI to generate and apply rugs</summary>
+    <copyright>2016 Atomist, Inc.</copyright>
+    <tags>rug-cli atomist rug admin</tags>
+    <projectSourceUrl>https://github.com/atomist/rug-cli</projectSourceUrl>
+    <docsUrl>http://docs.atomist.com/</docsUrl>
+    <bugTrackerUrl>https://github.com/atomist/rug-cli/issues</bugTrackerUrl>
+  </metadata>
+</package>
