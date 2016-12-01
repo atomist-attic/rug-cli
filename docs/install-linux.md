@@ -7,13 +7,13 @@ To install on a Debian-based distributions, follow the next instructions:
 1. Grab the public GPG key for the repository:
 
 ```
-$ wget -qO - 'https://atomist.jfrog.io/atomist/api/gpg/key/public' | apt-key add
+$ wget -qO - 'https://atomist.jfrog.io/atomist/api/gpg/key/public' | sudo apt-key add
 ```
 
 2. Add a new apt source entry:
 
 ```
-$ echo 'deb https://atomist.jfrog.io/atomist/debian $(lsb_release -c -s) main' | sudo tee /etc/apt/sources.list.d/atomist.list"
+$ echo "deb https://atomist.jfrog.io/atomist/debian $(lsb_release -c -s) main" | sudo tee /etc/apt/sources.list.d/atomist.list
 ```
 
 3. Update the metadata:
