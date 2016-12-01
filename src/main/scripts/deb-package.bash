@@ -14,8 +14,8 @@ function err() {
 }
 
 function install_deps() {
-    sudo apt-get install -y -q ruby-dev build-essential jq curl
-    sudo gem install fpm
+    apt-get install -y -q ruby-dev build-essential jq curl
+    gem install fpm
 }
 
 function gitentry2debentry() {
