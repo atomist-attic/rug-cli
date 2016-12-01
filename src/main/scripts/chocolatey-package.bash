@@ -4,7 +4,7 @@
 
 set -o pipefail
 declare Pkg="chocolatey-package"
-declare Version="0.1.0"
+declare Version="0.2.0"
 declare Author="Atomist, Inc <oss@atomist.com>"
 
 function err() {
@@ -89,16 +89,16 @@ function upload_to_repository() {
 
     echo "Package checksum: $checksum"
 
-    local response=$(curl -s -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD \
-                          -H "X-Checksum-Sha1:$checksum" \
-                          -F package=@$package \
-                          -XPUT \
-                          $nuget_repo_url)
-
+    local response
+    response=$(curl -s -f -u "$ATOMIST_REPO_USER:$ATOMIST_REPO_TOKEN" \
+                    -H "X-Checksum-Sha1:$checksum" \
+                    -F "package=@$package" \
+                    -X PUT \
+                    $nuget_repo_url 2> /dev/null)
     # this will emit a warning message on successful uploads because
     # the server respones with plain text in that case
-    if [[ $(echo $response | jq '.errors? | length') -ne 0 ]]; then
-        err $response
+    if [[ $? -ne 0 || ! $response || $(echo "$response" | jq '.errors? | length' 2> /dev/null) -ne 0 ]]; then
+        err "failed to upload package: $response"
         return 1
     fi
 }
@@ -117,7 +117,7 @@ function create_package() {
         err "failed to create chocolatey package"
         return 1
     fi
-    cd - 
+    cd -
 }
 
 function main() {
@@ -125,13 +125,13 @@ function main() {
         install_deps
     fi
 
-    if [[ ! $ARTIFACTORY_USER ]]; then
-        err "missing artifactory user ARTIFACTORY_USER"
+    if [[ ! $ATOMIST_REPO_USER ]]; then
+        err "missing artifactory user ATOMIST_REPO_USER"
         return 1
     fi
 
-    if [[ ! $ARTIFACTORY_PASSWORD ]]; then
-        err "missing artifactory password ARTIFACTORY_PASSWORD"
+    if [[ ! $ATOMIST_REPO_TOKEN ]]; then
+        err "missing artifactory password ATOMIST_REPO_TOKEN"
         return 1
     fi
 

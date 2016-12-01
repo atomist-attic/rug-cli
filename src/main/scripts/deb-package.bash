@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# Build a debian package using the fpm builder so 
-# we don't have to worry about the internals of the debian
-# packaging machinery
+# Build a debian package using the fpm builder so we don't have to
+# worry about the internals of the debian packaging machinery
 
 set -o pipefail
 declare Pkg="deb-package"
-declare Version="0.1.0"
+declare Version="0.2.0"
 declare Author="Atomist, Inc <opensource@atomist.com>"
 
 function err() {
@@ -34,7 +33,7 @@ function gitentry2debentry() {
 
     echo "rug-cli ($version) unstable; urgency=low"
     echo
-    if ! git --no-pager log --format="  * %s" $previous${previous:+..}$version; then 
+    if ! git --no-pager log --format="  * %s" $previous${previous:+..}$version; then
         err "Failed to extract logs"
         return 1
     fi
@@ -84,7 +83,7 @@ function git2deb_changelog() {
                     fi
                     version="$previous"
             done
-            if ! gitentry2debentry "" $version; then 
+            if ! gitentry2debentry "" $version; then
                 err "Failed to create first changelog entry"
                 return 1
             fi
@@ -115,7 +114,7 @@ function copy_files() {
     local source_dir="target/rug-cli-$project_version-bin/rug-cli-$project_version"
     local dest_dir="target/linux/deb/rug-cli/usr/share"
 
-    if ! echo "ln -s /usr/share/rug/bin/rug /usr/bin/rug" > postinst; then 
+    if ! echo "ln -s /usr/share/rug/bin/rug /usr/bin/rug" > postinst; then
         err "Failed to create postinst file"
         return 1
     fi
@@ -127,7 +126,7 @@ function copy_files() {
         err "Failed to copy debian copyright file"
         return 1
     fi
-    if ! cp src/main/bash/etc/bash_completion.d/rug $dest_dir/bash-completion/completions/rug; then 
+    if ! cp src/main/bash/etc/bash_completion.d/rug $dest_dir/bash-completion/completions/rug; then
         err "Failed to copy bash completion file"
         return 1
     fi
@@ -135,7 +134,7 @@ function copy_files() {
         err "Failed to copy rug binary"
         return 1
     fi
-    if ! cp $source_dir/lib/rug-cli-$project_version.jar $dest_dir/rug/lib/rug-cli-$project_version.jar; then 
+    if ! cp $source_dir/lib/rug-cli-$project_version.jar $dest_dir/rug/lib/rug-cli-$project_version.jar; then
         err "Failed to copy rug jar file"
         return 1
     fi
@@ -158,14 +157,14 @@ function upload_to_repository() {
 
     echo "Package checksum: $checksum"
 
-    local response=$(curl -s -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD \
-                          -H "X-Checksum-Sha1:$checksum"\
-                          -T $package\
-                          -XPUT \
-                          "$debian_repo_url/$package;$distributions;$components;$arch")
-
-    if [[ $(echo $response | jq '.errors? | length') -ne 0 ]]; then
-        err $response
+    local response
+    response=$(curl -s -f -u "$ATOMIST_REPO_USER:$ATOMIST_REPO_TOKEN" \
+                    -H "X-Checksum-Sha1:$checksum" \
+                    -T "$package" \
+                    -X PUT \
+                    "$debian_repo_url/$package;$distributions;$components;$arch" 2> /dev/null)
+    if [[ $? -ne 0 || ! $response || $(echo "$response" | jq '.errors? | length') -ne 0 ]]; then
+        err "failed to upload package: $response"
         return 1
     fi
 }
@@ -201,13 +200,13 @@ function main() {
         install_deps
     fi
 
-    if [[ ! $ARTIFACTORY_USER ]]; then
-        err "missing artifactory user ARTIFACTORY_USER"
+    if [[ ! $ATOMIST_REPO_USER ]]; then
+        err "missing artifactory user ATOMIST_REPO_USER"
         return 1
     fi
 
-    if [[ ! $ARTIFACTORY_PASSWORD ]]; then
-        err "missing artifactory password ARTIFACTORY_PASSWORD"
+    if [[ ! $ATOMIST_REPO_TOKEN ]]; then
+        err "missing artifactory password ATOMIST_REPO_TOKEN"
         return 1
     fi
 

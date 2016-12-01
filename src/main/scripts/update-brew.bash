@@ -51,8 +51,8 @@ function main() {
 
     local tap_repo=https://$token:x-oauth-basic@github.com/$tap.git
     local tap_dir=${tap##*/}
-    if ! git clone "$tap_repo" "$tap_dir"; then
-        err "failed to clone $tap_repo into $tap_dir"
+    if ! git clone --quiet "$tap_repo" "$tap_dir" > /dev/null 2>&1; then
+        err "failed to clone tap repo into $tap_dir"
         return 1
     fi
 
@@ -73,7 +73,7 @@ function main() {
         err "failed to commit new formula"
         return 1
     fi
-    if ! git push origin master; then
+    if ! git push --quiet origin master > /dev/null 2>&1; then
         err "failed to push changes to origin"
         return 1
     fi
