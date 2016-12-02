@@ -6,7 +6,7 @@
 set -o pipefail
 declare Pkg="rpm-package"
 declare Version="0.2.0"
-declare Author="Atomist, Inc <opensource@atomist.com>"
+declare Author="Atomist, Inc <oss@atomist.com>"
 
 function err() {
     echo "$Pkg: $*" 1>&2
