@@ -3,11 +3,23 @@ package com.atomist.rug.cli.command.list;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.atomist.rug.cli.AbstractCommandTest;
 
 public class ListCommandIntegrationTest extends AbstractCommandTest {
+
+    private boolean resolved = false;
+
+    @Before
+    public void init() throws Exception {
+        if (!resolved) {
+            assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
+                    "0.1.0");
+            resolved = true;
+        }
+    }
 
     @Test
     public void testFullArtifactFiltered() throws Exception {
