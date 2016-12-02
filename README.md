@@ -37,10 +37,6 @@ You can build, test, and install the project locally with [maven][].
 $ mvn install
 ```
 
-*Note:* At present, you may need to supply the `-DskipTests`
-command-line option until all tests only rely on publicly available
-Rugs.
-
 To create a new release of the project, simply push a tag of the form
 `M.N.P` where `M`, `N`, and `P` are integers that form the next
 appropriate [semantic version][semver] for release.  For example:
