@@ -143,7 +143,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
                     FileUtils.sizeOf(root), source.allFiles().size());
             log.newline();
             throw new CommandException(
-                    String.format("Editor failed to make changes to project %s: %s", root.getName(),
+                    String.format("Editor failed to make changes to project %s:\n  %s", root.getName(),
                             ((FailedModificationAttempt) result).failureExplanation()));
         }
     }
