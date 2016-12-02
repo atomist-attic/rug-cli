@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 
 public class LogVisitor implements NodeVisitor {
@@ -67,9 +68,9 @@ public class LogVisitor implements NodeVisitor {
         public String formatIndentation(boolean end) {
             boolean last = index + 1 >= count;
             if (end) {
-                return last ? "└─ " : "├─ ";
+                return last ? Constants.LAST_TREE_NODE : Constants.TREE_NODE;
             }
-            return last ? "   " : "|  ";
+            return last ? "   " : Constants.TREE_CONNECTOR;
         }
     }
 }

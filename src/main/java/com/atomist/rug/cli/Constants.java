@@ -1,5 +1,7 @@
 package com.atomist.rug.cli;
 
+import org.apache.commons.lang3.SystemUtils;
+
 public class Constants {
 
     
@@ -13,9 +15,13 @@ public class Constants {
     public static final String ATOMIST_ROOT = ".atomist";
     public static final String CLI_CONFIG_NAME = "cli.yml";
     
-    public static final String DIVIDER = "→";
-    public static final String REDIVID = "←";
+    public static final String DIVIDER = (SystemUtils.IS_OS_WINDOWS ? ">" : "→");
+    public static final String REDIVID = (SystemUtils.IS_OS_WINDOWS ? "<" : "←");
     public static final String LEFT_PADDING = "  ";
+    
+    public static final String LAST_TREE_NODE = (SystemUtils.IS_OS_WINDOWS ? "\\- " : "└─ ");
+    public static final String TREE_NODE = (SystemUtils.IS_OS_WINDOWS ? "+- " : "├─ ");
+    public static final String TREE_CONNECTOR = (SystemUtils.IS_OS_WINDOWS ? "|  " : "|  ");
     
     public static final String CLOSEST_MATCH_HINT = "Did you mean?";
 
