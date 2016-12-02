@@ -11,43 +11,47 @@ public class ListCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testFullArtifactFiltered() throws Exception {
-        assertCommandLine(0, () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                .contains("atomist-project-templates:spring-rest-service")), "list", "-f", "artifact=spring-r?st*");
+        assertCommandLine(0,
+                () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
+                        .contains("atomist-rugs:spring-boot-rest-service")),
+                "list", "-f", "artifact=spring-boot-r?st*");
     }
 
     @Test
     public void testFullListing() throws Exception {
         assertCommandLine(0, () -> {
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("atomist-project-templates:common-editors"));
+                    .contains("atomist-rugs:common-editors"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("atomist-project-templates:spring-rest-service"));
+                    .contains("atomist-rugs:spring-boot-rest-service"));
         }, "list");
     }
 
     @Test
     public void testFullVersionAndArtifactFiltered() throws Exception {
-        assertCommandLine(0, () -> assertFalse(systemOutRule.getLogWithNormalizedLineSeparator()
-                .contains("atomist-project-templates:spring-rest-service")), "list", "-f", "artifact=spring-r?st*", "-f", "version=[1.0,2.6)");
+        assertCommandLine(0,
+                () -> assertFalse(systemOutRule.getLogWithNormalizedLineSeparator()
+                        .contains("atomist-rugs:spring-boot-rest-service")),
+                "list", "-f", "artifact=spring-boot-r?st*", "-f", "version=[0.2.0,2.6)");
     }
 
     @Test
     public void testGroupFiltered() throws Exception {
         assertCommandLine(0, () -> {
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("atomist-project-templates:common-editors"));
+                    .contains("atomist-rugs:common-editors"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("atomist-project-templates:spring-rest-service"));
-        }, "list", "-f", "group=*atomist-project-temp?ates");
+                    .contains("atomist-rugs:spring-boot-rest-service"));
+        }, "list", "-f", "group=*atomist?rugs");
     }
 
     @Test
     public void testVersionFiltered() throws Exception {
         assertCommandLine(0, () -> {
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("atomist-project-templates:common-editors"));
-            assertFalse(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("atomist-project-templates:spring-rest-service"));
-        }, "list", "-f", "version=[1.0,3.3)");
+                    .contains("atomist-rugs:common-editors"));
+            assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
+                    .contains("atomist-rugs:spring-boot-rest-service"));
+        }, "list", "-f", "version=[0.1.0,3.3)");
     }
 }

@@ -28,21 +28,21 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
         assertFailure(
                 "Invalid parameter value\n  project_name = 1234567891234567891212345678912345678912",
                 "generate",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice",
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService",
                 "1234567891234567891212345678912345678912");
     }
 
     @Test
     public void testUnSuccessfulGenerateWithMissingParameter() throws Exception {
         assertFailure("Missing parameter value\n  project_name", "generate",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService");
     }
     
     @Test
     public void testUnSuccessfulGenerateWithInvalidName() throws Exception {
         assertFailure("Did you mean?\n" + 
-                "  Spring Boot Rest Microservice", "generate",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Micoserice");
+                "  NewSpringBootRestService", "generate",
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestServi");
     }
 
     private void testGenerationAt(String name, String location) throws Exception {
@@ -54,7 +54,7 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
             assertTrue(new File(root, ".provenance.txt").exists());
             FileUtils.deleteQuietly(root);
         }, "generate",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", name,
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", name,
                 "root_package=my.test", (!location.equals(".") ? "-C" : null),
                 (!location.equals(".") ? location : null));
     }

@@ -23,36 +23,36 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
             FileUtils.deleteQuietly(new File("./.provenance.txt"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("README.md created"));
-        }, "edit", "atomist-project-templates:common-editors:AddReadme", "projectName=TheName",
-                "description=SomeDescription", "-a", "3.2.2");
+        }, "edit", "atomist-rugs:common-editors:AddReadme", "projectName=TheName",
+                "description=SomeDescription", "-a", "0.1.0");
 
     }
 
     @Test
     public void testUnSuccessfulEditWithInvalidParameter() throws Exception {
         assertFailure("Invalid parameter value\n  projectName = $#%$#%$#^$%$W...@432", "edit",
-                "atomist-project-templates:common-editors:AddReadme",
-                "projectName=$#%$#%$#^$%$W...@432", "description=Some", "-a", "3.2.2");
+                "atomist-rugs:common-editors:AddReadme",
+                "projectName=$#%$#%$#^$%$W...@432", "description=Some", "-a", "0.1.0");
     }
 
     @Test
     public void testUnSuccessfulEditWithMissingParameters() throws Exception {
         assertFailure("Missing parameter value\n  projectName", "edit",
-                "atomist-project-templates:common-editors:AddReadme", "description=Some", "-a",
-                "3.2.2");
+                "atomist-rugs:common-editors:AddReadme", "description=Some", "-a",
+                "0.1.0");
     }
 
     @Test
     public void testUnSuccessfulEditWithInvalidName() throws Exception {
         assertFailure("Did you mean?\n" + 
                 "  AddReadme", "edit",
-                "atomist-project-templates:common-editors:AddRame", "description=Some", "-a",
-                "3.2.2");
+                "atomist-rugs:common-editors:AddRame", "description=Some", "-a",
+                "0.1.0");
     }
 
     @Test
     public void testUnSuccessfulEditWithMultipleMissingParameters() throws Exception {
         assertFailure("Missing parameter values\n  projectName\n  description", "edit",
-                "atomist-project-templates:common-editors:AddReadme", "-a", "3.2.2");
+                "atomist-rugs:common-editors:AddReadme", "-a", "0.1.0");
     }
 }

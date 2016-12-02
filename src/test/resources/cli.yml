@@ -4,25 +4,10 @@ local-repository:
 remote-repositories:
   maven-central:
     publish: false
-    url: "https://repo.maven.apache.org/maven2/"
-  private-templates:
-    authentication:
-      password: "${ARTIFACTORY_PASSWORD}"
-      username: "${ARTIFACTORY_USER}"
-    publish: true
-    url: "https://sforzando.artifactoryonline.com/sforzando/private-templates-dev"
-  public-rug-types:
+    url: "http://repo.maven.apache.org/maven2/"
+  rug-types:
     publish: false
     url: "https://atomist.jfrog.io/atomist/libs-release"
-  public-templates:
-    authentication:
-      password: "${ARTIFACTORY_PASSWORD}"
-      username: "${ARTIFACTORY_USER}"
+  rugs:
     publish: false
-    url: "https://sforzando.artifactoryonline.com/sforzando/public-templates-dev"
-  rug-types:
-    authentication:
-      password: "${ARTIFACTORY_PASSWORD}"
-      username: "${ARTIFACTORY_USER}"
-    publish: false
-    url: "https://sforzando.artifactoryonline.com/sforzando/rug-deps-dev"
+    url: "https://atomist.jfrog.io/atomist/rugs-release"

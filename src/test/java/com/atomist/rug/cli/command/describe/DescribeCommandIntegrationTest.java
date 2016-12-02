@@ -18,55 +18,55 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testInvalidOption() throws Exception {
         assertFailure("-j is not a valid option", "describe", "editor",
-                "atomist-project-templates:spring-rest-service:AddLoCKback", "-j");
+                "atomist-rugs:spring-boot-rest-service:AddLoCKback", "-j");
     }
 
     @Test
     public void testSuccessfulEditorDescribe() throws Exception {
-        assertSuccess("rug edit \"atomist-project-templates:spring-rest-service:SwitchReadmes\"",
+        assertSuccess("rug edit \"atomist-rugs:spring-boot-rest-service:SwitchReadmes\"",
                 "describe", "editor",
-                "atomist-project-templates:spring-rest-service:SwitchReadmes");
+                "atomist-rugs:spring-boot-rest-service:SwitchReadmes");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribe() throws Exception {
         assertSuccess(
-                "rug generate \"atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice\"",
+                "rug generate \"atomist-rugs:spring-boot-rest-service:NewSpringBootRestService\"",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService");
     }
 
     @Test
     public void testSuccessfulArchiveDescribe() throws Exception {
         assertSuccess("rug describe editor|generator|executor|reviewer ARTIFACT", "describe",
-                "archive", "atomist-project-templates:spring-rest-service");
+                "archive", "atomist-rugs:spring-boot-rest-service");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersion() throws Exception {
-        assertSuccess("atomist-project-templates:spring-rest-service:3.6.1", "describe",
+        assertSuccess("atomist-rugs:spring-boot-rest-service:0.1.0", "describe",
                 "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-a",
-                "3.6.1");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a",
+                "0.1.0");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionAndResolverReport() throws Exception {
         // delete the resolver plan file
         File file = new File(System.getProperty("user.home"),
-                ".atomist/repository/atomist-project-templates/spring-rest-service/3.6.1/_resolver.plan");
+                ".atomist/repository/atomist-rugs/spring-boot-rest-service/0.1.0/_resolver.plan");
         file.delete();
-        assertSuccess("Dependency report for atomist-project-templates:spring-rest-service:3.6.1",
+        assertSuccess("Dependency report for atomist-rugs:spring-boot-rest-service:0.1.0",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-a",
-                "3.6.1", "-r");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a",
+                "0.1.0", "-r");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionOffline() throws Exception {
         assertCommandLine(0, () -> assertFalse(systemOutRule.getLog().contains("Downloading ")), "describe", "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservice", "-o", "-a",
-                "3.6.1");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-o", "-a",
+                "0.1.0");
     }
 
     @Test
@@ -94,15 +94,15 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulEditorDescribe() throws Exception {
         assertFailure("Specified editor AddLoCKback could not be found", "describe", "editor",
-                "atomist-project-templates:spring-rest-service:AddLoCKback");
+                "atomist-rugs:spring-boot-rest-service:AddLoCKback");
     }
 
     @Test
     public void testUnSuccessfulGeneratorDescribe() throws Exception {
         assertFailure("Did you mean?\n" + 
-                "  Spring Boot Rest Microservice",
+                "  NewSpringBootRestService",
                 "describe", "generator",
-                "atomist-project-templates:spring-rest-service:Spring Boot Rest Microservic");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestServi");
     }
 
     @Test
