@@ -12,7 +12,7 @@ packaging tools for your operating system.
 
 *   [CLI Installation for MacOS](https://github.com/atomist/homebrew-tap)
 *   [CLI Installation for Linux](https://github.com/atomist/rug-cli/blob/master/docs/install-linux.md)
-*   [CLI Intallation for Windows (Work in progress)](https://github.com/atomist/rug-cli/issues/6)
+*   [CLI Intallation for Windows](https://github.com/atomist/rug-cli/blob/master/docs/install-windows.md)
 
 ## Documentation
 
