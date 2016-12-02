@@ -250,13 +250,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void describeName(ArtifactDescriptor artifact, ProjectOperationInfo info) {
         String name = info.name();
-        log.info(Style.bold(Style.green(StringUtils.stripName(name, artifact))));
+        log.info(Style.bold(Style.yellow(StringUtils.stripName(name, artifact))));
         log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
         log.info(info.description());
     }
 
     private void describeName(Manifest manifest) {
-        log.info(Style.bold(Style.green("%s:%s:%s", manifest.group(), manifest.artifact(),
+        log.info(Style.bold(Style.yellow("%s:%s:%s", manifest.group(), manifest.artifact(),
                 manifest.version())));
         log.newline();
     }
