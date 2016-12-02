@@ -44,7 +44,8 @@ public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand
         String zipFileName = artifact.artifact() + "-" + fullVersion + "."
                 + artifact.extension().toString().toLowerCase();
         File projectRoot = CommandUtils.getRequiredWorkingDirectory();
-        File archive = new File(projectRoot, Constants.ATOMIST_ROOT + "/target/" + zipFileName);
+        File archive = new File(projectRoot,
+                Constants.ATOMIST_ROOT + File.separator + "target" + File.separator + zipFileName);
 
         prepareTargetDirectory(archive);
         ArtifactSource source = createArtifactSource(projectRoot);
