@@ -115,6 +115,9 @@ public class SettingsReader {
 
     private void createDefaultSettingsFile(File settingsFile) {
         try {
+            if (!settingsFile.getParentFile().exists()) {
+                settingsFile.getParentFile().mkdirs();
+            }
             IOUtils.copy(getClass().getClassLoader().getResourceAsStream(Constants.CLI_CONFIG_NAME),
                     new FileOutputStream(settingsFile));
             FileUtils.setPermissionsToOwnerOnly(settingsFile);
