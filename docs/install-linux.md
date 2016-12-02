@@ -54,3 +54,10 @@ $ sudo yum install rug-cli
 ```
 
 The only required dependency is the jdk 8+.
+
+## Manual installation 
+
+You can also download the CLI as a compressed archive and simply put it in
+your PATH if you prefer. The archives can be found 
+[here](https://atomist.jfrog.io/atomist/libs-release/com/atomist/rug-cli/).
+
