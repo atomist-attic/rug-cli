@@ -30,7 +30,8 @@ function gitentry2rpmentry() {
         return 10
     fi
 
-    if ! git --no-pager log --date="format:%a %b %d %Y" --format="* %ad $Author $version" -n 1 $version; then
+    # ugly hack to run with old git version on travis
+    if ! echo "*" $(date -d "$(git log -n1 --pretty=format:%ai $version -1)" +"%a %b %d %Y") $(git --no-pager log --pretty="format:$Author $version" -n1 -1); then
         err "Failed to extract logs"
         return 1
     fi
