@@ -22,8 +22,8 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
     public String detail() {
         return "Create a Rug archive from the current repo and publish it in a remote repository.  "
                 + "Ensure that there is a manifest.yml descriptor in the .atomist directory.  "
-                + "This command will fail if there are none or multiple repositories marked with "
-                + "'publish' in the cli.yml.";
+                + "Use -i to specify what repository configuration should be used to publish.  "
+                + "ID should refer to a repository name in cli.yml";
     }
 
     @Override
@@ -31,7 +31,7 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
         Options options = new Options();
         options.addOption(Option.builder("a").longOpt("archive-version").argName("AV").hasArg(true)
                 .required(false).desc("Override artifact version with AV").build());
-        options.addOption(Option.builder("i").longOpt("repository-id").argName("ID").hasArg(true)
+        options.addOption(Option.builder("i").longOpt("id").argName("ID").hasArg(true)
                 .required(false).desc("ID identifying the repository to publish into").build());
 
         return options;
