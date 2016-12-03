@@ -9,13 +9,13 @@ See the [Rug CLI Quick Start][quick] and [Rug CLI documentation][doc]
 for more detailed information.
 
 [quick]: http://docs.atomist.com/quick-starts/rug-cli/
-[doc]: http://docs.atomist.com/rug-cli/
+[doc]: http://docs.atomist.com/rug/rug-cli/
 
 ## Installation
 
 See [Rug CLI Installation][install] for installation instructions.
 
-[install]: http://docs.atomist.com/rug-cli/rug-cli-install/
+[install]: http://docs.atomist.com/rug/rug-cli-install/
 
 ## Support
 
