@@ -47,6 +47,7 @@ _rug() {
         install
         publish
         default
+        extension
     )
 
     local i command_re special special_index
@@ -89,27 +90,27 @@ _rug() {
         command_options+=( -d --dry-run )
     fi
     if [[ $special == @(edit|generate) ]]; then
-        command_options+=( -p --parameter )
+        command_options+=( -R --repo )
     fi
     if [[ $special == list ]]; then
         command_options+=( -f --filter )
     fi
     if [[ $special == generate ]]; then
-        command_options+=( -R --repo )
         command_options+=( -F --overwrite )
     fi
     if [[ $special == default ]]; then
         command_options+=( -g --global )
-        command_options+=( -d --delete )
+        command_options+=( -a --archive-version )
     fi
     if [[ $special == publish ]]; then
-        command_options+=( -i --repository-id )
+        command_options+=( -i --id )
     fi
 
     local command_args=()
     local describe_args=(
         editor
         generator
+        archive
     )
     local describe_re describe_arg_found=
     describe_re=$(IFS='|'; echo "${describe_args[*]}")
@@ -121,6 +122,41 @@ _rug() {
         done
         if [[ ! $describe_arg_found ]]; then
             command_args+=( "${describe_args[@]}" )
+        fi
+    fi
+
+	local default_args=(
+        save
+        delete
+    )
+    local default_re default_arg_found=
+    default_re=$(IFS='|'; echo "${default_args[*]}")
+    if [[ $special == default ]]; then
+        for (( i=$special_index+1; i < ${#words[@]}-1; i++ )); do
+            if [[ ${words[i]} == @($default_re) ]]; then
+                default_arg_found=true
+            fi
+        done
+        if [[ ! $default_arg_found ]]; then
+            command_args+=( "${default_args[@]}" )
+        fi
+    fi
+
+	local extension_args=(
+        list
+        install
+        uninstall
+    )
+    local extension_re extension_arg_found=
+    extension_re=$(IFS='|'; echo "${extension_args[*]}")
+    if [[ $special == extension ]]; then
+        for (( i=$special_index+1; i < ${#words[@]}-1; i++ )); do
+            if [[ ${words[i]} == @($extension_re) ]]; then
+                extension_arg_found=true
+            fi
+        done
+        if [[ ! $extension_arg_found ]]; then
+            command_args+=( "${extension_args[@]}" )
         fi
     fi
 
