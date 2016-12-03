@@ -2,6 +2,9 @@
 local-repository:
   path: "${user.home}/.atomist/repository"
 remote-repositories:
+  local:
+    publish: true
+    url: "file:///Users/cdupuis/.atomist/repository-publish/"
   maven-central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"

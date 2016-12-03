@@ -71,8 +71,8 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulLocalEditorDescribe() throws Exception {
-        assertSuccess("rug edit \"atomist-project-templates:common-editors:AddGitIgnore\"",
-                "describe", "editor", "atomist-project-templates.common-editors.AddGitIgnore",
+        assertSuccess("rug edit \"rug-cli-tests:common-editors:AddGitIgnore\"",
+                "describe", "editor", "rug-cli-tests.common-editors.AddGitIgnore",
                 "-l");
     }
 
@@ -107,8 +107,8 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testUnSuccessfulGeneratorDescribeForNonExistingArchive() throws Exception {
-        assertFailure("No version found for atomist-project-templates:i-do-not-exist", "describe",
+        assertFailure("No version found for rug-cli-tests:i-do-not-exist", "describe",
                 "generator",
-                "atomist-project-templates:i-do-not-exist:SpringBootRestMicroservice");
+                "rug-cli-tests:i-do-not-exist:SpringBootRestMicroservice");
     }
 }
