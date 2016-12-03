@@ -4,7 +4,7 @@ local-repository:
 remote-repositories:
   local:
     publish: true
-    url: "file:///Users/cdupuis/.atomist/repository-publish/"
+    url: "file://${user.home}/.atomist/repository-publish/"
   maven-central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"

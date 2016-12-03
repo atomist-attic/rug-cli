@@ -168,7 +168,7 @@ public class Settings {
         }
 
         public void setUrl(String url) {
-            this.url = StringUtils.expandEnvironmentVars(url);
+            this.url = url;
         }
     }
 }

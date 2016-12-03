@@ -25,7 +25,7 @@ public abstract class MavenSettings {
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> {
                     RemoteRepository r = e.getValue();
 
-                    String url = r.getUrl();
+                    String url = StringUtils.expandEnvironmentVars(r.getUrl());
                     Repo repo = new Repo();
                     repo.setUrl(url);
 
