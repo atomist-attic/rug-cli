@@ -1,5 +1,6 @@
 package com.atomist.rug.cli.resolver;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -89,7 +90,17 @@ public class DependencyResolverFactory {
 
     private DependencyResolver wrapDependencyResolver(DependencyResolver resolver,
             String repoHome) {
-        return new CachingDependencyResolver(resolver, repoHome);
+        return new CachingDependencyResolver(resolver, repoHome) { 
+        	
+        	@Override
+        	protected boolean isOutdated(ArtifactDescriptor artifact, File file) {
+        		if (CommandLineOptions.hasOption("u")) {
+        			return true;
+        		}
+        		return super.isOutdated(artifact, file);
+        	}
+        	
+        };
     }
 
 }

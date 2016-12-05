@@ -37,6 +37,7 @@ _rug() {
         -t --timer
         -s --settings
         -q --quiet
+        -u --update
     )
     local commands=(
         describe
