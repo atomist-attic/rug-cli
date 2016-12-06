@@ -15,7 +15,7 @@ for more detailed information.
 
 See [Rug CLI Installation][install] for installation instructions.
 
-[install]: http://docs.atomist.com/rug/rug-cli-install/
+[install]: http://docs.atomist.com/rug/rug-cli/rug-cli-install/
 
 ## Support
 
