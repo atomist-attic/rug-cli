@@ -3,7 +3,6 @@ package com.atomist.rug.cli;
 import org.apache.commons.lang3.SystemUtils;
 
 public class Constants {
-
     
     public static final String COMMAND = "rug";
     public static final String GROUP = "com.atomist";
