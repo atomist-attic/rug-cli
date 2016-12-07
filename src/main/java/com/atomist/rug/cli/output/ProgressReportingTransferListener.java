@@ -13,6 +13,9 @@ import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.cli.utils.StringUtils;
+
+import dk.brics.automaton.StringUnionOperations;
 
 public class ProgressReportingTransferListener extends AbstractTransferListener {
 
@@ -93,6 +96,7 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
     }
 
     private String sanitizeUrl(String url) {
+    	url = StringUtils.expandEnvironmentVars(url);
         if (url.endsWith("/")) {
             return URI.create(url).getPath();
         }

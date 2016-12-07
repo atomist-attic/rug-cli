@@ -1,5 +1,6 @@
 package com.atomist.rug.cli.resolver;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -76,7 +77,8 @@ public class DependencyResolverFactory {
                         firstMessage = false;
                     }
                 }
-            }, Constants.TREE_NODE, Constants.LAST_TREE_NODE, Constants.TREE_CONNECTOR));
+            }, Constants.TREE_NODE, Constants.LAST_TREE_NODE, Constants.TREE_CONNECTOR,
+                    Constants.TREE_NODE_WITH_CHILDREN, Constants.LAST_TREE_NODE_WITH_CHILDREN));
         }
         return wrapDependencyResolver(resolver, properties.getRepoLocation());
     }
@@ -89,7 +91,17 @@ public class DependencyResolverFactory {
 
     private DependencyResolver wrapDependencyResolver(DependencyResolver resolver,
             String repoHome) {
-        return new CachingDependencyResolver(resolver, repoHome);
+        return new CachingDependencyResolver(resolver, repoHome) {
+
+            @Override
+            protected boolean isOutdated(ArtifactDescriptor artifact, File file) {
+                if (CommandLineOptions.hasOption("u")) {
+                    return true;
+                }
+                return super.isOutdated(artifact, file);
+            }
+
+        };
     }
 
 }

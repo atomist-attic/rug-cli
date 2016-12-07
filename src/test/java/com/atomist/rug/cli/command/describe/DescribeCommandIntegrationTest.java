@@ -24,8 +24,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulEditorDescribe() throws Exception {
         assertSuccess("rug edit \"atomist-rugs:spring-boot-rest-service:SwitchReadmes\"",
-                "describe", "editor",
-                "atomist-rugs:spring-boot-rest-service:SwitchReadmes");
+                "describe", "editor", "atomist-rugs:spring-boot-rest-service:SwitchReadmes");
     }
 
     @Test
@@ -44,10 +43,8 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersion() throws Exception {
-        assertSuccess("atomist-rugs:spring-boot-rest-service:0.1.0", "describe",
-                "generator",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a",
-                "0.1.0");
+        assertSuccess("atomist-rugs:spring-boot-rest-service:0.1.0", "describe", "generator",
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.1.0");
     }
 
     @Test
@@ -58,22 +55,30 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
         file.delete();
         assertSuccess("Dependency report for atomist-rugs:spring-boot-rest-service:0.1.0",
                 "describe", "generator",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a",
-                "0.1.0", "-r");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.1.0",
+                "-r");
+    }
+
+    @Test
+    public void testSuccessfulGeneratorDescribeWithVersionAndUpdate() throws Exception {
+        assertSuccess("Dependency report for atomist-rugs:spring-boot-rest-service:0.1.0",
+                "describe", "generator",
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.1.0",
+                "-ru");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionOffline() throws Exception {
-        assertCommandLine(0, () -> assertFalse(systemOutRule.getLog().contains("Downloading ")), "describe", "generator",
+        assertCommandLine(0, () -> assertFalse(systemOutRule.getLog().contains("Downloading ")),
+                "describe", "generator",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-o", "-a",
                 "0.1.0");
     }
 
     @Test
     public void testSuccessfulLocalEditorDescribe() throws Exception {
-        assertSuccess("rug edit \"atomist-project-templates:common-editors:AddGitIgnore\"",
-                "describe", "editor", "atomist-project-templates.common-editors.AddGitIgnore",
-                "-l");
+        assertSuccess("rug edit \"rug-cli-tests:common-editors:AddGitIgnore\"", "describe",
+                "editor", "rug-cli-tests.common-editors.AddGitIgnore", "-l");
     }
 
     @Test
@@ -99,16 +104,13 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testUnSuccessfulGeneratorDescribe() throws Exception {
-        assertFailure("Did you mean?\n" + 
-                "  NewSpringBootRestService",
-                "describe", "generator",
+        assertFailure("Did you mean?\n" + "  NewSpringBootRestService", "describe", "generator",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestServi");
     }
 
     @Test
     public void testUnSuccessfulGeneratorDescribeForNonExistingArchive() throws Exception {
-        assertFailure("No version found for atomist-project-templates:i-do-not-exist", "describe",
-                "generator",
-                "atomist-project-templates:i-do-not-exist:SpringBootRestMicroservice");
+        assertFailure("No version found for rug-cli-tests:i-do-not-exist", "describe", "generator",
+                "rug-cli-tests:i-do-not-exist:SpringBootRestMicroservice");
     }
 }

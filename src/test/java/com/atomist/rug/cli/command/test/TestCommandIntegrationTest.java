@@ -12,7 +12,7 @@ public class TestCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulTests() throws Exception {
         assertCommandLine(0, () -> {
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("atomist-project-templates:common-editors:3.2.2"));
+                    .contains("rug-cli-tests:common-editors:3.2.2"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("Successfully executed 13 of 13 scenarios: Test SUCCESS"));
         }, "test");
@@ -22,7 +22,7 @@ public class TestCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulTestsForFile() throws Exception {
         assertCommandLine(0, () -> {
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                    .contains("atomist-project-templates:common-editors:3.2.2"));
+                    .contains("rug-cli-tests:common-editors:3.2.2"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("Successfully executed 2 of 2 scenarios: Test SUCCESS"));
         }, "test", "AddGitIgnore");

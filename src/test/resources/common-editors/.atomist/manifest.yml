@@ -1,8 +1,8 @@
-group: atomist-project-templates
+group: rug-cli-tests
 artifact: common-editors
 version: "3.2.2"
 
-requires: "[0.4.0,0.5.0)"
+requires: "[0.5.0,0.6.0)"
 
 dependencies:
 

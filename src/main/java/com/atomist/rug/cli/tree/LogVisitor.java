@@ -26,7 +26,7 @@ public class LogVisitor implements NodeVisitor {
 
     public boolean visitEnter(Node node) {
         if (node.id() != null) {
-            out.info(indent + formatIndentation() + formatNode(node));
+            out.info(indent + formatIndentation(node) + formatNode(node));
         }
         childInfos.add(new ChildInfo(node.children().size()));
         return true;
@@ -41,10 +41,10 @@ public class LogVisitor implements NodeVisitor {
         }
     }
 
-    private String formatIndentation() {
+    private String formatIndentation(Node node) {
         StringBuilder buffer = new StringBuilder(128);
         for (Iterator<ChildInfo> it = childInfos.iterator(); it.hasNext();) {
-            buffer.append(it.next().formatIndentation(!it.hasNext()));
+            buffer.append(it.next().formatIndentation(node, !it.hasNext()));
         }
         return buffer.toString();
     }
@@ -65,12 +65,17 @@ public class LogVisitor implements NodeVisitor {
             this.count = count;
         }
 
-        public String formatIndentation(boolean end) {
+        public String formatIndentation(Node node, boolean end) {
             boolean last = index + 1 >= count;
             if (end) {
-                return last ? Constants.LAST_TREE_NODE : Constants.TREE_NODE;
+                return last
+                        ? (!node.children().isEmpty() ? Constants.LAST_TREE_NODE_WITH_CHILDREN
+                                : Constants.LAST_TREE_NODE)
+                        : (!node.children().isEmpty() ? Constants.TREE_NODE_WITH_CHILDREN
+                                : Constants.TREE_NODE);
             }
-            return last ? "   " : Constants.TREE_CONNECTOR;
+            return last ? (Constants.TREE_CONNECTOR.length() == 2 ? "  " : "   ")
+                    : Constants.TREE_CONNECTOR;
         }
     }
 }

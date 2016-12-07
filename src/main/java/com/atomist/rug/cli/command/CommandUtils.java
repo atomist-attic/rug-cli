@@ -47,7 +47,7 @@ public abstract class CommandUtils {
         options.addOption("v", "version", false, "Print version information");
         options.addOption("?", "help", false, "Print help information");
         options.addOption("h", "help", false, "Print help information");
-        options.addOption("q", "quiet", false, "Don't display progress messages");
+        options.addOption("q", "quiet", false, "Do not display progress messages");
         return options;
     }
 

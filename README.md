@@ -5,21 +5,17 @@
 
 Atomist Rug command-line interface for creating and running rugs.
 
+See the [Rug CLI Quick Start][quick] and [Rug CLI documentation][doc]
+for more detailed information.
+
+[quick]: http://docs.atomist.com/quick-starts/rug-cli/
+[doc]: http://docs.atomist.com/rug/rug-cli/
+
 ## Installation
 
-You can install the Rug command-line interface using standard
-packaging tools for your operating system.
+See [Rug CLI Installation][install] for installation instructions.
 
-*   [CLI Installation for MacOS](https://github.com/atomist/homebrew-tap)
-*   [CLI Installation for Linux](https://github.com/atomist/rug-cli/blob/master/docs/install-linux.md)
-*   [CLI Intallation for Windows](https://github.com/atomist/rug-cli/blob/master/docs/install-windows.md)
-
-## Documentation
-
-The following documentation is available:
-
-*   [CLI Commands and Syntax](https://github.com/atomist/rug-cli/blob/master/docs/rug-cli.md)
-*   [Documentation on Rug Archives](https://github.com/atomist/rug-cli/blob/master/docs/rug-archives.md)
+[install]: http://docs.atomist.com/rug/rug-cli/rug-cli-install/
 
 ## Support
 
@@ -40,10 +36,6 @@ You can build, test, and install the project locally with [maven][].
 ```sh
 $ mvn install
 ```
-
-*Note:* At present, you may need to supply the `-DskipTests`
-command-line option until all tests only rely on publicly available
-Rugs.
 
 To create a new release of the project, simply push a tag of the form
 `M.N.P` where `M`, `N`, and `P` are integers that form the next

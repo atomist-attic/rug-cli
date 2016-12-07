@@ -100,7 +100,7 @@ public class PublishCommand extends AbstractRepoCommand {
     private org.eclipse.aether.repository.RemoteRepository toRepository(String id,
             RemoteRepository remoteRepository) {
         org.eclipse.aether.repository.RemoteRepository.Builder builder = new org.eclipse.aether.repository.RemoteRepository.Builder(
-                id, "default", remoteRepository.getUrl());
+                id, "default", StringUtils.expandEnvironmentVars(remoteRepository.getUrl()));
 
         if (remoteRepository.getAuthentication() != null) {
             Authentication auth = remoteRepository.getAuthentication();
