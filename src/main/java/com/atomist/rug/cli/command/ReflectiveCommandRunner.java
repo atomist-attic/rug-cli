@@ -94,7 +94,8 @@ public class ReflectiveCommandRunner {
                 VersionRange range = versionScheme.parseVersionRange(Constants.RUG_VERSION_RANGE);
                 if (!range.containsVersion(version)) {
                     throw new CommandException(String.format(
-                            "This version of %s is not compatible with %s:%s %s (supported versions are %s).\nPlease upgrade to a more recent version of the Rug CLI.",
+                            "This version of %s is not compatible with %s:%s %s (supported versions are %s).\n"
+                                    + "Please upgrade to a more recent version of the Rug CLI or update your Rug archive to a supported version range.",
                             Constants.COMMAND, Constants.GROUP, Constants.RUG_ARTIFACT,
                             version.toString(), range.toString()));
                 }
