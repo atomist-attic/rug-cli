@@ -95,10 +95,10 @@ public abstract class AbstractDeltaHandlingCommand extends AbstractParameterized
 
         StringBuilder sb = new StringBuilder();
         if (last) {
-            sb.append("  └─ ");
+            sb.append("  ").append(Constants.LAST_TREE_NODE);
         }
         else {
-            sb.append("  ├─ ");
+            sb.append("  ").append(Constants.TREE_NODE);
         }
         if (!oldPath.equals("") && !newPath.equals("") && !oldPath.equals(newPath)) {
             sb.append(Style.yellow(oldPath)).append(" ").append(Constants.DIVIDER).append(" ")

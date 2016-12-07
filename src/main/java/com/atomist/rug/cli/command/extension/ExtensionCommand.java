@@ -134,10 +134,10 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
             FileUtils.copyFile(source, new File(root, source.getName()), true);
             StringBuilder sb = new StringBuilder();
             if (last) {
-                sb.append(" └─ ");
+                sb.append("  ").append(Constants.LAST_TREE_NODE);
             }
             else {
-                sb.append(" ├─ ");
+                sb.append("  ").append(Constants.TREE_NODE);
             }
             sb.append(Style.yellow(source.getName()));
             log.info(sb.toString());
@@ -164,7 +164,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                         log.info("  %s", Style.underline(com.atomist.rug.cli.utils.FileUtils
                                 .relativize(e.getParentFile().toURI())));
                         StringBuilder sb = new StringBuilder();
-                        sb.append(" └─ ");
+                        sb.append("  ").append(Constants.LAST_TREE_NODE);
                         sb.append(Style.yellow(e.getName()));
                         log.info(sb.toString());
                     });

@@ -19,9 +19,11 @@ public class Constants {
     public static final String REDIVID = (SystemUtils.IS_OS_WINDOWS ? "<" : "←");
     public static final String LEFT_PADDING = "  ";
     
-    public static final String LAST_TREE_NODE = (SystemUtils.IS_OS_WINDOWS ? "\\- " : "└─ ");
-    public static final String TREE_NODE = (SystemUtils.IS_OS_WINDOWS ? "+- " : "├─ ");
-    public static final String TREE_CONNECTOR = (SystemUtils.IS_OS_WINDOWS ? "|  " : "|  ");
+    public static final String LAST_TREE_NODE = (SystemUtils.IS_OS_WINDOWS ? "\\- " : "└── ");
+    public static final String LAST_TREE_NODE_WITH_CHILDREN = (SystemUtils.IS_OS_WINDOWS ? "\\- " : "└─┬ ");
+    public static final String TREE_NODE = (SystemUtils.IS_OS_WINDOWS ? "+- " : "├── ");
+    public static final String TREE_NODE_WITH_CHILDREN = (SystemUtils.IS_OS_WINDOWS ? "+- " : "├─┬ ");
+    public static final String TREE_CONNECTOR = (SystemUtils.IS_OS_WINDOWS ? "|  " : "| ");
     
     public static final String CLOSEST_MATCH_HINT = "Did you mean?";
 
