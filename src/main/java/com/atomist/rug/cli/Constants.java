@@ -2,6 +2,8 @@ package com.atomist.rug.cli;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import com.atomist.rug.cli.version.VersionUtils;
+
 public class Constants {
     
     public static final String COMMAND = "rug";
@@ -27,5 +29,9 @@ public class Constants {
     public static final String CLOSEST_MATCH_HINT = "Did you mean?";
     
     public static final String CATALOG_PATH = "operation/search";
+    
+    public static String cliClient() {
+        return ARTIFACT + " " + VersionUtils.readVersion().orElse("0.0.0");
+    }
 
 }

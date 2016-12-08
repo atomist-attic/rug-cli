@@ -28,6 +28,12 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     }
 
     @Test
+    public void testSuccessfulEditorDescribeWithNumberInName() throws Exception {
+        assertSuccess("rug edit \"atomist-rugs:common-editors:AddApacheSoftwareLicense20\"",
+                "describe", "editor", "atomist-rugs:common-editors:AddApacheSoftwareLicense20");
+    }
+
+    @Test
     public void testSuccessfulGeneratorDescribe() throws Exception {
         assertSuccess(
                 "rug generate \"atomist-rugs:spring-boot-rest-service:NewSpringBootRestService\"",

@@ -16,8 +16,8 @@ import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 
 public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDescriptorProvider {
 
-    private static final String COORDINATE_PATTERN_STRING = "([a-zA-Z1-9\\-]+):([a-zA-Z1-9\\-]+)(:([a-zA-Z1-9\\-. ]*))?";
-    private static final String SHORT_COORDINATE_PATTERN_STRING = "([a-zA-Z1-9\\-]+)(:([a-zA-Z1-9\\-. ]*))?";
+    private static final String COORDINATE_PATTERN_STRING = "([a-zA-Z0-9\\-]+):([a-zA-Z0-9\\-]+)(:([a-zA-Z0-9\\-. ]*))?";
+    private static final String SHORT_COORDINATE_PATTERN_STRING = "([a-zA-Z0-9\\-]+)(:([a-zA-Z0-9\\-. ]*))?";
 
     private int ix = -1;
 

@@ -104,7 +104,8 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             RevCommit commit = git.commit().setAll(true)
                     .setMessage(
                             String.format("Initial commit by generator %s\n\n%s", generator.name(),
-                                    new ProvenanceInfoWriter().write(generator, arguments)))
+                                    new ProvenanceInfoWriter().write(generator, arguments,
+                                            Constants.cliClient())))
                     .setAuthor("Atomist", "cli@atomist.com").call();
             log.info("Committed initial set of files to git repository (%s)",
                     commit.abbreviate(7).name());
@@ -128,7 +129,8 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         result = ArtifactSourceUtils.filter(result);
 
         // Add provenance info to output
-        result = new ProvenanceInfoWriter().write(result, generator, arguments);
+        result = new ProvenanceInfoWriter().write(result, generator, arguments,
+                Constants.cliClient());
 
         new FileSystemArtifactSourceWriter().write(result,
                 new SimpleFileSystemArtifactSourceIdentifier(root),
