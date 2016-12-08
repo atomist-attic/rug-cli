@@ -52,12 +52,16 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives"));
 
-        archives.entrySet().stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
-                .forEach(a -> printArchive(a.getKey(), a.getValue()));
-
-        log.info("\nFor more information on specific archive version, run:\n"
-                + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND);
-
+        if (archives.isEmpty()) {
+            log.info(Style.yellow("  No matching archives found"));
+            log.newline();
+        }
+        else {
+            archives.entrySet().stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+                    .forEach(a -> printArchive(a.getKey(), a.getValue()));
+            log.info("\nFor more information on specific archive version, run:\n"
+                    + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND);
+        }
     }
 
     private void printArchive(String groupArtifact, List<ArtifactDescriptor> versions) {

@@ -12,7 +12,7 @@ public class SearchCommandIntegrationTest extends AbstractCommandTest {
     public void testFullArtifactFiltered() throws Exception {
         assertCommandLine(0,
                 () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                        .contains("atomist-rugs:spring-boot-rest-service")),
-                "search", "docker", "-T", "spring", "-T", "lein");
+                        .contains("atomist-project-templates:spring-boot-common-editors (1.8.2)")),
+                "search", "docker", "-T", "spring");
     }
 }

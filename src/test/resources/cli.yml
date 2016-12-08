@@ -1,4 +1,6 @@
 ---
+catalogs:
+- "https://api-staging.atomist.services/catalog"
 local-repository:
   path: "${user.home}/.atomist/repository"
 remote-repositories:

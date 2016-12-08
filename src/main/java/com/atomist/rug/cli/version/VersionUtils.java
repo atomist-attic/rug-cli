@@ -2,14 +2,6 @@ package com.atomist.rug.cli.version;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
@@ -19,20 +11,16 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionScheme;
+
+import com.atomist.rug.cli.utils.HttpClientFactory;
 
 public abstract class VersionUtils {
 
@@ -62,7 +50,7 @@ public abstract class VersionUtils {
         String version = null;
 
         if (isOutdated()) {
-            HttpClient httpClient = createHttpClient(version);
+            HttpClient httpClient = HttpClientFactory.createHttpClient(URL);
             HttpGet httpget = new HttpGet(URL);
             try {
                 HttpResponse response = httpClient.execute(httpget);
@@ -112,43 +100,6 @@ public abstract class VersionUtils {
         String date = properties.getProperty("git.commit.time", "n/a");
 
         return new VersionInformation("rug", version, repo, version, sha, date);
-    }
-
-    private static void configureProxy(String version, HttpClientBuilder builder) {
-        List<Proxy> proxies = ProxySelector.getDefault().select(URI.create(URL));
-        if (!proxies.isEmpty()) {
-            Optional<Proxy> proxy = proxies.stream().filter(p -> p.type().equals(Proxy.Type.HTTP))
-                    .findFirst();
-            if (proxy.isPresent()) {
-                InetSocketAddress address = (InetSocketAddress) proxy.get().address();
-                builder.setProxy(new HttpHost(address.getHostName(), address.getPort()));
-
-                try {
-                    PasswordAuthentication auth = Authenticator.requestPasswordAuthentication(
-                            address.getHostName(), null, address.getPort(), "https",
-                            "Credentials for proxy " + proxy, null, new java.net.URL(URL),
-                            Authenticator.RequestorType.PROXY);
-                    if (auth != null) {
-                        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-                        credsProvider.setCredentials(
-                                new AuthScope(address.getHostName(), address.getPort()),
-                                new UsernamePasswordCredentials(auth.getUserName(),
-                                        String.valueOf(auth.getPassword())));
-                        builder.setDefaultCredentialsProvider(credsProvider);
-                    }
-                }
-                catch (MalformedURLException e) {
-                }
-
-            }
-        }
-    }
-
-    private static HttpClient createHttpClient(String version) {
-        HttpClientBuilder builder = HttpClientBuilder.create()
-                .setUserAgent("rug-cli-" + readVersion().orElse("0.0.0")).useSystemProperties();
-        configureProxy(version, builder);
-        return builder.build();
     }
 
     private static boolean isOutdated() {

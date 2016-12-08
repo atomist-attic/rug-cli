@@ -14,3 +14,7 @@ remote-repositories:
   rugs:
     publish: false
     url: "https://atomist.jfrog.io/atomist/rugs-release"
+
+# Set up Rug catalog endpoints for searching
+catalogs:
+- "https://api-staging.atomist.services/catalog"
