@@ -106,8 +106,9 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
 
         if (result instanceof SuccessfulModification) {
 
-            ArtifactSource resultSource = new ProvenanceInfoWriter()
-                    .write(((SuccessfulModification) result).result(), editor, arguments);
+            ArtifactSource resultSource = new ProvenanceInfoWriter().write(
+                    ((SuccessfulModification) result).result(), editor, arguments,
+                    Constants.cliClient());
 
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
@@ -142,9 +143,9 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
                     FileUtils.sizeOf(root), source.allFiles().size());
             log.newline();
-            throw new CommandException(
-                    String.format("Editor failed to make changes to project %s:\n  %s", root.getName(),
-                            ((FailedModificationAttempt) result).failureExplanation()));
+            throw new CommandException(String.format(
+                    "Editor failed to make changes to project %s:\n  %s", root.getName(),
+                    ((FailedModificationAttempt) result).failureExplanation()));
         }
     }
 
@@ -157,7 +158,8 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
                 git.add().addFilepattern(".").call();
                 RevCommit commit = git.commit().setAll(true)
                         .setMessage(String.format("Commit by editor %s\n\n%s", editor.name(),
-                                new ProvenanceInfoWriter().write(editor, arguments)))
+                                new ProvenanceInfoWriter().write(editor, arguments,
+                                        Constants.cliClient())))
                         .setAuthor("Atomist", "cli@atomist.com").call();
                 log.info("Committed changes to git repository (%s)", commit.abbreviate(7).name());
             }

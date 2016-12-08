@@ -2,6 +2,8 @@ package com.atomist.rug.cli;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import com.atomist.rug.cli.version.VersionUtils;
+
 public class Constants {
     
     public static final String COMMAND = "rug";
@@ -25,5 +27,9 @@ public class Constants {
     public static final String TREE_CONNECTOR = (SystemUtils.IS_OS_WINDOWS ? "|  " : "| ");
     
     public static final String CLOSEST_MATCH_HINT = "Did you mean?";
+    
+    public static String cliClient() {
+        return ARTIFACT + " " + VersionUtils.readVersion().orElse("0.0.0");
+    }
 
 }
