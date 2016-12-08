@@ -18,6 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -32,7 +34,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
+import org.eclipse.aether.version.VersionRange;
 import org.eclipse.aether.version.VersionScheme;
+
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.resolver.ArtifactDescriptor;
 
 public abstract class VersionUtils {
 
@@ -43,6 +52,54 @@ public abstract class VersionUtils {
     private static final String URL = "https://static.atomist.com/Formula/rug-cli.rb";
 
     private static final String VERSION_PATTERN_STRING = "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-(0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(\\.(0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\\+[0-9a-zA-Z-]+(\\.[0-9a-zA-Z-]+)*)?";
+
+    public static void validateJdkVersion() {
+        boolean warn = false;
+        if (SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_1_8)) {
+            // We need 1.8.0_111 at least
+            String version = SystemUtils.JAVA_VERSION;
+            int ix = version.lastIndexOf('_');
+            if (ix > 0) {
+                int patch = Integer.valueOf(version.substring(ix + 1));
+                if (patch < 111) {
+                    warn = true;
+                }
+            }
+        }
+        else {
+            // Not even Java 1.8
+            warn = true;
+        }
+
+        if (warn) {
+            new Log(VersionUtils.class)
+                    .info(Style.yellow("Please update your JDK to version 1.8.0_111 or newer."));
+        }
+    }
+
+    public static void validateRugCompatibility(List<ArtifactDescriptor> dependencies) {
+        Optional<ArtifactDescriptor> rugArtifact = dependencies.stream()
+                .filter(f -> f.group().equals(Constants.GROUP)
+                        && f.artifact().equals(Constants.RUG_ARTIFACT))
+                .findAny();
+        if (rugArtifact.isPresent()) {
+            VersionScheme versionScheme = new GenericVersionScheme();
+            try {
+                Version version = versionScheme.parseVersion(rugArtifact.get().version());
+                VersionRange range = versionScheme.parseVersionRange(Constants.RUG_VERSION_RANGE);
+                if (!range.containsVersion(version)) {
+                    throw new CommandException(String.format(
+                            "This version of %s is not compatible with %s:%s %s (supported versions are %s).\n"
+                                    + "Please upgrade to a more recent version of the Rug CLI or update your Rug archive to a supported version range.",
+                            Constants.COMMAND, Constants.GROUP, Constants.RUG_ARTIFACT,
+                            version.toString(), range.toString()));
+                }
+            }
+            catch (InvalidVersionSpecificationException e) {
+                // Since we were able to resolve the version it is impossible for this to happen
+            }
+        }
+    }
 
     public static Optional<String> newerVersion() {
         try {
@@ -78,7 +135,8 @@ public abstract class VersionUtils {
                         }
                     }
                 }
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
             }
             finally {
                 updateLastChecked();
