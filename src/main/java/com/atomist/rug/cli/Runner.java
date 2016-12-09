@@ -95,7 +95,7 @@ public class Runner {
     }
 
     private void printTimer(Timing timing) {
-        log.info("Command finished in " + timing.duration() + "s");
+        log.info("Command completed in " + timing.duration() + "s");
     }
 
     private void printVersion() {
