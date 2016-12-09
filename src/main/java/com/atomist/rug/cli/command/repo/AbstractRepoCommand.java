@@ -2,15 +2,21 @@ package com.atomist.rug.cli.command.repo;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import com.atomist.param.ParameterValue;
+import com.atomist.param.ParameterValueDeserializer$;
 import com.atomist.project.ProvenanceInfo;
 import com.atomist.project.SimpleProvenanceInfo;
+import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandUtils;
@@ -28,13 +34,18 @@ import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 
 public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand {
 
     @Command
-    public void run(ArtifactDescriptor artifact, @Option("archive-version") String version,
-            CommandLine commandLine) throws IOException {
-
+    public void run(Operations operations, ArtifactDescriptor artifact,
+            @Option("archive-version") String version, CommandLine commandLine) throws IOException {
+        
         String fullVersion = artifact.version();
         if (version != null) {
             fullVersion = version;
@@ -82,11 +93,11 @@ public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand
 
     private ProvenanceInfo getProvenanceInfo(File projectRoot, ArtifactSource source) {
         try {
-            RepositoryDetails repositoryDetails = new RepositoryDetailsProvider()
+            Optional<RepositoryDetails> repositoryDetails = new RepositoryDetailsProvider()
                     .readDetails(projectRoot);
-            if (repositoryDetails != null) {
-                return new SimpleProvenanceInfo(repositoryDetails.repo(),
-                        repositoryDetails.branch(), repositoryDetails.sha());
+            if (repositoryDetails.isPresent()) {
+                return new SimpleProvenanceInfo(repositoryDetails.get().repo(),
+                        repositoryDetails.get().branch(), repositoryDetails.get().sha());
             }
         }
         catch (IOException e) {
