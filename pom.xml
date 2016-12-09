@@ -15,8 +15,8 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
-		<rug.version>0.5.1</rug.version>
-		<rug-resolver.version>0.5.1</rug-resolver.version>
+		<rug.version>0.5.2</rug.version>
+		<rug-resolver.version>0.5.4</rug-resolver.version>
 	</properties>
 	<licenses>
 		<license>
@@ -42,7 +42,17 @@
 		<dependency>
 			<groupId>com.atomist</groupId>
 			<artifactId>artifact-source</artifactId>
-			<version>0.11.3</version>
+			<version>0.11.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-access</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.atomist</groupId>
@@ -105,10 +115,10 @@
 		</dependency>
 		<!-- inmemantlr needs antlr4 to come from the system classloader -->
 		<dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4</artifactId>
-            <version>4.5.3</version>
-        </dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4</artifactId>
+			<version>4.5.3</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -212,8 +222,11 @@
 						</goals>
 						<configuration>
 							<rules>
+								>
 								<bannedDependencies>
 									<excludes>
+										<exclude>ch.qos.logback:logback-classic</exclude>
+										<exclude>ch.qos.logback:logback-access</exclude>
 										<exclude>commons-logging:commons-logging</exclude>
 									</excludes>
 								</bannedDependencies>
@@ -318,7 +331,7 @@
 						<configuration>
 							<includedScopes>compile</includedScopes>
 							<licenseMerges>
-								<licenseMerge>Apache Software License, Version 2.0|Apache License, Version 2.0|Apache Public License 2.0|Apache 2|Apache 2.0|Apache 2.0 License|The Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache License 2.0</licenseMerge>
+								<licenseMerge>Apache Software License, Version 2.0|Apache License, Version 2.0|Apache Public License 2.0|Apache 2|Apache 2.0|Apache 2.0 License|The Apache License, Version 2.0|The	Apache Software License, Version 2.0|Apache License 2.0</licenseMerge>
 								<licenseMerge>Eclipse Public License, Version 1.0|Eclipse Public License - v 1.0|The Eclipse Public License, Version 1.0</licenseMerge>
 								<licenseMerge>BSD License|The BSD License|BSD</licenseMerge>
 							</licenseMerges>
