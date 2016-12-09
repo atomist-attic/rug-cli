@@ -2,7 +2,6 @@ package com.atomist.rug.cli.command.repo;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.apache.commons.cli.CommandLine;
@@ -10,10 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import com.atomist.param.ParameterValue;
-import com.atomist.param.ParameterValueDeserializer$;
 import com.atomist.project.ProvenanceInfo;
 import com.atomist.project.SimpleProvenanceInfo;
 import com.atomist.project.archive.Operations;
@@ -34,11 +30,6 @@ import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 
 public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand {
 
