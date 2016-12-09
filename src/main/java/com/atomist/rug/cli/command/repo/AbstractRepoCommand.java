@@ -65,11 +65,22 @@ public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand
 
             @Override
             protected ProvenanceInfo getProvenanceInfo() {
-                return AbstractRepoCommand.this.getProvenanceInfo(projectRoot, source);
+                try {
+                    Optional<RepositoryDetails> repositoryDetails = new RepositoryDetailsProvider()
+                            .readDetails(projectRoot);
+                    if (repositoryDetails.isPresent()) {
+                        return new SimpleProvenanceInfo(repositoryDetails.get().repo(),
+                                repositoryDetails.get().branch(), repositoryDetails.get().sha());
+                    }
+                }
+                catch (IOException e) {
+                    
+                }
+                return null;
             }
         };
 
-        deployer.deploy(projectRoot, source, artifact);
+        deployer.deploy(operations, source, artifact, projectRoot);
     }
 
     protected abstract void doWithRepositorySession(RepositorySystem system,
@@ -80,21 +91,6 @@ public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand
         ArtifactSource source = new FileSystemArtifactSource(
                 new SimpleFileSystemArtifactSourceIdentifier(projectRoot));
         return ArtifactSourceUtils.filter(source);
-    }
-
-    private ProvenanceInfo getProvenanceInfo(File projectRoot, ArtifactSource source) {
-        try {
-            Optional<RepositoryDetails> repositoryDetails = new RepositoryDetailsProvider()
-                    .readDetails(projectRoot);
-            if (repositoryDetails.isPresent()) {
-                return new SimpleProvenanceInfo(repositoryDetails.get().repo(),
-                        repositoryDetails.get().branch(), repositoryDetails.get().sha());
-            }
-        }
-        catch (IOException e) {
-
-        }
-        return null;
     }
 
     private void prepareTargetDirectory(File zipFile) {
