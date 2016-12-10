@@ -128,7 +128,7 @@ public class ReflectiveCommandRunner {
                 return f.toURI().toURL();
             }
             catch (MalformedURLException e) {
-                throw new RunnerException("", e);
+                throw new RunnerException("Error occured creating URL", e);
             }
         }).collect(Collectors.toList());
     }
