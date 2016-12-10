@@ -1,10 +1,11 @@
 
-{{cyan divider}} {{bold title}}
-  {{#empty archives ~}}
+{{cyan divider}} {{bold this "Local Archives"}}
+{{~#empty archives}}
   No local archives found
-  {{else ~}}
-  {{#archives ~}}  
-  {{yellow name}} ({{underline version}}{{versions}})
-  {{/archives ~}}
-  {{/empty ~}}
-{{{footer}}}
+{{else}}
+{{~#archives}}
+  {{yellow name}} ({{delimitedWithUnderline versions}})
+{{~/archives}}
+{{/empty}}
+For more information on specific archive version, run:
+  rug describe archive ARCHIVE -a VERSION

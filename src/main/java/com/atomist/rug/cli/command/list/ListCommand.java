@@ -60,7 +60,6 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-
     @Command
     public void run(@Option("filter") Properties filter) {
 
@@ -68,19 +67,13 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                 "Listing local archives")
                         .run(indicator -> collectArchives(filter).stream().collect(
                                 Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
+        
         List<Archive> test = archives.entrySet().stream()
                 .map(e -> new Archive(e.getKey(), e.getValue())).collect(Collectors.toList());
         test.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
         Map<String, Object> scopes = new HashMap<>();
-        scopes.put("title", "Local Archives");
         scopes.put("archives", test);
-        scopes.put("footer",
-                String.format("\nFor more information on specific archive version, run:\n"
-                        + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND));
         mergeContent(scopes);
-
-        // log.info(Style.yellow(" %s", groupArtifact) + " (%s)",
-        // StringUtils.collectionToDelimitedString(versionStrings, ", "));
     }
 
     protected List<ArtifactDescriptor> collectArchives(Properties filter) {
@@ -161,16 +154,12 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
 
         private String name;
 
-        private String version;
-        private String versions;
+        private List<String> versions;
 
         public Archive(String name, List<ArtifactDescriptor> artifacts) {
-            List<String> versionStrings = artifacts.stream()
+            this.versions = artifacts.stream()
                     .sorted((v1, v2) -> v2.version().compareTo(v1.version()))
                     .map(ArtifactDescriptor::version).collect(Collectors.toList());
-            this.version = versionStrings.get(0);
-            versionStrings.remove(0);
-            this.versions = StringUtils.collectionToDelimitedString(versionStrings, ", ");
             this.name = name;
         }
 
@@ -178,30 +167,31 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
             return name;
         }
 
-        public String getVersions() {
-            if (versions != null && versions.length() > 0) {
-                return ", " + versions;
-            }
+        public List<String> getVersions() {
             return versions;
-        }
-
-        public String getVersion() {
-            return version;
         }
     }
 
+    @SuppressWarnings("unchecked")
     public class HandlebarsHelpers {
         public CharSequence empty(Object obj1, Options options) throws IOException {
             Collection<?> collection = (Collection<?>) obj1;
             return collection.isEmpty() ? options.fn() : options.inverse();
         }
 
+        public CharSequence delimitedWithUnderline(Object obj1, Options options) throws IOException {
+            List<String> collection = (List<String>) obj1;
+            collection.set(0, Style.underline(collection.get(0)));
+            return collection.isEmpty() ? ""
+                    : StringUtils.collectionToDelimitedString(collection, ", ");
+        }
+
         public CharSequence cyan(Object obj1) throws IOException {
             return Style.cyan(obj1.toString());
         }
 
-        public CharSequence bold(Object obj1) throws IOException {
-            return Style.bold(obj1.toString());
+        public CharSequence bold(Object obj1, Options options) throws IOException {
+            return Style.bold(options.param(0));
         }
 
         public CharSequence underline(Object obj1) throws IOException {

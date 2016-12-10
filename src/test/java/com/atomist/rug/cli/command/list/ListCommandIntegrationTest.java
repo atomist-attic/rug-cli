@@ -12,14 +12,14 @@ public class ListCommandIntegrationTest extends AbstractCommandTest {
 
     private boolean resolved = false;
 
-    @Before
-    public void init() throws Exception {
-        if (!resolved) {
-            assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
-                    "0.1.0");
-            resolved = true;
-        }
-    }
+//    @Before
+//    public void init() throws Exception {
+//        if (!resolved) {
+//            assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
+//                    "0.1.0");
+//            resolved = true;
+//        }
+//    }
 
     @Test
     public void testFullArtifactFiltered() throws Exception {
