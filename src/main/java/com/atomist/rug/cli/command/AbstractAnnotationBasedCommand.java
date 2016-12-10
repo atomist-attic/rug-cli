@@ -22,15 +22,16 @@ import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.templating.ModelAndTemplate;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
 import scala.collection.JavaConversions;
 
-public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
+public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatizedCommand {
 
     @Override
-    protected void run(Operations operations, ArtifactDescriptor artifact,
+    protected ModelAndTemplate doRun(Operations operations, ArtifactDescriptor artifact,
             CommandLine commandLine) {
 
         Optional<Method> methodOptional = Arrays
@@ -40,19 +41,25 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
                 .findFirst();
 
         if (methodOptional.isPresent()) {
-            invokeCommandMethod(methodOptional.get(), operations, artifact, commandLine);
+            return invokeCommandMethod(methodOptional.get(), operations, artifact, commandLine);
         }
         else {
-            throw new CommandException(
-                    "Command class does not have an @Command-annotated method.");
+            throw new CommandException("Command class does not have an @Command-annotated method.");
         }
     }
 
-    protected void invokeCommandMethod(Method method, Operations operations,
+    protected ModelAndTemplate invokeCommandMethod(Method method, Operations operations,
             ArtifactDescriptor artifact, CommandLine commandLine) {
         List<Object> arguments = prepareMethodArguments(method, commandLine, artifact, operations);
         try {
-            method.invoke(this, (Object[]) arguments.toArray(new Object[arguments.size()]));
+            if (method.getReturnType().isAssignableFrom(ModelAndTemplate.class)) {
+                return (ModelAndTemplate) method.invoke(this,
+                        (Object[]) arguments.toArray(new Object[arguments.size()]));
+            }
+            else {
+                method.invoke(this, (Object[]) arguments.toArray(new Object[arguments.size()]));
+                return null;
+            }
         }
         catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new RunnerException(e);

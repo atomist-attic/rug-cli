@@ -3,13 +3,11 @@ package com.atomist.rug.cli.command.list;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -24,56 +22,39 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
-import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
-import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.templating.ModelAndTemplate;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.source.file.ZipFileArtifactSourceReader;
 import com.atomist.source.file.ZipFileInput;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Options;
-import com.github.jknack.handlebars.Template;
 
 public class ListCommand extends AbstractAnnotationBasedCommand {
 
     private Log log = new Log(ListCommand.class);
 
-    private void mergeContent(Map<String, Object> scopes) {
-        scopes.put("divider", Constants.DIVIDER);
-
-        Handlebars handlebars = new Handlebars();
-        handlebars.registerHelpers(new HandlebarsHelpers());
-        Template template;
-        try {
-            template = handlebars.compile("templates/list");
-            log.info(template.apply(scopes));
-        }
-        catch (IOException e) {
-        }
-    }
-
     @Command
-    public void run(@Option("filter") Properties filter) {
+    public ModelAndTemplate run(@Option("filter") Properties filter) {
 
         Map<String, List<ArtifactDescriptor>> archives = new ProgressReportingOperationRunner<Map<String, List<ArtifactDescriptor>>>(
                 "Listing local archives")
                         .run(indicator -> collectArchives(filter).stream().collect(
                                 Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
-        
-        List<Archive> test = archives.entrySet().stream()
-                .map(e -> new Archive(e.getKey(), e.getValue())).collect(Collectors.toList());
-        test.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
-        Map<String, Object> scopes = new HashMap<>();
-        scopes.put("archives", test);
-        mergeContent(scopes);
+
+        ModelAndTemplate modelAndTemplate = new ModelAndTemplate("list");
+        modelAndTemplate.set("archives", archives.entrySet().stream()
+                .map(e -> new Archive(e.getKey(), e.getValue()))
+                .sorted((a1, a2) -> a1.getName().compareTo(a2.getName()))
+                .collect(Collectors.toList()));
+
+        return modelAndTemplate;
     }
 
     protected List<ArtifactDescriptor> collectArchives(Properties filter) {
@@ -167,39 +148,10 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
             return name;
         }
 
+        @SuppressWarnings("unused")
         public List<String> getVersions() {
             return versions;
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public class HandlebarsHelpers {
-        public CharSequence empty(Object obj1, Options options) throws IOException {
-            Collection<?> collection = (Collection<?>) obj1;
-            return collection.isEmpty() ? options.fn() : options.inverse();
-        }
-
-        public CharSequence delimitedWithUnderline(Object obj1, Options options) throws IOException {
-            List<String> collection = (List<String>) obj1;
-            collection.set(0, Style.underline(collection.get(0)));
-            return collection.isEmpty() ? ""
-                    : StringUtils.collectionToDelimitedString(collection, ", ");
-        }
-
-        public CharSequence cyan(Object obj1) throws IOException {
-            return Style.cyan(obj1.toString());
-        }
-
-        public CharSequence bold(Object obj1, Options options) throws IOException {
-            return Style.bold(options.param(0));
-        }
-
-        public CharSequence underline(Object obj1) throws IOException {
-            return Style.underline(obj1.toString());
-        }
-
-        public CharSequence yellow(Object obj1) throws IOException {
-            return Style.yellow(obj1.toString());
-        }
-    }
 }
