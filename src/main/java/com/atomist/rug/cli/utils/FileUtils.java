@@ -38,8 +38,12 @@ public abstract class FileUtils {
     }
 
     public static String sizeOf(File file) {
-        return org.apache.commons.io.FileUtils
-                .byteCountToDisplaySize(org.apache.commons.io.FileUtils.sizeOf(file)).toLowerCase()
+        long fileSize = org.apache.commons.io.FileUtils.sizeOf(file);
+        File gitDirectory = new File(file, ".git");
+        if (gitDirectory.exists()) {
+            fileSize = fileSize - org.apache.commons.io.FileUtils.sizeOf(file);
+        }
+        return org.apache.commons.io.FileUtils.byteCountToDisplaySize(fileSize).toLowerCase()
                 .replace(" ", "");
     }
 
