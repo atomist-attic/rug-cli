@@ -31,7 +31,7 @@ import scala.collection.JavaConversions;
 public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatizedCommand {
 
     @Override
-    protected ModelAndTemplate doRun(Operations operations, ArtifactDescriptor artifact,
+    protected void doRun(Operations operations, ArtifactDescriptor artifact,
             CommandLine commandLine) {
 
         Optional<Method> methodOptional = Arrays
@@ -41,25 +41,18 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatized
                 .findFirst();
 
         if (methodOptional.isPresent()) {
-            return invokeCommandMethod(methodOptional.get(), operations, artifact, commandLine);
+            invokeCommandMethod(methodOptional.get(), operations, artifact, commandLine);
         }
         else {
             throw new CommandException("Command class does not have an @Command-annotated method.");
         }
     }
 
-    protected ModelAndTemplate invokeCommandMethod(Method method, Operations operations,
+    protected void invokeCommandMethod(Method method, Operations operations,
             ArtifactDescriptor artifact, CommandLine commandLine) {
         List<Object> arguments = prepareMethodArguments(method, commandLine, artifact, operations);
         try {
-            if (method.getReturnType().isAssignableFrom(ModelAndTemplate.class)) {
-                return (ModelAndTemplate) method.invoke(this,
-                        (Object[]) arguments.toArray(new Object[arguments.size()]));
-            }
-            else {
-                method.invoke(this, (Object[]) arguments.toArray(new Object[arguments.size()]));
-                return null;
-            }
+            method.invoke(this, (Object[]) arguments.toArray(new Object[arguments.size()]));
         }
         catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new RunnerException(e);

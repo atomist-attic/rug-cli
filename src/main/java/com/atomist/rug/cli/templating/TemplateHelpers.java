@@ -60,7 +60,7 @@ public class TemplateHelpers {
         return Style.green(obj1.toString());
     }
 
-    public CharSequence green(Object obj1) throws IOException {
+    public CharSequence tree(Object obj1) throws IOException {
         return "tree";
     }
 }

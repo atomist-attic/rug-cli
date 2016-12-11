@@ -41,20 +41,18 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
     private Log log = new Log(ListCommand.class);
 
     @Command
-    public ModelAndTemplate run(@Option("filter") Properties filter) {
+    public void run(@Option("filter") Properties filter) {
 
         Map<String, List<ArtifactDescriptor>> archives = new ProgressReportingOperationRunner<Map<String, List<ArtifactDescriptor>>>(
                 "Listing local archives")
                         .run(indicator -> collectArchives(filter).stream().collect(
                                 Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
 
-        ModelAndTemplate modelAndTemplate = new ModelAndTemplate("list");
-        modelAndTemplate.set("archives", archives.entrySet().stream()
-                .map(e -> new Archive(e.getKey(), e.getValue()))
-                .sorted((a1, a2) -> a1.getName().compareTo(a2.getName()))
-                .collect(Collectors.toList()));
-
-        return modelAndTemplate;
+        setResultView("list");
+        addResultContext("archives",
+                archives.entrySet().stream().map(e -> new Archive(e.getKey(), e.getValue()))
+                        .sorted((a1, a2) -> a1.name.compareTo(a2.name))
+                        .collect(Collectors.toList()));
     }
 
     protected List<ArtifactDescriptor> collectArchives(Properties filter) {
@@ -142,15 +140,6 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                     .sorted((v1, v2) -> v2.version().compareTo(v1.version()))
                     .map(ArtifactDescriptor::version).collect(Collectors.toList());
             this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        @SuppressWarnings("unused")
-        public List<String> getVersions() {
-            return versions;
         }
     }
 
