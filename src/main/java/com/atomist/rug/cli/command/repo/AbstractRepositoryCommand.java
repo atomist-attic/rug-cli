@@ -31,7 +31,7 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
-public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand {
+public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(Operations operations, ArtifactDescriptor artifact,
@@ -58,9 +58,9 @@ public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand
             @Override
             protected void doWithRepositorySession(RepositorySystem system,
                     RepositorySystemSession session, ArtifactSource source, Manifest manifest,
-                    Artifact zip, Artifact pom) {
-                AbstractRepoCommand.this.doWithRepositorySession(system, session, source, manifest,
-                        zip, pom, commandLine);
+                    Artifact zip, Artifact pom, Artifact metadata) {
+                AbstractRepositoryCommand.this.doWithRepositorySession(system, session, source, manifest,
+                        zip, pom, metadata, commandLine);
             }
 
             @Override
@@ -85,7 +85,7 @@ public abstract class AbstractRepoCommand extends AbstractAnnotationBasedCommand
 
     protected abstract void doWithRepositorySession(RepositorySystem system,
             RepositorySystemSession session, ArtifactSource source, Manifest manifest, Artifact zip,
-            Artifact pom, CommandLine commandLine);
+            Artifact pom, Artifact metadata, CommandLine commandLine);
 
     private ArtifactSource createArtifactSource(File projectRoot) {
         ArtifactSource source = new FileSystemArtifactSource(

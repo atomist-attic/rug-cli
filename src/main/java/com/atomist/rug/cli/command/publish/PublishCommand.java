@@ -16,7 +16,7 @@ import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.repo.AbstractRepoCommand;
+import com.atomist.rug.cli.command.repo.AbstractRepositoryCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
@@ -31,12 +31,12 @@ import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
-public class PublishCommand extends AbstractRepoCommand {
+public class PublishCommand extends AbstractRepositoryCommand {
 
     private Log log = new Log(PublishCommand.class);
 
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom,
+            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata, 
             CommandLine commandLine) {
 
         org.eclipse.aether.repository.RemoteRepository deployRepository = getDeployRepository(
@@ -48,7 +48,7 @@ public class PublishCommand extends AbstractRepoCommand {
                             .setTransferListener(new ProgressReportingTransferListener(indicator));
 
                     DeployRequest deployRequest = new DeployRequest();
-                    deployRequest.addArtifact(zip).addArtifact(pom);
+                    deployRequest.addArtifact(zip).addArtifact(pom).addArtifact(metadata);
                     deployRequest.setRepository(deployRepository);
 
                     return system.deploy(session, deployRequest);

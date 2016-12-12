@@ -15,7 +15,7 @@ import org.eclipse.aether.installation.InstallResult;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.command.repo.AbstractRepoCommand;
+import com.atomist.rug.cli.command.repo.AbstractRepositoryCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
@@ -25,13 +25,13 @@ import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
-public class InstallCommand extends AbstractRepoCommand {
+public class InstallCommand extends AbstractRepositoryCommand {
 
     private Log log = new Log(InstallCommand.class);
 
     @Override
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-            ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom,
+            ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom, Artifact metadata,
             CommandLine commandLine) {
 
         new ProgressReportingOperationRunner<InstallResult>(
@@ -55,8 +55,8 @@ public class InstallCommand extends AbstractRepoCommand {
                             });
 
                     InstallRequest installRequest = new InstallRequest();
-                    installRequest.addArtifact(artifact).addArtifact(pom);
-
+                    installRequest.addArtifact(artifact).addArtifact(pom).addArtifact(metadata);
+                   
                     return system.install(session, installRequest);
                 });
 
