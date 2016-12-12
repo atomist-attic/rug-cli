@@ -7,13 +7,11 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
-import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.settings.SettingsWriter;
@@ -21,8 +19,6 @@ import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.StringUtils;
 
 public class ConfigCommand extends AbstractAnnotationBasedCommand {
-
-	private Log log = new Log(ConfigCommand.class);
 
 	@Command
 	public void run(CommandLine commandLine, @Argument(index = 1) String command,
@@ -76,23 +72,11 @@ public class ConfigCommand extends AbstractAnnotationBasedCommand {
 
 		new SettingsWriter().write(settings, settingsFile);
 
-		log.newline();
-		log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Default (%s)", (global ? "global" : "project")));
-		log.info("  group: %s", Style.yellow(defaultGroup));
-		if (defaultArtifact != null) {
-			log.info("  artifact: %s", Style.yellow(defaultArtifact));
-		}
-		if (defaultVersion != null) {
-			log.info("  version: %s", Style.yellow(defaultVersion));
-		}
-
-		if (global) {
-			log.newline();
-			log.info(Style.green("Successfully configured global default archive configuration"));
-		} else {
-			log.newline();
-			log.info(Style.green("Successfully configured project default archive configuration"));
-		}
+		setResultView("default-save");
+		addResultContext("global", global);
+		addResultContext("group", defaultGroup);
+		addResultContext("artifact", defaultArtifact);
+		addResultContext("version", defaultVersion);
 	}
 
 	private void delete(boolean global) {
@@ -106,18 +90,9 @@ public class ConfigCommand extends AbstractAnnotationBasedCommand {
 		}
 		settings.setDefaults(null);
 		new SettingsWriter().write(settings, settingsFile);
-
-		log.newline();
-		log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Default (%s)", (global ? "global" : "project")));
-		log.info("  Deleted");
-		if (global) {
-			log.newline();
-			log.info(Style.green("Successfully deleted global default archive"));
-		} else {
-			log.newline();
-			log.info(Style.green("Successfully deleted project default archive"));
-		}
-
+		
+		setResultView("default-delete");
+		addResultContext("global", global);
 	}
 
 	private File settingsFile(boolean global) {

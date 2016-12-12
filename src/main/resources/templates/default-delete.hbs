@@ -1,0 +1,12 @@
+
+{{~#if global}}
+{{cyan (divider)}} {{bold "Default (global)"}}
+{{~else}}
+{{cyan (divider)}} {{bold "Default (project)"}}
+{{~/if}}
+  Deleted
+{{#if global}}
+{{#green}}Successfully deleted global default archive{{/green}}
+{{else}}
+{{#green}}Successfully deleted project default archive{{/green}}
+{{/if}}

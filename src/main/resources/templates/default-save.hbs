@@ -1,0 +1,18 @@
+
+{{~#if global}}
+{{cyan (divider)}} {{bold "Default (global)"}}
+{{~else}}
+{{cyan (divider)}} {{bold "Default (project)"}}
+{{~/if}}
+  group: {{yellow group}}
+{{~#if artifact}}
+  artifact: {{yellow artifact}}	
+{{~/if}}
+{{~#if version}}
+  version: {{yellow version}}	
+{{~/if}}
+{{#if global}}
+{{#green}}Successfully configured global default archive configuration{{/green}}
+{{else}}
+{{#green}}Successfully configured project default archive configuration{{/green}}
+{{/if}}
