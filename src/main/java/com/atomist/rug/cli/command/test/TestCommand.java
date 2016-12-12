@@ -102,15 +102,18 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                                 t.assertions().size()));
                 log.info("   " + Style.underline("Failed Assertions"));
                 JavaConversions.asJavaCollection(t.failures()).forEach(a -> log.info("    %s", a.message()));
+                StringBuilder sb = new StringBuilder();
                 if (t.eventLog().input().isDefined()) {
                     log.info("   " + Style.underline("Input"));
                     ArtifactSourceTreeCreator.visitTree(t.eventLog().input().getOrElse(null),
-                            new LogVisitor(log, "  "));
+                            new LogVisitor(sb, "  "));
+                    log.info(sb.toString());
                 }
                 if (t.eventLog().output().isDefined()) {
                     log.info("   " + Style.underline("Ouput"));
                     ArtifactSourceTreeCreator.visitTree(t.eventLog().output().getOrElse(null),
-                            new LogVisitor(log, "  "));
+                            new LogVisitor(sb, "  "));
+                    log.info(sb.toString());
                 }
             });
             throw new CommandException(

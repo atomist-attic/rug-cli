@@ -51,8 +51,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
             listExtension();
             break;
         default:
-            throw new CommandException("Not enough or invalid arguments provided.",
-                    "extension");
+            throw new CommandException("Not enough or invalid arguments provided.", "extension");
         }
     }
 
@@ -114,44 +113,29 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                         });
 
         File extensionRoot = createPathForExtension(artifact);
+        dependencies.forEach(d -> installExtension(d, extensionRoot));
 
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extension"));
-        log.info("  %s", Style
-                .underline(com.atomist.rug.cli.utils.FileUtils.relativize(extensionRoot.toURI())));
-
-        ArtifactDescriptor lastArtifact = dependencies.stream().reduce((d1, d2) -> d2).orElse(null);
-        dependencies.forEach(d -> installExtension(d, extensionRoot, lastArtifact.equals(d)));
-
-        log.newline();
-        log.info(Style.green("Successfully installed extension %s:%s", artifact.group(),
-                artifact.artifact()));
+        setResultView("extension-install");
+        addResultContext("artifact", artifact);
+        addResultContext("extension", extensionRoot);
+        addResultContext("dependencies", dependencies);
     }
 
-    private void installExtension(ArtifactDescriptor artifact, File root, boolean last) {
+    private void installExtension(ArtifactDescriptor artifact, File root) {
         try {
             File source = new File(artifact.uri());
             FileUtils.copyFile(source, new File(root, source.getName()), true);
-            StringBuilder sb = new StringBuilder();
-            if (last) {
-                sb.append("  ").append(Constants.LAST_TREE_NODE);
-            }
-            else {
-                sb.append("  ").append(Constants.TREE_NODE);
-            }
-            sb.append(Style.yellow(source.getName()));
-            log.info(sb.toString());
         }
         catch (IOException e) {
         }
     }
 
     private void listExtension() {
+        setResultView("extension-list");
+
         new ProgressReportingOperationRunner<Void>("Listing extensions").run((indicator) -> {
             File extensionRoot = new File(FileUtils.getUserDirectory(),
                     Constants.ATOMIST_ROOT + File.separator + "ext");
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extensions"));
 
             if (extensionRoot.exists()) {
                 List<File> extensions = FileUtils
@@ -159,23 +143,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                         .filter(e -> e.getName().startsWith(e.getParentFile().getName() + "-"))
                         .collect(Collectors.toList());
 
-                if (extensions.size() > 0) {
-                    extensions.forEach(e -> {
-                        log.info("  %s", Style.underline(com.atomist.rug.cli.utils.FileUtils
-                                .relativize(e.getParentFile().toURI())));
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("  ").append(Constants.LAST_TREE_NODE);
-                        sb.append(Style.yellow(e.getName()));
-                        log.info(sb.toString());
-                    });
-                    log.newline();
-                }
-                else {
-                    printNoExtensionsInstalled();
-                }
-            }
-            else {
-                printNoExtensionsInstalled();
+                addResultContext("extensions", extensions);
             }
             return null;
         });
@@ -188,11 +156,6 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                     artifact.group(), artifact.artifact()));
         }
 
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extension"));
-        log.info("  %s", Style
-                .underline(com.atomist.rug.cli.utils.FileUtils.relativize(extensionRoot.toURI())));
-
         try {
             FileUtils.deleteDirectory(extensionRoot);
         }
@@ -200,9 +163,9 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
             throw new RunnerException("Error occurred uninstalling extension.", e);
         }
 
-        log.newline();
-        log.info(Style.green("Successfully uninstalled extension %s:%s", artifact.group(),
-                artifact.artifact()));
+        setResultView("extension-uninstall");
+        addResultContext("extension", extensionRoot);
+        addResultContext("artifact", artifact);
     }
 
     private boolean verifyVersionRange(ArtifactDescriptor extension,

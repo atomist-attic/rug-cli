@@ -5,28 +5,27 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 
 public class LogVisitor implements NodeVisitor {
 
     private List<ChildInfo> childInfos = new ArrayList<>();
 
-    private Log out;
+    private StringBuilder out;
 
     private String indent = "  ";
 
-    public LogVisitor(Log out) {
+    public LogVisitor(StringBuilder out) {
         this.out = out;
     }
 
-    public LogVisitor(Log out, String indent) {
+    public LogVisitor(StringBuilder out, String indent) {
         this.out = out;
         this.indent = indent;
     }
 
     public boolean visitEnter(Node node) {
         if (node.id() != null) {
-            out.info(indent + formatIndentation(node) + formatNode(node));
+            out.append(indent + formatIndentation(node) + formatNode(node)).append(System.lineSeparator());
         }
         childInfos.add(new ChildInfo(node.children().size()));
         return true;

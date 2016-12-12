@@ -28,7 +28,6 @@ import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.cli.templating.ModelAndTemplate;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
@@ -133,6 +132,7 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
 
         private String name;
 
+        @SuppressWarnings("unused")
         private List<String> versions;
 
         public Archive(String name, List<ArtifactDescriptor> artifacts) {

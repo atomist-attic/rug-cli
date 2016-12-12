@@ -1,0 +1,10 @@
+
+{{cyan (divider)}} {{bold "Extensions"}}
+{{~#empty extensions}}
+  {{#yellow}}No extensions installed{{/yellow}}
+{{else}}
+{{~#extensions}}
+  {{underline (realativize getParentFile)}}
+  {{lastTreeNode}}{{yellow name}}
+{{~/extensions}}
+{{/empty}}

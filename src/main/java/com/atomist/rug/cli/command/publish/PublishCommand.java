@@ -13,27 +13,19 @@ import org.eclipse.aether.deployment.DeployRequest;
 import org.eclipse.aether.deployment.DeployResult;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.repo.AbstractRepoCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
-import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.Settings.Authentication;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
-import com.atomist.rug.cli.tree.LogVisitor;
-import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
 public class PublishCommand extends AbstractRepoCommand {
-
-    private Log log = new Log(PublishCommand.class);
 
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
             ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom,
@@ -54,16 +46,10 @@ public class PublishCommand extends AbstractRepoCommand {
                     return system.deploy(session, deployRequest);
                 });
 
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
-        log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(zip.getFile())),
-                FileUtils.sizeOf(zip.getFile()), source.allFiles().size());
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
-        ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
-        log.newline();
-        log.info(Style.green("Successfully published archive for %s:%s:%s", manifest.group(),
-                manifest.artifact(), manifest.version()));
+        setResultView("publish");
+        addResultContext("artifact", zip);
+        addResultContext("source", source);
+        addResultContext("manifest", manifest);
     }
 
     private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {

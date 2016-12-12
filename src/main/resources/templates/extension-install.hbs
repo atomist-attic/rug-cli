@@ -1,0 +1,8 @@
+
+{{cyan (divider)}} {{bold "Extension"}}
+  {{underline (realativize extension)}}
+{{~#dependencies}}
+  {{lastTreeNode}}{{#yellow this}}{{group}}:{{artifact}}:{{version}}{{/yellow}}
+{{~/dependencies}}  
+  
+{{#green}}Successfully installed extension {{artifact.group}}:{{artifact.artifact}}{{/green}}

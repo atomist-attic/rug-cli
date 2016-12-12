@@ -14,24 +14,17 @@ import org.eclipse.aether.installation.InstallRequest;
 import org.eclipse.aether.installation.InstallResult;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.repo.AbstractRepoCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
-import com.atomist.rug.cli.tree.LogVisitor;
-import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
 public class InstallCommand extends AbstractRepoCommand {
 
-    private Log log = new Log(InstallCommand.class);
-
     @Override
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-            ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom,
+            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom,
             CommandLine commandLine) {
 
         new ProgressReportingOperationRunner<InstallResult>(
@@ -55,21 +48,14 @@ public class InstallCommand extends AbstractRepoCommand {
                             });
 
                     InstallRequest installRequest = new InstallRequest();
-                    installRequest.addArtifact(artifact).addArtifact(pom);
+                    installRequest.addArtifact(zip).addArtifact(pom);
 
                     return system.install(session, installRequest);
                 });
-
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
-        log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(artifact.getFile())),
-                FileUtils.sizeOf(artifact.getFile()), source.allFiles().size());
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
-        ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
-        log.newline();
-        log.info(Style.green("Successfully installed archive for %s:%s:%s", manifest.group(),
-                manifest.artifact(), manifest.version()));
-
+        
+        setResultView("install");
+        addResultContext("artifact", zip);
+        addResultContext("source", source);
+        addResultContext("manifest", manifest);
     }
 }

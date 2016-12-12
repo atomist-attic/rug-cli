@@ -142,7 +142,9 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                 FileUtils.sizeOf(root), result.allFiles().size());
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
-        ArtifactSourceTreeCreator.visitTree(result, new LogVisitor(log));
+        StringBuilder sb = new StringBuilder();
+        ArtifactSourceTreeCreator.visitTree(result, new LogVisitor(sb));
+        log.info(sb.toString());
         if (createRepo) {
             log.newline();
             initializeRepoAndCommitFiles(generator, arguments, root);

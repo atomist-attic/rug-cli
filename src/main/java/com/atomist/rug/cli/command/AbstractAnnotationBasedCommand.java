@@ -22,7 +22,6 @@ import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Option;
-import com.atomist.rug.cli.templating.ModelAndTemplate;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 

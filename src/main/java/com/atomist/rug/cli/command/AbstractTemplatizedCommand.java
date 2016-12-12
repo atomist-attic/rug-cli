@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.commons.cli.CommandLine;
 
 import com.atomist.project.archive.Operations;
-import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.templating.TemplateHelpers;
 import com.atomist.rug.resolver.ArtifactDescriptor;
@@ -36,9 +35,6 @@ public abstract class AbstractTemplatizedCommand extends AbstractCommand {
         if (resultView == null) {
             return;
         }
-
-        resultContext.put("divider", Constants.DIVIDER);
-        resultContext.put("rug", Constants.COMMAND);
 
         Context context = Context.newBuilder(resultContext)
                 .resolver(MapValueResolver.INSTANCE, JavaBeanValueResolver.INSTANCE,
