@@ -15,7 +15,7 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
-		<rug.version>0.5.4</rug.version>
+		<rug.version>0.5.3</rug.version>
 		<rug-resolver.version>0.6.1</rug-resolver.version>
 	</properties>
 	<licenses>
@@ -331,7 +331,7 @@
 						<configuration>
 							<includedScopes>compile</includedScopes>
 							<licenseMerges>
-								<licenseMerge>Apache Software License, Version 2.0|Apache License, Version 2.0|Apache Public License 2.0|Apache 2|Apache 2.0|Apache 2.0 License|The Apache License, Version 2.0|The	Apache Software License, Version 2.0|Apache License 2.0</licenseMerge>
+								<licenseMerge>Apache Software License, Version 2.0|The Apache Software License, Version 2.0|Apache License, Version 2.0|Apache Public License 2.0|Apache 2|Apache 2.0|Apache 2.0 License|The Apache License, Version 2.0|Apache License 2.0</licenseMerge>
 								<licenseMerge>Eclipse Public License, Version 1.0|Eclipse Public License - v 1.0|The Eclipse Public License, Version 1.0</licenseMerge>
 								<licenseMerge>BSD License|The BSD License|BSD</licenseMerge>
 							</licenseMerges>
