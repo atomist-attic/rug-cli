@@ -16,7 +16,7 @@
 executor AddTravisWebhook
 
 @description "URL of the Travis webhook"
-param url: .*
+param url: ^.*$
 
 with services s
   editWith AddTravis
@@ -25,7 +25,7 @@ with services s
 editor AddTravis
 
 @description "URL of the Travis webhook"
-param url: .*
+param url: ^.*$
 
 with file f when path = ".travis.yml"
 begin

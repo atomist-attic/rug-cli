@@ -16,7 +16,7 @@
 executor Test
 
 @description "Text to use before project name"
-param preamble: .*
+param preamble: ^.*$
 
 with services s
   reviewWith NameDropper

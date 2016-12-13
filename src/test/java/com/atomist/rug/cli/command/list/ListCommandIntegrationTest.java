@@ -16,7 +16,7 @@ public class ListCommandIntegrationTest extends AbstractCommandTest {
     public void init() throws Exception {
         if (!resolved) {
             assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
-                    "0.1.0");
+                    "0.2.0");
             resolved = true;
         }
     }
@@ -64,6 +64,6 @@ public class ListCommandIntegrationTest extends AbstractCommandTest {
                     .contains("atomist-rugs:common-editors"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("atomist-rugs:spring-boot-rest-service"));
-        }, "list", "-f", "version=[0.1.0,3.3)");
+        }, "list", "-f", "version=[0.2.0,3.3)");
     }
 }
