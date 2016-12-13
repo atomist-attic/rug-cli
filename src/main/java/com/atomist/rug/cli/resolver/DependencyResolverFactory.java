@@ -11,7 +11,6 @@ import org.eclipse.aether.util.repository.JreProxySelector;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
-import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.MavenSettings;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.resolver.ArtifactDescriptor;
@@ -71,9 +70,8 @@ public class DependencyResolverFactory {
 
                 private void firstMessage() {
                     if (firstMessage) {
-                        indicator.report(Style.cyan(Constants.DIVIDER) + " "
-                                + Style.bold("Dependency report for %s:%s:%s", artifact.group(),
-                                        artifact.artifact(), artifact.version()));
+                        indicator.report(String.format("Dependency report for %s:%s:%s",
+                                artifact.group(), artifact.artifact(), artifact.version()));
                         firstMessage = false;
                     }
                 }

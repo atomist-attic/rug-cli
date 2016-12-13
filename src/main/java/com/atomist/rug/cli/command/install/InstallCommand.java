@@ -31,14 +31,14 @@ public class InstallCommand extends AbstractRepositoryCommand {
 
     @Override
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-            ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom, Artifact metadata,
-            CommandLine commandLine) {
+            ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom,
+            Artifact metadata, CommandLine commandLine) {
 
         new ProgressReportingOperationRunner<InstallResult>(
                 "Installing archive into local repository").run(indicator -> {
 
-                    ((DefaultRepositorySystemSession) session)
-                            .setTransferListener(new ProgressReportingTransferListener(indicator));
+                    ((DefaultRepositorySystemSession) session).setTransferListener(
+                            new ProgressReportingTransferListener(indicator, false));
                     ((DefaultRepositorySystemSession) session)
                             .setRepositoryListener(new AbstractRepositoryListener() {
 
@@ -48,15 +48,14 @@ public class InstallCommand extends AbstractRepositoryCommand {
                                     URI artifact = event.getFile().toURI();
 
                                     indicator.report(String.format("  Installed %s %s %s",
-                                            repo.relativize(artifact),
-                                            Constants.DIVIDER,
+                                            repo.relativize(artifact), Constants.DIVIDER,
                                             new File(repo).getAbsolutePath().toString()));
                                 }
                             });
 
                     InstallRequest installRequest = new InstallRequest();
                     installRequest.addArtifact(artifact).addArtifact(pom).addArtifact(metadata);
-                   
+
                     return system.install(session, installRequest);
                 });
 

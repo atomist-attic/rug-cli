@@ -17,10 +17,16 @@ import com.atomist.rug.cli.utils.StringUtils;
 
 public class ProgressReportingTransferListener extends AbstractTransferListener {
 
+    private boolean reportTitle = true;
     private ProgressReporter indicator;
 
     private Map<String, String> repositories;
 
+    public ProgressReportingTransferListener(ProgressReporter indicator, boolean reportTitle) {
+        this(new SettingsReader().read().getRemoteRepositories(), indicator);
+        this.reportTitle = reportTitle;
+    }
+    
     public ProgressReportingTransferListener(ProgressReporter indicator) {
         this(new SettingsReader().read().getRemoteRepositories(), indicator);
     }
@@ -36,20 +42,29 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
     @Override
     public void transferCorrupted(TransferEvent event) throws TransferCancelledException {
         if (CommandLineOptions.hasOption("X")) {
-            indicator.report(messageFrom(event));
+            report(event);
         }
     }
 
     @Override
     public void transferFailed(TransferEvent event) {
         if (CommandLineOptions.hasOption("X")) {
-            indicator.report(messageFrom(event));
+            report(event);
         }
     }
 
     @Override
     public void transferSucceeded(TransferEvent event) {
-        indicator.report(messageFrom(event));
+        report(event);
+    }
+    
+    private void report(TransferEvent event) {
+        String message = messageFrom(event);
+        if (reportTitle) {
+            indicator.report("Processing dependencies");
+            reportTitle = false;
+        }
+        indicator.report(message);
     }
 
     private String messageFrom(TransferEvent event) {

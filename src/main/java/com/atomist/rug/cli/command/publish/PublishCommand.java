@@ -36,7 +36,7 @@ public class PublishCommand extends AbstractRepositoryCommand {
     private Log log = new Log(PublishCommand.class);
 
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata, 
+            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,
             CommandLine commandLine) {
 
         org.eclipse.aether.repository.RemoteRepository deployRepository = getDeployRepository(
@@ -44,8 +44,8 @@ public class PublishCommand extends AbstractRepositoryCommand {
 
         new ProgressReportingOperationRunner<DeployResult>(
                 "Publishing archive into remote repository").run(indicator -> {
-                    ((DefaultRepositorySystemSession) session)
-                            .setTransferListener(new ProgressReportingTransferListener(indicator));
+                    ((DefaultRepositorySystemSession) session).setTransferListener(
+                            new ProgressReportingTransferListener(indicator, false));
 
                     DeployRequest deployRequest = new DeployRequest();
                     deployRequest.addArtifact(zip).addArtifact(pom).addArtifact(metadata);
