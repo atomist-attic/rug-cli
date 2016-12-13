@@ -72,8 +72,9 @@ public abstract class VersionUtils {
         }
 
         if (warn) {
-            new Log(VersionUtils.class)
-                    .info(Style.yellow("Please update your JDK to version 1.8.0_111 or newer."));
+            new Log(VersionUtils.class).info(Style.yellow(
+                    "Please update your Java Runtime Enviornment (JRE) from %s to version 1.8.0_111 or newer.",
+                    SystemUtils.JAVA_VERSION));
         }
     }
 
