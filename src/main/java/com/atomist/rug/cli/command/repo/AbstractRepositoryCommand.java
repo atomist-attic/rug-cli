@@ -14,11 +14,13 @@ import com.atomist.project.ProvenanceInfo;
 import com.atomist.project.SimpleProvenanceInfo;
 import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
+import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.deployer.AbstractMavenBasedDeployer;
 import com.atomist.rug.deployer.Deployer;
@@ -28,15 +30,20 @@ import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.source.ArtifactSource;
+import com.atomist.source.Deltas;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
+import scala.collection.JavaConversions;
+
 public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedCommand {
+    
+    private Log log = new Log(AbstractRepositoryCommand.class);
 
     @Command
     public void run(Operations operations, ArtifactDescriptor artifact,
             @Option("archive-version") String version, CommandLine commandLine) throws IOException {
-        
+
         String fullVersion = artifact.version();
         if (version != null) {
             fullVersion = version;
@@ -59,8 +66,8 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
             protected void doWithRepositorySession(RepositorySystem system,
                     RepositorySystemSession session, ArtifactSource source, Manifest manifest,
                     Artifact zip, Artifact pom, Artifact metadata) {
-                AbstractRepositoryCommand.this.doWithRepositorySession(system, session, source, manifest,
-                        zip, pom, metadata, commandLine);
+                AbstractRepositoryCommand.this.doWithRepositorySession(system, session, source,
+                        manifest, zip, pom, metadata, commandLine);
             }
 
             @Override
@@ -74,9 +81,30 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
                     }
                 }
                 catch (IOException e) {
-                    
+
                 }
                 return null;
+            }
+
+            @Override
+            protected ArtifactSource generateMetadata(Operations operations,
+                    ArtifactDescriptor artifact, ArtifactSource source, Manifest manifest) {
+                return new ProgressReportingOperationRunner<ArtifactSource>("Generating archive metadata").run(indicator -> {
+                    return super.generateMetadata(operations, artifact, source, manifest);
+                });
+            }
+
+            @Override
+            protected ArtifactSource compileTypeScript(ArtifactDescriptor artifact,
+                    ArtifactSource source) {
+                return new ProgressReportingOperationRunner<ArtifactSource>("Compiling script sources").run(indicator -> {
+                    ArtifactSource result = super.compileTypeScript(artifact, source);
+                    Deltas deltas = result.deltaFrom(source);
+                    JavaConversions.asJavaCollection(deltas.deltas()).forEach(d -> {
+                        log.info("  Compiled %s into archive", d.path());
+                    });
+                    return result;
+                });
             }
         };
 

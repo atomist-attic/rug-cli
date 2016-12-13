@@ -47,7 +47,7 @@ public class InstallCommand extends AbstractRepositoryCommand {
                                     URI repo = session.getLocalRepository().getBasedir().toURI();
                                     URI artifact = event.getFile().toURI();
 
-                                    indicator.report(String.format("Installed %s %s %s",
+                                    indicator.report(String.format("  Installed %s %s %s",
                                             repo.relativize(artifact),
                                             Constants.DIVIDER,
                                             new File(repo).getAbsolutePath().toString()));

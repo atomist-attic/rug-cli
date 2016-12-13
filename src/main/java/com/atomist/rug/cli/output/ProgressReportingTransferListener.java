@@ -55,10 +55,10 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
     private String messageFrom(TransferEvent event) {
         StringBuilder message = new StringBuilder();
         if (event.getRequestType().equals(RequestType.PUT)) {
-            message.append("Uploading ");
+            message.append("  Uploading ");
         }
         else {
-            message.append("Downloading ");
+            message.append("  Downloading ");
         }
         message.append(event.getResource().getResourceName());
         if (event.getRequestType().equals(RequestType.PUT)) {
