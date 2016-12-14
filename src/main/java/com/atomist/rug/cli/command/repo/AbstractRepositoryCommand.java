@@ -23,6 +23,7 @@ import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.deployer.AbstractMavenBasedDeployer;
+import com.atomist.rug.deployer.DefaultDeployerEventListener;
 import com.atomist.rug.deployer.Deployer;
 import com.atomist.rug.git.RepositoryDetails;
 import com.atomist.rug.git.RepositoryDetailsProvider;
@@ -31,13 +32,14 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.Deltas;
+import com.atomist.source.FileArtifact;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
 import scala.collection.JavaConversions;
 
 public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedCommand {
-    
+
     private Log log = new Log(AbstractRepositoryCommand.class);
 
     @Command
@@ -59,55 +61,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         prepareTargetDirectory(archive);
         ArtifactSource source = createArtifactSource(projectRoot);
 
-        Deployer deployer = new AbstractMavenBasedDeployer(
-                new SettingsReader().read().getLocalRepository().path()) {
-
-            @Override
-            protected void doWithRepositorySession(RepositorySystem system,
-                    RepositorySystemSession session, ArtifactSource source, Manifest manifest,
-                    Artifact zip, Artifact pom, Artifact metadata) {
-                AbstractRepositoryCommand.this.doWithRepositorySession(system, session, source,
-                        manifest, zip, pom, metadata, commandLine);
-            }
-
-            @Override
-            protected ProvenanceInfo getProvenanceInfo() {
-                try {
-                    Optional<RepositoryDetails> repositoryDetails = new RepositoryDetailsProvider()
-                            .readDetails(projectRoot);
-                    if (repositoryDetails.isPresent()) {
-                        return new SimpleProvenanceInfo(repositoryDetails.get().repo(),
-                                repositoryDetails.get().branch(), repositoryDetails.get().sha());
-                    }
-                }
-                catch (IOException e) {
-
-                }
-                return null;
-            }
-
-            @Override
-            protected ArtifactSource generateMetadata(Operations operations,
-                    ArtifactDescriptor artifact, ArtifactSource source, Manifest manifest) {
-                return new ProgressReportingOperationRunner<ArtifactSource>("Generating archive metadata").run(indicator -> {
-                    return super.generateMetadata(operations, artifact, source, manifest);
-                });
-            }
-
-            @Override
-            protected ArtifactSource compileTypeScript(ArtifactDescriptor artifact,
-                    ArtifactSource source) {
-                return new ProgressReportingOperationRunner<ArtifactSource>("Compiling script sources").run(indicator -> {
-                    ArtifactSource result = super.compileTypeScript(artifact, source);
-                    Deltas deltas = result.deltaFrom(source);
-                    JavaConversions.asJavaCollection(deltas.deltas()).forEach(d -> {
-                        log.info("  Compiled %s into archive", d.path());
-                    });
-                    return result;
-                });
-            }
-        };
-
+        Deployer deployer = new RepositoryCommandMavenDeployer(commandLine, projectRoot);
         deployer.deploy(operations, source, artifact, projectRoot);
     }
 
@@ -125,6 +79,77 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         FileUtils.deleteQuietly(zipFile.getParentFile());
         if (!zipFile.getParentFile().exists()) {
             zipFile.getParentFile().mkdirs();
+        }
+    }
+
+    private class ReportingDeployerEventListener extends DefaultDeployerEventListener {
+
+        @Override
+        public void metadataFileGenerated(FileArtifact file) {
+            log.info("  Generated %s", file.path());
+
+        }
+
+        @Override
+        public void compilationFinished(Deltas deltas) {
+            JavaConversions.asJavaCollection(deltas.deltas()).forEach(d -> {
+                log.info("  Compiled %s", d.path());
+            });
+        }
+    }
+
+    private class RepositoryCommandMavenDeployer extends AbstractMavenBasedDeployer {
+
+        private CommandLine commandLine;
+        private File projectRoot;
+
+        public RepositoryCommandMavenDeployer(CommandLine commandLine, File projectRoot) {
+            super(new SettingsReader().read().getLocalRepository().path());
+            this.commandLine = commandLine;
+            this.projectRoot = projectRoot;
+            registerEventListener(new ReportingDeployerEventListener());
+        }
+
+        @Override
+        protected void doWithRepositorySession(RepositorySystem system,
+                RepositorySystemSession session, ArtifactSource source, Manifest manifest,
+                Artifact zip, Artifact pom, Artifact metadata) {
+            AbstractRepositoryCommand.this.doWithRepositorySession(system, session, source,
+                    manifest, zip, pom, metadata, commandLine);
+        }
+
+        @Override
+        protected ProvenanceInfo getProvenanceInfo() {
+            try {
+                Optional<RepositoryDetails> repositoryDetails = new RepositoryDetailsProvider()
+                        .readDetails(projectRoot);
+                if (repositoryDetails.isPresent()) {
+                    return new SimpleProvenanceInfo(repositoryDetails.get().repo(),
+                            repositoryDetails.get().branch(), repositoryDetails.get().sha());
+                }
+            }
+            catch (IOException e) {
+
+            }
+            return null;
+        }
+
+        @Override
+        protected ArtifactSource generateMetadata(Operations operations,
+                ArtifactDescriptor artifact, ArtifactSource source, Manifest manifest) {
+            return new ProgressReportingOperationRunner<ArtifactSource>(
+                    "Generating archive metadata").run(indicator -> {
+                        return super.generateMetadata(operations, artifact, source, manifest);
+                    });
+        }
+
+        @Override
+        protected ArtifactSource compileTypeScript(ArtifactDescriptor artifact,
+                ArtifactSource source) {
+            return new ProgressReportingOperationRunner<ArtifactSource>("Compiling script sources")
+                    .run(indicator -> {
+                        return super.compileTypeScript(artifact, source);
+                    });
         }
     }
 }
