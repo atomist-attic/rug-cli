@@ -25,7 +25,7 @@ import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
 
@@ -64,7 +64,7 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
                 .map(e -> new SimpleParameterValue((String) e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
 
-        return new SimpleProjectOperationArguments(name, JavaConversions.asScalaBuffer(pvs));
+        return new SimpleProjectOperationArguments(name, JavaConverters.asScalaBuffer(pvs));
     }
 
     private Object prepareArgumentMethodArgument(CommandLine commandLine, Parameter p,
@@ -91,7 +91,7 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
                     }
                 }
                 argumentValue = new SimpleProjectOperationArguments("parameter",
-                        JavaConversions.asScalaBuffer(pvs));
+                        JavaConverters.asScalaBuffer(pvs));
             }
         }
         else if (argument.start() == -1 && argument.index() < commandLine.getArgList().size()) {

@@ -36,7 +36,7 @@ import com.atomist.source.FileArtifact;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedCommand {
 
@@ -92,7 +92,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
 
         @Override
         public void compilationFinished(Deltas deltas) {
-            JavaConversions.asJavaCollection(deltas.deltas()).forEach(d -> {
+            JavaConverters.asJavaCollection(deltas.deltas()).forEach(d -> {
                 log.info("  Compiled %s", d.path());
             });
         }

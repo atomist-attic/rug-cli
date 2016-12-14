@@ -41,7 +41,7 @@ import com.atomist.source.Delta;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 public class EditCommand extends AbstractDeltaHandlingCommand {
 
@@ -60,11 +60,11 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
         }
 
         String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-        Optional<ProjectEditor> opt = JavaConversions.asJavaCollection(operations.editors())
+        Optional<ProjectEditor> opt = JavaConverters.asJavaCollection(operations.editors())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (!opt.isPresent()) {
             // try again with a properly namespaced name
-            opt = JavaConversions.asJavaCollection(operations.editors()).stream()
+            opt = JavaConverters.asJavaCollection(operations.editors()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
 
@@ -75,7 +75,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
         else {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-            JavaConversions.asJavaCollection(operations.editors()).forEach(
+            JavaConverters.asJavaCollection(operations.editors()).forEach(
                     e -> log.info(Style.yellow("  %s", StringUtils.stripName(e.name(), artifact))
                             + " (" + e.description() + ")"));
             StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
@@ -117,7 +117,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
 
-            List<Delta> deltas = JavaConversions.asJavaCollection(resultSource.cachedDeltas())
+            List<Delta> deltas = JavaConverters.asJavaCollection(resultSource.cachedDeltas())
                     .stream().collect(Collectors.toList());
 
             iterateDeltas(deltas, source, resultSource, root, dryRun);

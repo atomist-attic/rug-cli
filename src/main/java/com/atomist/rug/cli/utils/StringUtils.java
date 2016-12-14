@@ -11,7 +11,7 @@ import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
 public abstract class StringUtils {
@@ -21,7 +21,7 @@ public abstract class StringUtils {
     public static void printClosestMatch(String name, ArtifactDescriptor artifact,
             Seq<String> nameOptions) {
         Optional<String> closestMatch = StringUtils.computeClosestMatch(name,
-                JavaConversions.asJavaCollection(nameOptions));
+                JavaConverters.asJavaCollection(nameOptions));
         if (closestMatch.isPresent()) {
             log.newline();
             log.info(Constants.CLOSEST_MATCH_HINT);

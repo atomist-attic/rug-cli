@@ -40,7 +40,7 @@ import com.atomist.source.SimpleSourceUpdateInfo;
 import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 public class GenerateCommand extends AbstractParameterizedCommand {
 
@@ -63,7 +63,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             throw new CommandException("No generator name provided.", "generate");
         }
 
-        Optional<ProjectGenerator> opt = JavaConversions.asJavaCollection(operations.generators())
+        Optional<ProjectGenerator> opt = JavaConverters.asJavaCollection(operations.generators())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (opt.isPresent()) {
             validate(artifact, opt.get(), arguments);
@@ -72,7 +72,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         else {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            JavaConversions.asJavaCollection(operations.generators()).forEach(
+            JavaConverters.asJavaCollection(operations.generators()).forEach(
                     e -> log.info(Style.yellow("  %s", e.name()) + " (" + e.description() + ")"));
             StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
             throw new CommandException(
@@ -156,13 +156,13 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             ParameterValue... pv) {
         List<ParameterValue> pvs = new ArrayList<>();
         if (arguments != null) {
-            pvs.addAll(JavaConversions.asJavaCollection(arguments.parameterValues()));
+            pvs.addAll(JavaConverters.asJavaCollection(arguments.parameterValues()));
         }
         if (pv != null) {
             Arrays.stream(pv).forEach(pvs::add);
         }
         return new SimpleProjectOperationArguments(
                 (arguments != null ? arguments.name() : "parameter"),
-                JavaConversions.asScalaBuffer(pvs));
+                JavaConverters.asScalaBuffer(pvs));
     }
 }

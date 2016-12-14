@@ -38,7 +38,7 @@ import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 import com.atomist.source.file.ZipFileArtifactSourceReader;
 import com.atomist.source.file.ZipFileInput;
 
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
@@ -132,11 +132,11 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void describeEditor(ArtifactDescriptor artifact, String name, Operations operations) {
         String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-        Optional<ProjectEditor> opt = JavaConversions.asJavaCollection(operations.editors())
+        Optional<ProjectEditor> opt = JavaConverters.asJavaCollection(operations.editors())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (!opt.isPresent()) {
             // try again with a proper namespaced name
-            opt = JavaConversions.asJavaCollection(operations.editors()).stream()
+            opt = JavaConverters.asJavaCollection(operations.editors()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
 
@@ -146,7 +146,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-            JavaConversions.asJavaCollection(operations.editors()).forEach(
+            JavaConverters.asJavaCollection(operations.editors()).forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
             if (name != null) {
@@ -162,12 +162,12 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeExecutor(ArtifactDescriptor artifact, String name, Operations operations) {
-        Optional<Executor> opt = JavaConversions.asJavaCollection(operations.executors()).stream()
+        Optional<Executor> opt = JavaConverters.asJavaCollection(operations.executors()).stream()
                 .filter(g -> g.name().equals(name)).findFirst();
         String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
         if (!opt.isPresent()) {
             // try again with a proper namespaced name
-            opt = JavaConversions.asJavaCollection(operations.executors()).stream()
+            opt = JavaConverters.asJavaCollection(operations.executors()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
 
@@ -178,7 +178,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Executors"));
-            JavaConversions.asJavaCollection(operations.executors()).forEach(
+            JavaConverters.asJavaCollection(operations.executors()).forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
             if (name != null) {
@@ -195,7 +195,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void describeGenerator(ArtifactDescriptor artifact, String name,
             Operations operations) {
-        Optional<ProjectGenerator> opt = JavaConversions.asJavaCollection(operations.generators())
+        Optional<ProjectGenerator> opt = JavaConverters.asJavaCollection(operations.generators())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
 
         log.newline();
@@ -205,7 +205,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            JavaConversions.asJavaCollection(operations.generators())
+            JavaConverters.asJavaCollection(operations.generators())
                     .forEach(e -> log.info("  " + Style.yellow(e.name()) + " " + e.description()));
             if (name != null) {
                 StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
@@ -226,13 +226,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         StringBuilder invokeSb = new StringBuilder();
         if (info instanceof ProjectGenerator) {
             invokeSb.append("PROJECT_NAME ");
-            JavaConversions.asJavaCollection(info.parameters()).stream()
+            JavaConverters.asJavaCollection(info.parameters()).stream()
                     .filter(p -> !p.getName().equals("project_name"))
                     .forEach(p -> invokeSb.append(p.getName()).append("=VALUE "));
 
         }
         else {
-            JavaConversions.asJavaCollection(info.parameters())
+            JavaConverters.asJavaCollection(info.parameters())
                     .forEach(p -> invokeSb.append(p.getName()).append("=VALUE "));
         }
         log.info("  %s %s \"%s:%s:%s\" -a %s%s %s", Constants.COMMAND, command, artifact.group(),
@@ -262,11 +262,11 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeOperations(ArtifactDescriptor artifact, Operations operations) {
-        Collection<ProjectEditor> editors = JavaConversions.asJavaCollection(operations.editors());
-        Collection<ProjectGenerator> generators = JavaConversions
+        Collection<ProjectEditor> editors = JavaConverters.asJavaCollection(operations.editors());
+        Collection<ProjectGenerator> generators = JavaConverters
                 .asJavaCollection(operations.generators());
-        Collection<Executor> executors = JavaConversions.asJavaCollection(operations.executors());
-        Collection<ProjectReviewer> reviewers = JavaConversions
+        Collection<Executor> executors = JavaConverters.asJavaCollection(operations.executors());
+        Collection<ProjectReviewer> reviewers = JavaConverters
                 .asJavaCollection(operations.reviewers());
         log.newline();
         if (!generators.isEmpty()) {
@@ -296,7 +296,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeParameters(Parameterized parameterized) {
-        List<Parameter> parameters = JavaConversions.asJavaCollection(parameterized.parameters())
+        List<Parameter> parameters = JavaConverters.asJavaCollection(parameterized.parameters())
                 .stream().collect(Collectors.toList());
 
         if (!parameters.isEmpty()) {
@@ -349,12 +349,12 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeReviewer(ArtifactDescriptor artifact, String name, Operations operations) {
-        Optional<ProjectReviewer> opt = JavaConversions.asJavaCollection(operations.reviewers())
+        Optional<ProjectReviewer> opt = JavaConverters.asJavaCollection(operations.reviewers())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
         if (!opt.isPresent()) {
             // try again with a proper namespaced name
-            opt = JavaConversions.asJavaCollection(operations.reviewers()).stream()
+            opt = JavaConverters.asJavaCollection(operations.reviewers()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
 
@@ -365,7 +365,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
-            JavaConversions.asJavaCollection(operations.reviewers()).forEach(
+            JavaConverters.asJavaCollection(operations.reviewers()).forEach(
                     e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
                             + " " + e.description()));
             if (name != null) {
@@ -383,7 +383,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeTags(ProjectOperationInfo info) {
         if (!info.tags().isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Tags"));
-            JavaConversions.asJavaCollection(info.tags()).forEach(
+            JavaConverters.asJavaCollection(info.tags()).forEach(
                     t -> log.info("  " + Style.yellow(t.name()) + " (" + t.description() + ")"));
         }
     }
