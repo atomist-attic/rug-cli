@@ -111,6 +111,9 @@ _rug() {
     local describe_args=(
         editor
         generator
+        handler
+        executor
+        reviewer
         archive
     )
     local describe_re describe_arg_found=

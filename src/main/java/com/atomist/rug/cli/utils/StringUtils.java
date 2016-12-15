@@ -22,8 +22,12 @@ public abstract class StringUtils {
 
     public static void printClosestMatch(String name, ArtifactDescriptor artifact,
             Seq<String> nameOptions) {
-        Optional<String> closestMatch = StringUtils.computeClosestMatch(name,
-                asJavaCollection(nameOptions));
+        printClosestMatch(name, artifact, asJavaCollection(nameOptions));
+    }
+    
+    public static void printClosestMatch(String name, ArtifactDescriptor artifact,
+            Collection<String> nameOptions) {
+        Optional<String> closestMatch = StringUtils.computeClosestMatch(name, nameOptions);
         if (closestMatch.isPresent()) {
             log.newline();
             log.info(Constants.CLOSEST_MATCH_HINT);
