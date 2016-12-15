@@ -14,16 +14,18 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 
 import scala.collection.JavaConverters;
 
+import static scala.collection.JavaConverters.asJavaCollectionConverter;
+
 public abstract class AbstractParameterizedCommand extends AbstractAnnotationBasedCommand {
 
     private Log log = new Log(getClass());
 
     protected void validate(ArtifactDescriptor artifact, ProjectOperation operation,
             ProjectOperationArguments arguments) {
-        Collection<ParameterValue> invalid = JavaConverters
-                .asJavaCollection(operation.findInvalidParameterValues(arguments));
-        Collection<Parameter> missing = JavaConverters
-                .asJavaCollection(operation.findMissingParameters(arguments));
+        Collection<ParameterValue> invalid =
+                asJavaCollectionConverter(operation.findInvalidParameterValues(arguments)).asJavaCollection();
+        Collection<Parameter> missing =
+                asJavaCollectionConverter(operation.findMissingParameters(arguments)).asJavaCollection();
 
         if (!invalid.isEmpty() || !missing.isEmpty()) {
             log.newline();

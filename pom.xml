@@ -16,7 +16,7 @@
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
 		<rug.version>0.6.0</rug.version>
-		<rug-resolver.version>0.6.4</rug-resolver.version>
+		<rug-resolver.version>0.6.5</rug-resolver.version>
 	</properties>
 	<licenses>
 		<license>
@@ -32,7 +32,7 @@
 			<dependency>
 				<groupId>com.atomist</groupId>
 				<artifactId>atomist-bom</artifactId>
-				<version>0.3.0</version>
+				<version>0.4.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>com.atomist</groupId>
 			<artifactId>artifact-source</artifactId>
-			<version>0.12.0</version>
+			<version>0.13.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>

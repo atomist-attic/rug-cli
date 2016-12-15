@@ -40,7 +40,8 @@ import com.atomist.source.SimpleSourceUpdateInfo;
 import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
-import scala.collection.JavaConverters;
+import static scala.collection.JavaConverters.asJavaCollectionConverter;
+import static scala.collection.JavaConverters.asScalaBufferConverter;
 
 public class GenerateCommand extends AbstractParameterizedCommand {
 
@@ -63,7 +64,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             throw new CommandException("No generator name provided.", "generate");
         }
 
-        Optional<ProjectGenerator> opt = JavaConverters.asJavaCollection(operations.generators())
+        Optional<ProjectGenerator> opt = asJavaCollectionConverter(operations.generators()).asJavaCollection()
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (opt.isPresent()) {
             validate(artifact, opt.get(), arguments);
@@ -72,7 +73,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         else {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            JavaConverters.asJavaCollection(operations.generators()).forEach(
+            asJavaCollectionConverter(operations.generators()).asJavaCollection().forEach(
                     e -> log.info(Style.yellow("  %s", e.name()) + " (" + e.description() + ")"));
             StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
             throw new CommandException(
@@ -156,13 +157,13 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             ParameterValue... pv) {
         List<ParameterValue> pvs = new ArrayList<>();
         if (arguments != null) {
-            pvs.addAll(JavaConverters.asJavaCollection(arguments.parameterValues()));
+            pvs.addAll(asJavaCollectionConverter(arguments.parameterValues()).asJavaCollection());
         }
         if (pv != null) {
             Arrays.stream(pv).forEach(pvs::add);
         }
         return new SimpleProjectOperationArguments(
                 (arguments != null ? arguments.name() : "parameter"),
-                JavaConverters.asScalaBuffer(pvs));
+                asScalaBufferConverter(pvs).asScala());
     }
 }
