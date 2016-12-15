@@ -32,8 +32,8 @@ import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
 import scala.collection.Seq;
 
-import static scala.collection.JavaConverters.asJavaCollectionConverter;
-import static scala.collection.JavaConverters.asScalaBufferConverter;
+import static scala.collection.JavaConversions.asJavaCollection;
+import static scala.collection.JavaConversions.asScalaBuffer;
 
 public class TestCommand extends AbstractAnnotationBasedCommand {
 
@@ -57,16 +57,16 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
         }
         else {
             // search for one scenario
-            Optional<TestScenario> scenario = asJavaCollectionConverter(scenarios).asJavaCollection().stream()
+            Optional<TestScenario> scenario = asJavaCollection(scenarios).stream()
                     .filter(s -> s.name().equals(testName)).findFirst();
             if (scenario.isPresent()) {
                 report = runTests(
-                        asScalaBufferConverter(Collections.singletonList(scenario.get())).asScala(),
+                        asScalaBuffer(Collections.singletonList(scenario.get())),
                         source, artifact, operations);
             }
             else {
                 // search for scenarios from a given file
-                List<FileArtifact> testFiles = asJavaCollectionConverter(source.allFiles()).asJavaCollection()
+                List<FileArtifact> testFiles = asJavaCollection(source.allFiles())
                         .stream()
                         .filter(f -> DefaultAtomistConfig$.MODULE$.isRugTest(f) && f.name()
                                 .equals(testName + DefaultAtomistConfig$.MODULE$.testExtension()))
@@ -74,11 +74,11 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
                 if (!testFiles.isEmpty()) {
                     List<TestScenario> fileScenarios = testFiles.stream()
-                            .flatMap(f -> asJavaCollectionConverter(ParserCombinatorTestScriptParser.parse(f))
-                                    .asJavaCollection()
+                            .flatMap(f -> asJavaCollection(ParserCombinatorTestScriptParser.parse(f))
+
                                     .stream())
                             .collect(Collectors.toList());
-                    report = runTests(asScalaBufferConverter(fileScenarios).asScala(), source,
+                    report = runTests(asScalaBuffer(fileScenarios), source,
                             artifact, operations);
 
                 }
@@ -98,12 +98,12 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Failed Scenarios"));
-            asJavaCollectionConverter(report.failures()).asJavaCollection().forEach(t -> {
+            asJavaCollection(report.failures()).forEach(t -> {
                 log.info(Style.yellow("  %s", t.name())
                         + String.format(" (%s of %s assertions failed)", t.failures().size(),
                                 t.assertions().size()));
                 log.info("   " + Style.underline("Failed Assertions"));
-                asJavaCollectionConverter(t.failures()).asJavaCollection().forEach(a -> log.info("    %s", a.message()));
+                asJavaCollection(t.failures()).forEach(a -> log.info("    %s", a.message()));
                 if (t.eventLog().input().isDefined()) {
                     log.info("   " + Style.underline("Input"));
                     ArtifactSourceTreeCreator.visitTree(t.eventLog().input().getOrElse(null),

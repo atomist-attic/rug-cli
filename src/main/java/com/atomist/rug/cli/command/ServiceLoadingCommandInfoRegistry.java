@@ -12,6 +12,8 @@ import org.apache.commons.cli.Options;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.utils.StringUtils;
 
+import static java.util.stream.Collectors.toList;
+
 public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
 
     private List<CommandInfo> commands = new ArrayList<>();
@@ -51,18 +53,22 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
         ServiceLoader<CommandInfo> loader = ServiceLoader.load(CommandInfo.class);
         loader.forEach(c -> commands.add(c));
         commands = commands.stream().sorted((c1, c2) -> Integer.compare(c1.order(), c2.order()))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private String getAddtionalHelpMessage(String commandName, CommandLine commandLine) {
         Optional<String> closestMatch = StringUtils.computeClosestMatch(commandName,
-                commands.stream().map(c -> c.name()).collect(Collectors.toList()));
+                commands.stream().map(CommandInfo::name).collect(toList()));
         if (closestMatch.isPresent()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n\nDid you mean?\n");
-            sb.append("  " + Constants.COMMAND).append(" ").append(closestMatch.get()).append(" ");
-            sb.append("");
-            return sb.toString();
+            return new StringBuilder()
+                    .append("\n\nDid you mean?\n")
+                    .append("  ")
+                    .append(Constants.COMMAND)
+                    .append(" ")
+                    .append(closestMatch.get())
+                    .append(" ")
+                    .append("")
+                    .toString();
         }
         else {
             return "";
