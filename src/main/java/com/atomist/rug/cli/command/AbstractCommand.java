@@ -129,11 +129,11 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
                 commandLine = parser.parse(options, args);
                 CommandLineOptions.set(commandLine);
             }
+            return commandLine;
         }
         catch (ParseException e) {
-            ParseExceptionProcessor.process(e);
+            throw new CommandException(ParseExceptionProcessor.process(e));
         }
-        return commandLine;
     }
 
     private ArtifactDescriptor createArtifactDescriptor(String group, String artifactId,

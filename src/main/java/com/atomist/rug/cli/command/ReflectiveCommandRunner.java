@@ -13,6 +13,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 
 import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.cli.command.utils.DependencyResolverExceptionProcessor;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.resolver.DependencyResolverFactory;
@@ -147,20 +148,11 @@ public class ReflectiveCommandRunner {
         String version = artifact.version();
         try {
             version = resolver.resolveVersion(artifact);
-        }
-        catch (DependencyResolverException e) {
-            throw new CommandException(String.format(
-                    "Could not find any version of archive %s:%s."
-                            + "\nMake sure all archives and dependencies are available in configured repositories.",
-                    artifact.group(), artifact.artifact()));
-        }
-        try {
             return resolver.resolveTransitiveDependencies(
                     ArtifactDescriptorFactory.copyFrom(artifact, version));
         }
         catch (DependencyResolverException e) {
-            throw new CommandException(e.getMessage()
-                    + "\nMake sure all archives and dependencies are available in configured repositories.");
+            throw new CommandException(DependencyResolverExceptionProcessor.process(e));
         }
     }
 

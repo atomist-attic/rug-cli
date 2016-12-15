@@ -1,18 +1,17 @@
 package com.atomist.rug.cli.command;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.utils.StringUtils;
-
-import static java.util.stream.Collectors.toList;
 
 public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
 
