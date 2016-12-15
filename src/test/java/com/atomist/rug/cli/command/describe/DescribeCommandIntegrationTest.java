@@ -116,7 +116,8 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testUnSuccessfulGeneratorDescribeForNonExistingArchive() throws Exception {
-        assertFailure("No version found for rug-cli-tests:i-do-not-exist", "describe", "generator",
+        assertFailure("Could not find any version of archive rug-cli-tests:i-do-not-exist.\n" + 
+                "Make sure all archives and dependencies are available in configured repositories.", "describe", "generator",
                 "rug-cli-tests:i-do-not-exist:SpringBootRestMicroservice");
     }
 }

@@ -33,7 +33,7 @@ public class DependencyResolverFactory {
             return t;
         });
         MavenProperties properties = MavenSettings
-                .mavenProperties(CommandLineOptions.hasOption("o"));
+                .mavenProperties(CommandLineOptions.hasOption("o"), !CommandLineOptions.hasOption("u"));
         MavenBasedDependencyResolver resolver = new MavenBasedDependencyResolver(
                 MavenSettings.repositorySystem(), properties, executorService) {
 

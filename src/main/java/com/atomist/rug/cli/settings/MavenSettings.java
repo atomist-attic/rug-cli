@@ -14,9 +14,10 @@ import com.atomist.rug.resolver.maven.MavenProperties.Repo;
 
 public abstract class MavenSettings {
 
-    public static MavenProperties mavenProperties(boolean offline) {
+    public static MavenProperties mavenProperties(boolean offline, boolean cacheMetadata) {
         MavenProperties properties = new MavenProperties();
         properties.setOffline(offline);
+        properties.setCacheMetadata(cacheMetadata);
 
         Settings settings = new SettingsReader().read();
 

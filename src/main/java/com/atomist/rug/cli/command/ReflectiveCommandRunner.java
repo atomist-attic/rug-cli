@@ -21,6 +21,7 @@ import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.rug.resolver.DependencyResolver;
+import com.atomist.rug.resolver.DependencyResolverException;
 
 public class ReflectiveCommandRunner {
 
@@ -143,9 +144,24 @@ public class ReflectiveCommandRunner {
             ProgressReporter indicator) {
         DependencyResolver resolver = new DependencyResolverFactory()
                 .createDependencyResolver(artifact, indicator);
-        String version = resolver.resolveVersion(artifact);
-        return resolver.resolveTransitiveDependencies(
-                ArtifactDescriptorFactory.copyFrom(artifact, version));
+        String version = artifact.version();
+        try {
+            version = resolver.resolveVersion(artifact);
+        }
+        catch (DependencyResolverException e) {
+            throw new CommandException(String.format(
+                    "Could not find any version of archive %s:%s."
+                            + "\nMake sure all archives and dependencies are available in configured repositories.",
+                    artifact.group(), artifact.artifact()));
+        }
+        try {
+            return resolver.resolveTransitiveDependencies(
+                    ArtifactDescriptorFactory.copyFrom(artifact, version));
+        }
+        catch (DependencyResolverException e) {
+            throw new CommandException(e.getMessage()
+                    + "\nMake sure all archives and dependencies are available in configured repositories.");
+        }
     }
 
     private static class NashornDelegatingUrlClassLoader extends URLClassLoader {
