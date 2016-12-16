@@ -6,9 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 
-import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.templating.TemplateHelpers;
+import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
@@ -25,7 +25,7 @@ public abstract class AbstractTemplatizedCommand extends AbstractCommand {
     private Map<String, Object> resultContext = new HashMap<>();
 
     @Override
-    protected final void run(Operations operations, ArtifactDescriptor artifact,
+    protected final void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
             CommandLine commandLine) {
         doRun(operations, artifact, commandLine);
         mergeModelAndTemplate();
@@ -35,7 +35,6 @@ public abstract class AbstractTemplatizedCommand extends AbstractCommand {
         if (resultView == null) {
             return;
         }
-
         Context context = Context.newBuilder(resultContext)
                 .resolver(MapValueResolver.INSTANCE, JavaBeanValueResolver.INSTANCE,
                         MethodValueResolver.INSTANCE, FieldValueResolver.INSTANCE)
@@ -52,9 +51,10 @@ public abstract class AbstractTemplatizedCommand extends AbstractCommand {
         }
     }
 
-    protected abstract void doRun(Operations operations, ArtifactDescriptor artifact,
+    protected abstract void doRun(OperationsAndHandlers operations, ArtifactDescriptor artifact,
             CommandLine commandLine);
 
+    
     protected void setResultView(String template) {
         this.resultView = template;
     }

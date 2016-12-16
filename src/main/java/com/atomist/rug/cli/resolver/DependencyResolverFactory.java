@@ -11,8 +11,6 @@ import org.eclipse.aether.util.repository.JreProxySelector;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.settings.MavenSettings;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
@@ -33,10 +31,10 @@ public class DependencyResolverFactory {
             t.setDaemon(true);
             return t;
         });
-        MavenProperties properties = MavenSettings
-                .mavenProperties(CommandLineOptions.hasOption("o"));
+        MavenProperties properties = MavenPropertiesFactory
+                .create(CommandLineOptions.hasOption("o"), !CommandLineOptions.hasOption("u"));
         MavenBasedDependencyResolver resolver = new MavenBasedDependencyResolver(
-                MavenSettings.repositorySystem(), properties, executorService) {
+                MavenPropertiesFactory.repositorySystem(), properties, executorService) {
 
             @Override
             protected Dependency createDependencyRoot(ArtifactDescriptor artifact) {
@@ -71,9 +69,8 @@ public class DependencyResolverFactory {
 
                 private void firstMessage() {
                     if (firstMessage) {
-                        indicator.report(Style.cyan(Constants.DIVIDER) + " "
-                                + Style.bold("Dependency report for %s:%s:%s", artifact.group(),
-                                        artifact.artifact(), artifact.version()));
+                        indicator.report(String.format("Dependency report for %s:%s:%s",
+                                artifact.group(), artifact.artifact(), artifact.version()));
                         firstMessage = false;
                     }
                 }

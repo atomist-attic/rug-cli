@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.generate;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+import static scala.collection.JavaConversions.asScalaBuffer;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,11 +25,11 @@ import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractParameterizedCommand;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
+import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
@@ -39,8 +42,6 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.SimpleSourceUpdateInfo;
 import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
-
-import scala.collection.JavaConversions;
 
 public class GenerateCommand extends AbstractParameterizedCommand {
 
@@ -58,12 +59,12 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                     new SimpleParameterValue("project_name", projectName));
         }
 
-        String name = CommandUtils.extractRugTypeName(fqArtifactName);
+        String name = OperationUtils.extractRugTypeName(fqArtifactName);
         if (name == null) {
             throw new CommandException("No generator name provided.", "generate");
         }
 
-        Optional<ProjectGenerator> opt = JavaConversions.asJavaCollection(operations.generators())
+        Optional<ProjectGenerator> opt = asJavaCollection(operations.generators())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (opt.isPresent()) {
             validate(artifact, opt.get(), arguments);
@@ -72,7 +73,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         else {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            JavaConversions.asJavaCollection(operations.generators()).forEach(
+            asJavaCollection(operations.generators()).forEach(
                     e -> log.info(Style.yellow("  %s", e.name()) + " (" + e.description() + ")"));
             StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
             throw new CommandException(
@@ -158,13 +159,13 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             ParameterValue... pv) {
         List<ParameterValue> pvs = new ArrayList<>();
         if (arguments != null) {
-            pvs.addAll(JavaConversions.asJavaCollection(arguments.parameterValues()));
+            pvs.addAll(asJavaCollection(arguments.parameterValues()));
         }
         if (pv != null) {
             Arrays.stream(pv).forEach(pvs::add);
         }
         return new SimpleProjectOperationArguments(
                 (arguments != null ? arguments.name() : "parameter"),
-                JavaConversions.asScalaBuffer(pvs));
+                asScalaBuffer(pvs));
     }
 }

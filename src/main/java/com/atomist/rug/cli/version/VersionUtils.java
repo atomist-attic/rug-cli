@@ -39,7 +39,6 @@ import org.eclipse.aether.version.VersionScheme;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
@@ -72,8 +71,9 @@ public abstract class VersionUtils {
         }
 
         if (warn) {
-            new Log(VersionUtils.class)
-                    .info(Style.yellow("Please update your JDK to version 1.8.0_111 or newer."));
+            new Log(VersionUtils.class).info(Style.yellow(
+                    "Please update your Java™ Runtime Environment (JRE) from %s to version 1.8.0_111 or newer.",
+                    SystemUtils.JAVA_VERSION));
         }
     }
 
@@ -88,11 +88,11 @@ public abstract class VersionUtils {
                 Version version = versionScheme.parseVersion(rugArtifact.get().version());
                 VersionRange range = versionScheme.parseVersionRange(Constants.RUG_VERSION_RANGE);
                 if (!range.containsVersion(version)) {
-                    throw new CommandException(String.format(
-                            "This version of %s is not compatible with %s:%s %s (supported versions are %s).\n"
-                                    + "Please upgrade to a more recent version of the Rug CLI or update your Rug archive to a supported version range.",
-                            Constants.COMMAND, Constants.GROUP, Constants.RUG_ARTIFACT,
-                            version.toString(), range.toString()));
+                    throw new VersionException(String.format(
+                            "This version of rug-cli is not compatible with %s:%s:%s (supported versions are %s).\n"
+                                    + "Please update to a more recent version of rug-cli or change your Rug archive to use a supported version of rug.",
+                            Constants.GROUP, Constants.RUG_ARTIFACT, version.toString(),
+                            range.toString()));
                 }
             }
             catch (InvalidVersionSpecificationException e) {

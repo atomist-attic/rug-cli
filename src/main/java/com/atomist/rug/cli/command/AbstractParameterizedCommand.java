@@ -12,7 +12,7 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
-import scala.collection.JavaConversions;
+import static scala.collection.JavaConversions.asJavaCollection;
 
 public abstract class AbstractParameterizedCommand extends AbstractAnnotationBasedCommand {
 
@@ -20,10 +20,10 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
 
     protected void validate(ArtifactDescriptor artifact, ProjectOperation operation,
             ProjectOperationArguments arguments) {
-        Collection<ParameterValue> invalid = JavaConversions
-                .asJavaCollection(operation.findInvalidParameterValues(arguments));
-        Collection<Parameter> missing = JavaConversions
-                .asJavaCollection(operation.findMissingParameters(arguments));
+        Collection<ParameterValue> invalid =
+                asJavaCollection(operation.findInvalidParameterValues(arguments));
+        Collection<Parameter> missing =
+                asJavaCollection(operation.findMissingParameters(arguments));
 
         if (!invalid.isEmpty() || !missing.isEmpty()) {
             log.newline();

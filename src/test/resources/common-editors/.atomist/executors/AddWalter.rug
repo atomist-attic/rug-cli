@@ -21,7 +21,7 @@
 executor AddWalter
 
 @description "Who should Walter address?"
-param target: [A-Z][a-z]+
+param target: ^[A-Z][a-z]+$
 
 with services s
   editWith Walter

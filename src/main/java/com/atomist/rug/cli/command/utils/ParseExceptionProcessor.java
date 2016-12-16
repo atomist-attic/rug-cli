@@ -7,12 +7,10 @@ import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
 
-import com.atomist.rug.cli.command.CommandException;
-
 public class ParseExceptionProcessor {
 
     @SuppressWarnings("unchecked")
-    public static void process(ParseException e) {
+    public static String process(ParseException e) {
         if (e instanceof MissingOptionException) {
             StringBuilder sb = new StringBuilder();
             Iterator<String> options = ((MissingOptionException) e).getMissingOptions().iterator();
@@ -22,19 +20,18 @@ public class ParseExceptionProcessor {
                     sb.append(", ");
                 }
             }
-            throw new CommandException(
-                    String.format("Missing required option(s) %s.", sb.toString()));
+            return String.format("Missing required option(s) %s.", sb.toString());
         }
         else if (e instanceof MissingArgumentException) {
-            throw new CommandException(String.format("%s is missing a required argument.",
-                    ((MissingArgumentException) e).getOption()), (String) null);
+            return String.format("%s is missing a required argument.",
+                    ((MissingArgumentException) e).getOption());
         }
         else if (e instanceof UnrecognizedOptionException) {
-            throw new CommandException(String.format("%s is not a valid option.",
-                    ((UnrecognizedOptionException) e).getOption()), (String) null);
+            return String.format("%s is not a valid option.",
+                    ((UnrecognizedOptionException) e).getOption());
         }
         else {
-            throw new CommandException(String.format("%s.", e.getMessage()), (String) null);
+            return String.format("%s.", e.getMessage());
         }
     }
 

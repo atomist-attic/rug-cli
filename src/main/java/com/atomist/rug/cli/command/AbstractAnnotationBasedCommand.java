@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.command;
 
+import static scala.collection.JavaConversions.asScalaBuffer;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -23,14 +25,13 @@ import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.utils.StringUtils;
+import com.atomist.rug.loader.Handlers;
+import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-
-import scala.collection.JavaConversions;
 
 public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatizedCommand {
 
-    @Override
-    protected void doRun(Operations operations, ArtifactDescriptor artifact,
+    protected void doRun(OperationsAndHandlers operations, ArtifactDescriptor artifact,
             CommandLine commandLine) {
 
         Optional<Method> methodOptional = Arrays
@@ -47,7 +48,7 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatized
         }
     }
 
-    protected void invokeCommandMethod(Method method, Operations operations,
+    protected void invokeCommandMethod(Method method, OperationsAndHandlers operations,
             ArtifactDescriptor artifact, CommandLine commandLine) {
         List<Object> arguments = prepareMethodArguments(method, commandLine, artifact, operations);
         try {
@@ -63,7 +64,7 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatized
                 .map(e -> new SimpleParameterValue((String) e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
 
-        return new SimpleProjectOperationArguments(name, JavaConversions.asScalaBuffer(pvs));
+        return new SimpleProjectOperationArguments(name, asScalaBuffer(pvs));
     }
 
     private Object prepareArgumentMethodArgument(CommandLine commandLine, Parameter p,
@@ -90,7 +91,7 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatized
                     }
                 }
                 argumentValue = new SimpleProjectOperationArguments("parameter",
-                        JavaConversions.asScalaBuffer(pvs));
+                        asScalaBuffer(pvs));
             }
         }
         else if (argument.start() == -1 && argument.index() < commandLine.getArgList().size()) {
@@ -104,7 +105,7 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatized
     }
 
     private List<Object> prepareMethodArguments(Method method, CommandLine commandLine,
-            ArtifactDescriptor artifact, Operations operations) {
+            ArtifactDescriptor artifact, OperationsAndHandlers operations) {
 
         List<Object> arguments = Arrays.asList(method.getParameters()).stream().map(p -> {
 
@@ -118,6 +119,12 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractTemplatized
                 return prepareOptionMethodArgument(commandLine, p, option);
             }
             else if (p.getType().equals(Operations.class)) {
+                return operations.operations();
+            }
+            else if (p.getType().equals(Handlers.class)) {
+                return operations.handlers();
+            }
+            else if (p.getType().equals(OperationsAndHandlers.class)) {
                 return operations;
             }
             else if (p.getType().equals(ArtifactDescriptor.class)) {

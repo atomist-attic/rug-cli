@@ -12,14 +12,14 @@ public class ListCommandIntegrationTest extends AbstractCommandTest {
 
     private boolean resolved = false;
 
-//    @Before
-//    public void init() throws Exception {
-//        if (!resolved) {
-//            assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
-//                    "0.1.0");
-//            resolved = true;
-//        }
-//    }
+    @Before
+    public void init() throws Exception {
+        if (!resolved) {
+            assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
+                    "0.2.0");
+            resolved = true;
+        }
+    }
 
     @Test
     public void testFullArtifactFiltered() throws Exception {
@@ -64,6 +64,6 @@ public class ListCommandIntegrationTest extends AbstractCommandTest {
                     .contains("atomist-rugs:common-editors"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("atomist-rugs:spring-boot-rest-service"));
-        }, "list", "-f", "version=[0.1.0,3.3)");
+        }, "list", "-f", "version=[0.2.0,3.3)");
     }
 }

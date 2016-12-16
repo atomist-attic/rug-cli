@@ -36,7 +36,7 @@ param name: @project_name
 param version: @semantic_version
 
 @description "Description of your new project"
-param description: .*
+param description: ^.*$
 
 with pom p when path = "pom.xml"
 begin

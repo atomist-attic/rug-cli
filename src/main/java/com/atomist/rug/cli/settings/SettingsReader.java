@@ -6,12 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.settings.Settings.Authentication;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.utils.CommandLineOptions;
@@ -44,9 +46,9 @@ public class SettingsReader {
     private void readProjectSettings(Settings settings) {
         if (!CommandLineOptions.hasOption("s")) {
             Settings projectSettings = null;
-            File userDir = org.apache.commons.io.FileUtils.getUserDirectory();
-            if (userDir != null && userDir.exists()) {
-                File projetSettingsFile = new File(userDir,
+            Optional<File> userDir =CommandUtils.getWorkingDirectory();
+            if (userDir.isPresent() && userDir.get().exists()) {
+                File projetSettingsFile = new File(userDir.get(),
                         Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
                 if (projetSettingsFile.exists()) {
                     projectSettings = settingsFromFile(projetSettingsFile);

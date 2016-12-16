@@ -13,7 +13,7 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.util.Visitable;
 import com.atomist.util.Visitor;
 
-import scala.collection.JavaConversions;
+import static scala.collection.JavaConversions.asJavaCollection;
 
 public class ArtifactSourceTreeCreator {
 
@@ -36,20 +36,20 @@ public class ArtifactSourceTreeCreator {
             }
 
             private Node getNodeForVisitable(Visitable visitable) {
-                Artifact a = null;
+                Artifact a;
                 List<String> pathElements = null;
                 Type type = null;
                 if (visitable instanceof FileArtifactMutableView) {
                     a = ((FileArtifactMutableView) visitable).currentBackingObject();
                     pathElements = new ArrayList<>(
-                            JavaConversions.asJavaCollection(a.pathElements()));
+                            asJavaCollection(a.pathElements()));
                     pathElements.add(a.name());
                     type = Type.FILE;
                 }
                 else if (visitable instanceof DirectoryArtifactMutableView) {
                     a = ((DirectoryArtifactMutableView) visitable).currentBackingObject();
                     pathElements = new ArrayList<>(
-                            JavaConversions.asJavaCollection(a.pathElements()));
+                            asJavaCollection(a.pathElements()));
                     type = Type.DIRECTORY;
                 }
                 return getOrAddNode(root, pathElements, 0, type);
