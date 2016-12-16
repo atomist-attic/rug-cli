@@ -8,10 +8,10 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.CommandHelpFormatter;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.ReflectiveCommandRunner;
+import com.atomist.rug.cli.command.utils.CommandHelpFormatter;
 import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;

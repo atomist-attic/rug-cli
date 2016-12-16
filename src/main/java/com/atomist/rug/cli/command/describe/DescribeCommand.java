@@ -24,9 +24,9 @@ import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
+import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
@@ -52,19 +52,19 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
         switch (kind) {
         case "editor":
-            describeEditor(artifact, CommandUtils.extractRugTypeName(name),
+            describeEditor(artifact, OperationUtils.extractRugTypeName(name),
                     operationsAndHandlers.operations());
             break;
         case "generator":
-            describeGenerator(artifact, CommandUtils.extractRugTypeName(name),
+            describeGenerator(artifact, OperationUtils.extractRugTypeName(name),
                     operationsAndHandlers.operations());
             break;
         case "reviewer":
-            describeReviewer(artifact, CommandUtils.extractRugTypeName(name),
+            describeReviewer(artifact, OperationUtils.extractRugTypeName(name),
                     operationsAndHandlers.operations());
             break;
         case "executor":
-            describeExecutor(artifact, CommandUtils.extractRugTypeName(name),
+            describeExecutor(artifact, OperationUtils.extractRugTypeName(name),
                     operationsAndHandlers.operations());
             break;
 //        case "handler":

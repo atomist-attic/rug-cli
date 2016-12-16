@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.generate;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+import static scala.collection.JavaConversions.asScalaBuffer;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,11 +25,11 @@ import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractParameterizedCommand;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
+import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
@@ -39,9 +42,6 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.SimpleSourceUpdateInfo;
 import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
-
-import static scala.collection.JavaConversions.asJavaCollection;
-import static scala.collection.JavaConversions.asScalaBuffer;
 
 public class GenerateCommand extends AbstractParameterizedCommand {
 
@@ -59,7 +59,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                     new SimpleParameterValue("project_name", projectName));
         }
 
-        String name = CommandUtils.extractRugTypeName(fqArtifactName);
+        String name = OperationUtils.extractRugTypeName(fqArtifactName);
         if (name == null) {
             throw new CommandException("No generator name provided.", "generate");
         }

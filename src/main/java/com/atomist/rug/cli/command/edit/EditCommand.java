@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.command.edit;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -26,10 +28,10 @@ import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractDeltaHandlingCommand;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
@@ -40,8 +42,6 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.Delta;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
-
-import static scala.collection.JavaConversions.asJavaCollection;
 
 public class EditCommand extends AbstractDeltaHandlingCommand {
 
@@ -54,7 +54,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             @Option("change-dir") String root, @Option("dry-run") boolean dryRun,
             @Option("repo") boolean repo) {
 
-        String name = CommandUtils.extractRugTypeName(fqArtifactName);
+        String name = OperationUtils.extractRugTypeName(fqArtifactName);
         if (name == null) {
             throw new CommandException("No editor name provided.", "edit");
         }

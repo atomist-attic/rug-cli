@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command;
+package com.atomist.rug.cli.command.utils;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -8,6 +8,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.CommandInfo;
+import com.atomist.rug.cli.command.CommandInfoRegistry;
 
 public class CommandHelpFormatter {
 
