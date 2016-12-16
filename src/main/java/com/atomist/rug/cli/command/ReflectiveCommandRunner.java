@@ -152,7 +152,8 @@ public class ReflectiveCommandRunner {
                     ArtifactDescriptorFactory.copyFrom(artifact, version));
         }
         catch (DependencyResolverException e) {
-            throw new CommandException(DependencyResolverExceptionProcessor.process(e));
+            throw new CommandException(DependencyResolverExceptionProcessor
+                    .process(ArtifactDescriptorFactory.copyFrom(artifact, version), e));
         }
     }
 

@@ -132,7 +132,7 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
             return commandLine;
         }
         catch (ParseException e) {
-            throw new CommandException(ParseExceptionProcessor.process(e));
+            throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
         }
     }
 
