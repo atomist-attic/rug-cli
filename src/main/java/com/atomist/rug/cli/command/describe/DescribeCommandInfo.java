@@ -12,8 +12,8 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 
 public class DescribeCommandInfo extends AbstractVersionCommandInfo implements CommandInfo {
 
-    private static List<String> commands = Arrays
-            .asList("editor", "generator", "executor", "reviewer", "archive");
+    private static List<String> commands = Arrays.asList("editor", "generator", "executor",
+            "reviewer", "archive");
 
     public DescribeCommandInfo() {
         super(DescribeCommand.class, "describe", 2);
@@ -66,7 +66,7 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
     public int order() {
         return 10;
     }
-    
+
     @Override
     public String usage() {
         return "describe [OPTION]... TYPE ARTIFACT";

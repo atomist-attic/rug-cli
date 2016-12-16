@@ -23,6 +23,8 @@ import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.utils.StringUtils;
+import com.atomist.rug.loader.Handlers;
+import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
 import static scala.collection.JavaConversions.asScalaBuffer;
@@ -30,7 +32,7 @@ import static scala.collection.JavaConversions.asScalaBuffer;
 public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
 
     @Override
-    protected void run(Operations operations, ArtifactDescriptor artifact,
+    protected void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
             CommandLine commandLine) {
 
         Optional<Method> methodOptional = Arrays
@@ -43,12 +45,11 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
             invokeCommandMethod(methodOptional.get(), operations, artifact, commandLine);
         }
         else {
-            throw new CommandException(
-                    "Command class does not have an @Command-annotated method.");
+            throw new CommandException("Command class does not have an @Command-annotated method.");
         }
     }
 
-    protected void invokeCommandMethod(Method method, Operations operations,
+    protected void invokeCommandMethod(Method method, OperationsAndHandlers operations,
             ArtifactDescriptor artifact, CommandLine commandLine) {
         List<Object> arguments = prepareMethodArguments(method, commandLine, artifact, operations);
         try {
@@ -105,7 +106,7 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
     }
 
     private List<Object> prepareMethodArguments(Method method, CommandLine commandLine,
-            ArtifactDescriptor artifact, Operations operations) {
+            ArtifactDescriptor artifact, OperationsAndHandlers operations) {
 
         List<Object> arguments = Arrays.asList(method.getParameters()).stream().map(p -> {
 
@@ -119,6 +120,12 @@ public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
                 return prepareOptionMethodArgument(commandLine, p, option);
             }
             else if (p.getType().equals(Operations.class)) {
+                return operations.operations();
+            }
+            else if (p.getType().equals(Handlers.class)) {
+                return operations.handlers();
+            }
+            else if (p.getType().equals(OperationsAndHandlers.class)) {
                 return operations;
             }
             else if (p.getType().equals(ArtifactDescriptor.class)) {

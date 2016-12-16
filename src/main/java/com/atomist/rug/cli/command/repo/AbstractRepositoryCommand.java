@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.command.repo;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -12,7 +14,6 @@ import org.eclipse.aether.artifact.Artifact;
 
 import com.atomist.project.ProvenanceInfo;
 import com.atomist.project.SimpleProvenanceInfo;
-import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -27,6 +28,7 @@ import com.atomist.rug.deployer.DefaultDeployerEventListener;
 import com.atomist.rug.deployer.Deployer;
 import com.atomist.rug.git.RepositoryDetails;
 import com.atomist.rug.git.RepositoryDetailsProvider;
+import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
@@ -36,14 +38,12 @@ import com.atomist.source.FileArtifact;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-
 public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedCommand {
 
     private Log log = new Log(AbstractRepositoryCommand.class);
 
     @Command
-    public void run(Operations operations, ArtifactDescriptor artifact,
+    public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
             @Option("archive-version") String version, CommandLine commandLine) throws IOException {
 
         String fullVersion = artifact.version();
@@ -62,7 +62,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         ArtifactSource source = createArtifactSource(projectRoot);
 
         Deployer deployer = new RepositoryCommandMavenDeployer(commandLine, projectRoot);
-        deployer.deploy(operations, source, artifact, projectRoot);
+        deployer.deploy(operationsAndHandlers, source, artifact, projectRoot);
     }
 
     protected abstract void doWithRepositorySession(RepositorySystem system,
@@ -135,11 +135,12 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         }
 
         @Override
-        protected ArtifactSource generateMetadata(Operations operations,
+        protected ArtifactSource generateMetadata(OperationsAndHandlers operationsAndHandlers,
                 ArtifactDescriptor artifact, ArtifactSource source, Manifest manifest) {
             return new ProgressReportingOperationRunner<ArtifactSource>(
                     "Generating archive metadata").run(indicator -> {
-                        return super.generateMetadata(operations, artifact, source, manifest);
+                        return super.generateMetadata(operationsAndHandlers, artifact, source,
+                                manifest);
                     });
         }
 

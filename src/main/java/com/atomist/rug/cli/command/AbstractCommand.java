@@ -11,6 +11,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.atomist.event.SystemEvent;
+import com.atomist.plan.TreeMaterializer;
 import com.atomist.project.archive.Operations;
 import com.atomist.rug.BadRugException;
 import com.atomist.rug.RugRuntimeException;
@@ -20,8 +22,11 @@ import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.kind.service.ConsoleMessageBuilder;
 import com.atomist.rug.loader.DecoratingOperationsLoader;
-import com.atomist.rug.loader.OperationsLoader;
+import com.atomist.rug.loader.HandlerOperationsLoader;
+import com.atomist.rug.loader.Handlers;
+import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.loader.OperationsLoaderException;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
@@ -29,6 +34,8 @@ import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.UriBasedDependencyResolver;
+import com.atomist.tree.TreeNode;
+import com.atomist.tree.pathexpression.PathExpression;
 
 public abstract class AbstractCommand implements com.atomist.rug.cli.command.Command {
 
@@ -53,12 +60,13 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
         loadOperationsAndInvokeRun(uri, artifact, commandLine);
     }
 
-    protected abstract void run(Operations operations, ArtifactDescriptor artifact,
+    protected abstract void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
             CommandLine commandLine);
 
-    private OperationsLoader createOperationsLoader(URI[] uri) {
-        OperationsLoader loader = new DecoratingOperationsLoader(new UriBasedDependencyResolver(uri,
-                new SettingsReader().read().getLocalRepository().path())) {
+    private HandlerOperationsLoader createOperationsLoader(URI[] uri) {
+        HandlerOperationsLoader loader = new DecoratingOperationsLoader(
+                new UriBasedDependencyResolver(uri,
+                        new SettingsReader().read().getLocalRepository().path())) {
             @Override
             protected List<ArtifactDescriptor> postProcessArfifactDescriptors(
                     ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
@@ -71,22 +79,31 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
         return loader;
     }
 
-    private Operations loadOperations(ArtifactDescriptor artifact, OperationsLoader loader) {
+    private OperationsAndHandlers loadOperationsAndHandlers(ArtifactDescriptor artifact,
+            HandlerOperationsLoader loader) {
         if (artifact == null) {
             return null;
         }
-        return new ProgressReportingOperationRunner<Operations>(String
+        return new ProgressReportingOperationRunner<OperationsAndHandlers>(String
                 .format("Loading %s into runtime", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run(indicator -> {
-
-                            return doLoadOperations(artifact, loader);
+                            return doLoadOperationsAndHandlers(artifact, loader);
                         });
     }
 
-    private Operations doLoadOperations(ArtifactDescriptor artifact, OperationsLoader loader)
-            throws Exception {
+    private OperationsAndHandlers doLoadOperationsAndHandlers(ArtifactDescriptor artifact,
+            HandlerOperationsLoader loader) throws Exception {
         try {
-            return loader.load(artifact);
+            Operations operations = loader.load(artifact);
+            Handlers handlers = loader.loadHandlers("", artifact,
+                    new ConsoleMessageBuilder("", null), new TreeMaterializer() {
+                        @Override
+                        public TreeNode rootNodeFor(SystemEvent arg0, PathExpression arg1) {
+                            return null;
+                        }
+                    });
+
+            return new OperationsAndHandlers(operations, handlers);
         }
         catch (Exception e) {
             if (e instanceof BadRugException) {
@@ -108,11 +125,11 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
 
     private void loadOperationsAndInvokeRun(URI[] uri, ArtifactDescriptor artifact,
             CommandLine commandLine) {
-        Operations operations = null;
+        OperationsAndHandlers operationsAndHandlers = null;
         if (artifact != null) {
-            operations = loadOperations(artifact, createOperationsLoader(uri));
+            operationsAndHandlers = loadOperationsAndHandlers(artifact, createOperationsLoader(uri));
         }
-        run(operations, artifact, commandLine);
+        run(operationsAndHandlers, artifact, commandLine);
     }
 
     private CommandLine parseCommandLine(String... args) {
