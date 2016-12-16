@@ -31,7 +31,6 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
-import com.atomist.rug.loader.Handlers;
 import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.manifest.ManifestException;
@@ -68,10 +67,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             describeExecutor(artifact, CommandUtils.extractRugTypeName(name),
                     operationsAndHandlers.operations());
             break;
-        case "handler":
-            describeHandler(artifact, CommandUtils.extractRugTypeName(name),
-                    operationsAndHandlers.handlers());
-            break;
+//        case "handler":
+//            describeHandler(artifact, CommandUtils.extractRugTypeName(name),
+//                    operationsAndHandlers.handlers());
+//            break;
         case "archive":
             describeArchive(artifact, operationsAndHandlers);
             break;
@@ -97,7 +96,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private void describeArchive(ArtifactDescriptor artifact, OperationsAndHandlers operationsAndHandlers) {
+    private void describeArchive(ArtifactDescriptor artifact,
+            OperationsAndHandlers operationsAndHandlers) {
         ArtifactSource source = createArtifactSource(artifact);
         try {
             log.newline();
@@ -204,44 +204,44 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private void describeHandler(ArtifactDescriptor artifact, String name, Handlers handlers) {
-        Optional<SystemEventHandler> opt = handlers.handlers().stream()
-                .filter(h -> h.name().equals(name)).findFirst();
-        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-        if (!opt.isPresent()) {
-            // try again with a proper namespaced name
-            opt = handlers.handlers().stream().filter(g -> g.name().equals(fqName)).findFirst();
-        }
-
-        log.newline();
-        if (opt.isPresent()) {
-            SystemEventHandler handler = opt.get();
-            log.info(Style.bold(Style.yellow(StringUtils.stripName(handler.name(), artifact))));
-            log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
-            log.info(handler.description());
-            log.newline();
-            if (!handler.tags().isEmpty()) {
-                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Tags"));
-                asJavaCollection(handler.tags()).forEach(
-                        t -> log.info("  " + Style.yellow(t.name()) + " (" + t.description() + ")"));
-            }
-        }
-        else {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
-            handlers.handlers().forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                            + " " + e.description()));
-            if (name != null) {
-                StringUtils.printClosestMatch(fqName, artifact, handlers.handlerNames());
-                throw new CommandException(
-                        String.format("Specified handler %s could not be found in %s:%s:%s", name,
-                                artifact.group(), artifact.artifact(), artifact.version()));
-            }
-            else {
-                describeInvokeArchive();
-            }
-        }
-    }
+//    private void describeHandler(ArtifactDescriptor artifact, String name, Handlers handlers) {
+//        Optional<SystemEventHandler> opt = handlers.handlers().stream()
+//                .filter(h -> h.name().equals(name)).findFirst();
+//        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
+//        if (!opt.isPresent()) {
+//            // try again with a proper namespaced name
+//            opt = handlers.handlers().stream().filter(g -> g.name().equals(fqName)).findFirst();
+//        }
+//
+//        log.newline();
+//        if (opt.isPresent()) {
+//            SystemEventHandler handler = opt.get();
+//            log.info(Style.bold(Style.yellow(StringUtils.stripName(handler.name(), artifact))));
+//            log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
+//            log.info(handler.description());
+//            log.newline();
+//            if (!handler.tags().isEmpty()) {
+//                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Tags"));
+//                asJavaCollection(handler.tags()).forEach(t -> log
+//                        .info("  " + Style.yellow(t.name()) + " (" + t.description() + ")"));
+//            }
+//        }
+//        else {
+//            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
+//            handlers.handlers().forEach(
+//                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
+//                            + " " + e.description()));
+//            if (name != null) {
+//                StringUtils.printClosestMatch(fqName, artifact, handlers.handlerNames());
+//                throw new CommandException(
+//                        String.format("Specified handler %s could not be found in %s:%s:%s", name,
+//                                artifact.group(), artifact.artifact(), artifact.version()));
+//            }
+//            else {
+//                describeInvokeArchive();
+//            }
+//        }
+//    }
 
     private void describeGenerator(ArtifactDescriptor artifact, String name,
             Operations operations) {
@@ -346,8 +346,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         if (!handlers.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
             handlers.forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                    + " (" + e.description() + ")"));
+                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))));
         }
     }
 
