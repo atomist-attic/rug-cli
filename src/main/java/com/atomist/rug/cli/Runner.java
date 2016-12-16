@@ -77,7 +77,7 @@ public class Runner {
             return commandLine;
         }
         catch (ParseException e) {
-            throw new CommandException(ParseExceptionProcessor.process(e));
+            throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
         }
     }
 
