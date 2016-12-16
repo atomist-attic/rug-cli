@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,15 +59,25 @@ public abstract class AbstractLocalArtifactDescriptorProvider extends AbstractCo
     }
 
     private List<URL> addNodeModulesToClasspath() {
-        File root = new File(CommandUtils.getRequiredWorkingDirectory(), ".atomist/node_modules");
-        if (root.exists()) {
+        File currentWorkingRoot = CommandUtils.getRequiredWorkingDirectory();
+        File nodeModuleRoot = new File(CommandUtils.getRequiredWorkingDirectory(), ".atomist/node_modules");
+        List<URL> urls = new ArrayList<>();
+        if (nodeModuleRoot.exists()) {
             try {
-                return Collections.singletonList(root.toURI().toURL());
+                urls.add(nodeModuleRoot.toURI().toURL());
             }
             catch (MalformedURLException e) {
                 // Can't happen
             }
         }
-        return Collections.emptyList();
+        if (currentWorkingRoot.exists()) {
+            try {
+                urls.add(currentWorkingRoot.toURI().toURL());
+            }
+            catch (MalformedURLException e) {
+                // Can't happen
+            }
+        }
+        return urls;
     }
 }
