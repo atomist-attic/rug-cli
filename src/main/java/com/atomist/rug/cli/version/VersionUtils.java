@@ -90,7 +90,7 @@ public abstract class VersionUtils {
                 if (!range.containsVersion(version)) {
                     throw new VersionException(String.format(
                             "This version of rug-cli is not compatible with %s:%s:%s (supported versions are %s).\n"
-                                    + "Please update to a more recent version of rug-cli or change your Rug archive to use a supported version range.",
+                                    + "Please update to a more recent version of rug-cli or change your Rug archive to use a supported version of rug.",
                             Constants.GROUP, Constants.RUG_ARTIFACT, version.toString(),
                             range.toString()));
                 }
