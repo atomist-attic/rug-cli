@@ -1,19 +1,19 @@
 package com.atomist.rug.cli.tree;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.atomist.rug.cli.tree.Node.Type;
 import com.atomist.rug.kind.core.DirectoryArtifactMutableView;
-import com.atomist.rug.kind.core.FileArtifactMutableView;
+import com.atomist.rug.kind.core.FileMutableView;
 import com.atomist.rug.kind.core.ProjectMutableView;
 import com.atomist.source.Artifact;
 import com.atomist.source.ArtifactSource;
 import com.atomist.util.Visitable;
 import com.atomist.util.Visitor;
-
-import static scala.collection.JavaConversions.asJavaCollection;
 
 public class ArtifactSourceTreeCreator {
 
@@ -28,7 +28,7 @@ public class ArtifactSourceTreeCreator {
 
             @Override
             public boolean visit(Visitable visitable, int arg1) {
-                if (visitable instanceof FileArtifactMutableView
+                if (visitable instanceof FileMutableView
                         || visitable instanceof DirectoryArtifactMutableView) {
                     getNodeForVisitable(visitable);
                 }
@@ -39,8 +39,8 @@ public class ArtifactSourceTreeCreator {
                 Artifact a;
                 List<String> pathElements = null;
                 Type type = null;
-                if (visitable instanceof FileArtifactMutableView) {
-                    a = ((FileArtifactMutableView) visitable).currentBackingObject();
+                if (visitable instanceof FileMutableView) {
+                    a = ((FileMutableView) visitable).currentBackingObject();
                     pathElements = new ArrayList<>(
                             asJavaCollection(a.pathElements()));
                     pathElements.add(a.name());

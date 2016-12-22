@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.test;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+import static scala.collection.JavaConversions.asScalaBuffer;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +23,7 @@ import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.test.ParserCombinatorTestScriptParser;
+import com.atomist.rug.test.RugTestParser;
 import com.atomist.rug.test.TestLoader;
 import com.atomist.rug.test.TestReport;
 import com.atomist.rug.test.TestRunner;
@@ -31,9 +34,6 @@ import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
 import scala.collection.Seq;
-
-import static scala.collection.JavaConversions.asJavaCollection;
-import static scala.collection.JavaConversions.asScalaBuffer;
 
 public class TestCommand extends AbstractAnnotationBasedCommand {
 
@@ -74,7 +74,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
                 if (!testFiles.isEmpty()) {
                     List<TestScenario> fileScenarios = testFiles.stream()
-                            .flatMap(f -> asJavaCollection(ParserCombinatorTestScriptParser.parse(f))
+                            .flatMap(f -> asJavaCollection(RugTestParser.parse(f))
 
                                     .stream())
                             .collect(Collectors.toList());
