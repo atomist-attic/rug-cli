@@ -1,7 +1,10 @@
 package com.atomist.rug.cli.command;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
 import java.io.File;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,12 +19,15 @@ import com.atomist.plan.TreeMaterializer;
 import com.atomist.project.archive.Operations;
 import com.atomist.rug.BadRugException;
 import com.atomist.rug.RugRuntimeException;
+import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
 import com.atomist.rug.cli.output.ConsoleUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.compiler.Compiler;
+import com.atomist.rug.compiler.ServiceLoaderCompilerRegistry;
 import com.atomist.rug.kind.service.ConsoleMessageBuilder;
 import com.atomist.rug.loader.DecoratingOperationsLoader;
 import com.atomist.rug.loader.HandlerOperationsLoader;
@@ -34,6 +40,8 @@ import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.UriBasedDependencyResolver;
+import com.atomist.source.ArtifactSource;
+import com.atomist.source.Deltas;
 import com.atomist.tree.TreeNode;
 import com.atomist.tree.pathexpression.PathExpression;
 
@@ -60,8 +68,23 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
         loadOperationsAndInvokeRun(uri, artifact, commandLine);
     }
 
-    protected abstract void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
-            CommandLine commandLine);
+    private ArtifactDescriptor createArtifactDescriptor(String group, String artifactId,
+            String version, boolean local) {
+        ArtifactDescriptor artifact = null;
+        if (local) {
+            artifact = new LocalArtifactDescriptor(group, artifactId, version, Extension.ZIP,
+                    Scope.COMPILE, CommandUtils.getRequiredWorkingDirectory().toURI());
+        }
+        else {
+            File archive = new File(new SettingsReader().read().getLocalRepository().path(),
+                    group.replace(".", File.separator) + File.separator + artifactId
+                            + File.separator + version + File.separator + artifactId + "-" + version
+                            + ".zip");
+            artifact = new DefaultArtifactDescriptor(group, artifactId, version, Extension.ZIP,
+                    Scope.COMPILE, archive.toURI());
+        }
+        return artifact;
+    }
 
     private HandlerOperationsLoader createOperationsLoader(URI[] uri) {
         HandlerOperationsLoader loader = new DecoratingOperationsLoader(
@@ -79,23 +102,11 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
         return loader;
     }
 
-    private OperationsAndHandlers loadOperationsAndHandlers(ArtifactDescriptor artifact,
-            HandlerOperationsLoader loader) {
-        if (artifact == null) {
-            return null;
-        }
-        return new ProgressReportingOperationRunner<OperationsAndHandlers>(String
-                .format("Loading %s into runtime", ArtifactDescriptorUtils.coordinates(artifact)))
-                        .run(indicator -> {
-                            return doLoadOperationsAndHandlers(artifact, loader);
-                        });
-    }
-
     private OperationsAndHandlers doLoadOperationsAndHandlers(ArtifactDescriptor artifact,
-            HandlerOperationsLoader loader) throws Exception {
+            ArtifactSource source, HandlerOperationsLoader loader) throws Exception {
         try {
-            Operations operations = loader.load(artifact);
-            Handlers handlers = loader.loadHandlers("", artifact,
+            Operations operations = loader.load(artifact, source);
+            Handlers handlers = loader.loadHandlers("", artifact, source,
                     new ConsoleMessageBuilder("", null), new TreeMaterializer() {
                         @Override
                         public TreeNode rootNodeFor(SystemEvent arg0, PathExpression arg1) {
@@ -123,11 +134,28 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
         }
     }
 
+    private OperationsAndHandlers loadOperationsAndHandlers(ArtifactDescriptor artifact,
+            ArtifactSource source, HandlerOperationsLoader loader) {
+        if (artifact == null) {
+            return null;
+        }
+
+        return new ProgressReportingOperationRunner<OperationsAndHandlers>(String
+                .format("Loading %s into runtime", ArtifactDescriptorUtils.coordinates(artifact)))
+                        .run(indicator -> {
+                            return doLoadOperationsAndHandlers(artifact, source, loader);
+                        });
+    }
+
     private void loadOperationsAndInvokeRun(URI[] uri, ArtifactDescriptor artifact,
             CommandLine commandLine) {
         OperationsAndHandlers operationsAndHandlers = null;
         if (artifact != null) {
-            operationsAndHandlers = loadOperationsAndHandlers(artifact, createOperationsLoader(uri));
+
+            ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
+            source = compile(source);
+            operationsAndHandlers = loadOperationsAndHandlers(artifact, source,
+                    createOperationsLoader(uri));
         }
         run(operationsAndHandlers, artifact, commandLine);
     }
@@ -153,21 +181,34 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
         }
     }
 
-    private ArtifactDescriptor createArtifactDescriptor(String group, String artifactId,
-            String version, boolean local) {
-        ArtifactDescriptor artifact = null;
-        if (local) {
-            artifact = new LocalArtifactDescriptor(group, artifactId, version, Extension.ZIP,
-                    Scope.COMPILE, CommandUtils.getRequiredWorkingDirectory().toURI());
+    private ArtifactSource compile(ArtifactSource source) {
+        // Get all registered and supported compilers
+        Collection<Compiler> compilers = asJavaCollection(
+                ServiceLoaderCompilerRegistry.findAll(source));
+
+        if (!compilers.isEmpty()) {
+
+            return new ProgressReportingOperationRunner<ArtifactSource>("Compiling script sources")
+                    .run(indicator -> {
+                        ArtifactSource compiledSource = source;
+                        for (Compiler compiler : compilers) {
+                            indicator.report(String.format(
+                                    "Invoking %s compiler to compile %s script sources",
+                                    compiler.name(), compiler.extension()));
+                            ArtifactSource cs = compiler.compile(compiledSource);
+                            Deltas deltas = cs.deltaFrom(compiledSource);
+                            asJavaCollection(deltas.deltas())
+                                    .forEach(d -> indicator.report("  Compiled " + d.path()));
+                            compiledSource = cs;
+                        }
+                        return compiledSource;
+                    });
         }
         else {
-            File archive = new File(new SettingsReader().read().getLocalRepository().path(),
-                    group.replace(".", File.separator) + File.separator + artifactId
-                            + File.separator + version + File.separator + artifactId + "-" + version
-                            + ".zip");
-            artifact = new DefaultArtifactDescriptor(group, artifactId, version, Extension.ZIP,
-                    Scope.COMPILE, archive.toURI());
+            return source;
         }
-        return artifact;
     }
+
+    protected abstract void run(OperationsAndHandlers operationsAndHandlers,
+            ArtifactDescriptor artifact, CommandLine commandLine);
 }

@@ -1,7 +1,5 @@
 package com.atomist.rug.cli.command.repo;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -33,7 +31,6 @@ import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.source.ArtifactSource;
-import com.atomist.source.Deltas;
 import com.atomist.source.FileArtifact;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
@@ -89,13 +86,6 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
             log.info("  Generated %s", file.path());
 
         }
-
-        @Override
-        public void compilationFinished(Deltas deltas) {
-            asJavaCollection(deltas.deltas()).forEach(d -> {
-                log.info("  Compiled %s", d.path());
-            });
-        }
     }
 
     private class RepositoryCommandMavenDeployer extends AbstractMavenBasedDeployer {
@@ -141,15 +131,6 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
                     "Generating archive metadata").run(indicator -> {
                         return super.generateMetadata(operationsAndHandlers, artifact, source,
                                 manifest);
-                    });
-        }
-
-        @Override
-        protected ArtifactSource compileTypeScript(ArtifactDescriptor artifact,
-                ArtifactSource source) {
-            return new ProgressReportingOperationRunner<ArtifactSource>("Compiling script sources")
-                    .run(indicator -> {
-                        return super.compileTypeScript(artifact, source);
                     });
         }
     }
