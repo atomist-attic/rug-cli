@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.atomist.rug.cli.tree.Node.Type;
-import com.atomist.rug.kind.core.DirectoryArtifactMutableView;
+import com.atomist.rug.kind.core.DirectoryMutableView;
 import com.atomist.rug.kind.core.FileMutableView;
 import com.atomist.rug.kind.core.ProjectMutableView;
 import com.atomist.source.Artifact;
@@ -29,7 +29,7 @@ public class ArtifactSourceTreeCreator {
             @Override
             public boolean visit(Visitable visitable, int arg1) {
                 if (visitable instanceof FileMutableView
-                        || visitable instanceof DirectoryArtifactMutableView) {
+                        || visitable instanceof DirectoryMutableView) {
                     getNodeForVisitable(visitable);
                 }
                 return true;
@@ -46,8 +46,8 @@ public class ArtifactSourceTreeCreator {
                     pathElements.add(a.name());
                     type = Type.FILE;
                 }
-                else if (visitable instanceof DirectoryArtifactMutableView) {
-                    a = ((DirectoryArtifactMutableView) visitable).currentBackingObject();
+                else if (visitable instanceof DirectoryMutableView) {
+                    a = ((DirectoryMutableView) visitable).currentBackingObject();
                     pathElements = new ArrayList<>(
                             asJavaCollection(a.pathElements()));
                     type = Type.DIRECTORY;
