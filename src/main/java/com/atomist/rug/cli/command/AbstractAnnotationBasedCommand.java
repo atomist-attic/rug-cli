@@ -29,7 +29,8 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 
 import static scala.collection.JavaConversions.asScalaBuffer;
 
-public abstract class AbstractAnnotationBasedCommand extends AbstractCommand {
+public abstract class AbstractAnnotationBasedCommand
+        extends AbstractCompilingAndOperationLoadingCommand {
 
     @Override
     protected void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
