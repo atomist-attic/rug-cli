@@ -29,7 +29,7 @@ param projectName: @project_name
 @displayName "description"
 param description: ^.*$
 
-with file f when { f.name().contains("README.md") } begin
+with File f when { f.name().contains("README.md") } begin
 	do replace "{{name}}" projectName
 	do replace "{{description}}" description
 end

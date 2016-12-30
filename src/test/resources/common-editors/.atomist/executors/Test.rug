@@ -18,12 +18,12 @@ executor Test
 @description "Text to use before project name"
 param preamble: ^.*$
 
-with services s
+with Services s
   reviewWith NameDropper
 
 
 
 reviewer NameDropper
 
-with project p
+with Project p
   do majorProblem { preamble + ":" + p.name() }

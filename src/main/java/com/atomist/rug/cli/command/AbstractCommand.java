@@ -13,6 +13,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.springframework.util.StringUtils;
 
 import com.atomist.event.SystemEvent;
 import com.atomist.plan.TreeMaterializer;
@@ -45,6 +46,8 @@ import com.atomist.source.Deltas;
 import com.atomist.tree.TreeNode;
 import com.atomist.tree.pathexpression.PathExpression;
 
+import scala.collection.JavaConverters;
+
 public abstract class AbstractCommand implements com.atomist.rug.cli.command.Command {
 
     private CommandInfoRegistry registry = new ServiceLoadingCommandInfoRegistry();
@@ -58,29 +61,29 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
     }
 
     @Override
-    public final void run(String group, String artifactId, String version, boolean local, URI[] uri,
-            String... args) {
+    public final void run(String group, String artifactId, String version, String extension,
+            boolean local, URI[] uri, String... args) {
 
         ConsoleUtils.configureStreams();
         CommandLine commandLine = parseCommandLine(args);
 
-        ArtifactDescriptor artifact = createArtifactDescriptor(group, artifactId, version, local);
+        ArtifactDescriptor artifact = createArtifactDescriptor(group, artifactId, version, extension, local);
         loadOperationsAndInvokeRun(uri, artifact, commandLine);
     }
 
     private ArtifactDescriptor createArtifactDescriptor(String group, String artifactId,
-            String version, boolean local) {
+            String version, String extension, boolean local) {
         ArtifactDescriptor artifact = null;
         if (local) {
-            artifact = new LocalArtifactDescriptor(group, artifactId, version, Extension.ZIP,
+            artifact = new LocalArtifactDescriptor(group, artifactId, version, Extension.valueOf(extension),
                     Scope.COMPILE, CommandUtils.getRequiredWorkingDirectory().toURI());
         }
         else {
             File archive = new File(new SettingsReader().read().getLocalRepository().path(),
                     group.replace(".", File.separator) + File.separator + artifactId
                             + File.separator + version + File.separator + artifactId + "-" + version
-                            + ".zip");
-            artifact = new DefaultArtifactDescriptor(group, artifactId, version, Extension.ZIP,
+                            + "." + extension.toLowerCase());
+            artifact = new DefaultArtifactDescriptor(group, artifactId, version, Extension.valueOf(extension),
                     Scope.COMPILE, archive.toURI());
         }
         return artifact;
@@ -188,17 +191,24 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
 
         if (!compilers.isEmpty()) {
 
-            return new ProgressReportingOperationRunner<ArtifactSource>("Compiling script sources")
+            return new ProgressReportingOperationRunner<ArtifactSource>("Processing script sources")
                     .run(indicator -> {
                         ArtifactSource compiledSource = source;
                         for (Compiler compiler : compilers) {
-                            indicator.report(String.format(
-                                    "Invoking %s compiler to compile %s script sources",
-                                    compiler.name(), compiler.extension()));
+                            indicator.report(String.format("Invoking %s on %s script sources",
+                                    compiler.name(),
+                                    StringUtils.collectionToCommaDelimitedString(JavaConverters
+                                            .asJavaCollectionConverter(compiler.extensions())
+                                            .asJavaCollection())));
                             ArtifactSource cs = compiler.compile(compiledSource);
                             Deltas deltas = cs.deltaFrom(compiledSource);
-                            asJavaCollection(deltas.deltas())
-                                    .forEach(d -> indicator.report("  Compiled " + d.path()));
+                            if (deltas.empty()) {
+                                indicator.report("  No files modified");
+                            }
+                            else {
+                                asJavaCollection(deltas.deltas())
+                                        .forEach(d -> indicator.report("  Created " + d.path()));
+                            }
                             compiledSource = cs;
                         }
                         return compiledSource;

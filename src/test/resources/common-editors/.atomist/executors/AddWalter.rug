@@ -23,19 +23,19 @@ executor AddWalter
 @description "Who should Walter address?"
 param target: ^[A-Z][a-z]+$
 
-with services s
+with Services s
   editWith Walter
 
 editor Walter
-with project p
+with Project p
   do addFile "walter" { "shut the fuck up " + $target }
 
 
 
 executor GoWalter
-with services s
+with Services s
     reviewWith WalterAdvice
 
 reviewer WalterAdvice
-with project p
+with Project p
   do majorProblem "Shut the fuck up, Donny!"

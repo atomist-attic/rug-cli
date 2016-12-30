@@ -15,8 +15,8 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
-		<rug.version>0.8.0-SNAPSHOT</rug.version>
-		<rug-resolver.version>0.8.0-SNAPSHOT</rug-resolver.version>
+		<rug.version>0.8.0-20161230154953</rug.version>
+		<rug-resolver.version>0.8.0-20161230155755</rug-resolver.version>
 	</properties>
 	<licenses>
 		<license>
@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>com.atomist</groupId>
 			<artifactId>artifact-source</artifactId>
-			<version>0.13.0</version>
+			<version>0.13.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
@@ -86,13 +86,18 @@
 					<groupId>ch.qos.logback</groupId>
 					<artifactId>logback-access</artifactId>
 				</exclusion>
+				<!-- For now we need to exclude inmemantlr as it packages slf4j -->
+				<exclusion>
+					<groupId>com.github.julianthome</groupId>
+					<artifactId>inmemantlr</artifactId>
+				</exclusion>
 			</exclusions>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.atomist</groupId>
 			<artifactId>rug-typescript-compiler</artifactId>
-			<version>0.6.0-SNAPSHOT</version>
+			<version>0.7.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
@@ -357,6 +362,13 @@
 		</plugins>
 	</build>
 	<repositories>
+		<repository>
+			<id>public-atomist-snapshots</id>
+			<url>https://atomist.jfrog.io/atomist/libs-dev/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>public-atomist-release</id>
 			<name>Atomist Release</name>

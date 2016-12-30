@@ -19,7 +19,7 @@
 @description "Looks for usages of the newly renamed Spring Starters: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#renamed-starters"
 reviewer RenamedStarters
 
-with file f when path = "pom.xml" begin
+with File f when path = "pom.xml" begin
   do contains "spring-boot-starter-ws"
   do contains "spring-boot-starter-redis"
 end
@@ -31,19 +31,19 @@ end
 @description "Looks for usages of the newly renamed DataSourceProperties get methods: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods"
 reviewer DatasourcePropertiesGetMethodsChanged
 
-with file f when f.name.endsWith ".java" and f.contains "getDriverClassName"
+with File f when f.name.endsWith ".java" and f.contains "getDriverClassName"
   do minorProblem
   { "getDriverClassName found in " + f.path() + " and may need to be changed to `determineDriverClassName` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods" }
 
-with file f when f.name.endsWith ".java" and f.contains "getUrl"
+with File f when f.name.endsWith ".java" and f.contains "getUrl"
   do minorProblem
   { "getUrl found in " + f.path() + " and may need to be changed to `determineUrl` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods" }
 
-with file f when f.name.endsWith ".java" and f.contains "getUsername"
+with File f when f.name.endsWith ".java" and f.contains "getUsername"
   do minorProblem
   { "getUsername found in " + f.path() + " and may need to be changed to `determineUsername` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods" }
 
-with file f when f.name.endsWith ".java" and f.contains "getPassword"
+with File f when f.name.endsWith ".java" and f.contains "getPassword"
   do minorProblem
   { "getPassword found in " + f.path() + " and may need to be changed to `determinePassword` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#datasourceproperties-get-methods" }
 
@@ -54,7 +54,7 @@ with file f when f.name.endsWith ".java" and f.contains "getPassword"
 @description "Looks for Entity Scan on the old packaging approach: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#entityscan"
 reviewer EntityScanFromOldPackage
 
-with file f when { f.name().contains(".java") }
+with File f when { f.name().contains(".java") }
   do contains "import org.springframework.boot.orm.jpa.EntityScan"
 
 @tag "java"
@@ -63,7 +63,7 @@ with file f when { f.name().contains(".java") }
 @description "Test Utilities and Classes Repackaged: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes"
 reviewer TestUtilitiesAndClassesRepackaged
 
-with file f when { f.name().contains(".java") } begin
+with File f when { f.name().contains(".java") } begin
   do contains "org.springframework.boot.test.ConfigFileApplicationContextInitializer"
   do contains "org.springframework.boot.test.EnvironmentTestUtils"
   do contains "org.springframework.boot.test.OutputCapture"
@@ -72,14 +72,14 @@ with file f when { f.name().contains(".java") } begin
   do contains "org.springframework.boot.test.TestRestTemplate"
 end
 
-with java.source j when { j.path().startsWith("src/test/java") }
-  with java.class c when c.hasAnnotation "WebIntegrationTest"
+with JavaSource j when { j.path().startsWith("src/test/java") }
+  with JavaType c when c.hasAnnotation "WebIntegrationTest"
     do minorProblem { "File `" + c.pkg() + "." + c.name() + "`: Consider using `@SpringBootTest(webEnvironment=WebEnvironment.DEFINED_PORT)` (or `RANDOM_PORT`) instead of `@WebIntegrationTest` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes" }
-  with java.class c when c.hasAnnotation "ContextConfiguration"
+  with JavaType c when c.hasAnnotation "ContextConfiguration"
     do minorProblem { "File `" + c.pkg() + "." + c.name() + "`: Consider using `@SpringBootTest(classes=MyConfig.class)` instead of `@ContextConfiguration` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes" }
-  with java.class c when c.hasAnnotation "IntegrationTest" and c.hasAnnotation "WebAppConfiguration"
+  with JavaType c when c.hasAnnotation "IntegrationTest" and c.hasAnnotation "WebAppConfiguration"
     do minorProblem { "File `" + c.pkg() + "." + c.name() + "`: Consider using `@SpringBootTest(webEnvironment=WebEnvironment.DEFINED_PORT)` (or `RANDOM_PORT`) instead of `@WebIntegrationTest` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes" }
-  with java.class c when c.hasAnnotation "IntegrationTest"
+  with JavaType c when c.hasAnnotation "IntegrationTest"
     do minorProblem { "File `" + c.pkg() + "." + c.name() + "`: Consider using `@SpringBootTest(webEnvironment=WebEnvironment.DEFINED_PORT)` instead of `@IntegrationTest` according to https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#test-utilities-and-classes" }
 
 
