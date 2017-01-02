@@ -4,6 +4,7 @@ jdk:
 addons:
   apt:
     packages:
+    - oracle-java8-installer
     - build-essential
     - ruby-dev
     - curl
