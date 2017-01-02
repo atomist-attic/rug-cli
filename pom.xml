@@ -108,6 +108,7 @@
 					<artifactId>logback-access</artifactId>
 				</exclusion>
 			</exclusions>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
