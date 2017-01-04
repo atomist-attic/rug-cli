@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -24,8 +25,8 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
     public Options allOptions() {
         Options options = new Options();
         commands.forEach(e -> {
-            e.options().getOptions().stream().forEach(options::addOption);
-            e.globalOptions().getOptions().stream().forEach(options::addOption);
+            e.options().getOptions().forEach(options::addOption);
+            e.globalOptions().getOptions().forEach(options::addOption);
         });
         return options;
     }
@@ -51,26 +52,21 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
     private void init() {
         ServiceLoader<CommandInfo> loader = ServiceLoader.load(CommandInfo.class);
         loader.forEach(c -> commands.add(c));
-        commands = commands.stream().sorted((c1, c2) -> Integer.compare(c1.order(), c2.order()))
+        commands = commands.stream().sorted(Comparator.comparingInt(CommandInfo::order))
                 .collect(toList());
     }
 
     private String getAddtionalHelpMessage(String commandName, CommandLine commandLine) {
         Optional<String> closestMatch = StringUtils.computeClosestMatch(commandName,
                 commands.stream().map(CommandInfo::name).collect(toList()));
-        if (closestMatch.isPresent()) {
-            return new StringBuilder()
-                    .append("\n\nDid you mean?\n")
-                    .append("  ")
-                    .append(Constants.COMMAND)
-                    .append(" ")
-                    .append(closestMatch.get())
-                    .append(" ")
-                    .append("")
-                    .toString();
-        }
-        else {
-            return "";
-        }
+        return closestMatch.map(s -> new StringBuilder()
+                .append("\n\nDid you mean?\n")
+                .append("  ")
+                .append(Constants.COMMAND)
+                .append(" ")
+                .append(s)
+                .append(" ")
+                .append("")
+                .toString()).orElse("");
     }
 }
