@@ -59,19 +59,14 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
     private String getAddtionalHelpMessage(String commandName, CommandLine commandLine) {
         Optional<String> closestMatch = StringUtils.computeClosestMatch(commandName,
                 commands.stream().map(CommandInfo::name).collect(toList()));
-        if (closestMatch.isPresent()) {
-            return new StringBuilder()
-                    .append("\n\nDid you mean?\n")
-                    .append("  ")
-                    .append(Constants.COMMAND)
-                    .append(" ")
-                    .append(closestMatch.get())
-                    .append(" ")
-                    .append("")
-                    .toString();
-        }
-        else {
-            return "";
-        }
+        return closestMatch.map(s -> new StringBuilder()
+                .append("\n\nDid you mean?\n")
+                .append("  ")
+                .append(Constants.COMMAND)
+                .append(" ")
+                .append(s)
+                .append(" ")
+                .append("")
+                .toString()).orElse("");
     }
 }
