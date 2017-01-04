@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.tree;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Node {
@@ -16,7 +17,7 @@ public class Node {
 
     public void accept(NodeVisitor visitor) {
         visitor.visitEnter(this);
-        children.stream().sorted((c1, c2) -> c1.id().compareTo(c2.id()))
+        children.stream().sorted(Comparator.comparing(Node::id))
                 .forEach(c -> c.accept(visitor));
         visitor.visitLeave(this);
     }

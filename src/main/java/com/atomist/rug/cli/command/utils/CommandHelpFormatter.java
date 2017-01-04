@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.command.utils;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.Option;
@@ -72,8 +73,8 @@ public class CommandHelpFormatter {
     private void printCommands(StringBuilder sb, CommandInfoRegistry registry) {
         sb.append("Available commands:\n");
         int length = registry.commands().stream()
-                .max((o1, o2) -> Integer.compare(o1.name().length(), o2.name().length())).get()
-                .name().length() + 1;
+                             .max(Comparator.comparingInt(o -> o.name().length())).get()
+                             .name().length() + 1;
         String formatString = "  %-" + length + "s %s\n";
         registry.commands().forEach(c -> sb.append(String.format(formatString, c.name(),
                 WordUtils.wrap(c.description(), WRAP - length, createString(length + 3), false))));
@@ -87,14 +88,13 @@ public class CommandHelpFormatter {
         sb.append("\n");
 
         int length = getOptionLenght(options.getOptions().stream()
-                .max((o1, o2) -> Integer.compare(getOptionLenght(o1), getOptionLenght(o2))).get())
+                                            .max(Comparator.comparingInt(this::getOptionLenght)).get())
                 + 6;
         String formatString = "  %-" + length + "s %s\n";
 
         sb.append(label).append(":\n");
         options.getOptions().stream().collect(Collectors.groupingBy(Option::getDescription))
-                .entrySet().stream().sorted((o1, o2) -> o1.getValue().get(0).getOpt()
-                        .compareTo(o2.getValue().get(0).getOpt()))
+                .entrySet().stream().sorted(Comparator.comparing(o -> o.getValue().get(0).getOpt()))
                 .forEach(e -> {
                     Option opt = e.getValue().stream().findFirst().get();
                     String ops = e.getValue().stream().map(o -> "-" + o.getOpt())
