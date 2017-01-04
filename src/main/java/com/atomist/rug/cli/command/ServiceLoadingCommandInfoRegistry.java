@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -51,7 +52,7 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
     private void init() {
         ServiceLoader<CommandInfo> loader = ServiceLoader.load(CommandInfo.class);
         loader.forEach(c -> commands.add(c));
-        commands = commands.stream().sorted((c1, c2) -> Integer.compare(c1.order(), c2.order()))
+        commands = commands.stream().sorted(Comparator.comparingInt(CommandInfo::order))
                 .collect(toList());
     }
 

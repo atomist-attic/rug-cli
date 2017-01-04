@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -52,7 +53,7 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives"));
 
-        archives.entrySet().stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+        archives.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
                 .forEach(a -> printArchive(a.getKey(), a.getValue()));
 
         log.info("\nFor more information on specific archive version, run:\n"
@@ -76,7 +77,7 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
         if (repo.exists()) {
             Collection<File> archives = FileUtils.listFiles(repo, new String[] { "zip" }, true)
                     .stream()
-                    .sorted((o1, o2) -> o1.getAbsolutePath().compareTo(o2.getAbsolutePath()))
+                    .sorted(Comparator.comparing(File::getAbsolutePath))
                     .collect(Collectors.toList());
 
             String group = filter.getProperty("group");
