@@ -1,6 +1,6 @@
 ---
 local-repository:
-  path: "${user.home}/.atomist/repository"
+  path: "${user.home}/.atomist/cli-tests-repository"
 remote-repositories:
   local:
     publish: true
