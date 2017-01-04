@@ -36,11 +36,10 @@ public abstract class AbstractAnnotationBasedCommand
     protected void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
             CommandLine commandLine) {
 
-        Optional<Method> methodOptional = Arrays
-                .asList(ReflectionUtils.getAllDeclaredMethods(getClass())).stream()
-                .filter(m -> AnnotationUtils.getAnnotation(m,
+        Optional<Method> methodOptional = Arrays.stream(ReflectionUtils.getAllDeclaredMethods(getClass()))
+                                                .filter(m -> AnnotationUtils.getAnnotation(m,
                         com.atomist.rug.cli.command.annotation.Command.class) != null)
-                .findFirst();
+                                                .findFirst();
 
         if (methodOptional.isPresent()) {
             invokeCommandMethod(methodOptional.get(), operations, artifact, commandLine);
@@ -109,7 +108,7 @@ public abstract class AbstractAnnotationBasedCommand
     private List<Object> prepareMethodArguments(Method method, CommandLine commandLine,
             ArtifactDescriptor artifact, OperationsAndHandlers operations) {
 
-        List<Object> arguments = Arrays.asList(method.getParameters()).stream().map(p -> {
+        List<Object> arguments = Arrays.stream(method.getParameters()).map(p -> {
 
             Argument argument = AnnotationUtils.getAnnotation(p, Argument.class);
             Option option = AnnotationUtils.getAnnotation(p, Option.class);
