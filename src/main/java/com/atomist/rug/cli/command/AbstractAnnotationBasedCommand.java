@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.command;
 
+import static scala.collection.JavaConversions.asScalaBuffer;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -26,15 +28,14 @@ import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.loader.Handlers;
 import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-
-import static scala.collection.JavaConversions.asScalaBuffer;
+import com.atomist.source.ArtifactSource;
 
 public abstract class AbstractAnnotationBasedCommand
         extends AbstractCompilingAndOperationLoadingCommand {
 
     @Override
     protected void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
-            CommandLine commandLine) {
+            ArtifactSource source, CommandLine commandLine) {
 
         Optional<Method> methodOptional = Arrays.stream(ReflectionUtils.getAllDeclaredMethods(getClass()))
                                                 .filter(m -> AnnotationUtils.getAnnotation(m,
@@ -42,7 +43,7 @@ public abstract class AbstractAnnotationBasedCommand
                                                 .findFirst();
 
         if (methodOptional.isPresent()) {
-            invokeCommandMethod(methodOptional.get(), operations, artifact, commandLine);
+            invokeCommandMethod(methodOptional.get(), operations, artifact, source, commandLine);
         }
         else {
             throw new CommandException("Command class does not have an @Command-annotated method.");
@@ -50,8 +51,9 @@ public abstract class AbstractAnnotationBasedCommand
     }
 
     protected void invokeCommandMethod(Method method, OperationsAndHandlers operations,
-            ArtifactDescriptor artifact, CommandLine commandLine) {
-        List<Object> arguments = prepareMethodArguments(method, commandLine, artifact, operations);
+            ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
+        List<Object> arguments = prepareMethodArguments(method, operations, artifact, source,
+                commandLine);
         try {
             method.invoke(this, (Object[]) arguments.toArray(new Object[arguments.size()]));
         }
@@ -105,8 +107,8 @@ public abstract class AbstractAnnotationBasedCommand
         return argumentValue;
     }
 
-    private List<Object> prepareMethodArguments(Method method, CommandLine commandLine,
-            ArtifactDescriptor artifact, OperationsAndHandlers operations) {
+    private List<Object> prepareMethodArguments(Method method, OperationsAndHandlers operations,
+            ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
 
         List<Object> arguments = Arrays.stream(method.getParameters()).map(p -> {
 
@@ -130,6 +132,9 @@ public abstract class AbstractAnnotationBasedCommand
             }
             else if (p.getType().equals(ArtifactDescriptor.class)) {
                 return artifact;
+            }
+            else if (p.getType().equals(ArtifactSource.class)) {
+                return source;
             }
             else if (p.getType().equals(CommandLine.class)) {
                 return commandLine;

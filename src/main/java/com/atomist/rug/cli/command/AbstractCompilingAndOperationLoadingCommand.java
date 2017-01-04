@@ -42,14 +42,14 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     @Override
     protected final void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
         OperationsAndHandlers operationsAndHandlers = null;
+        ArtifactSource source = null;
         if (artifact != null && artifact.extension() == Extension.ZIP) {
 
-            ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
-            source = compile(source);
+            source = compile(ArtifactSourceUtils.createArtifactSource(artifact));
             operationsAndHandlers = loadOperationsAndHandlers(artifact, source,
                     createOperationsLoader(uri));
         }
-        run(operationsAndHandlers, artifact, commandLine);
+        run(operationsAndHandlers, artifact, source, commandLine);
     }
     
     private ArtifactSource compile(ArtifactSource source) {
@@ -151,6 +151,6 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
 
     protected abstract void run(OperationsAndHandlers operationsAndHandlers,
-            ArtifactDescriptor artifact, CommandLine commandLine);
+            ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine);
 
 }

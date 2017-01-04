@@ -32,8 +32,6 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
-import com.atomist.source.file.FileSystemArtifactSource;
-import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
 public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedCommand {
 
@@ -41,7 +39,8 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
 
     @Command
     public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
-            @Option("archive-version") String version, CommandLine commandLine) throws IOException {
+            ArtifactSource source, @Option("archive-version") String version,
+            CommandLine commandLine) throws IOException {
 
         String fullVersion = artifact.version();
         if (version != null) {
@@ -56,7 +55,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
                 Constants.ATOMIST_ROOT + File.separator + "target" + File.separator + zipFileName);
 
         prepareTargetDirectory(archive);
-        ArtifactSource source = createArtifactSource(projectRoot);
+        source = ArtifactSourceUtils.filter(source);
 
         Deployer deployer = new RepositoryCommandMavenDeployer(commandLine, projectRoot);
         deployer.deploy(operationsAndHandlers, source, artifact, projectRoot);
@@ -65,12 +64,6 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
     protected abstract void doWithRepositorySession(RepositorySystem system,
             RepositorySystemSession session, ArtifactSource source, Manifest manifest, Artifact zip,
             Artifact pom, Artifact metadata, CommandLine commandLine);
-
-    private ArtifactSource createArtifactSource(File projectRoot) {
-        ArtifactSource source = new FileSystemArtifactSource(
-                new SimpleFileSystemArtifactSourceIdentifier(projectRoot));
-        return ArtifactSourceUtils.filter(source);
-    }
 
     private void prepareTargetDirectory(File zipFile) {
         FileUtils.deleteQuietly(zipFile.getParentFile());
