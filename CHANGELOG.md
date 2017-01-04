@@ -17,4 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Update for rug 0.8.0
 
--   Update to Java 8 thanks to @cchacin
+-   CLI now compiles TypeScript into the resulting archive for `install` and `publish`
+
+-   Removed support for reading archive metadate from `package.json`
+
+-   Update to Java 8 thanks to @cchacin
