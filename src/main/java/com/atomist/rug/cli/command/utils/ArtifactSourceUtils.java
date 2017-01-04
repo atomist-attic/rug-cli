@@ -16,7 +16,7 @@ import com.atomist.source.file.ZipFileInput;
 
 public abstract class ArtifactSourceUtils {
 
-    public static final List<String> DIRS_TO_FILTER = Arrays.asList(".git");
+    public static final List<String> DIRS_TO_FILTER = Arrays.asList(".git", "target");
     public static final List<String> FILES_TO_FILTER = Arrays.asList(".DS_Store", ".travis.yml",
             "travis-build.bash");
 
