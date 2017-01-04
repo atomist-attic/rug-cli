@@ -72,8 +72,8 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
                     .filter(c -> c.className().equals(getClass().getName())).findFirst();
             if (commandInfo.isPresent()) {
                 Options options = new Options();
-                commandInfo.get().options().getOptions().stream().forEach(options::addOption);
-                commandInfo.get().globalOptions().getOptions().stream().forEach(options::addOption);
+                commandInfo.get().options().getOptions().forEach(options::addOption);
+                commandInfo.get().globalOptions().getOptions().forEach(options::addOption);
                 commandLine = parser.parse(options, args);
                 CommandLineOptions.set(commandLine);
             }

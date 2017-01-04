@@ -24,8 +24,8 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
     public Options allOptions() {
         Options options = new Options();
         commands.forEach(e -> {
-            e.options().getOptions().stream().forEach(options::addOption);
-            e.globalOptions().getOptions().stream().forEach(options::addOption);
+            e.options().getOptions().forEach(options::addOption);
+            e.globalOptions().getOptions().forEach(options::addOption);
         });
         return options;
     }

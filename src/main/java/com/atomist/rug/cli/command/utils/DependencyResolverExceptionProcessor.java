@@ -65,8 +65,8 @@ public class DependencyResolverExceptionProcessor {
         List<RemoteRepository> repositories = e.getRemoteRepositories();
         if (repositories != null && !repositories.isEmpty()) {
             sb.append("Configured repositories from ~/.atomist/cli.yml:\n");
-            repositories.stream().forEach(r -> sb.append("  ").append(r.getId()).append(" (")
-                    .append(r.getUrl()).append(")\n"));
+            repositories.forEach(r -> sb.append("  ").append(r.getId()).append(" (")
+                                        .append(r.getUrl()).append(")\n"));
         }
     }
 
