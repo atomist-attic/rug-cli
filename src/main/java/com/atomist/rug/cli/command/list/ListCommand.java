@@ -51,14 +51,20 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                                 Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
 
         log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives") + " ("
+                + archives.size() + " archives found)");
 
-        archives.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
-                .forEach(a -> printArchive(a.getKey(), a.getValue()));
+        if (archives.isEmpty()) {
+            log.info(Style.yellow("  No matching archives found"));
+            log.newline();
+        }
+        else {
+            archives.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
+                    .forEach(a -> printArchive(a.getKey(), a.getValue()));
 
-        log.info("\nFor more information on specific archive version, run:\n"
-                + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND);
-
+            log.info("\nFor more information on specific archive version, run:\n"
+                    + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND);
+        }
     }
 
     private void printArchive(String groupArtifact, List<ArtifactDescriptor> versions) {
@@ -76,8 +82,7 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
         URI repoHome = repo.toURI();
         if (repo.exists()) {
             Collection<File> archives = FileUtils.listFiles(repo, new String[] { "zip" }, true)
-                    .stream()
-                    .sorted(Comparator.comparing(File::getAbsolutePath))
+                    .stream().sorted(Comparator.comparing(File::getAbsolutePath))
                     .collect(Collectors.toList());
 
             String group = filter.getProperty("group");
