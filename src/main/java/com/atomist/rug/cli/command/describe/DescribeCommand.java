@@ -69,10 +69,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             describeExecutor(artifact, OperationUtils.extractRugTypeName(name),
                     operationsAndHandlers.operations());
             break;
-//        case "handler":
-//            describeHandler(artifact, CommandUtils.extractRugTypeName(name),
-//                    operationsAndHandlers.handlers());
-//            break;
+        // case "handler":
+        // describeHandler(artifact, CommandUtils.extractRugTypeName(name),
+        // operationsAndHandlers.handlers());
+        // break;
         case "archive":
             describeArchive(artifact, operationsAndHandlers);
             break;
@@ -140,7 +140,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private String describeDescription(Parameter p) {
         return WordUtils.wrap(p.getDescription(), Constants.WRAP_LENGTH, "\n    ", false);
-        
+
     }
 
     private void describeEditor(ArtifactDescriptor artifact, String name, Operations operations) {
@@ -206,44 +206,44 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-//    private void describeHandler(ArtifactDescriptor artifact, String name, Handlers handlers) {
-//        Optional<SystemEventHandler> opt = handlers.handlers().stream()
-//                .filter(h -> h.name().equals(name)).findFirst();
-//        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-//        if (!opt.isPresent()) {
-//            // try again with a proper namespaced name
-//            opt = handlers.handlers().stream().filter(g -> g.name().equals(fqName)).findFirst();
-//        }
-//
-//        log.newline();
-//        if (opt.isPresent()) {
-//            SystemEventHandler handler = opt.get();
-//            log.info(Style.bold(Style.yellow(StringUtils.stripName(handler.name(), artifact))));
-//            log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
-//            log.info(handler.description());
-//            log.newline();
-//            if (!handler.tags().isEmpty()) {
-//                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Tags"));
-//                asJavaCollection(handler.tags()).forEach(t -> log
-//                        .info("  " + Style.yellow(t.name()) + " (" + t.description() + ")"));
-//            }
-//        }
-//        else {
-//            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
-//            handlers.handlers().forEach(
-//                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-//                            + " " + e.description()));
-//            if (name != null) {
-//                StringUtils.printClosestMatch(fqName, artifact, handlers.handlerNames());
-//                throw new CommandException(
-//                        String.format("Specified handler %s could not be found in %s:%s:%s", name,
-//                                artifact.group(), artifact.artifact(), artifact.version()));
-//            }
-//            else {
-//                describeInvokeArchive();
-//            }
-//        }
-//    }
+    // private void describeHandler(ArtifactDescriptor artifact, String name, Handlers handlers) {
+    // Optional<SystemEventHandler> opt = handlers.handlers().stream()
+    // .filter(h -> h.name().equals(name)).findFirst();
+    // String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
+    // if (!opt.isPresent()) {
+    // // try again with a proper namespaced name
+    // opt = handlers.handlers().stream().filter(g -> g.name().equals(fqName)).findFirst();
+    // }
+    //
+    // log.newline();
+    // if (opt.isPresent()) {
+    // SystemEventHandler handler = opt.get();
+    // log.info(Style.bold(Style.yellow(StringUtils.stripName(handler.name(), artifact))));
+    // log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
+    // log.info(handler.description());
+    // log.newline();
+    // if (!handler.tags().isEmpty()) {
+    // log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Tags"));
+    // asJavaCollection(handler.tags()).forEach(t -> log
+    // .info(" " + Style.yellow(t.name()) + " (" + t.description() + ")"));
+    // }
+    // }
+    // else {
+    // log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
+    // handlers.handlers().forEach(
+    // e -> log.info(" " + Style.yellow(StringUtils.stripName(e.name(), artifact))
+    // + " " + e.description()));
+    // if (name != null) {
+    // StringUtils.printClosestMatch(fqName, artifact, handlers.handlerNames());
+    // throw new CommandException(
+    // String.format("Specified handler %s could not be found in %s:%s:%s", name,
+    // artifact.group(), artifact.artifact(), artifact.version()));
+    // }
+    // else {
+    // describeInvokeArchive();
+    // }
+    // }
+    // }
 
     private void describeGenerator(ArtifactDescriptor artifact, String name,
             Operations operations) {
@@ -313,7 +313,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
     }
 
-    private void describeOperations(ArtifactDescriptor artifact, OperationsAndHandlers operationsAndHandlers) {
+    private void describeOperations(ArtifactDescriptor artifact,
+            OperationsAndHandlers operationsAndHandlers) {
         Operations operations = operationsAndHandlers.operations();
         Collection<ProjectEditor> editors = asJavaCollection(operations.editors());
         Collection<ProjectGenerator> generators = asJavaCollection(operations.generators());
@@ -323,27 +324,27 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         if (!generators.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            generators.forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                            + " (" + e.description() + ")"));
+            generators.forEach(e -> log.info("  "
+                    + Style.yellow(StringUtils.stripName(e.name(), artifact)) + "\n    "
+                    + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
         }
         if (!editors.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-            editors.forEach(e -> log
-                    .info("  " + Style.yellow("%s", StringUtils.stripName(e.name(), artifact))
-                            + " (" + e.description() + ")"));
+            editors.forEach(e -> log.info("  "
+                    + Style.yellow("%s", StringUtils.stripName(e.name(), artifact)) + "\n    "
+                    + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
         }
         if (!executors.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Executors"));
-            executors.forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                            + " (" + e.description() + ")"));
+            executors.forEach(e -> log.info("  "
+                    + Style.yellow(StringUtils.stripName(e.name(), artifact)) + "\n    "
+                    + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
         }
         if (!reviewers.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
-            reviewers.forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                            + " (" + e.description() + ")"));
+            reviewers.forEach(e -> log.info("  "
+                    + Style.yellow(StringUtils.stripName(e.name(), artifact)) + "\n    "
+                    + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
         }
         if (!handlers.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
@@ -367,16 +368,16 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 required.forEach(p -> log.info(
                         "  " + Style.yellow(p.getName())
                                 + " (%s)\n    %s\n      pattern: %s, min length: %s, max length: %s",
-                                p.getDisplayName(), describeDescription(p), p.getPattern(), p.getMinLength(),
-                        p.getMaxLength()));
+                        p.getDisplayName(), describeDescription(p), p.getPattern(),
+                        p.getMinLength(), p.getMaxLength()));
             }
             if (!optional.isEmpty()) {
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (optional)"));
                 optional.forEach(p -> log.info(
                         "  " + Style.yellow(p.getName())
                                 + " (%s)\n    %s\n      pattern: %s, min length: %s, max length: %s",
-                        p.getDisplayName(), describeDescription(p), p.getPattern(), p.getMinLength(),
-                        p.getMaxLength()));
+                        p.getDisplayName(), describeDescription(p), p.getPattern(),
+                        p.getMinLength(), p.getMaxLength()));
             }
         }
         else {
