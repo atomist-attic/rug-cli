@@ -16,18 +16,18 @@
 executor AddTravisWebhook
 
 @description "URL of the Travis webhook"
-param url: .*
+param url: ^.*$
 
-with services s
+with Services s
   editWith AddTravis
 
 
 editor AddTravis
 
 @description "URL of the Travis webhook"
-param url: .*
+param url: ^.*$
 
-with file f when path = ".travis.yml"
+with File f when path = ".travis.yml"
 begin
   do replace "notifications:" { "notifications: \n  webhooks: " + url}
 end

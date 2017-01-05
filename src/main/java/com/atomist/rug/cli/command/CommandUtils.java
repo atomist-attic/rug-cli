@@ -9,16 +9,6 @@ import com.atomist.rug.cli.Constants;
 
 public abstract class CommandUtils {
 
-    public static String extractRugTypeName(String name) {
-        if (name != null) {
-            String[] parts = name.split(":");
-            if (parts.length > 1) {
-                return parts[parts.length - 1];
-            }
-        }
-        return name;
-    }
-
     public static File getRequiredWorkingDirectory() {
         Optional<File> projectDir = getWorkingDirectory(System.getProperty("user.dir"));
         return projectDir.orElseThrow(() -> new CommandException(

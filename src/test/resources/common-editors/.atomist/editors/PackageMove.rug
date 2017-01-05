@@ -20,5 +20,5 @@ editor PackageMove
 param old_package: @java_package
 param new_package: @java_package
 
-with java.source j when pkg = old_package
+with JavaSource j when pkg = old_package
 	do movePackage to new_package

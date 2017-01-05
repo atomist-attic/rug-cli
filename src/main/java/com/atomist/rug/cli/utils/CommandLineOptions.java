@@ -24,8 +24,7 @@ public abstract class CommandLineOptions {
 
     public static boolean hasOption(String opt) {
         return options.get().stream()
-                .filter(o -> o.getLongOpt().equals(opt) || o.getOpt().equals(opt)).findFirst()
-                .isPresent();
+                      .anyMatch(o -> o.getLongOpt().equals(opt) || o.getOpt().equals(opt));
     }
 
     public static void set(CommandLine commandLine) {

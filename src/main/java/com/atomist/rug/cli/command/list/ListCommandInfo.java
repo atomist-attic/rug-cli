@@ -3,9 +3,9 @@ package com.atomist.rug.cli.command.list;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import com.atomist.rug.cli.command.AbstractRugEnabledCommandInfo;
+import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
-public class ListCommandInfo extends AbstractRugEnabledCommandInfo {
+public class ListCommandInfo extends AbstractRugScopedCommandInfo {
 
     public ListCommandInfo() {
         super(ListCommand.class, "list");

@@ -15,7 +15,7 @@ import org.eclipse.aether.installation.InstallResult;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.command.repo.AbstractRepoCommand;
+import com.atomist.rug.cli.command.repo.AbstractRepositoryCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
@@ -25,20 +25,20 @@ import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
-public class InstallCommand extends AbstractRepoCommand {
+public class InstallCommand extends AbstractRepositoryCommand {
 
     private Log log = new Log(InstallCommand.class);
 
     @Override
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
             ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom,
-            CommandLine commandLine) {
+            Artifact metadata, CommandLine commandLine) {
 
         new ProgressReportingOperationRunner<InstallResult>(
                 "Installing archive into local repository").run(indicator -> {
 
-                    ((DefaultRepositorySystemSession) session)
-                            .setTransferListener(new ProgressReportingTransferListener(indicator));
+                    ((DefaultRepositorySystemSession) session).setTransferListener(
+                            new ProgressReportingTransferListener(indicator, false));
                     ((DefaultRepositorySystemSession) session)
                             .setRepositoryListener(new AbstractRepositoryListener() {
 
@@ -47,15 +47,14 @@ public class InstallCommand extends AbstractRepoCommand {
                                     URI repo = session.getLocalRepository().getBasedir().toURI();
                                     URI artifact = event.getFile().toURI();
 
-                                    indicator.report(String.format("Installed %s %s %s",
-                                            repo.relativize(artifact),
-                                            Constants.DIVIDER,
+                                    indicator.report(String.format("  Installed %s %s %s",
+                                            repo.relativize(artifact), Constants.DIVIDER,
                                             new File(repo).getAbsolutePath().toString()));
                                 }
                             });
 
                     InstallRequest installRequest = new InstallRequest();
-                    installRequest.addArtifact(artifact).addArtifact(pom);
+                    installRequest.addArtifact(artifact).addArtifact(pom).addArtifact(metadata);
 
                     return system.install(session, installRequest);
                 });

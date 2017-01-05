@@ -93,6 +93,7 @@ _rug() {
     fi
     if [[ $special == @(edit|generate) ]]; then
         command_options+=( -R --repo )
+        command_options+=( -I --interactive )
     fi
     if [[ $special == list ]]; then
         command_options+=( -f --filter )
@@ -115,6 +116,8 @@ _rug() {
     local describe_args=(
         editor
         generator
+        executor
+        reviewer
         archive
     )
     local describe_re describe_arg_found=

@@ -10,13 +10,13 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.deployment.DeployRequest;
-import org.eclipse.aether.deployment.DeployResult;
+import org.eclipse.aether.transfer.TransferEvent;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.repo.AbstractRepoCommand;
+import com.atomist.rug.cli.command.repo.AbstractRepositoryCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
@@ -31,27 +31,40 @@ import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
-public class PublishCommand extends AbstractRepoCommand {
+public class PublishCommand extends AbstractRepositoryCommand {
 
     private Log log = new Log(PublishCommand.class);
 
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom,
+            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,
             CommandLine commandLine) {
 
         org.eclipse.aether.repository.RemoteRepository deployRepository = getDeployRepository(
                 commandLine.getOptionValue("i"));
 
-        new ProgressReportingOperationRunner<DeployResult>(
+        String artifactUrl = new ProgressReportingOperationRunner<String>(
                 "Publishing archive into remote repository").run(indicator -> {
-                    ((DefaultRepositorySystemSession) session)
-                            .setTransferListener(new ProgressReportingTransferListener(indicator));
+                    String[] url = new String[1];
+                    ((DefaultRepositorySystemSession) session).setTransferListener(
+                            new ProgressReportingTransferListener(indicator, false) {
+
+                                @Override
+                                public void transferSucceeded(TransferEvent event) {
+                                    super.transferSucceeded(event);
+                                    if (event.getResource().getResourceName().endsWith(".zip")) {
+                                        url[0] = event.getResource().getRepositoryUrl()
+                                                + event.getResource().getResourceName();
+                                    }
+                                }
+                            });
 
                     DeployRequest deployRequest = new DeployRequest();
-                    deployRequest.addArtifact(zip).addArtifact(pom);
+                    deployRequest.addArtifact(zip).addArtifact(pom).addArtifact(metadata);
                     deployRequest.setRepository(deployRepository);
 
-                    return system.deploy(session, deployRequest);
+                    system.deploy(session, deployRequest);
+
+                    return url[0];
                 });
 
         log.newline();
@@ -62,8 +75,8 @@ public class PublishCommand extends AbstractRepoCommand {
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
         ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
         log.newline();
-        log.info(Style.green("Successfully published archive for %s:%s:%s", manifest.group(),
-                manifest.artifact(), manifest.version()));
+        log.info(Style.green("Successfully published archive for %s:%s:%s to\n  %s",
+                manifest.group(), manifest.artifact(), manifest.version(), artifactUrl));
     }
 
     private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {

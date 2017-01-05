@@ -1,10 +1,12 @@
-package com.atomist.rug.cli.settings;
+package com.atomist.rug.cli.resolver;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.aether.RepositorySystem;
 
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.maven.MavenConfiguration;
@@ -12,11 +14,12 @@ import com.atomist.rug.resolver.maven.MavenProperties;
 import com.atomist.rug.resolver.maven.MavenProperties.Auth;
 import com.atomist.rug.resolver.maven.MavenProperties.Repo;
 
-public abstract class MavenSettings {
+abstract class MavenPropertiesFactory {
 
-    public static MavenProperties mavenProperties(boolean offline) {
+    public static MavenProperties create(boolean offline, boolean cacheMetadata) {
         MavenProperties properties = new MavenProperties();
         properties.setOffline(offline);
+        properties.setCacheMetadata(cacheMetadata);
 
         Settings settings = new SettingsReader().read();
 

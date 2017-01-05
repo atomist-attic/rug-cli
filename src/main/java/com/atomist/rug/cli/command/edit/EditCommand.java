@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.command.edit;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -26,10 +28,10 @@ import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractDeltaHandlingCommand;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
@@ -40,8 +42,6 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.Delta;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
-
-import scala.collection.JavaConversions;
 
 public class EditCommand extends AbstractDeltaHandlingCommand {
 
@@ -54,28 +54,28 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             @Option("change-dir") String root, @Option("dry-run") boolean dryRun,
             @Option("repo") boolean repo) {
 
-        String name = CommandUtils.extractRugTypeName(fqArtifactName);
+        String name = OperationUtils.extractRugTypeName(fqArtifactName);
         if (name == null) {
             throw new CommandException("No editor name provided.", "edit");
         }
 
         String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-        Optional<ProjectEditor> opt = JavaConversions.asJavaCollection(operations.editors())
+        Optional<ProjectEditor> opt =asJavaCollection(operations.editors())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (!opt.isPresent()) {
             // try again with a properly namespaced name
-            opt = JavaConversions.asJavaCollection(operations.editors()).stream()
+            opt = asJavaCollection(operations.editors()).stream()
                     .filter(g -> g.name().equals(fqName)).findFirst();
         }
 
         if (opt.isPresent()) {
-            validate(artifact, opt.get(), arguments);
+            arguments = validate(artifact, opt.get(), arguments);
             invoke(artifact, name, opt.get(), arguments, root, dryRun, repo);
         }
         else {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-            JavaConversions.asJavaCollection(operations.editors()).forEach(
+            asJavaCollection(operations.editors()).forEach(
                     e -> log.info(Style.yellow("  %s", StringUtils.stripName(e.name(), artifact))
                             + " (" + e.description() + ")"));
             StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
@@ -117,7 +117,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
 
-            List<Delta> deltas = JavaConversions.asJavaCollection(resultSource.cachedDeltas())
+            List<Delta> deltas = asJavaCollection(resultSource.cachedDeltas())
                     .stream().collect(Collectors.toList());
 
             iterateDeltas(deltas, source, resultSource, root, dryRun);

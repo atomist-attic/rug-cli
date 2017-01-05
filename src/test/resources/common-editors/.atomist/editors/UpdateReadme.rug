@@ -27,9 +27,9 @@ param projectName: @project_name
 @maxLength 90
 @description "Description of the new project"
 @displayName "description"
-param description: .*
+param description: ^.*$
 
-with file f when { f.name().contains("README.md") } begin
+with File f when { f.name().contains("README.md") } begin
 	do replace "{{name}}" projectName
 	do replace "{{description}}" description
 end
