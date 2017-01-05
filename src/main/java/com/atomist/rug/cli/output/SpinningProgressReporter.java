@@ -35,7 +35,8 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
             sleep(20);
         }
         this.showProgress = false;
-        sleep(80);
+        try { this.join(); }
+        catch (InterruptedException e) {}
     }
 
     @Override

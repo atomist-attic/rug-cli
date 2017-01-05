@@ -8,10 +8,10 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.CommandHelpFormatter;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.ReflectiveCommandRunner;
+import com.atomist.rug.cli.command.utils.CommandHelpFormatter;
 import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
@@ -77,9 +77,8 @@ public class Runner {
             return commandLine;
         }
         catch (ParseException e) {
-            ParseExceptionProcessor.process(e);
+            throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
         }
-        return null;
     }
 
     private void printCommandHelp(CommandLine commandLine) {
@@ -95,7 +94,7 @@ public class Runner {
     }
 
     private void printTimer(Timing timing) {
-        log.info("Command finished in " + timing.duration() + "s");
+        log.info("Command completed in " + timing.duration() + "s");
     }
 
     private void printVersion() {

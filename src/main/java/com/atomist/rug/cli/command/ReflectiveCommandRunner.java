@@ -13,6 +13,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 
 import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.cli.command.utils.DependencyResolverExceptionProcessor;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.resolver.DependencyResolverFactory;
@@ -21,6 +22,7 @@ import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.rug.resolver.DependencyResolver;
+import com.atomist.rug.resolver.DependencyResolverException;
 
 public class ReflectiveCommandRunner {
 
@@ -128,7 +130,7 @@ public class ReflectiveCommandRunner {
                 return f.toURI().toURL();
             }
             catch (MalformedURLException e) {
-                throw new RunnerException("", e);
+                throw new RunnerException("Error occured creating URL", e);
             }
         }).collect(Collectors.toList());
     }
@@ -143,9 +145,16 @@ public class ReflectiveCommandRunner {
             ProgressReporter indicator) {
         DependencyResolver resolver = new DependencyResolverFactory()
                 .createDependencyResolver(artifact, indicator);
-        String version = resolver.resolveVersion(artifact);
-        return resolver.resolveTransitiveDependencies(
-                ArtifactDescriptorFactory.copyFrom(artifact, version));
+        String version = artifact.version();
+        try {
+            version = resolver.resolveVersion(artifact);
+            return resolver.resolveTransitiveDependencies(
+                    ArtifactDescriptorFactory.copyFrom(artifact, version));
+        }
+        catch (DependencyResolverException e) {
+            throw new CommandException(DependencyResolverExceptionProcessor
+                    .process(ArtifactDescriptorFactory.copyFrom(artifact, version), e));
+        }
     }
 
     private static class NashornDelegatingUrlClassLoader extends URLClassLoader {

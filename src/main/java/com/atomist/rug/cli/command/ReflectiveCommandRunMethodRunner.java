@@ -16,9 +16,9 @@ public class ReflectiveCommandRunMethodRunner {
 
         if (info instanceof ArtifactDescriptorProvider) {
             Method runMethod = commandClass.getMethod("run", String.class, String.class,
-                    String.class, boolean.class, URI[].class, String[].class);
+                    String.class, String.class, boolean.class, URI[].class, String[].class);
             runMethod.invoke(commandClass.newInstance(), artifact.group(), artifact.artifact(),
-                    artifact.version(),
+                    artifact.version(), artifact.extension().toString(),
                     (artifact instanceof LocalArtifactDescriptor),
                     uris.toArray(new URI[uris.size()]), args);
         }

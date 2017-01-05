@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.resolver;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,8 +12,6 @@ import org.eclipse.aether.util.repository.JreProxySelector;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.settings.MavenSettings;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
@@ -33,10 +32,10 @@ public class DependencyResolverFactory {
             t.setDaemon(true);
             return t;
         });
-        MavenProperties properties = MavenSettings
-                .mavenProperties(CommandLineOptions.hasOption("o"));
+        MavenProperties properties = MavenPropertiesFactory
+                .create(CommandLineOptions.hasOption("o"), !CommandLineOptions.hasOption("u"));
         MavenBasedDependencyResolver resolver = new MavenBasedDependencyResolver(
-                MavenSettings.repositorySystem(), properties, executorService) {
+                MavenPropertiesFactory.repositorySystem(), properties, executorService) {
 
             @Override
             protected Dependency createDependencyRoot(ArtifactDescriptor artifact) {
@@ -71,9 +70,8 @@ public class DependencyResolverFactory {
 
                 private void firstMessage() {
                     if (firstMessage) {
-                        indicator.report(Style.cyan(Constants.DIVIDER) + " "
-                                + Style.bold("Dependency report for %s:%s:%s", artifact.group(),
-                                        artifact.artifact(), artifact.version()));
+                        indicator.report(String.format("Dependency report for %s:%s:%s",
+                                artifact.group(), artifact.artifact(), artifact.version()));
                         firstMessage = false;
                     }
                 }
@@ -86,7 +84,8 @@ public class DependencyResolverFactory {
     private void addExclusions(MavenBasedDependencyResolver resolver) {
         // This is exclusion is needed to prevent multiple versions of slf4j bindings on the
         // classpath
-        // resolver.setExclusions(Collections.singletonList("ch.qos.logback:logback-classic"));
+        resolver.setExclusions(Arrays.asList(new String[] { "ch.qos.logback:logback-classic",
+                "ch.qos.logback:logback-access", "org.slf4j:jcl-over-slf4j" }));
     }
 
     private DependencyResolver wrapDependencyResolver(DependencyResolver resolver,

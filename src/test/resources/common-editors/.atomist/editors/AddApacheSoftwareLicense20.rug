@@ -20,5 +20,5 @@ let license = "ApacheSoftwareLicenseV20.vm"
 
 let licenseFilename = "LICENSE"
 
-with project p
+with Project p
   do merge license to licenseFilename

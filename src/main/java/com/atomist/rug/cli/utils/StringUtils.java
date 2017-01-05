@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.utils;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,8 +12,9 @@ import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
-import scala.collection.JavaConversions;
 import scala.collection.Seq;
+
+import static scala.collection.JavaConversions.asJavaCollection;
 
 public abstract class StringUtils {
     
@@ -20,8 +22,12 @@ public abstract class StringUtils {
 
     public static void printClosestMatch(String name, ArtifactDescriptor artifact,
             Seq<String> nameOptions) {
-        Optional<String> closestMatch = StringUtils.computeClosestMatch(name,
-                JavaConversions.asJavaCollection(nameOptions));
+        printClosestMatch(name, artifact, asJavaCollection(nameOptions));
+    }
+    
+    public static void printClosestMatch(String name, ArtifactDescriptor artifact,
+            Collection<String> nameOptions) {
+        Optional<String> closestMatch = StringUtils.computeClosestMatch(name, nameOptions);
         if (closestMatch.isPresent()) {
             log.newline();
             log.info(Constants.CLOSEST_MATCH_HINT);
@@ -34,7 +40,7 @@ public abstract class StringUtils {
         Map<String, Integer> distances = searchBase.stream().collect(Collectors.toMap(s -> s,
                 s -> LevenshteinDistance.computeLevenshteinDistance(searchTerm, s)));
         return distances.entrySet().stream().filter(e -> e.getValue() <= 3)
-                .min((e1, e2) -> e1.getValue().compareTo(e2.getValue())).map(Map.Entry::getKey);
+                .min(Comparator.comparing(Map.Entry::getValue)).map(Map.Entry::getKey);
     }
 
     public static String puralize(String value, Collection<?> items) {
