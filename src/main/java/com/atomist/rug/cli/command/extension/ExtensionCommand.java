@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command.extension;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,8 +52,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
             listExtension();
             break;
         default:
-            throw new CommandException("Not enough or invalid arguments provided.",
-                    "extension");
+            throw new CommandException("Not enough or invalid arguments provided.", "extension");
         }
     }
 
@@ -147,38 +147,38 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void listExtension() {
-        new ProgressReportingOperationRunner<Void>("Listing extensions").run((indicator) -> {
-            File extensionRoot = new File(FileUtils.getUserDirectory(),
-                    Constants.ATOMIST_ROOT + File.separator + "ext");
+        List<File> extensions = new ProgressReportingOperationRunner<List<File>>(
+                "Listing extensions").run((indicator) -> {
+                    File extensionRoot = new File(FileUtils.getUserDirectory(),
+                            Constants.ATOMIST_ROOT + File.separator + "ext");
+
+                    if (extensionRoot.exists()) {
+                        return FileUtils.listFiles(extensionRoot, new String[] { "jar" }, true)
+                                .stream()
+                                .filter(e -> e.getName()
+                                        .startsWith(e.getParentFile().getName() + "-"))
+                                .collect(Collectors.toList());
+                    }
+                    return Collections.emptyList();
+                });
+        
+        log.newline();
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extensions"));
+
+        if (extensions.size() > 0) {
+            extensions.forEach(e -> {
+                log.info("  %s", Style.underline(
+                        com.atomist.rug.cli.utils.FileUtils.relativize(e.getParentFile().toURI())));
+                StringBuilder sb = new StringBuilder();
+                sb.append("  ").append(Constants.LAST_TREE_NODE);
+                sb.append(Style.yellow(e.getName()));
+                log.info(sb.toString());
+            });
             log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extensions"));
-
-            if (extensionRoot.exists()) {
-                List<File> extensions = FileUtils
-                        .listFiles(extensionRoot, new String[] { "jar" }, true).stream()
-                        .filter(e -> e.getName().startsWith(e.getParentFile().getName() + "-"))
-                        .collect(Collectors.toList());
-
-                if (extensions.size() > 0) {
-                    extensions.forEach(e -> {
-                        log.info("  %s", Style.underline(com.atomist.rug.cli.utils.FileUtils
-                                .relativize(e.getParentFile().toURI())));
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("  ").append(Constants.LAST_TREE_NODE);
-                        sb.append(Style.yellow(e.getName()));
-                        log.info(sb.toString());
-                    });
-                    log.newline();
-                }
-                else {
-                    printNoExtensionsInstalled();
-                }
-            }
-            else {
-                printNoExtensionsInstalled();
-            }
-            return null;
-        });
+        }
+        else {
+            printNoExtensionsInstalled();
+        }
     }
 
     private void uninstallExtension(ArtifactDescriptor artifact) {

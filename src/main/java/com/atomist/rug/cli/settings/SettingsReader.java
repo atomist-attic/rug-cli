@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -104,7 +105,11 @@ public class SettingsReader {
                 settings.getDefaults().setGroup((String) defaults.get("group"));
                 settings.getDefaults().setArtifact((String) defaults.get("artifact"));
                 settings.getDefaults().setVersion((String) defaults.get("version"));
-
+            }
+            
+            if (data.containsKey("catalogs")) {
+                List<String> urls = (List<String>) data.get("catalogs");
+                urls.forEach(u -> settings.getCatalogs().addUrl(u));
             }
 
             return settings;

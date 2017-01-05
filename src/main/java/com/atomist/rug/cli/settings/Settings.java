@@ -1,16 +1,24 @@
 package com.atomist.rug.cli.settings;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 @JsonInclude(Include.NON_EMPTY)
 public class Settings {
+    
+    @JsonProperty("catalogs")
+    private Catalogs catalogs = new Catalogs();
 
     @JsonProperty("default")
     private Defaults defaults = new Defaults();
@@ -23,6 +31,10 @@ public class Settings {
 
     public Defaults getDefaults() {
         return defaults;
+    }
+    
+    public Catalogs getCatalogs() {
+        return catalogs;
     }
 
     public LocalRepository getLocalRepository() {
@@ -54,6 +66,10 @@ public class Settings {
 
     public void setDefaults(Defaults defaults) {
         this.defaults = defaults;
+    }
+    
+    public void setCatalogs(Catalogs catalogs) {
+        this.catalogs = catalogs;
     }
 
     public void setLocalRepository(LocalRepository localRepository) {
@@ -135,6 +151,26 @@ public class Settings {
 
         public void setPath(String path) {
             this.path = path.replace("/", File.separator);
+        }
+    }
+    
+    @JsonInclude(Include.NON_EMPTY)
+    public static class Catalogs {
+        
+        private List<String> urls = new ArrayList<>();
+        
+        public void addUrl(String url) {
+            urls.add(url);
+        }
+        
+        @JsonValue
+        public List<String> getUrls() {
+            if (urls == null || urls.size() == 0) {
+                return Collections.singletonList(Constants.CATALOG_URL);
+            }
+            else {
+                return urls;
+            }
         }
     }
 

@@ -30,6 +30,10 @@ public class Constants {
     
     public static final String CLOSEST_MATCH_HINT = "Did you mean?";
     
+    public static final String CATALOG_PATH = "operation/search";
+    public static final String CATALOG_URL = "https://api.atomist.com/catalog";
+    
+    
     public static String cliClient() {
         return ARTIFACT + " " + VersionUtils.readVersion().orElse("0.0.0");
     }

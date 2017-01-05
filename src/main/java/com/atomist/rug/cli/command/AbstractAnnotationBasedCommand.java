@@ -24,6 +24,8 @@ import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.loader.Handlers;
 import com.atomist.rug.loader.OperationsAndHandlers;
@@ -138,6 +140,9 @@ public abstract class AbstractAnnotationBasedCommand
             }
             else if (p.getType().equals(CommandLine.class)) {
                 return commandLine;
+            }
+            else if (p.getType().equals(Settings.class)) {
+                return new SettingsReader().read();
             }
             return null;
         }).collect(Collectors.toList());
