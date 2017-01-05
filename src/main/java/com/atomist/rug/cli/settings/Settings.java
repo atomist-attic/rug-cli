@@ -2,10 +2,12 @@ package com.atomist.rug.cli.settings;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -163,7 +165,12 @@ public class Settings {
         
         @JsonValue
         public List<String> getUrls() {
-            return urls;
+            if (urls == null || urls.size() == 0) {
+                return Collections.singletonList(Constants.CATALOG_URL);
+            }
+            else {
+                return urls;
+            }
         }
     }
 

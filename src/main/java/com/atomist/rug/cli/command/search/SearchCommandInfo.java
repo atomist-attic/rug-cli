@@ -3,9 +3,9 @@ package com.atomist.rug.cli.command.search;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import com.atomist.rug.cli.command.AbstractRugEnabledCommandInfo;
+import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
-public class SearchCommandInfo extends AbstractRugEnabledCommandInfo {
+public class SearchCommandInfo extends AbstractRugScopedCommandInfo {
 
     public SearchCommandInfo() {
         super(SearchCommand.class, "search");
