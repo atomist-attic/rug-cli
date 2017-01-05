@@ -67,7 +67,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         Optional<ProjectGenerator> opt = asJavaCollection(operations.generators())
                 .stream().filter(g -> g.name().equals(name)).findFirst();
         if (opt.isPresent()) {
-            validate(artifact, opt.get(), arguments);
+            arguments = validate(artifact, opt.get(), arguments);
             invoke(artifact, name, opt.get(), arguments, root, createRepo, overwrite);
         }
         else {

@@ -69,7 +69,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
         }
 
         if (opt.isPresent()) {
-            validate(artifact, opt.get(), arguments);
+            arguments = validate(artifact, opt.get(), arguments);
             invoke(artifact, name, opt.get(), arguments, root, dryRun, repo);
         }
         else {

@@ -34,6 +34,8 @@ public class GenerateCommandInfo extends AbstractVersionCommandInfo {
         options.addOption(Option.builder("C").longOpt("change-dir").argName("DIR")
                 .desc("Create project in directory DIR, default is '.'").hasArg(true)
                 .required(false).build());
+        options.addOption("I", "interactive", false,
+                "Interactive mode for specifying parameter values");
         return options;
     }
 
@@ -41,7 +43,7 @@ public class GenerateCommandInfo extends AbstractVersionCommandInfo {
     public int order() {
         return 20;
     }
-    
+
     @Override
     public String usage() {
         return "generate [OPTION]... GENERATOR PROJECT_NAME [PARAMETER]...";
