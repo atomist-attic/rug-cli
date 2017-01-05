@@ -92,6 +92,7 @@ _rug() {
     fi
     if [[ $special == @(edit|generate) ]]; then
         command_options+=( -R --repo )
+        command_options+=( -I --interactive )
     fi
     if [[ $special == list ]]; then
         command_options+=( -f --filter )

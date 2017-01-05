@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import com.atomist.event.SystemEventHandler;
 import com.atomist.param.Parameter;
 import com.atomist.param.Parameterized;
@@ -137,8 +139,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private String describeDescription(Parameter p) {
-        return p.getDescription() != null && p.getDescription().length() > 0
-                ? "(" + p.getDescription() + ")" : "";
+        return WordUtils.wrap(p.getDescription(), Constants.WRAP_LENGTH, "\n    ", false);
+        
     }
 
     private void describeEditor(ArtifactDescriptor artifact, String name, Operations operations) {
@@ -364,16 +366,16 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (required)"));
                 required.forEach(p -> log.info(
                         "  " + Style.yellow(p.getName())
-                                + " %s\n    pattern: %s, min length: %s, max length: %s",
-                        describeDescription(p), p.getPattern(), p.getMinLength(),
+                                + " (%s)\n    %s\n      pattern: %s, min length: %s, max length: %s",
+                                p.getDisplayName(), describeDescription(p), p.getPattern(), p.getMinLength(),
                         p.getMaxLength()));
             }
             if (!optional.isEmpty()) {
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (optional)"));
                 optional.forEach(p -> log.info(
                         "  " + Style.yellow(p.getName())
-                                + " %s\n    pattern: %s, min length: %s, max length: %s",
-                        describeDescription(p), p.getPattern(), p.getMinLength(),
+                                + " (%s)\n    %s\n      pattern: %s, min length: %s, max length: %s",
+                        p.getDisplayName(), describeDescription(p), p.getPattern(), p.getMinLength(),
                         p.getMaxLength()));
             }
         }
