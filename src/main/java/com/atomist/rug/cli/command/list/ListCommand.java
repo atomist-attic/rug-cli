@@ -52,7 +52,9 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
 
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives") + " ("
-                + archives.size() + " archives found)");
+                + archives.size() + " "
+                + com.atomist.rug.cli.utils.StringUtils.puralize("archive", archives.keySet())
+                + " found)");
 
         if (archives.isEmpty()) {
             log.info(Style.yellow("  No matching archives found"));

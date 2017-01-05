@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command.search;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -47,9 +48,10 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
 
         Map<String, List<Operation>> operations = new ProgressReportingOperationRunner<Map<String, List<Operation>>>(
                 "Searching catalogs").run(indicator -> {
-                    List<Operation> results = settings.getCatalogs().getUrls().stream()
-                            .map(u -> collectResults(u, search, tags)).flatMap(List::stream)
-                            .collect(Collectors.toList());
+                    List<Operation> results = settings.getCatalogs().getUrls().stream().map(u -> {
+                        indicator.report("  Searching " + u);
+                        return collectResults(u, search, tags);
+                    }).flatMap(List::stream).collect(Collectors.toList());
 
                     return results.stream()
                             .collect(Collectors.groupingBy(o -> o.getArchive().key()));
@@ -57,14 +59,17 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
                 });
 
         log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Remote Archives"));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Remote Archives") + " ("
+                + operations.size() + " "
+                + com.atomist.rug.cli.utils.StringUtils.puralize("archive", operations.keySet())
+                + " found)");
 
         if (operations.isEmpty()) {
             log.info(Style.yellow("  No matching archives found"));
             log.newline();
         }
         else {
-            operations.entrySet().stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+            operations.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
                     .forEach(a -> printArchive(a.getValue()));
             log.info("\nFor more information on specific archive version, run:\n"
                     + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND);

@@ -17,4 +17,4 @@ remote-repositories:
 
 # Set up Rug catalog endpoints for searching
 catalogs:
-- "https://api-staging.atomist.services/catalog"
+- "https://api.atomist.com/catalog"
