@@ -60,14 +60,12 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
             Optional<TestScenario> scenario = asJavaCollection(scenarios).stream()
                     .filter(s -> s.name().equals(testName)).findFirst();
             if (scenario.isPresent()) {
-                report = runTests(
-                        asScalaBuffer(Collections.singletonList(scenario.get())),
-                        source, artifact, operations);
+                report = runTests(asScalaBuffer(Collections.singletonList(scenario.get())), source,
+                        artifact, operations);
             }
             else {
                 // search for scenarios from a given file
-                List<FileArtifact> testFiles = asJavaCollection(source.allFiles())
-                        .stream()
+                List<FileArtifact> testFiles = asJavaCollection(source.allFiles()).stream()
                         .filter(f -> DefaultAtomistConfig$.MODULE$.isRugTest(f) && f.name()
                                 .equals(testName + DefaultAtomistConfig$.MODULE$.testExtension()))
                         .collect(Collectors.toList());
@@ -78,8 +76,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
                                     .stream())
                             .collect(Collectors.toList());
-                    report = runTests(asScalaBuffer(fileScenarios), source,
-                            artifact, operations);
+                    report = runTests(asScalaBuffer(fileScenarios), source, artifact, operations);
 
                 }
                 else {
@@ -102,17 +99,17 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                 log.info(Style.yellow("  %s", t.name())
                         + String.format(" (%s of %s assertions failed)", t.failures().size(),
                                 t.assertions().size()));
-                log.info("   " + Style.underline("Failed Assertions"));
-                asJavaCollection(t.failures()).forEach(a -> log.info("    %s", a.message()));
+                log.info("    " + Style.underline("Failed Assertions"));
+                asJavaCollection(t.failures()).forEach(a -> log.info("       %s", a.message()));
                 if (t.eventLog().input().isDefined()) {
-                    log.info("   " + Style.underline("Input"));
+                    log.info("    " + Style.underline("Input"));
                     ArtifactSourceTreeCreator.visitTree(t.eventLog().input().getOrElse(null),
-                            new LogVisitor(log, "  "));
+                            new LogVisitor(log, "    "));
                 }
                 if (t.eventLog().output().isDefined()) {
-                    log.info("   " + Style.underline("Ouput"));
+                    log.info("    " + Style.underline("Ouput"));
                     ArtifactSourceTreeCreator.visitTree(t.eventLog().output().getOrElse(null),
-                            new LogVisitor(log, "  "));
+                            new LogVisitor(log, "    "));
                 }
             });
             throw new CommandException(
