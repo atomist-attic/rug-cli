@@ -49,6 +49,7 @@ _rug() {
         publish
         default
         extension
+        search
     )
 
     local i command_re special special_index
@@ -106,6 +107,9 @@ _rug() {
     fi
     if [[ $special == publish ]]; then
         command_options+=( -i --id )
+    fi
+    if [[ $special == search ]]; then
+        command_options+=( -T --tag )
     fi
 
     local command_args=()
