@@ -14,10 +14,15 @@ import com.atomist.plan.TreeMaterializer;
 import com.atomist.project.archive.Operations;
 import com.atomist.rug.BadRugException;
 import com.atomist.rug.RugRuntimeException;
+import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
+import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.compiler.Compiler;
 import com.atomist.rug.compiler.ServiceLoaderCompilerRegistry;
 import com.atomist.rug.kind.service.ConsoleMessageBuilder;
@@ -39,6 +44,8 @@ import scala.collection.JavaConverters;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
     
+    private Log log = new Log(getClass());
+    
     @Override
     protected final void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
         OperationsAndHandlers operationsAndHandlers = null;
@@ -46,12 +53,21 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         if (artifact != null && artifact.extension() == Extension.ZIP) {
 
             source = compile(ArtifactSourceUtils.createArtifactSource(artifact));
+            printArtifactSource(artifact, source);
             operationsAndHandlers = loadOperationsAndHandlers(artifact, source,
                     createOperationsLoader(uri));
         }
         run(operationsAndHandlers, artifact, source, commandLine);
     }
     
+    private void printArtifactSource(ArtifactDescriptor artifact, ArtifactSource source) {
+        if (CommandLineOptions.hasOption("X") && source != null) {
+            log.info("Loaded archive sources for %s", ArtifactDescriptorUtils.coordinates(artifact));
+            log.info("  " + FileUtils.relativize(artifact.uri()));
+            ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
+        }
+    }
+
     private ArtifactSource compile(ArtifactSource source) {
         // Get all registered and supported compilers
         Collection<Compiler> compilers = asJavaCollection(
