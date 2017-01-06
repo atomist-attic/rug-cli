@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command.repo;
+package com.atomist.rug.cli.command;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +14,6 @@ import com.atomist.project.ProvenanceInfo;
 import com.atomist.project.SimpleProvenanceInfo;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
-import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
@@ -76,7 +74,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
 
         @Override
         public void metadataFileGenerated(FileArtifact file) {
-            log.info("  Generated %s", file.path());
+            log.info("  Created %s", file.path());
 
         }
     }
