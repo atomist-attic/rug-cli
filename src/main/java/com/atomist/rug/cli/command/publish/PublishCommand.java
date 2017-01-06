@@ -15,8 +15,8 @@ import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.command.AbstractRepositoryCommand;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.repo.AbstractRepositoryCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
