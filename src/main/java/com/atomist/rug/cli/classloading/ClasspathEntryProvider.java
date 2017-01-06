@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command;
+package com.atomist.rug.cli.classloading;
 
 import java.net.URL;
 import java.util.List;
