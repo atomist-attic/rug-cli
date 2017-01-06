@@ -367,7 +367,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (required)"));
                 required.forEach(p -> log.info(
                         "  " + Style.yellow(p.getName())
-                                + " (%s)\n    %s\n      pattern: %s, min length: %s, max length: %s",
+                                + " (%s)\n    %s\n      Pattern: %s, min length: %s, Max length: %s",
                         p.getDisplayName(), describeDescription(p), p.getPattern(),
                         p.getMinLength(), p.getMaxLength()));
             }
@@ -375,7 +375,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (optional)"));
                 optional.forEach(p -> log.info(
                         "  " + Style.yellow(p.getName())
-                                + " (%s)\n    %s\n      pattern: %s, min length: %s, max length: %s",
+                                + " (%s)\n    %s\n      Pattern: %s, min length: %s, max length: %s",
                         p.getDisplayName(), describeDescription(p), p.getPattern(),
                         p.getMinLength(), p.getMaxLength()));
             }

@@ -5,6 +5,7 @@ import static scala.collection.JavaConversions.asJavaCollection;
 import java.io.Console;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValue;
 import com.atomist.param.SimpleParameterValue;
+import com.atomist.param.SimpleParameterValues;
 import com.atomist.project.ProjectOperation;
 import com.atomist.project.ProjectOperationArguments;
 import com.atomist.project.SimpleProjectOperationArguments;
@@ -27,14 +29,6 @@ import scala.collection.JavaConversions;
 public abstract class AbstractParameterizedCommand extends AbstractAnnotationBasedCommand {
 
     private Log log = new Log(getClass());
-
-    protected ProjectOperationArguments validate(ArtifactDescriptor artifact,
-            ProjectOperation operation, ProjectOperationArguments arguments) {
-
-        arguments = collectParameters(operation, arguments);
-        validateCollectedParameters(artifact, operation, arguments);
-        return arguments;
-    }
 
     private ProjectOperationArguments collectParameters(ProjectOperation operation,
             ProjectOperationArguments arguments) {
@@ -61,23 +55,28 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
 
                     log.info("  " + WordUtils.wrap(parameter.getDescription(),
                             Constants.WRAP_LENGTH, "\n  ", false));
-                    log.info("    pattern: %s, min length: %s, max length: %s",
-                            parameter.getPattern(), parameter.getMinLength(),
-                            parameter.getMaxLength());
 
-                    String value = console.readLine("  %s %s %s ", Style.cyan(Constants.DIVIDER),
-                            Style.yellow(parameter.getName()),
-                            (defaultValue != null && defaultValue.length() > 0
-                                    ? "[" + defaultValue + "] " : "")
-                                    + (parameter.isRequired() ? "*:" : ":"));
+                    pv = readParameter(console, parameter, defaultValue);
 
-                    if (value == null || value.length() == 0) {
-                        value = defaultValue;
+                    boolean firstAttempt = true;
+                    while (isInvalid(operation, pv)) {
+                        log.info(Style.red("  Provided value '%s' is not valid", pv.getValue()));
+                        if (firstAttempt) {
+                            log.newline();
+                            log.info("  pattern: %s, min length: %s, max length: %s",
+                                    parameter.getPattern(),
+                                    (parameter.getMinLength() >= 0 ? parameter.getMinLength()
+                                            : "not defined"),
+                                    (parameter.getMaxLength() >= 0 ? parameter.getMaxLength()
+                                            : "not defined"));
+                            firstAttempt = false;
+                        }
+
+                        pv = readParameter(console, parameter, defaultValue);
                     }
 
-                    if (value != null && value.length() > 0) {
-                        newValues.add(new SimpleParameterValue(parameter.getName(), value));
-                    }
+                    // add the new and validated parameter to project operations arguments
+                    newValues.add(pv);
                 }
 
                 arguments = new SimpleProjectOperationArguments(arguments.name(),
@@ -89,6 +88,31 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
             }
         }
         return arguments;
+    }
+
+    private boolean isInvalid(ProjectOperation operation, ParameterValue pv) {
+        return !operation.findInvalidParameterValues(new SimpleParameterValues(
+                JavaConversions.asScalaBuffer(Collections.singletonList(pv)))).isEmpty();
+    }
+
+    private String getPrompt(Parameter parameter, String defaultValue) {
+        return String.format("  %s %s %s ", Style.cyan(Constants.DIVIDER),
+                Style.yellow(parameter.getName()),
+                (defaultValue != null && defaultValue.length() > 0 ? "[" + defaultValue + "] " : "")
+                        + (parameter.isRequired() ? "*:" : ":"));
+    }
+
+    private ParameterValue readParameter(Console console, Parameter parameter,
+            String defaultValue) {
+        ParameterValue pv;
+        String value = console.readLine(getPrompt(parameter, defaultValue));
+
+        if (value == null || value.length() == 0) {
+            value = defaultValue;
+        }
+
+        pv = new SimpleParameterValue(parameter.getName(), value);
+        return pv;
     }
 
     private void validateCollectedParameters(ArtifactDescriptor artifact,
@@ -117,6 +141,14 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
             throw new CommandException(String.format("Missing and/or invalid parameters for %s",
                     StringUtils.stripName(operation.name(), artifact)));
         }
+    }
+
+    protected ProjectOperationArguments validate(ArtifactDescriptor artifact,
+            ProjectOperation operation, ProjectOperationArguments arguments) {
+
+        arguments = collectParameters(operation, arguments);
+        validateCollectedParameters(artifact, operation, arguments);
+        return arguments;
     }
 
 }
