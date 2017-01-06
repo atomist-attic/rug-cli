@@ -365,25 +365,30 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
             if (!required.isEmpty()) {
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (required)"));
-                required.forEach(p -> log.info(
-                        "  " + Style.yellow(p.getName())
-                                + " (%s)\n    %s\n      Pattern: %s, min length: %s, Max length: %s",
-                        p.getDisplayName(), describeDescription(p), p.getPattern(),
-                        p.getMinLength(), p.getMaxLength()));
+                describeParameters(required);
             }
             if (!optional.isEmpty()) {
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters (optional)"));
-                optional.forEach(p -> log.info(
-                        "  " + Style.yellow(p.getName())
-                                + " (%s)\n    %s\n      Pattern: %s, min length: %s, max length: %s",
-                        p.getDisplayName(), describeDescription(p), p.getPattern(),
-                        p.getMinLength(), p.getMaxLength()));
+                describeParameters(optional);
             }
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters"));
             log.info("  no parameters needed");
         }
+    }
+
+    private void describeParameters(List<Parameter> required) {
+        required.forEach(p -> log.info(
+                "  " + Style.yellow(p.getName())
+                        + " (%s)\n    %s\n      Pattern: %s, min length: %s, max length: %s",
+                p.getDisplayName(), describeDescription(p), describePattern(p),
+                (p.getMinLength() >= 0 ? p.getMinLength() : "not defined"),
+                (p.getMaxLength() >= 0 ? p.getMaxLength() : "not defined")));
+    }
+
+    private String describePattern(Parameter p) {
+        return p.getPattern();
     }
 
     private void describeProjectOperationInfo(ArtifactDescriptor artifact,
