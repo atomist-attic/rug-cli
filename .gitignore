@@ -170,3 +170,4 @@ Temporary Items
 hs_err_pid*
 /src/test/resources/common-editors/.provenance.yml
 /src/test/resources/common-editors/.atomist.yml
+/README.backup
