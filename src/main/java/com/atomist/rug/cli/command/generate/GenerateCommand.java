@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -64,8 +65,8 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             throw new CommandException("No generator name provided.", "generate");
         }
 
-        Optional<ProjectGenerator> opt = asJavaCollection(operations.generators())
-                .stream().filter(g -> g.name().equals(name)).findFirst();
+        Optional<ProjectGenerator> opt = asJavaCollection(operations.generators()).stream()
+                .filter(g -> g.name().equals(name)).findFirst();
         if (opt.isPresent()) {
             arguments = validate(artifact, opt.get(), arguments);
             invoke(artifact, name, opt.get(), arguments, root, createRepo, overwrite);
@@ -73,8 +74,9 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         else {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            asJavaCollection(operations.generators()).forEach(
-                    e -> log.info(Style.yellow("  %s", e.name()) + " (" + e.description() + ")"));
+            asJavaCollection(operations.generators())
+                    .forEach(e -> log.info(Style.yellow("  %s", e.name()) + "\n    " + WordUtils
+                            .wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
             StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
             throw new CommandException(
                     String.format("Specified generator %s could not be found in %s:%s:%s", name,
@@ -163,7 +165,6 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             Arrays.stream(pv).forEach(pvs::add);
         }
         return new SimpleProjectOperationArguments(
-                (arguments != null ? arguments.name() : "parameter"),
-                asScalaBuffer(pvs));
+                (arguments != null ? arguments.name() : "parameter"), asScalaBuffer(pvs));
     }
 }

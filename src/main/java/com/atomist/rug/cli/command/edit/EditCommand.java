@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -77,7 +78,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
             asJavaCollection(operations.editors()).forEach(
                     e -> log.info(Style.yellow("  %s", StringUtils.stripName(e.name(), artifact))
-                            + " (" + e.description() + ")"));
+                            + "\n    " + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
             StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
             throw new CommandException(
                     String.format("Specified editor %s could not be found in %s:%s:%s",
