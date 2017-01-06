@@ -43,26 +43,27 @@ import com.atomist.tree.pathexpression.PathExpression;
 import scala.collection.JavaConverters;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
-    
+
     private Log log = new Log(getClass());
-    
+
     @Override
     protected final void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
         OperationsAndHandlers operationsAndHandlers = null;
         ArtifactSource source = null;
         if (artifact != null && artifact.extension() == Extension.ZIP) {
-
-            source = compile(ArtifactSourceUtils.createArtifactSource(artifact));
+            source = ArtifactSourceUtils.filter(ArtifactSourceUtils.createArtifactSource(artifact));
             printArtifactSource(artifact, source);
+            source = compile(source);
             operationsAndHandlers = loadOperationsAndHandlers(artifact, source,
                     createOperationsLoader(uri));
         }
         run(operationsAndHandlers, artifact, source, commandLine);
     }
-    
+
     private void printArtifactSource(ArtifactDescriptor artifact, ArtifactSource source) {
         if (CommandLineOptions.hasOption("X") && source != null) {
-            log.info("Loaded archive sources for %s", ArtifactDescriptorUtils.coordinates(artifact));
+            log.info("Loaded archive sources for %s",
+                    ArtifactDescriptorUtils.coordinates(artifact));
             log.info("  " + FileUtils.relativize(artifact.uri()));
             ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
         }
@@ -102,7 +103,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
             return source;
         }
     }
-    
+
     private HandlerOperationsLoader createOperationsLoader(URI[] uri) {
         HandlerOperationsLoader loader = new DecoratingOperationsLoader(
                 new UriBasedDependencyResolver(uri,
@@ -164,7 +165,6 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                             return doLoadOperationsAndHandlers(artifact, source, loader);
                         });
     }
-
 
     protected abstract void run(OperationsAndHandlers operationsAndHandlers,
             ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine);
