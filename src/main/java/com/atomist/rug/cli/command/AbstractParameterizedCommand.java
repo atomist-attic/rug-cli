@@ -51,32 +51,38 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                 log.newline();
                 log.info(Style.cyan(Constants.DIVIDER) + " "
                         + Style.bold("Please specify parameter values"));
+                log.info(Constants.LEFT_PADDING
+                        + "Press 'Enter' to accept default or provided values. '*' indicates required parameters.");
 
                 for (Parameter parameter : parameters) {
-                    log.newline();
+                    if (parameter.isDisplayable()) {
+                        log.newline();
 
-                    ParameterValue pv = JavaConversions.mapAsJavaMap(arguments.parameterValueMap())
-                            .get(parameter.getName());
-                    String defaultValue = (pv != null ? pv.getValue().toString()
-                            : parameter.getDefaultValue());
+                        ParameterValue pv = JavaConversions
+                                .mapAsJavaMap(arguments.parameterValueMap())
+                                .get(parameter.getName());
+                        String defaultValue = (pv != null ? pv.getValue().toString()
+                                : parameter.getDefaultValue());
 
-                    log.info("  " + WordUtils.wrap(parameter.getDescription(),
-                            Constants.WRAP_LENGTH, "\n  ", false));
-                    log.info("    pattern: %s, min length: %s, max length: %s",
-                            parameter.getPattern(), parameter.getMinLength(),
-                            parameter.getMaxLength());
+                        log.info("  " + WordUtils.wrap(parameter.getDescription(),
+                                Constants.WRAP_LENGTH, "\n  ", false));
+                        log.info("    pattern: %s, min length: %s, max length: %s",
+                                parameter.getPattern(), parameter.getMinLength(),
+                                parameter.getMaxLength());
 
-                    String value = console.readLine("  %s %s %s ", Style.cyan(Constants.DIVIDER),
-                            Style.yellow(parameter.getName()),
-                            (defaultValue != null && defaultValue.length() > 0
-                                    ? "[" + defaultValue + "] :" : ":"));
+                        String value = console.readLine("  %s %s %s ",
+                                Style.cyan(Constants.DIVIDER), Style.yellow(parameter.getName()),
+                                (defaultValue != null && defaultValue.length() > 0
+                                        ? "[" + defaultValue + "] " : "")
+                                        + (parameter.isRequired() ? "*:" : ":"));
 
-                    if (value == null || value.length() == 0) {
-                        value = defaultValue;
-                    }
+                        if (value == null || value.length() == 0) {
+                            value = defaultValue;
+                        }
 
-                    if (value != null && value.length() > 0) {
-                        newValues.add(new SimpleParameterValue(parameter.getName(), value));
+                        if (value != null && value.length() > 0) {
+                            newValues.add(new SimpleParameterValue(parameter.getName(), value));
+                        }
                     }
                 }
 
