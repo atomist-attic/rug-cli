@@ -30,7 +30,7 @@ import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
@@ -43,11 +43,11 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
     private Log log = new Log(ListCommand.class);
 
     @Command
-    public void run(@Option("filter") Properties filter) {
+    public void run(@Option("filter") Properties filter, Settings settings) {
 
         Map<String, List<ArtifactDescriptor>> archives = new ProgressReportingOperationRunner<Map<String, List<ArtifactDescriptor>>>(
                 "Listing local archives")
-                        .run(indicator -> collectArchives(filter).stream().collect(
+                        .run(indicator -> collectArchives(filter, settings).stream().collect(
                                 Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
 
         log.newline();
@@ -79,8 +79,8 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                 StringUtils.collectionToDelimitedString(versionStrings, ", "));
     }
 
-    protected List<ArtifactDescriptor> collectArchives(Properties filter) {
-        File repo = new File(new SettingsReader().read().getLocalRepository().path());
+    private List<ArtifactDescriptor> collectArchives(Properties filter, Settings settings) {
+        File repo = new File(settings.getLocalRepository().path());
         URI repoHome = repo.toURI();
         if (repo.exists()) {
             Collection<File> archives = FileUtils.listFiles(repo, new String[] { "zip" }, true)
