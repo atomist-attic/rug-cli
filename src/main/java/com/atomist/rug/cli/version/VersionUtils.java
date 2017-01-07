@@ -27,6 +27,7 @@ import org.eclipse.aether.version.VersionScheme;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.HttpClientFactory;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
@@ -65,7 +66,8 @@ public abstract class VersionUtils {
         }
     }
 
-    public static void validateRugCompatibility(List<ArtifactDescriptor> dependencies) {
+    public static void validateRugCompatibility(ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies) {
         Optional<ArtifactDescriptor> rugArtifact = dependencies.stream()
                 .filter(f -> f.group().equals(Constants.GROUP)
                         && f.artifact().equals(Constants.RUG_ARTIFACT))
@@ -77,10 +79,11 @@ public abstract class VersionUtils {
                 VersionRange range = versionScheme.parseVersionRange(Constants.RUG_VERSION_RANGE);
                 if (!range.containsVersion(version)) {
                     throw new VersionException(String.format(
-                            "This version of rug-cli is not compatible with %s:%s:%s (supported versions are %s).\n"
-                                    + "Please update to a more recent version of rug-cli or change your Rug archive to use a supported version of rug.",
-                            Constants.GROUP, Constants.RUG_ARTIFACT, version.toString(),
-                            range.toString()));
+                            "Installed version of rug-cli is not compatible with archive %s.\n"
+                          + "The archive depends on %s:%s:%s which is incompatible with rug-cli (compatible version range %s).\n"
+                          + "Please update to a more recent version of rug-cli or change the Rug archive to use a supported Rug version.",
+                            ArtifactDescriptorUtils.coordinates(artifact), Constants.GROUP,
+                            Constants.RUG_ARTIFACT, version.toString(), range.toString()));
                 }
             }
             catch (InvalidVersionSpecificationException e) {
