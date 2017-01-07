@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug/compare/0.19.1...HEAD
+[Unreleased]: https://github.com/atomist/rug/compare/0.20.0...HEAD
+
+## [0.20.0] - 2017-01-08
+
+[0.19.1]: https://github.com/atomist/rug/compare/0.19.1...0.20.0
+
+### Changed
+
+-   Interactive mode `--interactive` or `-I` for entering parameters for edit and generate
+
+-   New `search` command to allow searching our online catalog of Rugs
+
+-   Write ArtifactSource content to the console when running with `-X`to allow debugging for filters
+
+-   Print remote repository URL on publish
 
 ## [0.19.1] - 2017-01-04
 
