@@ -37,9 +37,49 @@ import com.atomist.rug.manifest.ManifestFactory;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 
+import scala.collection.Seq;
+
 public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
+    private static final DescribeLabels EDITOR_LABELS = new DescribeLabels("edit", "editor",
+            "Editors");
+    private static final DescribeLabels GENERATOR_LABELS = new DescribeLabels("generate",
+            "generator", "Generators");
+    private static final DescribeLabels EXECUTOR_LABELS = new DescribeLabels("execute", "executor",
+            "Executors");
+    private static final DescribeLabels REVIEWER_LABELS = new DescribeLabels("review", "reviewer",
+            "Reviewers");
+
     private Log log = new Log(getClass());
+
+    @Command
+    public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
+            ArtifactSource source, @Argument(index = 1, defaultValue = "") String kind,
+            @Argument(index = 2) String name) {
+
+        Operations operations = operationsAndHandlers.operations();
+        String operationName = OperationUtils.extractRugTypeName(name);
+
+        switch (kind) {
+        case "editor":
+            describeOperations(artifact, operationName, operations.editors(), EDITOR_LABELS);
+            break;
+        case "generator":
+            describeOperations(artifact, operationName, operations.generators(), GENERATOR_LABELS);
+            break;
+        case "reviewer":
+            describeOperations(artifact, operationName, operations.reviewers(), REVIEWER_LABELS);
+            break;
+        case "executor":
+            describeOperations(artifact, operationName, operations.executors(), EXECUTOR_LABELS);
+            break;
+        case "archive":
+            describeArchive(artifact, source, operationsAndHandlers);
+            break;
+        default:
+            throw new CommandException("No or invalid TYPE provided.", "describe");
+        }
+    }
 
     private void describeArchive(ArtifactDescriptor artifact, ArtifactSource source,
             OperationsAndHandlers operationsAndHandlers) {
@@ -85,132 +125,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     }
 
-    private void describeEditor(ArtifactDescriptor artifact, String name, Operations operations) {
-        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-        Optional<ProjectEditor> opt = asJavaCollection(operations.editors()).stream()
-                .filter(g -> g.name().equals(name)).findFirst();
-        if (!opt.isPresent()) {
-            // try again with a proper namespaced name
-            opt = asJavaCollection(operations.editors()).stream()
-                    .filter(g -> g.name().equals(fqName)).findFirst();
-        }
-
-        log.newline();
-        if (opt.isPresent()) {
-            describeProjectOperationInfo(artifact, opt.get(), "editor", "edit");
-        }
-        else {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-            asJavaCollection(operations.editors()).forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                            + " " + e.description()));
-            if (name != null) {
-                StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
-                throw new CommandException(
-                        String.format("Specified editor %s could not be found in %s:%s:%s", name,
-                                artifact.group(), artifact.artifact(), artifact.version()));
-            }
-            else {
-                describeInvokeArchive();
-            }
-        }
-    }
-
-    private void describeExecutor(ArtifactDescriptor artifact, String name, Operations operations) {
-        Optional<Executor> opt = asJavaCollection(operations.executors()).stream()
-                .filter(g -> g.name().equals(name)).findFirst();
-        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-        if (!opt.isPresent()) {
-            // try again with a proper namespaced name
-            opt = asJavaCollection(operations.executors()).stream()
-                    .filter(g -> g.name().equals(fqName)).findFirst();
-        }
-
-        log.newline();
-        if (opt.isPresent()) {
-            describeProjectOperationInfo(artifact, opt.get(), "executor", "execute");
-        }
-        else {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Executors"));
-            asJavaCollection(operations.executors()).forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                            + " " + e.description()));
-            if (name != null) {
-                StringUtils.printClosestMatch(fqName, artifact, operations.executorNames());
-                throw new CommandException(
-                        String.format("Specified executor %s could not be found in %s:%s:%s", name,
-                                artifact.group(), artifact.artifact(), artifact.version()));
-            }
-            else {
-                describeInvokeArchive();
-            }
-        }
-    }
-
-    private void describeGenerator(ArtifactDescriptor artifact, String name,
-            Operations operations) {
-        Optional<ProjectGenerator> opt = asJavaCollection(operations.generators()).stream()
-                .filter(g -> g.name().equals(name)).findFirst();
-
-        log.newline();
-        if (opt.isPresent()) {
-            describeProjectOperationInfo(artifact, opt.get(), "generator", "generate");
-        }
-        else {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            asJavaCollection(operations.generators())
-                    .forEach(e -> log.info("  " + Style.yellow(e.name()) + " " + e.description()));
-            if (name != null) {
-                StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
-                throw new CommandException(
-                        String.format("Specified generator %s could not be found in %s:%s:%s", name,
-                                artifact.group(), artifact.artifact(), artifact.version()));
-            }
-            else {
-                describeInvokeArchive();
-            }
-        }
-    }
-
-    // private void describeHandler(ArtifactDescriptor artifact, String name, Handlers handlers) {
-    // Optional<SystemEventHandler> opt = handlers.handlers().stream()
-    // .filter(h -> h.name().equals(name)).findFirst();
-    // String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-    // if (!opt.isPresent()) {
-    // // try again with a proper namespaced name
-    // opt = handlers.handlers().stream().filter(g -> g.name().equals(fqName)).findFirst();
-    // }
-    //
-    // log.newline();
-    // if (opt.isPresent()) {
-    // SystemEventHandler handler = opt.get();
-    // log.info(Style.bold(Style.yellow(StringUtils.stripName(handler.name(), artifact))));
-    // log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
-    // log.info(handler.description());
-    // log.newline();
-    // if (!handler.tags().isEmpty()) {
-    // log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Tags"));
-    // asJavaCollection(handler.tags()).forEach(t -> log
-    // .info(" " + Style.yellow(t.name()) + " (" + t.description() + ")"));
-    // }
-    // }
-    // else {
-    // log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
-    // handlers.handlers().forEach(
-    // e -> log.info(" " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-    // + " " + e.description()));
-    // if (name != null) {
-    // StringUtils.printClosestMatch(fqName, artifact, handlers.handlerNames());
-    // throw new CommandException(
-    // String.format("Specified handler %s could not be found in %s:%s:%s", name,
-    // artifact.group(), artifact.artifact(), artifact.version()));
-    // }
-    // else {
-    // describeInvokeArchive();
-    // }
-    // }
-    // }
-
     private void describeInvoke(ArtifactDescriptor artifact, ProjectOperationInfo info,
             String command, String type) {
         log.newline();
@@ -251,6 +165,41 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.info(Style.bold(Style.yellow("%s:%s:%s", manifest.group(), manifest.artifact(),
                 manifest.version())));
         log.newline();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void describeOperations(ArtifactDescriptor artifact, String name, Seq<?> operations,
+            DescribeLabels labels) {
+        Collection<ProjectOperationInfo> ops = (Collection<ProjectOperationInfo>) asJavaCollection(
+                operations);
+        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
+        Optional<ProjectOperationInfo> opt = ops.stream().filter(g -> g.name().equals(name))
+                .findFirst();
+        if (!opt.isPresent()) {
+            // try again with a proper namespaced name
+            opt = ops.stream().filter(g -> g.name().equals(fqName)).findFirst();
+        }
+
+        log.newline();
+        if (opt.isPresent()) {
+            describeProjectOperationInfo(artifact, opt.get(), labels.operation(), labels.command());
+        }
+        else {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold(labels.label()));
+            ops.forEach(e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
+                    + "\n    "
+                    + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
+            if (name != null) {
+                StringUtils.printClosestMatch(StringUtils.stripName(fqName, artifact), artifact,
+                        ops.stream().map(o -> o.name()).collect(Collectors.toList()));
+                throw new CommandException(String.format(
+                        "Specified %s %s could not be found in %s:%s:%s", labels.operation(), name,
+                        artifact.group(), artifact.artifact(), artifact.version()));
+            }
+            else {
+                describeInvokeArchive();
+            }
+        }
     }
 
     private void describeOperations(ArtifactDescriptor artifact,
@@ -343,38 +292,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private void describeReviewer(ArtifactDescriptor artifact, String name, Operations operations) {
-        Optional<ProjectReviewer> opt = asJavaCollection(operations.reviewers()).stream()
-                .filter(g -> g.name().equals(name)).findFirst();
-        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-        if (!opt.isPresent()) {
-            // try again with a proper namespaced name
-            opt = asJavaCollection(operations.reviewers()).stream()
-                    .filter(g -> g.name().equals(fqName)).findFirst();
-        }
-
-        log.newline();
-        if (opt.isPresent()) {
-            describeProjectOperationInfo(artifact, opt.get(), "reviewer", "review");
-
-        }
-        else {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
-            asJavaCollection(operations.reviewers()).forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                            + " " + e.description()));
-            if (name != null) {
-                StringUtils.printClosestMatch(fqName, artifact, operations.reviewerNames());
-                throw new CommandException(
-                        String.format("Specified reviewer %s could not be found in %s:%s:%s", name,
-                                artifact.group(), artifact.artifact(), artifact.version()));
-            }
-            else {
-                describeInvokeArchive();
-            }
-        }
-    }
-
     private void describeTags(ProjectOperationInfo info) {
         if (!info.tags().isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Tags"));
@@ -391,36 +308,27 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         });
     }
 
-    @Command
-    public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
-            ArtifactSource source, @Argument(index = 1, defaultValue = "") String kind,
-            @Argument(index = 2) String name) {
+    private static class DescribeLabels {
+        private final String command;
+        private final String operation;
+        private final String label;
 
-        Operations operations = operationsAndHandlers.operations();
-        String operationName = OperationUtils.extractRugTypeName(name);
+        public DescribeLabels(String command, String operation, String label) {
+            this.command = command;
+            this.operation = operation;
+            this.label = label;
+        }
 
-        switch (kind) {
-        case "editor":
-            describeEditor(artifact, operationName, operations);
-            break;
-        case "generator":
-            describeGenerator(artifact, operationName, operations);
-            break;
-        case "reviewer":
-            describeReviewer(artifact, operationName, operations);
-            break;
-        case "executor":
-            describeExecutor(artifact, operationName, operations);
-            break;
-        // case "handler":
-        // describeHandler(artifact, CommandUtils.extractRugTypeName(name),
-        // operationsAndHandlers.handlers());
-        // break;
-        case "archive":
-            describeArchive(artifact, source, operationsAndHandlers);
-            break;
-        default:
-            throw new CommandException("No or invalid TYPE provided.", "describe");
+        public String command() {
+            return command;
+        }
+
+        public String label() {
+            return label;
+        }
+
+        public String operation() {
+            return operation;
         }
     }
 }
