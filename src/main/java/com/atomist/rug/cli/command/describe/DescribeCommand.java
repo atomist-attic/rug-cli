@@ -2,9 +2,6 @@ package com.atomist.rug.cli.command.describe;
 
 import static scala.collection.JavaConversions.asJavaCollection;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -39,10 +36,6 @@ import com.atomist.rug.manifest.ManifestException;
 import com.atomist.rug.manifest.ManifestFactory;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
-import com.atomist.source.file.FileSystemArtifactSource;
-import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
-import com.atomist.source.file.ZipFileArtifactSourceReader;
-import com.atomist.source.file.ZipFileInput;
 
 public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
@@ -50,57 +43,39 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
-            @Argument(index = 1, defaultValue = "") String kind, @Argument(index = 2) String name) {
+            ArtifactSource source, @Argument(index = 1, defaultValue = "") String kind,
+            @Argument(index = 2) String name) {
+
+        Operations operations = operationsAndHandlers.operations();
+        String operationName = OperationUtils.extractRugTypeName(name);
 
         switch (kind) {
         case "editor":
-            describeEditor(artifact, OperationUtils.extractRugTypeName(name),
-                    operationsAndHandlers.operations());
+            describeEditor(artifact, operationName, operations);
             break;
         case "generator":
-            describeGenerator(artifact, OperationUtils.extractRugTypeName(name),
-                    operationsAndHandlers.operations());
+            describeGenerator(artifact, operationName, operations);
             break;
         case "reviewer":
-            describeReviewer(artifact, OperationUtils.extractRugTypeName(name),
-                    operationsAndHandlers.operations());
+            describeReviewer(artifact, operationName, operations);
             break;
         case "executor":
-            describeExecutor(artifact, OperationUtils.extractRugTypeName(name),
-                    operationsAndHandlers.operations());
+            describeExecutor(artifact, operationName, operations);
             break;
         // case "handler":
         // describeHandler(artifact, CommandUtils.extractRugTypeName(name),
         // operationsAndHandlers.handlers());
         // break;
         case "archive":
-            describeArchive(artifact, operationsAndHandlers);
+            describeArchive(artifact, source, operationsAndHandlers);
             break;
         default:
             throw new CommandException("No or invalid TYPE provided.", "describe");
         }
     }
 
-    private ArtifactSource createArtifactSource(ArtifactDescriptor artifact) {
-        try {
-            File archiveRoot = new File(artifact.uri());
-            if (archiveRoot.isFile()) {
-                return ZipFileArtifactSourceReader
-                        .fromZipSource(new ZipFileInput(new FileInputStream(archiveRoot)));
-            }
-            else {
-                return new FileSystemArtifactSource(
-                        new SimpleFileSystemArtifactSourceIdentifier(archiveRoot));
-            }
-        }
-        catch (FileNotFoundException e) {
-            throw new RunnerException(e);
-        }
-    }
-
-    private void describeArchive(ArtifactDescriptor artifact,
+    private void describeArchive(ArtifactDescriptor artifact, ArtifactSource source,
             OperationsAndHandlers operationsAndHandlers) {
-        ArtifactSource source = createArtifactSource(artifact);
         try {
             log.newline();
             Manifest manifest = ManifestFactory.read(source);
@@ -187,7 +162,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         if (opt.isPresent()) {
             describeProjectOperationInfo(artifact, opt.get(), "executor", "execute");
-
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Executors"));
@@ -253,7 +227,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         if (opt.isPresent()) {
             describeProjectOperationInfo(artifact, opt.get(), "generator", "generate");
-
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
