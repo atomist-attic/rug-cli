@@ -50,7 +50,7 @@ public class ReflectiveCommandRunner {
                                     .run(indicator -> resolveDependencies(rootArtifact, indicator));
 
             // Validate that this CLI version is compatible with declared version of Rug
-            VersionUtils.validateRugCompatibility(dependencies);
+            VersionUtils.validateRugCompatibility(rootArtifact, dependencies);
 
             artifact = dependencies.stream()
                     .filter(a -> a.group().equals(rootArtifact.group())
