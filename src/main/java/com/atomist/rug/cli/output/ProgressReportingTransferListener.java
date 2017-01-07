@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.aether.transfer.AbstractTransferListener;
 import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
@@ -26,7 +27,7 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
         this(new SettingsReader().read().getRemoteRepositories(), indicator);
         this.reportTitle = reportTitle;
     }
-    
+
     public ProgressReportingTransferListener(ProgressReporter indicator) {
         this(new SettingsReader().read().getRemoteRepositories(), indicator);
     }
@@ -57,7 +58,7 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
     public void transferSucceeded(TransferEvent event) {
         report(event);
     }
-    
+
     private void report(TransferEvent event) {
         String message = messageFrom(event);
         if (reportTitle) {
@@ -78,16 +79,20 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
         message.append(event.getResource().getResourceName());
         if (event.getRequestType().equals(RequestType.PUT)) {
             message.append(" ").append(Constants.DIVIDER).append(" ");
-        }
+        } 
         else {
             message.append(" ").append(Constants.REDIVID).append(" ");
         }
         message.append(
                 repositories.getOrDefault(sanitizeUrl(event.getResource().getRepositoryUrl()),
                         event.getResource().getRepositoryUrl()));
-        message.append(" (");
-        message.append((event.getResource().getContentLength() / 1024));
-        message.append("kb) ");
+        // only print size if > 0
+        if (event.getResource().getContentLength() > 0) {
+            message.append(" (");
+            message.append(FileUtils.byteCountToDisplaySize(event.getResource().getContentLength())
+                    .toLowerCase());
+            message.append(") ");
+        }
 
         String eventMsg = event.getType().toString().toLowerCase();
         switch (event.getType()) {
@@ -109,7 +114,7 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
     }
 
     private String sanitizeUrl(String url) {
-    	url = StringUtils.expandEnvironmentVars(url);
+        url = StringUtils.expandEnvironmentVars(url);
         if (url.endsWith("/")) {
             return URI.create(url).getPath();
         }
@@ -117,5 +122,4 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
             return URI.create(url + "/").getPath();
         }
     }
-
 }

@@ -39,8 +39,7 @@ public abstract class FileUtils {
 
     public static String sizeOf(File file) {
         return org.apache.commons.io.FileUtils
-                .byteCountToDisplaySize(org.apache.commons.io.FileUtils.sizeOf(file)).toLowerCase()
-                .replace(" ", "");
+                .byteCountToDisplaySize(org.apache.commons.io.FileUtils.sizeOf(file)).toLowerCase();
     }
 
     public static String relativize(URI uri) {
