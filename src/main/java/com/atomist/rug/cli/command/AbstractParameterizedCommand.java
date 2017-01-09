@@ -59,7 +59,9 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                     pv = readParameter(console, parameter, defaultValue);
 
                     boolean firstAttempt = true;
-                    while (isInvalid(operation, pv)) {
+                    while (isInvalid(operation, pv)
+                            || ((pv.getValue() == null || pv.getValue().toString().length() == 0)
+                                    && parameter.isRequired())) {
                         log.info(Style.red("  Provided value '%s' is not valid", pv.getValue()));
                         if (firstAttempt) {
                             log.newline();
@@ -104,15 +106,13 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
 
     private ParameterValue readParameter(Console console, Parameter parameter,
             String defaultValue) {
-        ParameterValue pv;
         String value = console.readLine(getPrompt(parameter, defaultValue));
 
         if (value == null || value.length() == 0) {
             value = defaultValue;
         }
 
-        pv = new SimpleParameterValue(parameter.getName(), value);
-        return pv;
+        return new SimpleParameterValue(parameter.getName(), value);
     }
 
     private void validateCollectedParameters(ArtifactDescriptor artifact,
