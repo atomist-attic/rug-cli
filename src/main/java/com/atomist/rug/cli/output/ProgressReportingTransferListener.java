@@ -91,9 +91,9 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
             message.append(" (");
             message.append(FileUtils.byteCountToDisplaySize(event.getResource().getContentLength())
                     .toLowerCase());
-            message.append(") ");
+            message.append(")");
         }
-
+        message.append(" ");
         String eventMsg = event.getType().toString().toLowerCase();
         switch (event.getType()) {
         case SUCCEEDED:
