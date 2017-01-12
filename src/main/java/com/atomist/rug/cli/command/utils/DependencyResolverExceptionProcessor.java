@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
+import com.atomist.source.file.*;
 import org.eclipse.aether.repository.RemoteRepository;
 
 import com.atomist.project.ProvenanceInfo;
@@ -17,10 +18,6 @@ import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.maven.DependencyCollectionException;
 import com.atomist.rug.resolver.maven.DependencyCollectionException.ErrorType;
 import com.atomist.source.ArtifactSource;
-import com.atomist.source.file.FileSystemArtifactSource;
-import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
-import com.atomist.source.file.ZipFileArtifactSourceReader;
-import com.atomist.source.file.ZipFileInput;
 
 public class DependencyResolverExceptionProcessor {
 
@@ -72,6 +69,10 @@ public class DependencyResolverExceptionProcessor {
 
     private static Optional<ProvenanceInfo> resolveToProvenanceInfo(ArtifactDescriptor artifact) {
         if (artifact instanceof LocalArtifactDescriptor) {
+//            ArtifactSource source = FileSystemArtifactSource$.MODULE$.apply(
+//                    new SimpleFileSystemArtifactSourceIdentifier(new File(artifact.uri())),
+//                    new DotGitDirFilter(artifact.uri().getPath()));
+
             ArtifactSource source = new FileSystemArtifactSource(
                     new SimpleFileSystemArtifactSourceIdentifier(new File(artifact.uri())));
             return new ProvenanceInfoArtifactSourceReader().read(source);
