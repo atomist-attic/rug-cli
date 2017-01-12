@@ -39,6 +39,12 @@ public abstract class ArtifactSourceUtils {
                         .fromZipSource(new ZipFileInput(new FileInputStream(archiveRoot)));
             }
             else {
+//                return FileSystemArtifactSource$.MODULE$.apply(
+//                        new SimpleFileSystemArtifactSourceIdentifier(archiveRoot),
+//                        Arrays.asList(
+//                                new DotGitignoreFileFilter(archiveRoot.getPath()),
+//                                new DotGitDirFilter(archiveRoot.getPath())));
+
                 return new FileSystemArtifactSource(
                         new SimpleFileSystemArtifactSourceIdentifier(archiveRoot));
             }

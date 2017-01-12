@@ -30,6 +30,10 @@ public abstract class AbstractLocalArtifactDescriptorProvider extends AbstractCo
         ArtifactSource source = new FileSystemArtifactSource(
                 new SimpleFileSystemArtifactSourceIdentifier(projectRoot));
 
+//        ArtifactSource source = FileSystemArtifactSource$.MODULE$.apply(
+//                new SimpleFileSystemArtifactSourceIdentifier(projectRoot),
+//                new DotGitDirFilter(projectRoot.getPath()));
+
         Manifest manifest = ManifestFactory.read(source);
         if (manifest != null) {
             return new ManifestArtifactDescriptorCreator().create(manifest, projectRoot.toURI());

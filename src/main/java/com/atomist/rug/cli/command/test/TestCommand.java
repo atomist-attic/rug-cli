@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command.test;
 import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,9 +44,13 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
     public void run(Operations operations, ArtifactDescriptor artifact,
             @Argument(index = 1) String testName) {
 
+        File workingDir = CommandUtils.getRequiredWorkingDirectory();
+//        ArtifactSource source = FileSystemArtifactSource$.MODULE$.apply(
+//                new SimpleFileSystemArtifactSourceIdentifier(workingDir),
+//                new DotGitDirFilter(workingDir.getPath()));
+
         ArtifactSource source = new FileSystemArtifactSource(
-                new SimpleFileSystemArtifactSourceIdentifier(
-                        CommandUtils.getRequiredWorkingDirectory()));
+                new SimpleFileSystemArtifactSourceIdentifier(workingDir));
 
         TestLoader testLoader = new TestLoader(DefaultAtomistConfig$.MODULE$);
         Seq<TestScenario> scenarios = testLoader.loadTestScenarios(source);
