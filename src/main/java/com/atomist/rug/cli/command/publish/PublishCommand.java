@@ -26,6 +26,7 @@ import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.manifest.Manifest;
@@ -71,12 +72,24 @@ public class PublishCommand extends AbstractRepositoryCommand {
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
         log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(zip.getFile())),
                 FileUtils.sizeOf(zip.getFile()), source.allFiles().size());
+
+        printTree(source);
+
         log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
-        ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("URL"));
+        log.info("  %s", Style.underline(artifactUrl));
+        
         log.newline();
-        log.info(Style.green("Successfully published archive for %s:%s:%s to\n  %s",
-                manifest.group(), manifest.artifact(), manifest.version(), artifactUrl));
+        log.info(Style.green("Successfully published archive for %s:%s:%s",
+                manifest.group(), manifest.artifact(), manifest.version()));
+    }
+
+    private void printTree(ArtifactSource source) {
+        if (CommandLineOptions.hasOption("X")) {
+            log.newline();
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
+            ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
+        }
     }
 
     private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {
