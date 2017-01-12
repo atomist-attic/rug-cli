@@ -97,7 +97,7 @@
 		<dependency>
 			<groupId>com.atomist</groupId>
 			<artifactId>rug-typescript-compiler</artifactId>
-			<version>0.8.0</version>
+			<version>0.8.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
