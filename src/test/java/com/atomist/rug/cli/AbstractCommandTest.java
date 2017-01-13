@@ -73,6 +73,10 @@ public abstract class AbstractCommandTest {
     protected String[] commandLine(boolean includeConf, String... tokens) {
         File config = new File("../cli.yml");
 
+        if (!config.exists()) {
+            throw new RuntimeException("Config file missing at ../cli.yml\nLook, if you're running tests locally, try setting your working directory to src/test/resources/common-editors");
+        }
+
         List<String> commandLine = new ArrayList<>(Arrays.asList(tokens));
         if (includeConf) {
             commandLine.add("-q");
@@ -95,8 +99,14 @@ public abstract class AbstractCommandTest {
 
         @Override
         public void checkAssertion() throws Exception {
-            assertTrue(systemOutRule.getLogWithNormalizedLineSeparator().contains(requiredContent)
-                    || systemErrRule.getLogWithNormalizedLineSeparator().contains(requiredContent));
+
+            String sysout = systemOutRule.getLogWithNormalizedLineSeparator();
+            String stderr = systemErrRule.getLogWithNormalizedLineSeparator();
+            if (!sysout.contains(requiredContent) && !stderr.contains(requiredContent)) {
+                System.out.println("Received on sysout: <" + sysout + ">\n and on stderr: <" + stderr + ">\nneither of which contain: <" + requiredContent + ">" );
+            }
+            assertTrue(sysout.contains(requiredContent)
+                    || stderr.contains(requiredContent));
         }
 
     }

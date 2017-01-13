@@ -89,9 +89,26 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testUnSuccessfulDescribe() throws Exception {
-        assertFailure("No or invalid TYPE provided.\n\n"
-                + "Run the following command for usage help:\n" + "  rug describe --help.", "-X",
+        assertFailure("Please tell me the TYPE and the NAME of what you would like me to describe.\n\n"
+                + "Run the following command for usage help:\n" + "  rug describe --help.",
                 "describe", "-l");
+    }
+
+    @Test
+    public void testUnSuccessfulDescribeArchiveForgotType() throws Exception {
+        String archiveIWantedToDescribe =  "atomist-rugs:spring-boot-rest-service";
+        assertFailure("Please try: rug describe archive " + archiveIWantedToDescribe + "\n\n"
+                        + "Run the following command for usage help:\n" + "  rug describe --help.",
+                "describe", archiveIWantedToDescribe);
+    }
+
+
+    @Test
+    public void testUnSuccessfulDescribeEditorForgotType() throws Exception {
+        String editorIWantedToDescribe = "atomist-rugs:spring-boot-rest-service:NewBootyThing";
+        assertFailure(" Please tell me what kind of thing to describe. Try: rug describe [editor|generator|executor] " + editorIWantedToDescribe + "\n\n"
+                        + "Run the following command for usage help:\n" + "  rug describe --help.",
+                "describe", editorIWantedToDescribe);
     }
 
     @Test
