@@ -18,7 +18,11 @@ import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
+import com.atomist.rug.cli.tree.LogVisitor;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.deployer.AbstractMavenBasedDeployer;
 import com.atomist.rug.deployer.DefaultDeployerEventListener;
 import com.atomist.rug.deployer.Deployer;
@@ -60,6 +64,14 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
     protected abstract void doWithRepositorySession(RepositorySystem system,
             RepositorySystemSession session, ArtifactSource source, Manifest manifest, Artifact zip,
             Artifact pom, Artifact metadata, CommandLine commandLine);
+
+    protected void printTree(ArtifactSource source) {
+        if (CommandLineOptions.hasOption("V")) {
+            log.newline();
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
+            ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
+        }
+    }
 
     private void prepareTargetDirectory(File zipFile) {
         FileUtils.deleteQuietly(zipFile.getParentFile());

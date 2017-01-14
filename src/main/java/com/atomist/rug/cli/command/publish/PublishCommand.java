@@ -24,9 +24,6 @@ import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.Settings.Authentication;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
-import com.atomist.rug.cli.tree.LogVisitor;
-import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.manifest.Manifest;
@@ -82,14 +79,6 @@ public class PublishCommand extends AbstractRepositoryCommand {
         log.newline();
         log.info(Style.green("Successfully published archive for %s:%s:%s",
                 manifest.group(), manifest.artifact(), manifest.version()));
-    }
-
-    private void printTree(ArtifactSource source) {
-        if (CommandLineOptions.hasOption("X")) {
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
-            ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
-        }
     }
 
     private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {

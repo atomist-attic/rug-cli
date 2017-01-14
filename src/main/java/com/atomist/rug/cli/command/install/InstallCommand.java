@@ -19,9 +19,6 @@ import com.atomist.rug.cli.command.AbstractRepositoryCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
-import com.atomist.rug.cli.tree.LogVisitor;
-import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
@@ -71,13 +68,5 @@ public class InstallCommand extends AbstractRepositoryCommand {
         log.info(Style.green("Successfully installed archive for %s:%s:%s", manifest.group(),
                 manifest.artifact(), manifest.version()));
 
-    }
-
-    private void printTree(ArtifactSource source) {
-        if (CommandLineOptions.hasOption("X")) {
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
-            ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
-        }
     }
 }
