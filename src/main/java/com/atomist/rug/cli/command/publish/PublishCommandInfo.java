@@ -29,8 +29,12 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
     @Override
     public Options options() {
         Options options = new Options();
+        options.addOption(Option.builder().longOpt("archive-group").argName("AG").hasArg(true)
+                .required(false).desc("Override archive group with AG").build());
+        options.addOption(Option.builder().longOpt("archive-artifact").argName("AA").hasArg(true)
+                .required(false).desc("Override archive artifact with AA").build());
         options.addOption(Option.builder("a").longOpt("archive-version").argName("AV").hasArg(true)
-                .required(false).desc("Override artifact version with AV").build());
+                .required(false).desc("Override archive version with AV").build());
         options.addOption(Option.builder("i").longOpt("id").argName("ID").hasArg(true)
                 .required(false).desc("ID identifying the repository to publish into").build());
 

@@ -32,6 +32,7 @@ _rug() {
     local global_options=(
         -? -h --help
         -X --error
+        -V --verbose
         -o --offline
         -r --resolver-report
         -t --timer
@@ -75,6 +76,7 @@ _rug() {
     local command_options=(
         -? -h --help
         -X --error
+        -V --verbose
         -o --offline
         -r --resolver-report
         -t --timer
@@ -107,6 +109,9 @@ _rug() {
     fi
     if [[ $special == publish ]]; then
         command_options+=( -i --id )
+        command_options+=( -a --archive-version )
+        command_options+=( --archive-artifact )
+        command_options+=( --archive-group )
     fi
     if [[ $special == search ]]; then
         command_options+=( -T --tag )
