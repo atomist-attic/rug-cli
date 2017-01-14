@@ -41,7 +41,7 @@ public class RunnerTest extends AbstractCommandTest {
 
     @Test
     public void testInvalidOption() throws Exception {
-        assertFailure("Run the following command for usage help:\n" + "  rug --help.", "-p");
+        assertFailure("Run the following command for usage help:\n" + "  rug --help", "-p");
     }
 
     @Test
