@@ -77,15 +77,15 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             describeArchive(artifact, source, operationsAndHandlers);
             break;
         case "":
-            throw new CommandException("Please tell me the TYPE and the NAME of what you would like me to describe.", "describe");
+            throw new CommandException("Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.", "describe");
         default:
             if (kind.split(":").length == 2) {
-                throw new CommandException("It looks like you're trying to describe an archive. Please try: rug describe archive " + kind, "describe");
+                throw new CommandException("It looks like you're trying to describe an archive. Please try:\n  rug describe archive " + kind, "describe");
             }
             if (kind.split(":").length == 3) {
-                throw new CommandException("Please tell me what kind of thing to describe. Try: rug describe [editor|generator|executor] " + kind, "describe");
+                throw new CommandException("Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|executor|reviewer " + kind, "describe");
             }
-            throw new CommandException("Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, or executor.", "describe");
+            throw new CommandException("Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.", "describe");
         }
     }
 
