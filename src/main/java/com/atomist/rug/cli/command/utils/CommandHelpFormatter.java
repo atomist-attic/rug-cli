@@ -16,7 +16,7 @@ public class CommandHelpFormatter {
 
     public static String HELP_FOOTER = "\n\nPlease report issues at https://github.com/atomist/rug-cli";
 
-    private static int WRAP = 70;
+    private static int WRAP = 90;
 
     public String createString(int length) {
         char[] chars = new char[length];
@@ -73,8 +73,7 @@ public class CommandHelpFormatter {
     private void printCommands(StringBuilder sb, CommandInfoRegistry registry) {
         sb.append("Available commands:\n");
         int length = registry.commands().stream()
-                             .max(Comparator.comparingInt(o -> o.name().length())).get()
-                             .name().length() + 1;
+                .max(Comparator.comparingInt(o -> o.name().length())).get().name().length() + 1;
         String formatString = "  %-" + length + "s %s\n";
         registry.commands().forEach(c -> sb.append(String.format(formatString, c.name(),
                 WordUtils.wrap(c.description(), WRAP - length, createString(length + 3), false))));
@@ -88,17 +87,22 @@ public class CommandHelpFormatter {
         sb.append("\n");
 
         int length = getOptionLenght(options.getOptions().stream()
-                                            .max(Comparator.comparingInt(this::getOptionLenght)).get())
-                + 6;
+                .max(Comparator.comparingInt(this::getOptionLenght)).get()) + 6;
         String formatString = "  %-" + length + "s %s\n";
 
         sb.append(label).append(":\n");
         options.getOptions().stream().collect(Collectors.groupingBy(Option::getDescription))
-                .entrySet().stream().sorted(Comparator.comparing(o -> o.getValue().get(0).getOpt()))
-                .forEach(e -> {
+                .entrySet().stream()
+                .sorted(Comparator.comparing(o -> o.getValue().get(0).getLongOpt())).forEach(e -> {
                     Option opt = e.getValue().stream().findFirst().get();
-                    String ops = e.getValue().stream().map(o -> "-" + o.getOpt())
-                            .collect(Collectors.joining(",")) + ",--" + opt.getLongOpt();
+                    String ops = e.getValue().stream()
+                            .map(o -> (o.getOpt() != null ? "-" + o.getOpt() : null))
+                            .filter(o -> o != null).collect(Collectors.joining(","));
+                    
+                    if (ops.length() > 0) {
+                        ops += ",";
+                    }
+                    ops +=  "--" + opt.getLongOpt();
                     if (opt.hasArgName()) {
                         ops += " " + opt.getArgName();
                     }
