@@ -89,16 +89,40 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testUnSuccessfulDescribe() throws Exception {
-        assertFailure("No or invalid TYPE provided.\n\n"
-                + "Run the following command for usage help:\n" + "  rug describe --help.", "-X",
+        assertFailure(
+                "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.\n" + 
+                "\n" + 
+                "Run the following command for usage help:\n" + 
+                "  rug describe --help",
                 "describe", "-l");
+    }
+
+    @Test
+    public void testUnSuccessfulDescribeArchiveForgotType() throws Exception {
+        String archiveIWantedToDescribe = "atomist-rugs:spring-boot-rest-service";
+        assertFailure(
+                "It looks like you're trying to describe an archive. Please try:\n"
+                        + "  rug describe archive " + archiveIWantedToDescribe + "\n" + "\n"
+                        + "Run the following command for usage help:\n" + "  rug describe --help",
+                "describe", archiveIWantedToDescribe);
+    }
+
+    @Test
+    public void testUnSuccessfulDescribeEditorForgotType() throws Exception {
+        String editorIWantedToDescribe = "atomist-rugs:spring-boot-rest-service:NewBootyThing";
+        assertFailure(
+                "Please tell me what kind of thing to describe. Try:\n"
+                        + "  rug describe editor|generator|executor|reviewer "
+                        + editorIWantedToDescribe + "\n" + "\n"
+                        + "Run the following command for usage help:\n" + "  rug describe --help",
+                "describe", editorIWantedToDescribe);
     }
 
     @Test
     public void testUnSuccessfulDescribeOffline() throws Exception {
         assertFailure(
                 "No valid ARTIFACT provided, no default artifact defined and not in local mode.\n\n"
-                        + "Run the following command for usage help:\n" + "  rug describe --help.",
+                        + "Run the following command for usage help:\n" + "  rug describe --help",
                 "-oX", "describe");
     }
 
