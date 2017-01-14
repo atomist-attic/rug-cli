@@ -23,7 +23,8 @@ public abstract class AbstractCommandInfo implements CommandInfo {
         Options options = new Options();
         options.addOption("?", "help", false, "Print help information");
         options.addOption("h", "help", false, "Print help information");
-        options.addOption("X", "error", false, "Print verbose error messages");
+        options.addOption("X", "error", false, "Print stacktraces");
+        options.addOption("V", "verbose", false, "Print verbose output");
         options.addOption(Option.builder("s").longOpt("settings").argName("FILE").hasArg(true)
                 .required(false).desc("Use settings file FILE").build());
         options.addOption("q", "quiet", false, "Do not display progress messages");
