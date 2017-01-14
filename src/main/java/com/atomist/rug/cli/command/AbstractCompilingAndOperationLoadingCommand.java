@@ -61,7 +61,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     }
 
     private void printArtifactSource(ArtifactDescriptor artifact, ArtifactSource source) {
-        if (CommandLineOptions.hasOption("X") && source != null) {
+        if (CommandLineOptions.hasOption("V") && source != null) {
             log.info("Loaded archive sources for %s",
                     ArtifactDescriptorUtils.coordinates(artifact));
             log.info("  " + FileUtils.relativize(artifact.uri()));
