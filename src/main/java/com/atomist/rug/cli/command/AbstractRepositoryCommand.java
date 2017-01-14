@@ -37,16 +37,14 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
 
     @Command
     public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
-            ArtifactSource source, @Option("archive-version") String version,
-            CommandLine commandLine) throws IOException {
+            ArtifactSource source, @Option("archive-group") String archiveGroup,
+            @Option("archive-artifact") String archiveArtifact,
+            @Option("archive-version") String archiveVersion, CommandLine commandLine)
+            throws IOException {
 
-        String fullVersion = artifact.version();
-        if (version != null) {
-            fullVersion = version;
-            artifact = ArtifactDescriptorFactory.copyFrom(artifact, fullVersion);
-        }
+        artifact = ArtifactDescriptorFactory.copyFrom(artifact, archiveGroup, archiveArtifact, archiveVersion);
 
-        String zipFileName = artifact.artifact() + "-" + fullVersion + "."
+        String zipFileName = artifact.artifact() + "-" + artifact.version() + "."
                 + artifact.extension().toString().toLowerCase();
         File projectRoot = CommandUtils.getRequiredWorkingDirectory();
         File archive = new File(projectRoot,

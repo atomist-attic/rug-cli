@@ -14,45 +14,48 @@ import com.atomist.rug.cli.AbstractCommandTest;
 
 public class PublishCommandIntegrationTest extends AbstractCommandTest {
 
-	@Before
-	public void cleanUp() throws IOException {
-		FileUtils.deleteDirectory(new File(FileUtils.getUserDirectory(),
-				".atomist" + File.separator + "repository-publish" + File.separator + "rug-cli-tests"));
-	}
+    @Before
+    public void cleanUp() throws IOException {
+        FileUtils.deleteDirectory(new File(FileUtils.getUserDirectory(), ".atomist" + File.separator
+                + "repository-publish" + File.separator + "rug-cli-tests"));
+    }
 
-	@AfterClass
-	public static void deleteRepo() throws IOException {
-		FileUtils.deleteDirectory(
-				new File(FileUtils.getUserDirectory(), ".atomist" + File.separator + "repository-publish"));
-	}
+    @AfterClass
+    public static void deleteRepo() throws IOException {
+        FileUtils.deleteDirectory(new File(FileUtils.getUserDirectory(),
+                ".atomist" + File.separator + "repository-publish"));
+    }
 
-	@Test
-	public void testSuccessfulPublish() throws Exception {
-		assertCommandLine(0, () -> {
-			assertVersion("3.2.2");
-		}, "publish");
-	}
+    @Test
+    public void testSuccessfulPublish() throws Exception {
+        assertCommandLine(0, () -> {
+            assertVersion("rug-cli-tests", "common-editors", "3.2.2");
+        }, "publish");
+    }
 
-	@Test
-	public void testSuccessfulInstallWithVersion() throws Exception {
-		assertCommandLine(0, () -> {
-			assertVersion("4.0.0");
-		}, "publish", "-a", "4.0.0");
-	}
+    @Test
+    public void testSuccessfulInstallWithGroupArtifactAndVersion() throws Exception {
+        assertCommandLine(0, () -> {
+            assertVersion("test-group", "test-artifact", "4.0.0");
+        }, "publish", "--archive-group", "test-group", "--archive-artifact", "test-artifact", "-a",
+                "4.0.0");
+    }
 
-	private void assertVersion(String version) {
-		assertTrue(
-				systemOutRule.getLogWithNormalizedLineSeparator().contains("rug-cli-tests:common-editors:" + version));
-		assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-				.contains("Successfully published archive for rug-cli-tests:common-editors:" + version));
-		assertTrue(new File(FileUtils.getUserDirectory(),
-				".atomist" + File.separator + "repository-publish" + File.separator + "rug-cli-tests" + File.separator
-						+ "common-editors" + File.separator + version + File.separator + "common-editors-" + version
-						+ ".zip").exists());
-		assertTrue(new File(FileUtils.getUserDirectory(),
-				".atomist" + File.separator + "repository-publish" + File.separator + "rug-cli-tests" + File.separator
-						+ "common-editors" + File.separator + version + File.separator + "common-editors-" + version
-						+ ".pom").exists());
+    private void assertVersion(String group, String artifact, String version) {
+        assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
+                .contains(group + ":" + artifact + ":" + version));
+        assertTrue(systemOutRule.getLogWithNormalizedLineSeparator().contains(
+                "Successfully published archive for " + group + ":" + artifact + ":" + version));
+        assertTrue(new File(FileUtils.getUserDirectory(),
+                ".atomist" + File.separator + "repository-publish" + File.separator
+                        + group + File.separator + artifact + File.separator
+                        + version + File.separator + artifact + "-" + version + ".zip")
+                                .exists());
+        assertTrue(new File(FileUtils.getUserDirectory(),
+                ".atomist" + File.separator + "repository-publish" + File.separator
+                        + group + File.separator + artifact + File.separator
+                        + version + File.separator + artifact + "-" + version + ".pom")
+                                .exists());
 
-	}
+    }
 }
