@@ -69,9 +69,9 @@ public class DependencyResolverExceptionProcessor {
 
     private static Optional<ProvenanceInfo> resolveToProvenanceInfo(ArtifactDescriptor artifact) {
         if (artifact instanceof LocalArtifactDescriptor) {
-//            ArtifactSource source = FileSystemArtifactSource$.MODULE$.apply(
+//            ArtifactSource source = new FileSystemArtifactSource(
 //                    new SimpleFileSystemArtifactSourceIdentifier(new File(artifact.uri())),
-//                    new DotGitDirFilter(artifact.uri().getPath()));
+//                    Arrays.asList(new GitDirFilter(artifact.uri().getPath())));
 
             ArtifactSource source = new FileSystemArtifactSource(
                     new SimpleFileSystemArtifactSourceIdentifier(new File(artifact.uri())));

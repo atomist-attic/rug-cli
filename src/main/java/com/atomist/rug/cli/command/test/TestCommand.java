@@ -45,9 +45,9 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
             @Argument(index = 1) String testName) {
 
         File workingDir = CommandUtils.getRequiredWorkingDirectory();
-//        ArtifactSource source = FileSystemArtifactSource$.MODULE$.apply(
+//        ArtifactSource source = new FileSystemArtifactSource(
 //                new SimpleFileSystemArtifactSourceIdentifier(workingDir),
-//                new DotGitDirFilter(workingDir.getPath()));
+//                Arrays.asList(new GitDirFilter(workingDir.getPath())));
 
         ArtifactSource source = new FileSystemArtifactSource(
                 new SimpleFileSystemArtifactSourceIdentifier(workingDir));
