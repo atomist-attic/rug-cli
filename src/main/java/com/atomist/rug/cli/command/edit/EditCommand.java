@@ -96,9 +96,9 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             isClean(root);
         }
 
-//        ArtifactSource source = FileSystemArtifactSource$.MODULE$.apply(
+//        ArtifactSource source = new FileSystemArtifactSource(
 //                new SimpleFileSystemArtifactSourceIdentifier(root),
-//                new DotGitDirFilter(root.getPath()));
+//                Arrays.asList(new GitDirFilter(root.getPath())));
 
         ArtifactSource source = new FileSystemArtifactSource(
                 new SimpleFileSystemArtifactSourceIdentifier(root));
