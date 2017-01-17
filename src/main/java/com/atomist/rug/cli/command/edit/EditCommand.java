@@ -32,6 +32,7 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
@@ -41,8 +42,6 @@ import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.Delta;
-import com.atomist.source.file.FileSystemArtifactSource;
-import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
 public class EditCommand extends AbstractDeltaHandlingCommand {
 
@@ -96,12 +95,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             isClean(root);
         }
 
-//        ArtifactSource source = new FileSystemArtifactSource(
-//                new SimpleFileSystemArtifactSourceIdentifier(root),
-//                Arrays.asList(new GitDirFilter(root.getPath())));
-
-        ArtifactSource source = new FileSystemArtifactSource(
-                new SimpleFileSystemArtifactSourceIdentifier(root));
+        ArtifactSource source = ArtifactSourceUtils.createArtifactSource(root);
 
         ModificationAttempt result = new ProgressReportingOperationRunner<ModificationAttempt>(
                 String.format("Running editor %s of %s",

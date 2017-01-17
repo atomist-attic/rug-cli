@@ -29,7 +29,6 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
-import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
@@ -129,7 +128,6 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                 String.format("Running generator %s of %s", generator.name(),
                         ArtifactDescriptorUtils.coordinates(artifact)))
                                 .run(indicator -> generator.generate(arguments));
-        result = ArtifactSourceUtils.filter(result);
 
         // Add provenance info to output
         result = new ProvenanceInfoWriter().write(result, generator, arguments,

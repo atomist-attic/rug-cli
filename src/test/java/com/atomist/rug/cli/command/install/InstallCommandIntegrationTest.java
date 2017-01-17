@@ -23,14 +23,14 @@ public class InstallCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulInstall() throws Exception {
         assertCommandLine(0, () -> {
             assertVersion("3.2.2");
-        }, "install");
+        }, "install", "-V");
     }
 
     @Test
     public void testSuccessfulInstallWithVersion() throws Exception {
         assertCommandLine(0, () -> {
             assertVersion("4.0.0");
-        }, "install", "-a", "4.0.0");
+        }, "install", "-a", "4.0.0", "-V");
     }
 
     private void assertVersion(String version) {

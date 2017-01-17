@@ -18,6 +18,7 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
+import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
@@ -45,12 +46,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
             @Argument(index = 1) String testName) {
 
         File workingDir = CommandUtils.getRequiredWorkingDirectory();
-//        ArtifactSource source = new FileSystemArtifactSource(
-//                new SimpleFileSystemArtifactSourceIdentifier(workingDir),
-//                Arrays.asList(new GitDirFilter(workingDir.getPath())));
-
-        ArtifactSource source = new FileSystemArtifactSource(
-                new SimpleFileSystemArtifactSourceIdentifier(workingDir));
+        ArtifactSource source = ArtifactSourceUtils.createArtifactSource(workingDir);
 
         TestLoader testLoader = new TestLoader(DefaultAtomistConfig$.MODULE$);
         Seq<TestScenario> scenarios = testLoader.loadTestScenarios(source);

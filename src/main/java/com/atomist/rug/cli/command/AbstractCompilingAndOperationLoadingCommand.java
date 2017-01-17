@@ -51,7 +51,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         OperationsAndHandlers operationsAndHandlers = null;
         ArtifactSource source = null;
         if (artifact != null && artifact.extension() == Extension.ZIP) {
-            source = ArtifactSourceUtils.filter(ArtifactSourceUtils.createArtifactSource(artifact));
+            source = ArtifactSourceUtils.createArtifactSource(artifact);
             printArtifactSource(artifact, source);
             source = compile(source);
             operationsAndHandlers = loadOperationsAndHandlers(artifact, source,

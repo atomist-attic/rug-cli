@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.List;
 
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.resolver.ArtifactDescriptor;
@@ -13,22 +12,15 @@ import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 import com.atomist.source.file.ZipFileArtifactSourceReader;
 import com.atomist.source.file.ZipFileInput;
+import com.atomist.source.filter.ArtifactFilter;
+import com.atomist.source.filter.AtomistIgnoreFileFilter;
+import com.atomist.source.filter.GitDirFilter;
 
 public abstract class ArtifactSourceUtils {
 
-    public static final List<String> DIRS_TO_FILTER = Arrays.asList(".git", "target");
-    public static final List<String> FILES_TO_FILTER = Arrays.asList(".DS_Store", ".travis.yml",
-            "travis-build.bash");
-
-    public static ArtifactSource filter(ArtifactSource source) {
-        ArtifactSource result = source.filter(
-                (d) -> !ArtifactSourceUtils.DIRS_TO_FILTER.contains(d.name()),
-                (f) -> !ArtifactSourceUtils.FILES_TO_FILTER.contains(f.name()));
-
-//        ArtifactSourceTreeCreator.visitTree(result,
-//                new LogVisitor(new Log(ArtifactSourceUtils.class)));
-        
-        return result;
+    public static ArtifactSource createArtifactSource(File root) {
+        return new FileSystemArtifactSource(new SimpleFileSystemArtifactSourceIdentifier(root),
+                Arrays.asList(new GitDirFilter(root.getPath())));
     }
 
     public static ArtifactSource createArtifactSource(ArtifactDescriptor artifact) {
@@ -39,14 +31,11 @@ public abstract class ArtifactSourceUtils {
                         .fromZipSource(new ZipFileInput(new FileInputStream(archiveRoot)));
             }
             else {
-//                return FileSystemArtifactSource$.MODULE$.apply(
-//                        new SimpleFileSystemArtifactSourceIdentifier(archiveRoot),
-//                        Arrays.asList(
-//                                new DotGitignoreFileFilter(archiveRoot.getPath()),
-//                                new DotGitDirFilter(archiveRoot.getPath())));
-
                 return new FileSystemArtifactSource(
-                        new SimpleFileSystemArtifactSourceIdentifier(archiveRoot));
+                        new SimpleFileSystemArtifactSourceIdentifier(archiveRoot),
+                        Arrays.asList(new GitDirFilter(archiveRoot.getPath()),
+                                new AtomistIgnoreFileFilter(archiveRoot.getPath()),
+                                new TargetDirFilter(archiveRoot)));
             }
         }
         catch (FileNotFoundException e) {
@@ -54,4 +43,19 @@ public abstract class ArtifactSourceUtils {
         }
     }
 
+    private static class TargetDirFilter implements ArtifactFilter {
+
+        private String prefix;
+
+        public TargetDirFilter(File root) {
+            this.prefix = root.getAbsolutePath() + File.separator + ".atomist" + File.separator
+                    + "target";
+        }
+
+        @Override
+        public boolean apply(String path) {
+            return !path.startsWith(prefix);
+        }
+
+    }
 }

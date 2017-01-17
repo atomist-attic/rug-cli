@@ -16,7 +16,6 @@ import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
-import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.SettingsReader;
@@ -55,7 +54,6 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
                 Constants.ATOMIST_ROOT + File.separator + "target" + File.separator + zipFileName);
 
         prepareTargetDirectory(archive);
-        source = ArtifactSourceUtils.filter(source);
 
         Deployer deployer = new RepositoryCommandMavenDeployer(commandLine, projectRoot);
         deployer.deploy(operationsAndHandlers, source, artifact, projectRoot);
