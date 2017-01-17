@@ -4,13 +4,12 @@ import java.io.File;
 
 import org.apache.commons.cli.CommandLine;
 
+import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.manifest.ManifestArtifactDescriptorCreator;
 import com.atomist.rug.manifest.ManifestFactory;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
-import com.atomist.source.file.FileSystemArtifactSource;
-import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
 public abstract class AbstractLocalArtifactDescriptorProvider extends AbstractCommandInfo
         implements ArtifactDescriptorProvider {
@@ -27,12 +26,7 @@ public abstract class AbstractLocalArtifactDescriptorProvider extends AbstractCo
         }
 
         File projectRoot = CommandUtils.getRequiredWorkingDirectory();
-        ArtifactSource source = new FileSystemArtifactSource(
-                new SimpleFileSystemArtifactSourceIdentifier(projectRoot));
-
-//        ArtifactSource source = FileSystemArtifactSource$.MODULE$.apply(
-//                new SimpleFileSystemArtifactSourceIdentifier(projectRoot),
-//                new DotGitDirFilter(projectRoot.getPath()));
+        ArtifactSource source = ArtifactSourceUtils.createArtifactSource(projectRoot);
 
         Manifest manifest = ManifestFactory.read(source);
         if (manifest != null) {

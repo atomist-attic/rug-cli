@@ -63,18 +63,14 @@ public class DependencyResolverExceptionProcessor {
         if (repositories != null && !repositories.isEmpty()) {
             sb.append("Configured repositories from ~/.atomist/cli.yml:\n");
             repositories.forEach(r -> sb.append("  ").append(r.getId()).append(" (")
-                                        .append(r.getUrl()).append(")\n"));
+                    .append(r.getUrl()).append(")\n"));
         }
     }
 
     private static Optional<ProvenanceInfo> resolveToProvenanceInfo(ArtifactDescriptor artifact) {
         if (artifact instanceof LocalArtifactDescriptor) {
-//            ArtifactSource source = new FileSystemArtifactSource(
-//                    new SimpleFileSystemArtifactSourceIdentifier(new File(artifact.uri())),
-//                    Arrays.asList(new GitDirFilter(artifact.uri().getPath())));
-
-            ArtifactSource source = new FileSystemArtifactSource(
-                    new SimpleFileSystemArtifactSourceIdentifier(new File(artifact.uri())));
+            ArtifactSource source = ArtifactSourceUtils
+                    .createArtifactSource(new File(artifact.uri()));
             return new ProvenanceInfoArtifactSourceReader().read(source);
         }
         else {
