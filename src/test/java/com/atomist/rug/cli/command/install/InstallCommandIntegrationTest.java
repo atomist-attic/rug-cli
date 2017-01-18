@@ -23,14 +23,14 @@ public class InstallCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulInstall() throws Exception {
         assertCommandLine(0, () -> {
             assertVersion("3.2.2");
-        }, "install", "-V");
+        }, "install", "-Vur");
     }
 
     @Test
     public void testSuccessfulInstallWithVersion() throws Exception {
         assertCommandLine(0, () -> {
             assertVersion("4.0.0");
-        }, "install", "-a", "4.0.0", "-V");
+        }, "install", "-a", "4.0.0", "-Vur");
     }
 
     private void assertVersion(String version) {
@@ -39,15 +39,15 @@ public class InstallCommandIntegrationTest extends AbstractCommandTest {
         assertTrue(systemOutRule.getLogWithNormalizedLineSeparator().contains(
                 "Successfully installed archive for rug-cli-tests:common-editors:" + version));
         assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository" + File.separator + "rug-cli-tests"
+                ".atomist" + File.separator + "repository-tests" + File.separator + "rug-cli-tests"
                         + File.separator + "common-editors" + File.separator + version
                         + File.separator + "common-editors-" + version + ".zip").exists());
         assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository" + File.separator + "rug-cli-tests"
+                ".atomist" + File.separator + "repository-tests" + File.separator + "rug-cli-tests"
                         + File.separator + "common-editors" + File.separator + version
                         + File.separator + "common-editors-" + version + ".pom").exists());
         assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository" + File.separator + "rug-cli-tests"
+                ".atomist" + File.separator + "repository-tests" + File.separator + "rug-cli-tests"
                         + File.separator + "common-editors" + File.separator + version
                         + File.separator + "common-editors-" + version + "-metadata.json")
                                 .exists());

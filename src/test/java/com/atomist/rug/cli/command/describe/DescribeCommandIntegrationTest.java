@@ -57,7 +57,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulGeneratorDescribeWithVersionAndResolverReport() throws Exception {
         // delete the resolver plan file
         File file = new File(System.getProperty("user.home"),
-                ".atomist/repository/atomist-rugs/spring-boot-rest-service/0.5.0/_resolver.plan");
+                ".atomist/repository-tests/atomist-rugs/spring-boot-rest-service/0.5.0/_resolver.plan");
         file.delete();
         assertSuccess("Dependency report for atomist-rugs:spring-boot-rest-service:0.5.0",
                 "describe", "generator",
