@@ -7,11 +7,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug/compare/0.20.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.0...HEAD
+
+## [0.21.0] - 2017-01-18
+
+[0.21.0]: https://github.com/atomist/rug-cli/compare/0.20.0...0.21.0
+
+### Changed
+
+-   Update to Rug 0.10.0
+
+-   Allow overwriting artifact group, artifact and version on `publish`
+
+-   Introduce `--verbose -V` to get more verbose output
+
+-   Better error messages on certain errors
+
 
 ## [0.20.0] - 2017-01-08
 
-[0.19.1]: https://github.com/atomist/rug/compare/0.19.1...0.20.0
+[0.20.1]: https://github.com/atomist/rug-cli/compare/0.19.1...0.20.0
 
 ### Changed
 
@@ -25,7 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.19.1] - 2017-01-04
 
-[0.19.1]: https://github.com/atomist/rug/compare/0.19.0...0.19.1
+[0.19.1]: https://github.com/atomist/rug-cli/compare/0.19.0...0.19.1
 
 ### Changed
 
@@ -33,7 +48,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.19.0] - 2017-01-04
 
-[0.19.0]: https://github.com/atomist/rug/compare/0.18.1...0.19.0
+[0.19.0]: https://github.com/atomist/rug-cli/compare/0.18.1...0.19.0
 
 ### Changed
 
