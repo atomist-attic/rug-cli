@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.20.0] - 2017-01-08
 
-[0.20.1]: https://github.com/atomist/rug-cli/compare/0.19.1...0.20.0
+[0.20.0]: https://github.com/atomist/rug-cli/compare/0.19.1...0.20.0
 
 ### Changed
 
