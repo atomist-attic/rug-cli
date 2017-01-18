@@ -2,7 +2,7 @@
 catalogs:
 - "https://api-staging.atomist.services/catalog"
 local-repository:
-  path: "${user.home}/.atomist/repository"
+  path: "${user.home}/.atomist/repository-tests"
 remote-repositories:
   local:
     publish: true

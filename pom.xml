@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>com.atomist</groupId>
 			<artifactId>artifact-source</artifactId>
-			<version>0.14.1</version>
+			<version>0.14.3</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
@@ -90,22 +90,6 @@
 				<exclusion>
 					<groupId>com.github.julianthome</groupId>
 					<artifactId>inmemantlr</artifactId>
-				</exclusion>
-			</exclusions>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.atomist</groupId>
-			<artifactId>rug-typescript-compiler</artifactId>
-			<version>0.8.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-access</artifactId>
 				</exclusion>
 			</exclusions>
 			<scope>provided</scope>
