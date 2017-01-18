@@ -31,6 +31,7 @@ import com.atomist.rug.loader.HandlerOperationsLoader;
 import com.atomist.rug.loader.Handlers;
 import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.loader.OperationsLoaderException;
+import com.atomist.rug.loader.OperationsLoaderRuntimeException;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
@@ -39,8 +40,6 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.Deltas;
 import com.atomist.tree.TreeNode;
 import com.atomist.tree.pathexpression.PathExpression;
-
-import scala.collection.JavaConverters;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 
@@ -81,10 +80,8 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                         ArtifactSource compiledSource = source;
                         for (Compiler compiler : compilers) {
                             indicator.report(String.format("Invoking %s on %s script sources",
-                                    compiler.name(),
-                                    StringUtils.collectionToCommaDelimitedString(JavaConverters
-                                            .asJavaCollectionConverter(compiler.extensions())
-                                            .asJavaCollection())));
+                                    compiler.name(), StringUtils.collectionToCommaDelimitedString(
+                                            compiler.extensions())));
                             ArtifactSource cs = compiler.compile(compiledSource);
                             Deltas deltas = cs.deltaFrom(compiledSource);
                             if (deltas.empty()) {
@@ -131,6 +128,12 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                                 PathExpression pathExpression) {
                             return null;
                         }
+
+                        @Override
+                        public TreeNode hydrate(String teamId, TreeNode treeNode,
+                                PathExpression pathExpression) {
+                            return null;
+                        }
                     });
 
             return new OperationsAndHandlers(operations, handlers);
@@ -139,7 +142,8 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
             if (e instanceof BadRugException) {
                 throw new CommandException("Failed to load archive: \n" + e.getMessage(), e);
             }
-            else if (e instanceof OperationsLoaderException) {
+            else if (e instanceof OperationsLoaderException
+                    || e instanceof OperationsLoaderRuntimeException) {
                 if (e.getCause() instanceof BadRugException) {
                     throw new CommandException(
                             "Failed to load archive: \n" + e.getCause().getMessage(), e);
