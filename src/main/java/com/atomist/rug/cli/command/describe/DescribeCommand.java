@@ -168,6 +168,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
         log.info(info.description());
     }
+    
+    private String describeDisplayName(Parameter p) {
+        return (p.getDisplayName() != null ? "(" + p.getDisplayName() + ")" : "");
+    }
 
     private void describeName(Manifest manifest) {
         log.info(Style.bold(Style.yellow("%s:%s:%s", manifest.group(), manifest.artifact(),
@@ -245,8 +249,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeParameters(List<Parameter> required) {
         required.forEach(p -> log.info(
                 "  " + Style.yellow(p.getName())
-                        + " (%s)\n    %s\n      Pattern: %s, min length: %s, max length: %s",
-                p.getDisplayName(), describeDescription(p), describePattern(p),
+                        + " %s\n    %s\n      Pattern: %s, min length: %s, max length: %s",
+                describeDisplayName(p), describeDescription(p), describePattern(p),
                 (p.getMinLength() >= 0 ? p.getMinLength() : "not defined"),
                 (p.getMaxLength() >= 0 ? p.getMaxLength() : "not defined")));
     }
