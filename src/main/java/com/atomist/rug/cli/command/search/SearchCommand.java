@@ -40,7 +40,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(Settings settings, @Argument(index = 1) String search,
-            @Option("tag") Properties tags) {
+            @Option("tag") Properties tags, @Option("type") String type) {
 
         if (settings.getCatalogs().getUrls().isEmpty()) {
             throw new CommandException("No catalog endpoints configured in cli.yml.");
@@ -50,7 +50,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
                 "Searching catalogs").run(indicator -> {
                     List<Operation> results = settings.getCatalogs().getUrls().stream().map(u -> {
                         indicator.report("  Searching " + u);
-                        return collectResults(u, search, tags);
+                        return collectResults(u, search, type, tags);
                     }).flatMap(List::stream).collect(Collectors.toList());
 
                     return results.stream()
@@ -82,7 +82,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
                 archive.getVersion().getValue());
     }
 
-    private List<Operation> collectResults(String endpoint, String search, Properties tags) {
+    private List<Operation> collectResults(String endpoint, String search, String type, Properties tags) {
 
         if (!endpoint.endsWith(Constants.CATALOG_PATH)) {
             if (!endpoint.endsWith("/")) {
@@ -94,7 +94,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         HttpClient client = HttpClientFactory.createHttpClient(endpoint);
         HttpPost post = new HttpPost(endpoint);
 
-        StringEntity requestEntity = new StringEntity(getSearchQuery(search, tags),
+        StringEntity requestEntity = new StringEntity(getSearchQuery(search, type, tags),
                 ContentType.APPLICATION_JSON);
 
         post.setEntity(requestEntity);
@@ -106,25 +106,29 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
             }
         }
         catch (ClientProtocolException e) {
-            // TODO what to do with those
+            new CommandException("Client error occurred searching online catalog", e);
         }
         catch (IOException e) {
-            // TODO what to do with those
+            new CommandException("IO error occurred searching online catalog", e);
         }
         return Collections.emptyList();
     }
 
-    private String getSearchQuery(String search, Properties tags) {
+    private String getSearchQuery(String search, String type, Properties tags) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{ \"queries\": [{ ");
+        sb.append("\"archive\": { \"scope\": \"public\" }");
         if (search != null && search.length() > 0) {
-            return String.format(
-                    "{\"queries\": [{ \"search\": \"%s\", \"tags\": [%s], \"archive\": { \"scope\": \"public\" }}]}",
-                    search, toCommaSeperatedList(tags));
+            sb.append(String.format(", \"search\": \"%s\"", search));
         }
-        else {
-            return String.format(
-                    "{\"queries\": [{ \"tags\": [%s], \"archive\": { \"scope\": \"public\" }}]}",
-                    toCommaSeperatedList(tags));
+        if (tags.size() > 0) {
+            sb.append(String.format(", \"tags\": [%s]", toCommaSeperatedList(tags)));
         }
+        if (type != null) {
+            sb.append(String.format(", \"operation\": { \"type\": \"%s\" }", type));
+        }
+        sb.append(" }]}");
+        return sb.toString();
     }
 
     private String toCommaSeperatedList(Properties tags) {
