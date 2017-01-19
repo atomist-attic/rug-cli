@@ -26,7 +26,7 @@ public abstract class AbstractLocalArtifactDescriptorProvider extends AbstractCo
         }
 
         File projectRoot = CommandUtils.getRequiredWorkingDirectory();
-        ArtifactSource source = ArtifactSourceUtils.createArtifactSource(projectRoot);
+        ArtifactSource source = ArtifactSourceUtils.createManifestOnlyArtifactSource(projectRoot);
 
         Manifest manifest = ManifestFactory.read(source);
         if (manifest != null) {
