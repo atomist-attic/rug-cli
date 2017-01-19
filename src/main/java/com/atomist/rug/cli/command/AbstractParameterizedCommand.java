@@ -80,7 +80,6 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                     // add the new and validated parameter to project operations arguments
                     newValues.add(pv);
                 }
-
                 arguments = new SimpleProjectOperationArguments(arguments.name(),
                         JavaConversions.asScalaBuffer(newValues));
                 log.newline();

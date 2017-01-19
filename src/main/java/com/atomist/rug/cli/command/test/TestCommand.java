@@ -32,8 +32,6 @@ import com.atomist.rug.test.TestRunner;
 import com.atomist.rug.test.TestScenario;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
-import com.atomist.source.file.FileSystemArtifactSource;
-import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
 import scala.collection.Seq;
 
