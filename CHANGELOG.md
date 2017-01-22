@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
--   Requiring Java 8 as a dependency on Debian/Ubuntu (#70)
+-   Suggesting Java 8 as a dependency on Debian/Ubuntu (#70)
 
 ## [0.21.1] - 2017-01-19
 
