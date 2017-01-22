@@ -187,7 +187,7 @@ function create_package() {
         --url https://www.atomist.com \
         --license "GPL-3.0" \
         --vendor "Atomist, Inc" \
-        -d "default-jdk" \
+        -d "openjdk-8-jdk" \
         --deb-changelog target/linux/deb/changelog \
         --after-install=postinst \
         --pre-uninstall=preuninst \

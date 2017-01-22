@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.1...HEAD
 
+### Changed
+
+-   Requiring Java 8 as a dependency on Debian/Ubuntu (#70)
+
 ## [0.21.1] - 2017-01-19
 
 [0.21.1]: https://github.com/atomist/rug-cli/compare/0.21.0...0.21.1
