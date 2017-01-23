@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.1...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.2...HEAD
+
+## [0.21.2] - 2017-01-23
+
+[0.21.2]: https://github.com/atomist/rug-cli/compare/0.21.1...0.21.2
+
+### Changed
+
+-   Fixed NPE when running `rug install` and rug archive is not in a git repo 
 
 ### Changed
 
