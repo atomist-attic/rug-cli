@@ -7,7 +7,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.2...HEAD
+
+## [0.21.2] - 2017-01-23
+
+[0.21.2]: https://github.com/atomist/rug-cli/compare/0.21.1...0.21.2
+
+### Changed
+
+-   Fixed NPE when running `rug install` and rug archive is not in a git repo 
+
+### Changed
+
+-   Suggesting Java 8 as a dependency on Debian/Ubuntu (#70)
+-   Add Ubuntu trusty as a supported target (#70)
+
+## [0.21.1] - 2017-01-19
+
+[0.21.1]: https://github.com/atomist/rug-cli/compare/0.21.0...0.21.1
+
+### Changed
+
+-   Add search filter for operation type, `rug search --type editor`
+
+-   Parameter default values added to output of `rug describe`
 
 ## [0.21.0] - 2017-01-18
 
@@ -22,7 +45,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Introduce `--verbose -V` to get more verbose output
 
 -   Better error messages on certain errors
-
 
 ## [0.20.0] - 2017-01-08
 

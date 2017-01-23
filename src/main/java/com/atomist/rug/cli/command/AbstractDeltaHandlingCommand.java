@@ -112,7 +112,7 @@ public abstract class AbstractDeltaHandlingCommand extends AbstractParameterized
         }
         if (root != null) {
             File file = new File(root, newPath);
-            sb.append(" ").append(FileUtils.sizeOf(file));
+            sb.append(" (").append(FileUtils.sizeOf(file)).append(")");
         }
 
         log.info(sb.toString());

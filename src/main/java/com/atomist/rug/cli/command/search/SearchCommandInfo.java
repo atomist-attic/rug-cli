@@ -18,7 +18,7 @@ public class SearchCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String detail() {
-        return "SEARCH could be any text used to search the catalog.  TAG can be any valid tag, eg. spring or elm";
+        return "SEARCH could be any text used to search the catalog.  TAG can be any valid tag, eg. spring or elm.  TYPE can be either 'editor', 'generator', 'executor' or 'reviewer'.";
     }
 
     @Override
@@ -26,6 +26,8 @@ public class SearchCommandInfo extends AbstractRugScopedCommandInfo {
         Options options = super.options();
         options.addOption(Option.builder("T").argName("TAG").hasArg(true)
                 .desc("Specify a TAG to filter search").longOpt("tag").optionalArg(true).build());
+        options.addOption(Option.builder().argName("TYPE").hasArg(true)
+                .desc("Specify a TYPE to filter search based on Rug type").longOpt("type").optionalArg(true).build());
         return options;
     }
 

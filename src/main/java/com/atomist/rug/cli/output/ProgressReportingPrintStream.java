@@ -14,7 +14,7 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         Optional<ProgressReporter> progressReporterOption = ProgressReporterUtils
                 .getActiveProgressReporter();
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
-            progressReporterOption.get().report("$" + l);
+            progressReporterOption.get().report("$  " + l);
         }
         else if (l.startsWith("$")) {
             super.print(l.substring(1));
@@ -28,7 +28,7 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         Optional<ProgressReporter> progressReporterOption = ProgressReporterUtils
                 .getActiveProgressReporter();
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
-            progressReporterOption.get().report("$" + l);
+            progressReporterOption.get().report("$  " + l);
         }
         else if (l.startsWith("$")) {
             super.println(l.substring(1));
@@ -44,7 +44,7 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         Optional<ProgressReporter> progressReporterOption = ProgressReporterUtils
                 .getActiveProgressReporter();
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
-            progressReporterOption.get().report("$" + l);
+            progressReporterOption.get().report("$  " + l);
         }
         else if (l.startsWith("$")) {
             super.write(l.substring(1).getBytes());
@@ -60,7 +60,7 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         Optional<ProgressReporter> progressReporterOption = ProgressReporterUtils
                 .getActiveProgressReporter();
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
-            progressReporterOption.get().report("$" + l);
+            progressReporterOption.get().report("$  " + l);
         }
         else if (l.startsWith("$")) {
             buf = l.substring(1).getBytes();

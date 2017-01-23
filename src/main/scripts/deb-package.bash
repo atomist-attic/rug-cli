@@ -149,7 +149,7 @@ function upload_to_repository() {
     fi
 
     local debian_repo_url="https://atomist.jfrog.io/atomist/debian/pool"
-    local distributions="deb.distribution=wheezy;deb.distribution=jessie;deb.distribution=yakkety;deb.distribution=xenial;deb.distribution=wily;deb.distribution=vivid"
+    local distributions="deb.distribution=trusty;deb.distribution=wheezy;deb.distribution=jessie;deb.distribution=yakkety;deb.distribution=xenial;deb.distribution=wily;deb.distribution=vivid"
     local components="deb.component=main"
     local arch="deb.architecture=all"
     local checksum=$(sha1sum $package | awk '{ print $1 }')
@@ -187,7 +187,7 @@ function create_package() {
         --url https://www.atomist.com \
         --license "GPL-3.0" \
         --vendor "Atomist, Inc" \
-        -d "default-jdk" \
+        --deb-suggests "openjdk-8-jdk" \
         --deb-changelog target/linux/deb/changelog \
         --after-install=postinst \
         --pre-uninstall=preuninst \

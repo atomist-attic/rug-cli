@@ -77,15 +77,25 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             describeArchive(artifact, source, operationsAndHandlers);
             break;
         case "":
-            throw new CommandException("Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.", "describe");
+            throw new CommandException(
+                    "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.",
+                    "describe");
         default:
             if (kind.split(":").length == 2) {
-                throw new CommandException("It looks like you're trying to describe an archive. Please try:\n  rug describe archive " + kind, "describe");
+                throw new CommandException(
+                        "It looks like you're trying to describe an archive. Please try:\n  rug describe archive "
+                                + kind,
+                        "describe");
             }
             if (kind.split(":").length == 3) {
-                throw new CommandException("Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|executor|reviewer " + kind, "describe");
+                throw new CommandException(
+                        "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|executor|reviewer "
+                                + kind,
+                        "describe");
             }
-            throw new CommandException("Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.", "describe");
+            throw new CommandException(
+                    "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.",
+                    "describe");
         }
     }
 
@@ -169,6 +179,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.info(info.description());
     }
 
+    private String describeDisplayName(Parameter p) {
+        return (p.getDisplayName() != null ? "(" + p.getDisplayName() + ")" : "");
+    }
+
     private void describeName(Manifest manifest) {
         log.info(Style.bold(Style.yellow("%s:%s:%s", manifest.group(), manifest.artifact(),
                 manifest.version())));
@@ -242,13 +256,15 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private void describeParameters(List<Parameter> required) {
-        required.forEach(p -> log.info(
+    private void describeParameters(List<Parameter> parameters) {
+        parameters.forEach(p -> log.info(
                 "  " + Style.yellow(p.getName())
-                        + " (%s)\n    %s\n      Pattern: %s, min length: %s, max length: %s",
-                p.getDisplayName(), describeDescription(p), describePattern(p),
+                        + " %s\n    %s\n      pattern: %s, min length: %s, max length: %s%s",
+                describeDisplayName(p), describeDescription(p), describePattern(p),
                 (p.getMinLength() >= 0 ? p.getMinLength() : "not defined"),
-                (p.getMaxLength() >= 0 ? p.getMaxLength() : "not defined")));
+                (p.getMaxLength() >= 0 ? p.getMaxLength() : "not defined"),
+                (p.getDefaultValue() != null && p.getDefaultValue().length() > 0
+                        ? ", default: " + p.getDefaultValue() : "")));
     }
 
     private void describeParameters(Parameterized parameterized) {
