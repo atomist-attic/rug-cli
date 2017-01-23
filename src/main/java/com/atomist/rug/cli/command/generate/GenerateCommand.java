@@ -117,6 +117,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         }
     }
 
+    // Question: what is "name" here? how does it relate to project name?
     private void invoke(ArtifactDescriptor artifact, String name, ProjectGenerator generator,
             ProjectOperationArguments arguments, String rootName, boolean createRepo,
             boolean overwrite) {
@@ -127,7 +128,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
                 String.format("Running generator %s of %s", generator.name(),
                         ArtifactDescriptorUtils.coordinates(artifact)))
-                                .run(indicator -> generator.generate(arguments));
+                                .run(indicator -> generator.(projectName, arguments));
 
         // Add provenance info to output
         result = new ProvenanceInfoWriter().write(result, generator, arguments,
