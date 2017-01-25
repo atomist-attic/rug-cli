@@ -84,6 +84,8 @@ public abstract class AbstractCommandTest {
             commandLine.add("-s");
             commandLine.add(config.getAbsolutePath());
             commandLine.add("-X");
+            commandLine.add("-t");
+            commandLine.add("-V");
         }
         commandLine = commandLine.stream().filter(c -> c != null).collect(Collectors.toList());
 
