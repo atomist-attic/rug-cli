@@ -146,16 +146,6 @@ public abstract class VersionUtils {
         readFileIntoProperties("git-rug-cli.properties", properties);
 
         String repo = properties.getProperty("git.remote.origin.url", "n/a");
-        if (repo != null) {
-            repo = repo.replace("git@github.com\\:", "");
-            repo = repo.replace("https://github.com/", "");
-            properties.put("git.remote.origin.url", repo);
-        }
-
-        if (repo != null && repo.indexOf(':') >= 0) {
-            repo = repo.substring(repo.indexOf(':') + 1);
-        }
-
         String version = properties.getProperty("version", "n/a");
         String sha = properties.getProperty("git.commit.id.abbrev", "n/a");
         String date = properties.getProperty("git.commit.time", "n/a");
