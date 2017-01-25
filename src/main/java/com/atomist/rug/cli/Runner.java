@@ -100,7 +100,7 @@ public class Runner {
     private void printVersion() {
         VersionInformation versionInfo = VersionUtils.readVersionInformation();
 
-        log.info(Constants.COMMAND + " " + versionInfo.version());
+        log.info(Style.bold(Constants.COMMAND + " " + versionInfo.version()));
         log.info(String.format("%s (git revision %s; last commit %s)", versionInfo.repo(),
                 versionInfo.sha(), versionInfo.date()));
     }
