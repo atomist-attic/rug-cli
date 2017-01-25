@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Allow `.` (period) in archive group ids as per
     https://github.com/atomist/rug-cli/issues/84
     
--   Styled out of `rug help` and `rug -v` a bit as per
+-   Styled output of `rug help` and `rug -v` a bit as per
     https://github.com/atomist/rug-cli/issues/83
 
 ## [0.21.2] - 2017-01-23
