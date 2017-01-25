@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.2...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.3...HEAD
+
+## [0.21.3] - 2017-01-25
+
+[0.21.3]: https://github.com/atomist/rug-cli/compare/0.21.2...0.21.3
+
+### Changed
+
+-   Allow `.` (period) in archive group ids as per
+    https://github.com/atomist/rug-cli/issues/84 
 
 ## [0.21.2] - 2017-01-23
 
