@@ -11,6 +11,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.CommandInfo;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
+import com.atomist.rug.cli.output.Style;
 
 public class CommandHelpFormatter {
 
@@ -30,8 +31,8 @@ public class CommandHelpFormatter {
         sb.append(String.format("Usage: %s %s\n", Constants.COMMAND, description.usage()));
         sb.append(String.format("%s.\n", description.description()));
 
-        printOptions(description.globalOptions(), sb, "Options");
-        printOptions(description.options(), sb, "Command Options");
+        printOptions(description.globalOptions(), sb, Style.bold("Options"));
+        printOptions(description.options(), sb, Style.bold("Command Options"));
 
         sb.append("\n");
         sb.append(WordUtils.wrap(description.detail(), WRAP));
