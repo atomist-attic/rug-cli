@@ -28,6 +28,7 @@ import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.utils.HttpClientFactory;
+import com.atomist.rug.cli.version.VersionUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -82,7 +83,8 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
                 archive.getVersion().getValue());
     }
 
-    private List<Operation> collectResults(String endpoint, String search, String type, Properties tags) {
+    private List<Operation> collectResults(String endpoint, String search, String type,
+            Properties tags) {
 
         if (!endpoint.endsWith(Constants.CATALOG_PATH)) {
             if (!endpoint.endsWith("/")) {
@@ -91,7 +93,8 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
             endpoint = endpoint + Constants.CATALOG_PATH;
         }
 
-        HttpClient client = HttpClientFactory.createHttpClient(endpoint);
+        HttpClient client = HttpClientFactory.createHttpClient(endpoint,
+                "rug-cli-" + VersionUtils.readVersion().orElse("0.0.0"));
         HttpPost post = new HttpPost(endpoint);
 
         StringEntity requestEntity = new StringEntity(getSearchQuery(search, type, tags),
