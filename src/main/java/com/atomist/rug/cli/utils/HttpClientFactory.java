@@ -1,16 +1,5 @@
 package com.atomist.rug.cli.utils;
 
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.URI;
-import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -19,7 +8,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import com.atomist.rug.cli.version.VersionUtils;
+import java.net.*;
+import java.util.List;
+import java.util.Optional;
 
 public class HttpClientFactory {
 
@@ -53,9 +44,8 @@ public class HttpClientFactory {
         }
     }
 
-    public static HttpClient createHttpClient(String url) {
-        HttpClientBuilder builder = HttpClientBuilder.create()
-                .setUserAgent("rug-cli-" + VersionUtils.readVersion().orElse("0.0.0"))
+    public static HttpClient createHttpClient(String url, String userAgent) {
+        HttpClientBuilder builder = HttpClientBuilder.create().setUserAgent(userAgent)
                 .useSystemProperties();
         configureProxy(builder, url);
         return builder.build();

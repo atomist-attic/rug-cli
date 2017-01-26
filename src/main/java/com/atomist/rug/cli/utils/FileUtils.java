@@ -5,7 +5,10 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+
+import com.atomist.rug.cli.Constants;
 
 public abstract class FileUtils {
 
@@ -53,4 +56,34 @@ public abstract class FileUtils {
                 : file.getAbsolutePath().toString());
         return path;
     }
+    
+    public static Optional<File> getWorkingDirectory() {
+        return getWorkingDirectory(System.getProperty("user.dir"));
+    }
+    
+    public static Optional<File> getWorkingDirectory(String root) {
+        if (root == null) {
+            root = System.getProperty("user.dir");
+        }
+        File projectRoot = searchFromProjectRoot(new File(root));
+        return Optional.ofNullable(projectRoot);
+    }
+
+    private static File searchFromProjectRoot(File root) {
+        // inside project root with a child .atomist
+        File dir = new File(root, Constants.ATOMIST_ROOT);
+        if (dir.exists()) {
+            return root;
+        }
+        // inside .atomist folder
+        if (root.getName().equals(Constants.ATOMIST_ROOT)) {
+            return root.getParentFile();
+        }
+        // inside any sub-folder of .atomist
+        if (root.getParentFile().getName().equals(Constants.ATOMIST_ROOT)) {
+            return root.getParentFile().getParentFile();
+        }
+        return null;
+    }
+
 }
