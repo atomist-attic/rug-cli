@@ -1,9 +1,11 @@
 package com.atomist.rug.cli.command;
 
 import static scala.collection.JavaConversions.asJavaCollection;
+import static scala.collection.JavaConversions.asScalaBuffer;
 
 import java.io.Console;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -148,6 +150,19 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         arguments = collectParameters(operation, arguments);
         validateCollectedParameters(artifact, operation, arguments);
         return arguments;
+    }
+    
+    protected ProjectOperationArguments mergeParameters(ProjectOperationArguments arguments,
+            ParameterValue... pv) {
+        List<ParameterValue> pvs = new ArrayList<>();
+        if (arguments != null) {
+            pvs.addAll(asJavaCollection(arguments.parameterValues()));
+        }
+        if (pv != null) {
+            Arrays.stream(pv).forEach(pvs::add);
+        }
+        return new SimpleProjectOperationArguments(
+                (arguments != null ? arguments.name() : "parameter"), asScalaBuffer(pvs));
     }
 
 }

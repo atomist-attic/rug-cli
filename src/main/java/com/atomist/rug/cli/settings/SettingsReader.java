@@ -1,25 +1,19 @@
 package com.atomist.rug.cli.settings;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.io.IOUtils;
-import org.yaml.snakeyaml.Yaml;
-
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.settings.Settings.Authentication;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
+import org.apache.commons.io.IOUtils;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class SettingsReader {
 
@@ -42,22 +36,6 @@ public class SettingsReader {
         readProjectSettings(settings);
 
         return settings;
-    }
-
-    private void readProjectSettings(Settings settings) {
-        if (!CommandLineOptions.hasOption("s")) {
-            Settings projectSettings = null;
-            Optional<File> userDir =CommandUtils.getWorkingDirectory();
-            if (userDir.isPresent() && userDir.get().exists()) {
-                File projetSettingsFile = new File(userDir.get(),
-                        Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
-                if (projetSettingsFile.exists()) {
-                    projectSettings = settingsFromFile(projetSettingsFile);
-                    // now merge both files
-                    settings.override(projectSettings);
-                }
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -106,7 +84,7 @@ public class SettingsReader {
                 settings.getDefaults().setArtifact((String) defaults.get("artifact"));
                 settings.getDefaults().setVersion((String) defaults.get("version"));
             }
-            
+
             if (data.containsKey("catalogs")) {
                 List<String> urls = (List<String>) data.get("catalogs");
                 urls.forEach(u -> settings.getCatalogs().addUrl(u));
@@ -133,6 +111,22 @@ public class SettingsReader {
         catch (IOException e) {
             // worse thing that can happen here is that we inform the user later that no default
             // settings file could be found.
+        }
+    }
+
+    private void readProjectSettings(Settings settings) {
+        if (!CommandLineOptions.hasOption("s")) {
+            Settings projectSettings = null;
+            Optional<File> userDir = FileUtils.getWorkingDirectory();
+            if (userDir.isPresent() && userDir.get().exists()) {
+                File projetSettingsFile = new File(userDir.get(),
+                        Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
+                if (projetSettingsFile.exists()) {
+                    projectSettings = settingsFromFile(projetSettingsFile);
+                    // now merge both files
+                    settings.override(projectSettings);
+                }
+            }
         }
     }
 }

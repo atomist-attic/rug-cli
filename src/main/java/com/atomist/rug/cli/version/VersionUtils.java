@@ -80,8 +80,8 @@ public abstract class VersionUtils {
                 if (!range.containsVersion(version)) {
                     throw new VersionException(String.format(
                             "Installed version of rug-cli is not compatible with archive %s.\n"
-                          + "The archive depends on %s:%s:%s which is incompatible with rug-cli (compatible version range %s).\n"
-                          + "Please update to a more recent version of rug-cli or change the Rug archive to use a supported Rug version.",
+                                    + "The archive depends on %s:%s:%s which is incompatible with rug-cli (compatible version range %s).\n"
+                                    + "Please update to a more recent version of rug-cli or change the Rug archive to use a supported Rug version.",
                             ArtifactDescriptorUtils.coordinates(artifact), Constants.GROUP,
                             Constants.RUG_ARTIFACT, version.toString(), range.toString()));
                 }
@@ -110,7 +110,8 @@ public abstract class VersionUtils {
         String version = null;
 
         if (isOutdated()) {
-            HttpClient httpClient = HttpClientFactory.createHttpClient(URL);
+            HttpClient httpClient = HttpClientFactory.createHttpClient(URL,
+                    "rug-cli-" + readVersion().orElse("0.0.0"));
             HttpGet httpget = new HttpGet(URL);
             try {
                 HttpResponse response = httpClient.execute(httpget);

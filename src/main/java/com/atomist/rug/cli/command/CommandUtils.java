@@ -5,18 +5,14 @@ import java.util.Optional;
 
 import org.apache.commons.cli.Options;
 
-import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class CommandUtils {
 
     public static File getRequiredWorkingDirectory() {
-        Optional<File> projectDir = getWorkingDirectory(System.getProperty("user.dir"));
+        Optional<File> projectDir = FileUtils.getWorkingDirectory();
         return projectDir.orElseThrow(() -> new CommandException(
                 "Current directory is not a valid archive directory. Couldn't find .atomist folder."));
-    }
-
-    public static Optional<File> getWorkingDirectory() {
-        return getWorkingDirectory(System.getProperty("user.dir"));
     }
 
     public static void main(String[] args) {
@@ -41,28 +37,4 @@ public abstract class CommandUtils {
         return options;
     }
 
-    private static Optional<File> getWorkingDirectory(String root) {
-        if (root == null) {
-            root = System.getProperty("user.dir");
-        }
-        File projectRoot = searchFromProjectRoot(new File(root));
-        return Optional.ofNullable(projectRoot);
-    }
-
-    private static File searchFromProjectRoot(File root) {
-        // inside project root with a child .atomist
-        File dir = new File(root, Constants.ATOMIST_ROOT);
-        if (dir.exists()) {
-            return root;
-        }
-        // inside .atomist folder
-        if (root.getName().equals(Constants.ATOMIST_ROOT)) {
-            return root.getParentFile();
-        }
-        // inside any sub-folder of .atomist
-        if (root.getParentFile().getName().equals(Constants.ATOMIST_ROOT)) {
-            return root.getParentFile().getParentFile();
-        }
-        return null;
-    }
 }
