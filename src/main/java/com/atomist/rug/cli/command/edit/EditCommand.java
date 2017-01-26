@@ -13,7 +13,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import com.atomist.project.ProjectOperationArguments;
@@ -38,6 +37,7 @@ import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.cli.utils.GitUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
@@ -122,7 +122,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             iterateDeltas(deltas, source, resultSource, root, dryRun);
             if (repo) {
                 log.newline();
-                commitFiles(editor, arguments, root);
+                GitUtils.commitFiles(editor, arguments, root);
             }
 
             log.newline();
@@ -145,26 +145,6 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             throw new CommandException(String.format(
                     "Editor failed to make changes to project %s:\n  %s", root.getName(),
                     ((FailedModificationAttempt) result).failureExplanation()));
-        }
-    }
-
-    private void commitFiles(ProjectEditor editor, ProjectOperationArguments arguments, File root) {
-        FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        try (Repository repository = builder.setGitDir(new File(root, ".git")).readEnvironment()
-                .findGitDir().build()) {
-            try (Git git = new Git(repository)) {
-                log.info("Committing to git repository at " + git.getRepository().getDirectory());
-                git.add().addFilepattern(".").call();
-                RevCommit commit = git.commit().setAll(true)
-                        .setMessage(String.format("Commit by editor %s\n\n%s", editor.name(),
-                                new ProvenanceInfoWriter().write(editor, arguments,
-                                        Constants.cliClient())))
-                        .setAuthor("Atomist", "cli@atomist.com").call();
-                log.info("Committed changes to git repository (%s)", commit.abbreviate(7).name());
-            }
-        }
-        catch (IllegalStateException | IOException | GitAPIException e) {
-            throw new RunnerException(e);
         }
     }
 

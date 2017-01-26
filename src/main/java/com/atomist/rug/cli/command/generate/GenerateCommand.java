@@ -1,30 +1,20 @@
 package com.atomist.rug.cli.command.generate;
 
 import static scala.collection.JavaConversions.asJavaCollection;
-import static scala.collection.JavaConversions.asScalaBuffer;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.text.WordUtils;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.atomist.param.Parameter;
-import com.atomist.param.ParameterValue;
 import com.atomist.param.SimpleParameterValue;
 import com.atomist.project.ProjectOperationArguments;
 import com.atomist.project.ProvenanceInfoWriter;
-import com.atomist.project.SimpleProjectOperationArguments;
 import com.atomist.project.archive.Operations;
 import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractParameterizedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
@@ -37,6 +27,7 @@ import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.cli.utils.GitUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
@@ -101,25 +92,6 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         return root;
     }
 
-    private void initializeRepoAndCommitFiles(ProjectGenerator generator,
-            ProjectOperationArguments arguments, File root) {
-        try (Git git = Git.init().setDirectory(root).call()) {
-            log.info("Initialized a new git repository at " + git.getRepository().getDirectory());
-            git.add().addFilepattern(".").call();
-            RevCommit commit = git.commit().setAll(true)
-                    .setMessage(
-                            String.format("Initial commit by generator %s\n\n%s", generator.name(),
-                                    new ProvenanceInfoWriter().write(generator, arguments,
-                                            Constants.cliClient())))
-                    .setAuthor("Atomist", "cli@atomist.com").call();
-            log.info("Committed initial set of files to git repository (%s)",
-                    commit.abbreviate(7).name());
-        }
-        catch (IllegalStateException | GitAPIException e) {
-            throw new RunnerException(e);
-        }
-    }
-
     private void invoke(ArtifactDescriptor artifact, String name, ProjectGenerator generator,
             ProjectOperationArguments arguments, String rootName, boolean createRepo,
             boolean overwrite) {
@@ -150,7 +122,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         ArtifactSourceTreeCreator.visitTree(result, new LogVisitor(log));
         if (createRepo) {
             log.newline();
-            initializeRepoAndCommitFiles(generator, arguments, root);
+            GitUtils.initializeRepoAndCommitFiles(generator, arguments, root);
         }
         log.newline();
         log.info(Style.green("Successfully generated new project %s", projectName));
@@ -172,18 +144,5 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             }
         }
         throw new CommandException("No PROJECT_NAME provided", "generate");
-    }
-
-    private ProjectOperationArguments mergeParameters(ProjectOperationArguments arguments,
-            ParameterValue... pv) {
-        List<ParameterValue> pvs = new ArrayList<>();
-        if (arguments != null) {
-            pvs.addAll(asJavaCollection(arguments.parameterValues()));
-        }
-        if (pv != null) {
-            Arrays.stream(pv).forEach(pvs::add);
-        }
-        return new SimpleProjectOperationArguments(
-                (arguments != null ? arguments.name() : "parameter"), asScalaBuffer(pvs));
     }
 }
