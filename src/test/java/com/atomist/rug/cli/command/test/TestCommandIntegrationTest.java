@@ -30,14 +30,12 @@ public class TestCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulTestsWithResolverInformation() throws Exception {
-        // Make sure the manifest newer than the cached resolver result
-        Runtime.getRuntime().exec("touch .atomist/manifest.yml");
         assertCommandLine(0, () -> {
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("com.atomist:rug-cli-root:jar:1.0.0"));
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("Successfully executed 13 of 13 scenarios: Test SUCCESS"));
-        }, "test", "-r");
+        }, "test", "-ru");
     }
 
     @Test
