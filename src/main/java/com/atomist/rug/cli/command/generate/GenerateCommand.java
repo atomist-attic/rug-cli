@@ -14,6 +14,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValue;
 import com.atomist.param.SimpleParameterValue;
 import com.atomist.project.ProjectOperationArguments;
@@ -42,6 +43,8 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.SimpleSourceUpdateInfo;
 import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
+
+import scala.collection.JavaConverters;
 
 public class GenerateCommand extends AbstractParameterizedCommand {
 
@@ -121,7 +124,8 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             ProjectOperationArguments arguments, String rootName, boolean createRepo,
             boolean overwrite) {
 
-        String projectName = arguments.stringParamValue("project_name");
+        String projectName = projectName(generator, arguments);
+
         File root = createProjectRoot(rootName, projectName, overwrite);
 
         ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
@@ -151,6 +155,23 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         log.newline();
         log.info(Style.green("Successfully generated new project %s", projectName));
 
+    }
+
+    private String projectName(ProjectGenerator generator, ProjectOperationArguments arguments) {
+        if (JavaConverters.mapAsJavaMapConverter(arguments.parameterValueMap()).asJava()
+                .containsKey("project_name")) {
+            return arguments.stringParamValue("project_name");
+        }
+        // extract potential default project_name
+        else {
+            Optional<Parameter> projectNameParameter = JavaConverters
+                    .asJavaCollectionConverter(generator.parameters()).asJavaCollection().stream()
+                    .filter(p -> p.getName().equals("project_name")).findAny();
+            if (projectNameParameter.isPresent() && projectNameParameter.get().hasDefaultValue()) {
+                return projectNameParameter.get().getDefaultValue();
+            }
+        }
+        throw new CommandException("No PROJECT_NAME provided", "generate");
     }
 
     private ProjectOperationArguments mergeParameters(ProjectOperationArguments arguments,
