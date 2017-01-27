@@ -5,7 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomist</groupId>
 	<artifactId>rug-cli</artifactId>
+<<<<<<< HEAD
 	<version>0.22.0-SNAPSHOT</version>
+=======
+	<version>0.21.4-SNAPSHOT</version>
+>>>>>>> Update rug-resolver
 	<packaging>jar</packaging>
 	<name>rug-cli</name>
 	<description>CLI for working with Rug</description>
@@ -16,11 +20,13 @@
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
 <<<<<<< HEAD
-=======
 		<rug-resolver.version>0.10.4</rug-resolver.version>
->>>>>>> Changes for ProjectGenerator
 		<rug.version>0.11.0</rug.version>
 		<rug-resolver.version>0.11.0</rug-resolver.version>
+=======
+		<rug.version>0.10.0</rug.version>
+		<rug-resolver.version>0.10.3</rug-resolver.version>
+>>>>>>> Update rug-resolver
 	</properties>
 	<licenses>
 		<license>
@@ -351,13 +357,13 @@
 		</plugins>
 	</build>
 	<repositories>
-		<repository>
-			<id>public-atomist-snapshots</id>
-			<url>https://atomist.jfrog.io/atomist/libs-dev/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>public-atomist-snapshots</id> -->
+<!-- 			<url>https://atomist.jfrog.io/atomist/libs-dev/</url> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>false</enabled> -->
+<!-- 			</snapshots> -->
+<!-- 		</repository> -->
 		<repository>
 			<id>public-atomist-release</id>
 			<name>Atomist Release</name>
