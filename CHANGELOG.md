@@ -7,8 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.3...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.4...HEAD
 
+## [0.21.4] - 2017-01-27
+
+[0.21.4]: https://github.com/atomist/rug-cli/compare/0.21.3...0.21.4
+
+### Changed
+
+-   Fix leading `.` in operation names of metadata.json
+    https://github.com/atomist/rug-cli/issues/88
+    
 ## [0.21.3] - 2017-01-25
 
 [0.21.3]: https://github.com/atomist/rug-cli/compare/0.21.2...0.21.3
