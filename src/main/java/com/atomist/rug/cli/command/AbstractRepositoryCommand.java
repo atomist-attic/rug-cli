@@ -26,7 +26,7 @@ import com.atomist.rug.deployer.AbstractMavenBasedDeployer;
 import com.atomist.rug.deployer.DefaultDeployerEventListener;
 import com.atomist.rug.deployer.Deployer;
 import com.atomist.rug.git.RepositoryDetails;
-import com.atomist.rug.git.RepositoryDetailsProvider;
+import com.atomist.rug.git.RepositoryDetailsReader;
 import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.resolver.ArtifactDescriptor;
@@ -45,7 +45,8 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
             @Option("archive-version") String archiveVersion, CommandLine commandLine)
             throws IOException {
 
-        artifact = ArtifactDescriptorFactory.copyFrom(artifact, archiveGroup, archiveArtifact, archiveVersion);
+        artifact = ArtifactDescriptorFactory.copyFrom(artifact, archiveGroup, archiveArtifact,
+                archiveVersion);
 
         String zipFileName = artifact.artifact() + "-" + artifact.version() + "."
                 + artifact.extension().toString().toLowerCase();
@@ -110,8 +111,8 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         @Override
         protected ProvenanceInfo getProvenanceInfo() {
             try {
-                Optional<RepositoryDetails> repositoryDetails = new RepositoryDetailsProvider()
-                        .readDetails(projectRoot);
+                Optional<RepositoryDetails> repositoryDetails = RepositoryDetailsReader
+                        .read(projectRoot);
                 if (repositoryDetails.isPresent()) {
                     return new SimpleProvenanceInfo(repositoryDetails.get().repo(),
                             repositoryDetails.get().branch(), repositoryDetails.get().sha());
