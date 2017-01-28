@@ -14,6 +14,8 @@ import com.atomist.param.Parameter;
 import com.atomist.param.Parameterized;
 import com.atomist.project.Executor;
 import com.atomist.project.ProjectOperationInfo;
+import com.atomist.project.ProvenanceInfo;
+import com.atomist.project.ProvenanceInfoArtifactSourceReader;
 import com.atomist.project.archive.Operations;
 import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.generate.ProjectGenerator;
@@ -25,6 +27,7 @@ import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
+import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
@@ -34,8 +37,11 @@ import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.manifest.ManifestException;
 import com.atomist.rug.manifest.ManifestFactory;
+import com.atomist.rug.metadata.MetadataWriter;
+import com.atomist.rug.metadata.MetadataWriter.Format;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
+import com.atomist.source.FileArtifact;
 
 import scala.collection.Seq;
 
@@ -43,10 +49,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private static final DescribeLabels EDITOR_LABELS = new DescribeLabels("edit", "editor",
             "Editors");
-    private static final DescribeLabels GENERATOR_LABELS = new DescribeLabels("generate",
-            "generator", "Generators");
     private static final DescribeLabels EXECUTOR_LABELS = new DescribeLabels("execute", "executor",
             "Executors");
+    private static final DescribeLabels GENERATOR_LABELS = new DescribeLabels("generate",
+            "generator", "Generators");
     private static final DescribeLabels REVIEWER_LABELS = new DescribeLabels("review", "reviewer",
             "Reviewers");
 
@@ -55,7 +61,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     @Command
     public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
             ArtifactSource source, @Argument(index = 1, defaultValue = "") String kind,
-            @Argument(index = 2) String name) {
+            @Argument(index = 2) String name, @Option("output") String format) {
 
         Operations operations = operationsAndHandlers.operations();
         String operationName = OperationUtils.extractRugTypeName(name);
@@ -74,7 +80,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             describeOperations(artifact, operationName, operations.executors(), EXECUTOR_LABELS);
             break;
         case "archive":
-            describeArchive(artifact, source, operationsAndHandlers);
+            describeArchive(operationsAndHandlers, artifact, source, format);
             break;
         case "":
             throw new CommandException(
@@ -116,6 +122,21 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
+    private void describeArchive(OperationsAndHandlers operationsAndHandlers,
+            ArtifactDescriptor artifact, ArtifactSource source, String format) {
+        if (format != null) {
+            validateFormat(format);
+            
+            Optional<ProvenanceInfo> info = ProvenanceInfoArtifactSourceReader.read(source);
+            FileArtifact metadata = MetadataWriter.create(operationsAndHandlers, artifact,
+                    source, info.orElse(null), Format.valueOf(format.toUpperCase()));
+            System.out.println(metadata.content());
+        }
+        else {
+            describeArchive(artifact, source, operationsAndHandlers);
+        }
+    }
+
     private void describeContents(ArtifactDescriptor artifact, ArtifactSource source) {
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
         log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(artifact.uri())),
@@ -141,6 +162,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private String describeDescription(Parameter p) {
         return WordUtils.wrap(p.getDescription(), Constants.WRAP_LENGTH, "\n    ", false);
 
+    }
+
+    private String describeDisplayName(Parameter p) {
+        return (p.getDisplayName() != null ? "(" + p.getDisplayName() + ")" : "");
     }
 
     private void describeInvoke(ArtifactDescriptor artifact, ProjectOperationInfo info,
@@ -179,14 +204,42 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.info(info.description());
     }
 
-    private String describeDisplayName(Parameter p) {
-        return (p.getDisplayName() != null ? "(" + p.getDisplayName() + ")" : "");
-    }
-
     private void describeName(Manifest manifest) {
         log.info(Style.bold(Style.yellow("%s:%s:%s", manifest.group(), manifest.artifact(),
                 manifest.version())));
         log.newline();
+    }
+
+    private void describeOperations(ArtifactDescriptor artifact,
+            OperationsAndHandlers operationsAndHandlers) {
+        Operations operations = operationsAndHandlers.operations();
+        Collection<ProjectEditor> editors = asJavaCollection(operations.editors());
+        Collection<ProjectGenerator> generators = asJavaCollection(operations.generators());
+        Collection<Executor> executors = asJavaCollection(operations.executors());
+        Collection<ProjectReviewer> reviewers = asJavaCollection(operations.reviewers());
+        Collection<SystemEventHandler> handlers = operationsAndHandlers.handlers().handlers();
+        log.newline();
+        if (!generators.isEmpty()) {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
+            listOperations(artifact, generators);
+        }
+        if (!editors.isEmpty()) {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
+            listOperations(artifact, editors);
+        }
+        if (!executors.isEmpty()) {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Executors"));
+            listOperations(artifact, executors);
+        }
+        if (!reviewers.isEmpty()) {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
+            listOperations(artifact, reviewers);
+        }
+        if (!handlers.isEmpty()) {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
+            handlers.forEach(
+                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -221,38 +274,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             else {
                 describeInvokeArchive();
             }
-        }
-    }
-
-    private void describeOperations(ArtifactDescriptor artifact,
-            OperationsAndHandlers operationsAndHandlers) {
-        Operations operations = operationsAndHandlers.operations();
-        Collection<ProjectEditor> editors = asJavaCollection(operations.editors());
-        Collection<ProjectGenerator> generators = asJavaCollection(operations.generators());
-        Collection<Executor> executors = asJavaCollection(operations.executors());
-        Collection<ProjectReviewer> reviewers = asJavaCollection(operations.reviewers());
-        Collection<SystemEventHandler> handlers = operationsAndHandlers.handlers().handlers();
-        log.newline();
-        if (!generators.isEmpty()) {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            listOperations(artifact, generators);
-        }
-        if (!editors.isEmpty()) {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-            listOperations(artifact, editors);
-        }
-        if (!executors.isEmpty()) {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Executors"));
-            listOperations(artifact, executors);
-        }
-        if (!reviewers.isEmpty()) {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
-            listOperations(artifact, reviewers);
-        }
-        if (!handlers.isEmpty()) {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Handlers"));
-            handlers.forEach(
-                    e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))));
         }
     }
 
@@ -332,10 +353,16 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         });
     }
 
+    private void validateFormat(String format) {
+        if (!"json".equals(format) && !"yaml".equals(format)) {
+            throw new CommandException("Invalid FORMAT provided. Allowed formats are: json or yaml", "describe");
+        }
+    }
+
     private static class DescribeLabels {
         private final String command;
-        private final String operation;
         private final String label;
+        private final String operation;
 
         public DescribeLabels(String command, String operation, String label) {
             this.command = command;

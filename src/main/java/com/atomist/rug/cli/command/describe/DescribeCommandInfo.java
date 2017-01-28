@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.command.AbstractVersionCommandInfo;
 import com.atomist.rug.cli.command.CommandException;
@@ -59,7 +61,15 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
     public String detail() {
         return "TYPE should be 'editor', 'generator', 'executor', 'reviewer' or 'archive' and ARTIFACT"
                 + " should be the full name of an artifact, e.g., \"atomist:spring-service:Spring Microservice\".  "
-                + "If the name of the artifact has spaces in it, you need to put quotes around it.";
+                + "If the name of the artifact has spaces in it, you need to put quotes around it.  "
+                + "FORMAT can be 'json' or 'yaml' and is only valid when describing an archive.";
+    }
+    
+    public Options options() {
+        Options options = super.options();
+        options.addOption(Option.builder("O").argName("FORMAT").desc("Specify output format")
+                .longOpt("output").hasArg(true).required(false).build());
+        return options;
     }
 
     @Override

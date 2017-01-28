@@ -8,11 +8,13 @@ import org.slf4j.LoggerFactory;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReporterUtils;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 
 public class Log {
     
     // There is a performance hit to have a logger per clazz
     private static final Logger logger = LoggerFactory.getLogger(Log.class.getName());
+//    private static final boolean CONSOLE_CONNECTED = System.console() != null;
 
     public Log(Class<?> clazz) {
     }
@@ -54,8 +56,13 @@ public class Log {
             indicator.get().report(message);
         }
         else {
-            System.out.println(message);
+            if (!CommandLineOptions.hasOption("O")) {
+                System.out.println(message);
+            }
+            else {
+                //if (CONSOLE_CONNECTED) {
+                System.err.println(message);
+            }
         }
     }
-
 }
