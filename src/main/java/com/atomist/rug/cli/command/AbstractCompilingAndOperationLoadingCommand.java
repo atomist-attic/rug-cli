@@ -52,7 +52,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         if (artifact != null && artifact.extension() == Extension.ZIP) {
             source = ArtifactSourceUtils.createArtifactSource(artifact);
             printArtifactSource(artifact, source);
-            source = compile(source);
+            source = compile(artifact, source);
             operationsAndHandlers = loadOperationsAndHandlers(artifact, source,
                     createOperationsLoader(uri));
         }
@@ -68,37 +68,40 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         }
     }
 
-    private ArtifactSource compile(ArtifactSource source) {
-        // Get all registered and supported compilers
-        Collection<Compiler> compilers = asJavaCollection(
-                ServiceLoaderCompilerRegistry.findAll(source));
+    private ArtifactSource compile(ArtifactDescriptor artifact, ArtifactSource source) {
+        // Only compile local archives
+        if (artifact instanceof LocalArtifactDescriptor) {
 
-        if (!compilers.isEmpty()) {
+            // Get all registered and supported compilers
+            Collection<Compiler> compilers = asJavaCollection(
+                    ServiceLoaderCompilerRegistry.findAll(source));
 
-            return new ProgressReportingOperationRunner<ArtifactSource>("Processing script sources")
-                    .run(indicator -> {
-                        ArtifactSource compiledSource = source;
-                        for (Compiler compiler : compilers) {
-                            indicator.report(String.format("Invoking %s on %s script sources",
-                                    compiler.name(), StringUtils.collectionToCommaDelimitedString(
-                                            compiler.extensions())));
-                            ArtifactSource cs = compiler.compile(compiledSource);
-                            Deltas deltas = cs.deltaFrom(compiledSource);
-                            if (deltas.empty()) {
-                                indicator.report("  No files modified");
+            if (!compilers.isEmpty()) {
+
+                return new ProgressReportingOperationRunner<ArtifactSource>(
+                        "Processing script sources").run(indicator -> {
+                            ArtifactSource compiledSource = source;
+                            for (Compiler compiler : compilers) {
+                                indicator.report(String.format("Invoking %s on %s script sources",
+                                        compiler.name(),
+                                        StringUtils.collectionToCommaDelimitedString(
+                                                compiler.extensions())));
+                                ArtifactSource cs = compiler.compile(compiledSource);
+                                Deltas deltas = cs.deltaFrom(compiledSource);
+                                if (deltas.empty()) {
+                                    indicator.report("  No files modified");
+                                }
+                                else {
+                                    asJavaCollection(deltas.deltas()).forEach(
+                                            d -> indicator.report("  Created " + d.path()));
+                                }
+                                compiledSource = cs;
                             }
-                            else {
-                                asJavaCollection(deltas.deltas())
-                                        .forEach(d -> indicator.report("  Created " + d.path()));
-                            }
-                            compiledSource = cs;
-                        }
-                        return compiledSource;
-                    });
+                            return compiledSource;
+                        });
+            }
         }
-        else {
-            return source;
-        }
+        return source;
     }
 
     private HandlerOperationsLoader createOperationsLoader(URI[] uri) {
