@@ -5,7 +5,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SpinningProgressReporter extends Thread implements ProgressReporter {
 
-    private static final String animNix = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+    //    private static final String animNix = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+    private static final String animNix = "⣾⣽⣻⢿⡿⣟⣯⣷";
     private static final String animWin32 = "|/-\\";
     private static final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 
