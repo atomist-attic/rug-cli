@@ -1,10 +1,12 @@
 package com.atomist.rug.cli.command.describe;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.Assertion;
 
 import com.atomist.rug.cli.AbstractCommandTest;
 
@@ -45,6 +47,34 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulArchiveDescribe() throws Exception {
         assertSuccess("rug describe editor|generator|executor|reviewer ARTIFACT", "describe",
                 "archive", "atomist-rugs:spring-boot-rest-service");
+    }
+
+    @Test
+    public void testSuccessfulArchiveDescribeJson() throws Exception {
+        assertCommandLine(0, new Assertion() {
+
+            @Override
+            public void checkAssertion() throws Exception {
+                String sysout = systemOutRule.getLogWithNormalizedLineSeparator();
+                String stderr = systemErrRule.getLogWithNormalizedLineSeparator();
+                assertTrue(stderr.contains("Loading"));
+                assertTrue(sysout.startsWith("{"));
+            }
+        }, "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-O", "json");
+    }
+
+    @Test
+    public void testSuccessfulArchiveDescribeYaml() throws Exception {
+        assertCommandLine(0, new Assertion() {
+            
+            @Override
+            public void checkAssertion() throws Exception {
+                String sysout = systemOutRule.getLogWithNormalizedLineSeparator();
+                String stderr = systemErrRule.getLogWithNormalizedLineSeparator();
+                assertTrue(stderr.contains("Loading"));
+                assertTrue(sysout.startsWith("---"));
+            }
+        }, "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-O", "yaml");
     }
 
     @Test
@@ -90,10 +120,9 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulDescribe() throws Exception {
         assertFailure(
-                "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.\n" + 
-                "\n" + 
-                "Run the following command for usage help:\n" + 
-                "  rug describe --help",
+                "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.\n"
+                        + "\n" + "Run the following command for usage help:\n"
+                        + "  rug describe --help",
                 "describe", "-l");
     }
 
