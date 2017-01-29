@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command;
 
 import static scala.collection.JavaConversions.asScalaBuffer;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -24,6 +25,7 @@ import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -35,27 +37,12 @@ import com.atomist.source.ArtifactSource;
 public abstract class AbstractAnnotationBasedCommand
         extends AbstractCompilingAndOperationLoadingCommand {
 
-    @Override
-    protected void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
-            ArtifactSource source, CommandLine commandLine) {
-
-        Optional<Method> methodOptional = Arrays.stream(ReflectionUtils.getAllDeclaredMethods(getClass()))
-                                                .filter(m -> AnnotationUtils.getAnnotation(m,
-                        com.atomist.rug.cli.command.annotation.Command.class) != null)
-                                                .findFirst();
-
-        if (methodOptional.isPresent()) {
-            invokeCommandMethod(methodOptional.get(), operations, artifact, source, commandLine);
-        }
-        else {
-            throw new CommandException("Command class does not have an @Command-annotated method.");
-        }
+    private <A extends Annotation> Optional<Method> annotatedMethodWith(Class<A> annotationClass) {
+        return Arrays.stream(ReflectionUtils.getAllDeclaredMethods(getClass()))
+                .filter(m -> AnnotationUtils.getAnnotation(m, annotationClass) != null).findFirst();
     }
 
-    protected void invokeCommandMethod(Method method, OperationsAndHandlers operations,
-            ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
-        List<Object> arguments = prepareMethodArguments(method, operations, artifact, source,
-                commandLine);
+    private void invokeMethod(Method method, List<Object> arguments) {
         try {
             method.invoke(this, (Object[]) arguments.toArray(new Object[arguments.size()]));
         }
@@ -64,12 +51,12 @@ public abstract class AbstractAnnotationBasedCommand
         }
     }
 
-    private ProjectOperationArguments prepareArguments(Properties props, String name) {
-        List<ParameterValue> pvs = props.entrySet().stream()
-                .map(e -> new SimpleParameterValue((String) e.getKey(), e.getValue()))
-                .collect(Collectors.toList());
+    private void invokeValidateMethod(List<Object> arguments) {
+        Optional<Method> validateMethod = annotatedMethodWith(Validator.class);
 
-        return new SimpleProjectOperationArguments(name, asScalaBuffer(pvs));
+        if (validateMethod.isPresent()) {
+            invokeMethod(validateMethod.get(), arguments);
+        }
     }
 
     private Object prepareArgumentMethodArgument(CommandLine commandLine, Parameter p,
@@ -107,6 +94,14 @@ public abstract class AbstractAnnotationBasedCommand
                     : argument.defaultValue());
         }
         return argumentValue;
+    }
+
+    private ProjectOperationArguments prepareArguments(Properties props, String name) {
+        List<ParameterValue> pvs = props.entrySet().stream()
+                .map(e -> new SimpleParameterValue((String) e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+
+        return new SimpleProjectOperationArguments(name, asScalaBuffer(pvs));
     }
 
     private List<Object> prepareMethodArguments(Method method, OperationsAndHandlers operations,
@@ -164,6 +159,24 @@ public abstract class AbstractAnnotationBasedCommand
         }
         else {
             return StringUtils.expandEnvironmentVars(commandLine.getOptionValue(option.value()));
+        }
+    }
+
+    @Override
+    protected void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
+            ArtifactSource source, CommandLine commandLine) {
+
+        Optional<Method> method = annotatedMethodWith(com.atomist.rug.cli.command.annotation.Command.class);
+
+        if (method.isPresent()) {
+            List<Object> arguments = prepareMethodArguments(method.get(), operations, artifact,
+                    source, commandLine);
+
+            invokeValidateMethod(arguments);
+            invokeMethod(method.get(), arguments);
+        }
+        else {
+            throw new CommandException("Command class does not have an @Command-annotated method.");
         }
     }
 }
