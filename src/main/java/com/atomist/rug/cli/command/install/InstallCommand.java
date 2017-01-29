@@ -14,7 +14,6 @@ import org.eclipse.aether.installation.InstallRequest;
 import org.eclipse.aether.installation.InstallResult;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractRepositoryCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
@@ -24,8 +23,6 @@ import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
 public class InstallCommand extends AbstractRepositoryCommand {
-
-    private Log log = new Log(InstallCommand.class);
 
     @Override
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,

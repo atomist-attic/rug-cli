@@ -43,7 +43,7 @@ import com.atomist.tree.pathexpression.PathExpression;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 
-    private Log log = new Log(getClass());
+    protected Log log = new Log(getClass());
 
     @Override
     protected final void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {

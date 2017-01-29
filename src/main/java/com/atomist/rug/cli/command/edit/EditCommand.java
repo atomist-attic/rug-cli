@@ -24,7 +24,6 @@ import com.atomist.project.edit.NoModificationNeeded;
 import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.edit.SuccessfulModification;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractDeltaHandlingCommand;
 import com.atomist.rug.cli.command.CommandException;
@@ -44,8 +43,6 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.Delta;
 
 public class EditCommand extends AbstractDeltaHandlingCommand {
-
-    private Log log = new Log(getClass());
 
     @Command
     public void run(Operations operations, ArtifactDescriptor artifact,

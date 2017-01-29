@@ -16,7 +16,6 @@ import org.eclipse.aether.version.VersionConstraint;
 import org.eclipse.aether.version.VersionScheme;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
@@ -33,8 +32,6 @@ import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.rug.resolver.DependencyResolver;
 
 public class ExtensionCommand extends AbstractAnnotationBasedCommand {
-
-    private Log log = new Log(ExtensionCommand.class);
 
     @Command
     public void run(CommandLine commandLine,
