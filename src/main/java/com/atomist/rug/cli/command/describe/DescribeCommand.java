@@ -21,13 +21,13 @@ import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.project.review.ProjectReviewer;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
@@ -55,8 +55,45 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             "generator", "Generators");
     private static final DescribeLabels REVIEWER_LABELS = new DescribeLabels("review", "reviewer",
             "Reviewers");
-
-    private Log log = new Log(getClass());
+    
+    @Validator
+    public void validate(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
+            ArtifactSource source, String kind, String name, String format) {
+        
+        switch (kind) {
+        case "editor":
+            break;
+        case "generator":
+            break;
+        case "reviewer":
+            break;
+        case "executor":
+            break;
+        case "archive":
+            validateFormat(format);
+            break;
+        case "":
+            throw new CommandException(
+                    "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.",
+                    "describe");
+        default:
+            if (kind.split(":").length == 2) {
+                throw new CommandException(
+                        "It looks like you're trying to describe an archive. Please try:\n  rug describe archive "
+                                + kind,
+                        "describe");
+            }
+            if (kind.split(":").length == 3) {
+                throw new CommandException(
+                        "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|executor|reviewer "
+                                + kind,
+                        "describe");
+            }
+            throw new CommandException(
+                    "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.",
+                    "describe");
+        }
+    }
 
     @Command
     public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
@@ -82,26 +119,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         case "archive":
             describeArchive(operationsAndHandlers, artifact, source, format);
             break;
-        case "":
-            throw new CommandException(
-                    "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.",
-                    "describe");
-        default:
-            if (kind.split(":").length == 2) {
-                throw new CommandException(
-                        "It looks like you're trying to describe an archive. Please try:\n  rug describe archive "
-                                + kind,
-                        "describe");
-            }
-            if (kind.split(":").length == 3) {
-                throw new CommandException(
-                        "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|executor|reviewer "
-                                + kind,
-                        "describe");
-            }
-            throw new CommandException(
-                    "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.",
-                    "describe");
         }
     }
 
@@ -126,10 +143,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             ArtifactDescriptor artifact, ArtifactSource source, String format) {
         if (format != null) {
             validateFormat(format);
-            
+
             Optional<ProvenanceInfo> info = ProvenanceInfoArtifactSourceReader.read(source);
-            FileArtifact metadata = MetadataWriter.create(operationsAndHandlers, artifact,
-                    source, info.orElse(null), Format.valueOf(format.toUpperCase()));
+            FileArtifact metadata = MetadataWriter.create(operationsAndHandlers, artifact, source,
+                    info.orElse(null), Format.valueOf(format.toUpperCase()));
             System.out.println(metadata.content());
         }
         else {
@@ -354,8 +371,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void validateFormat(String format) {
-        if (!"json".equals(format) && !"yaml".equals(format)) {
-            throw new CommandException("Invalid FORMAT provided. Allowed formats are: json or yaml", "describe");
+        if (format != null && (!"json".equals(format) && !"yaml".equals(format))) {
+            throw new CommandException("Invalid FORMAT provided. Allowed formats are: json or yaml",
+                    "describe");
         }
     }
 
