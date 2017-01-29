@@ -16,6 +16,8 @@ public class RugArchiveLifecycleTest extends AbstractCommandTest {
 
     private static final String location = System.getProperty("java.io.tmpdir") + File.separator
             + System.currentTimeMillis();
+    
+    private static String workingDir = System.getProperty("user.dir");
 
     @Test
     public void testAGenerate() throws Exception {
@@ -56,5 +58,6 @@ public class RugArchiveLifecycleTest extends AbstractCommandTest {
     @AfterClass
     public static void cleanUp() {
         FileUtils.deleteQuietly(new File(location));
+        System.setProperty("user.dir", workingDir);
     }
 }
