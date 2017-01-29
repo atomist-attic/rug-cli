@@ -13,7 +13,6 @@ import org.eclipse.aether.artifact.Artifact;
 import com.atomist.project.ProvenanceInfo;
 import com.atomist.project.SimpleProvenanceInfo;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
@@ -35,8 +34,6 @@ import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
 
 public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedCommand {
-
-    private Log log = new Log(AbstractRepositoryCommand.class);
 
     @Command
     public void run(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,

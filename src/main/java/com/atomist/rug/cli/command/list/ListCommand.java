@@ -24,7 +24,6 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
@@ -39,8 +38,6 @@ import com.atomist.source.file.ZipFileArtifactSourceReader;
 import com.atomist.source.file.ZipFileInput;
 
 public class ListCommand extends AbstractAnnotationBasedCommand {
-
-    private Log log = new Log(ListCommand.class);
 
     @Command
     public void run(@Option("filter") Properties filter, Settings settings) {

@@ -18,7 +18,6 @@ import org.apache.http.entity.StringEntity;
 import org.springframework.util.StringUtils;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
@@ -34,8 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SuppressWarnings("unused")
 public class SearchCommand extends AbstractAnnotationBasedCommand {
-
-    private Log log = new Log(SearchCommand.class);
 
     private ObjectMapper mapper = new ObjectMapper();
 

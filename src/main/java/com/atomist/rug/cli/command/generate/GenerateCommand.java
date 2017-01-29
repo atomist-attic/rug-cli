@@ -14,7 +14,6 @@ import com.atomist.project.ProvenanceInfoWriter;
 import com.atomist.project.archive.Operations;
 import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractParameterizedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
@@ -38,8 +37,6 @@ import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 import scala.collection.JavaConverters;
 
 public class GenerateCommand extends AbstractParameterizedCommand {
-
-    private Log log = new Log(getClass());
 
     @Command
     public void run(Operations operations, ArtifactDescriptor artifact,
