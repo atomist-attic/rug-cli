@@ -14,7 +14,6 @@ import org.eclipse.aether.transfer.TransferEvent;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractRepositoryCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
@@ -30,8 +29,6 @@ import com.atomist.rug.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
 public class PublishCommand extends AbstractRepositoryCommand {
-
-    private Log log = new Log(PublishCommand.class);
 
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
             ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,

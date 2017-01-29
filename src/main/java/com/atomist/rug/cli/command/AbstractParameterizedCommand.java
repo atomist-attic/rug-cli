@@ -20,7 +20,6 @@ import com.atomist.project.ProjectOperation;
 import com.atomist.project.ProjectOperationArguments;
 import com.atomist.project.SimpleProjectOperationArguments;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -29,8 +28,6 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import scala.collection.JavaConversions;
 
 public abstract class AbstractParameterizedCommand extends AbstractAnnotationBasedCommand {
-
-    private Log log = new Log(getClass());
 
     private ProjectOperationArguments collectParameters(ProjectOperation operation,
             ProjectOperationArguments arguments) {

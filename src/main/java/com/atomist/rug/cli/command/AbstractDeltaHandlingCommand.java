@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.source.ArtifactSource;
@@ -21,8 +20,6 @@ import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import difflib.DiffUtils;
 
 public abstract class AbstractDeltaHandlingCommand extends AbstractParameterizedCommand {
-
-    private Log log = new Log(getClass());
 
     protected void iterateDeltas(Collection<Delta> deltas, ArtifactSource source,
             ArtifactSource resultSource, File root,
