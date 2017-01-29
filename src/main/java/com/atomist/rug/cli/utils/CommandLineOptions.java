@@ -24,7 +24,7 @@ public abstract class CommandLineOptions {
     }
 
     public static boolean hasOption(String opt) {
-        return options.get().stream().anyMatch(
+        return options != null && options.get() != null && options.get().stream().anyMatch(
                 o -> o.getLongOpt().equals(opt) || (o.getOpt() != null && o.getOpt().equals(opt)));
     }
 
