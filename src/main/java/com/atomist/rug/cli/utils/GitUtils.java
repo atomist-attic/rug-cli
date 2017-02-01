@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -16,6 +17,7 @@ import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.cli.command.CommandException;
 
 public abstract class GitUtils {
 
@@ -54,6 +56,24 @@ public abstract class GitUtils {
                                         Constants.cliClient())))
                         .setAuthor("Atomist", "cli@atomist.com").call();
                 log.info("Committed changes to git repository (%s)", commit.abbreviate(7).name());
+            }
+        }
+        catch (IllegalStateException | IOException | GitAPIException e) {
+            throw new RunnerException(e);
+        }
+    }
+
+    public static void isClean(File root) {
+        FileRepositoryBuilder builder = new FileRepositoryBuilder();
+        try (Repository repository = builder.setGitDir(new File(root, ".git")).readEnvironment()
+                .findGitDir().build()) {
+            try (Git git = new Git(repository)) {
+                Status status = git.status().call();
+                if (!status.isClean()) {
+                    throw new CommandException(String.format(
+                            "Working tree at %s not clean. Please commit or stash your changes before running an editor with -R.",
+                            root.getAbsolutePath()), "edit");
+                }
             }
         }
         catch (IllegalStateException | IOException | GitAPIException e) {
