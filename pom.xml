@@ -348,13 +348,13 @@
 		</plugins>
 	</build>
 	<repositories>
-<!-- 		<repository> -->
-<!-- 			<id>public-atomist-snapshots</id> -->
-<!-- 			<url>https://atomist.jfrog.io/atomist/libs-dev/</url> -->
-<!-- 			<snapshots> -->
-<!-- 				<enabled>false</enabled> -->
-<!-- 			</snapshots> -->
-<!-- 		</repository> -->
+		<repository>
+			<id>public-atomist-snapshots</id>
+			<url>https://atomist.jfrog.io/atomist/libs-dev/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>public-atomist-release</id>
 			<name>Atomist Release</name>
