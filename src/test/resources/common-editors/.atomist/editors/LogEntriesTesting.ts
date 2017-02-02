@@ -18,20 +18,16 @@ import { ProjectEditor } from '@atomist/rug/operations/ProjectEditor'
 import { Project } from '@atomist/rug/model/Core'
 import { Result, Status } from '@atomist/rug/operations/RugOperation'
 
-class UpdateTravisMaven implements ProjectEditor {
-
-    tags: string[] = ["travis-ci","continous-integration","maven"]
-    name: string = "UpdateTravisMaven"
-    description: string = "Update the Travis Maven build files"
+class LogEntriesTesting implements ProjectEditor {
+    tags: string[] = ["log", "entries"]
+    name: string = "LogEntriesTesting"
+    description: string = "Test log entries"
     edit(project: Project): Result {
-        if (project.fileExists("pom.xml")) {
-            project.merge("settings.xml.vm", ".settings.xml", {});
-            project.merge("travis-build.bash-mvn.vm", "travis-build.bash", {});
-            return new Result(Status.Success, "Update Travis Maven build files")
-        } else {
-            return new Result(Status.NoChange, "Not a Maven build")
-        }
+      let p = project as any
+      p.addFile("src/main/whitespace", "      \t\n    \t")
+      p.describeChange("Added valid program in Whitespace(tm) programming language")
+      return new Result(Status.Success, "Update Travis Maven build files")
     }
 }
 
-export let travis = new UpdateTravisMaven()
+export let entries = new LogEntriesTesting()

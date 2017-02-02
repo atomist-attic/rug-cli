@@ -59,7 +59,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     @Validator
     public void validate(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
             ArtifactSource source, String kind, String name, String format) {
-        
         switch (kind) {
         case "editor":
             break;
@@ -230,12 +229,19 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeOperations(ArtifactDescriptor artifact,
             OperationsAndHandlers operationsAndHandlers) {
         Operations operations = operationsAndHandlers.operations();
-        Collection<ProjectEditor> editors = asJavaCollection(operations.editors());
-        Collection<ProjectGenerator> generators = asJavaCollection(operations.generators());
-        Collection<Executor> executors = asJavaCollection(operations.executors());
-        Collection<ProjectReviewer> reviewers = asJavaCollection(operations.reviewers());
-        Collection<SystemEventHandler> handlers = operationsAndHandlers.handlers().handlers();
+        Collection<ProjectEditor> editors = asJavaCollection(operations.editors()).stream()
+                .sorted((o1, o2) -> o1.name().compareTo(o2.name())).collect(Collectors.toList());
+        Collection<ProjectGenerator> generators = asJavaCollection(operations.generators()).stream()
+                .sorted((o1, o2) -> o1.name().compareTo(o2.name())).collect(Collectors.toList());
+        Collection<Executor> executors = asJavaCollection(operations.executors()).stream()
+                .sorted((o1, o2) -> o1.name().compareTo(o2.name())).collect(Collectors.toList());
+        Collection<ProjectReviewer> reviewers = asJavaCollection(operations.reviewers()).stream()
+                .sorted((o1, o2) -> o1.name().compareTo(o2.name())).collect(Collectors.toList());
+        Collection<SystemEventHandler> handlers = operationsAndHandlers.handlers().handlers()
+                .stream().sorted((o1, o2) -> o1.name().compareTo(o2.name()))
+                .collect(Collectors.toList());
         log.newline();
+       
         if (!generators.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
             listOperations(artifact, generators);

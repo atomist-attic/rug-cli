@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command;
 
 import static scala.collection.JavaConversions.asJavaCollection;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +26,8 @@ import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.compiler.Compiler;
 import com.atomist.rug.compiler.ServiceLoaderCompilerRegistry;
+import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
+import com.atomist.rug.compiler.typescript.compilation.CompilerFactory;
 import com.atomist.rug.kind.service.ConsoleMessageBuilder;
 import com.atomist.rug.loader.DecoratingOperationsLoader;
 import com.atomist.rug.loader.HandlerOperationsLoader;
@@ -72,6 +75,10 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         // Only compile local archives
         if (artifact instanceof LocalArtifactDescriptor) {
 
+            String root = new File(new File(artifact.uri()),
+                    ".atomist" + File.separator + "target" + File.separator + ".jscache")
+                            .getAbsolutePath();
+
             // Get all registered and supported compilers
             Collection<Compiler> compilers = asJavaCollection(
                     ServiceLoaderCompilerRegistry.findAll(source));
@@ -82,6 +89,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                         "Processing script sources").run(indicator -> {
                             ArtifactSource compiledSource = source;
                             for (Compiler compiler : compilers) {
+                                compiler = wrapCompiler(compiler, root);
                                 indicator.report(String.format("Invoking %s on %s script sources",
                                         compiler.name(),
                                         StringUtils.collectionToCommaDelimitedString(
@@ -102,6 +110,16 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
             }
         }
         return source;
+    }
+
+    private Compiler wrapCompiler(Compiler compiler, String root) {
+        if (compiler instanceof TypeScriptCompiler) {
+            return new TypeScriptCompiler(
+                    CompilerFactory.cachingCompiler(CompilerFactory.create(), root));
+        }
+        else {
+            return compiler;
+        }
     }
 
     private HandlerOperationsLoader createOperationsLoader(URI[] uri) {

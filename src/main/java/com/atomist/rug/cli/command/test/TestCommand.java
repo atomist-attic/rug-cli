@@ -4,7 +4,6 @@ import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 
 import com.atomist.project.archive.DefaultAtomistConfig$;
 import com.atomist.project.archive.Operations;
-import com.atomist.project.edit.ProjectEditor;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -26,7 +24,6 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
-import com.atomist.rug.loader.DecoratingOperationsLoader.DecoratedProjectGenerator;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.test.RugTestParser;
 import com.atomist.rug.test.TestLoader;
@@ -36,7 +33,6 @@ import com.atomist.rug.test.TestScenario;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
 
-import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
 public class TestCommand extends AbstractAnnotationBasedCommand {
@@ -46,17 +42,6 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
     @Command
     public void run(Operations operations, ArtifactDescriptor artifact,
             @Argument(index = 1) String testName) {
-
-        // TODO CD remove when https://github.com/atomist/rug/issues/197 is fixed
-        List<ProjectEditor> editors = new ArrayList<>();
-        editors.addAll(
-                JavaConverters.asJavaCollectionConverter(operations.editors()).asJavaCollection());
-        editors.addAll(JavaConverters.asJavaCollectionConverter(operations.generators())
-                .asJavaCollection().stream().filter(g -> g instanceof DecoratedProjectGenerator)
-                .map(g -> ((DecoratedProjectGenerator) g).editor()).collect(Collectors.toList()));
-        operations = new Operations(operations.generators(),
-                JavaConverters.asScalaBufferConverter(editors).asScala(), operations.reviewers(),
-                operations.executors());
 
         File workingDir = CommandUtils.getRequiredWorkingDirectory();
         ArtifactSource source = ArtifactSourceUtils.createArtifactSource(workingDir);
