@@ -29,25 +29,29 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
     }
 
     @Test
+    public void testSuccessfulEditWithLogs() throws Exception {
+        assertSuccess("Added valid program in Whitespace(tm) programming language", "edit",
+                "LogEntriesTesting", "-l", "-d");
+
+    }
+
+    @Test
     public void testUnSuccessfulEditWithInvalidParameter() throws Exception {
         assertFailure("Invalid parameter value\n  project_name = $#%$#%$#^$%$W...@432", "edit",
-                "atomist-rugs:common-editors:AddReadme",
-                "project_name=$#%$#%$#^$%$W...@432", "description=Some", "-a", "0.5.0");
+                "atomist-rugs:common-editors:AddReadme", "project_name=$#%$#%$#^$%$W...@432",
+                "description=Some", "-a", "0.5.0");
     }
 
     @Test
     public void testUnSuccessfulEditWithMissingParameters() throws Exception {
         assertFailure("Missing parameter value\n  project_name", "edit",
-                "atomist-rugs:common-editors:AddReadme", "description=Some", "-a",
-                "0.5.0");
+                "atomist-rugs:common-editors:AddReadme", "description=Some", "-a", "0.5.0");
     }
 
     @Test
     public void testUnSuccessfulEditWithInvalidName() throws Exception {
-        assertFailure("Did you mean?\n" + 
-                "  AddReadme", "edit",
-                "atomist-rugs:common-editors:AddRame", "description=Some", "-a",
-                "0.5.0");
+        assertFailure("Did you mean?\n" + "  AddReadme", "edit",
+                "atomist-rugs:common-editors:AddRame", "description=Some", "-a", "0.5.0");
     }
 
     @Test

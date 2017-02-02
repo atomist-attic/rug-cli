@@ -1,23 +1,6 @@
 {
-  "name": "@rug-cli-tests/common-editors",
-  "version": "3.2.2",
-  "keywords": [
-    "Atomist",
-    "Rug",
-    "Travis"
-  ],
-  "author": "Atomist, Inc",
-  "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/atomist-rugs/common-editors.git"
-  },
-  "bugs": {
-    "url": "https://github.com/atomist-rugs/common-editors/issues"
-  },
-  "homepage": "https://github.com/atomist-rugs/common-editors",
   "dependencies": {
-    "@atomist/rug": "0.7.1"
+    "@atomist/rug": "0.10.0"
   },
   "scripts": {
     "rug-install": "rug install -urX",

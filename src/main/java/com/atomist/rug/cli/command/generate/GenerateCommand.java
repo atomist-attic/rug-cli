@@ -100,7 +100,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
                 String.format("Running generator %s of %s", generator.name(),
                         ArtifactDescriptorUtils.coordinates(artifact)))
-                                .run(indicator -> generator.generate(arguments));
+                                .run(indicator -> generator.generate(projectName, arguments));
 
         // Add provenance info to output
         result = new ProvenanceInfoWriter().write(result, generator, arguments,
