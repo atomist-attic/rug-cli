@@ -151,8 +151,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
     private void printLogEntries(ProgressReporter indicator, ModificationAttempt r) {
         if (r instanceof SuccessfulModification) {
             Collection<ChangeLogEntry<ArtifactSource>> logEntries = JavaConverters
-                    .asJavaCollectionConverter(
-                            ((SuccessfulModification) r).changeLogEntries())
+                    .asJavaCollectionConverter(((SuccessfulModification) r).changeLogEntries())
                     .asJavaCollection();
             logEntries.forEach(l -> indicator.report("  " + l.comment()));
         }

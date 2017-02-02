@@ -55,11 +55,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             "generator", "Generators");
     private static final DescribeLabels REVIEWER_LABELS = new DescribeLabels("review", "reviewer",
             "Reviewers");
-
+    
     @Validator
     public void validate(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
             ArtifactSource source, String kind, String name, String format) {
-
         switch (kind) {
         case "editor":
             break;

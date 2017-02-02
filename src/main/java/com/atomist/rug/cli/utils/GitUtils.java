@@ -80,5 +80,4 @@ public abstract class GitUtils {
             throw new RunnerException(e);
         }
     }
-
 }
