@@ -1,0 +1,4 @@
+#!/bin/bash
+rug_cli_dir="$RUG_CLI_DEV_HOME"
+rug_exe=$(ls $rug_cli_dir/target/rug-cli-*-bin/*/bin/rug)
+exec $rug_exe "$@"
