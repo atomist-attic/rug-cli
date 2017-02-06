@@ -106,7 +106,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                             new LogVisitor(log, "    "));
                 }
                 if (t.eventLog().output().isDefined()) {
-                    log.info("    " + Style.underline("Ouput"));
+                    log.info("    " + Style.underline("Output"));
                     ArtifactSourceTreeCreator.visitTree(t.eventLog().output().getOrElse(null),
                             new LogVisitor(log, "    "));
                 }
