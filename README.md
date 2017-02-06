@@ -51,4 +51,4 @@ release and the comment provided on the annotated tag as the contents
 of the release notes.  It will also automatically upload the needed
 artifacts.
 
-[semver]: http://semver.org
+[semver]: http://semver.org 
