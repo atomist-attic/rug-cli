@@ -21,7 +21,6 @@ import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.project.review.ProjectReviewer;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
@@ -35,7 +34,6 @@ import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.manifest.Manifest;
-import com.atomist.rug.manifest.ManifestException;
 import com.atomist.rug.manifest.ManifestFactory;
 import com.atomist.rug.metadata.MetadataWriter;
 import com.atomist.rug.metadata.MetadataWriter.Format;
@@ -55,7 +53,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             "generator", "Generators");
     private static final DescribeLabels REVIEWER_LABELS = new DescribeLabels("review", "reviewer",
             "Reviewers");
-    
+
     @Validator
     public void validate(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
             ArtifactSource source, String kind, String name, String format) {
@@ -123,19 +121,14 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void describeArchive(ArtifactDescriptor artifact, ArtifactSource source,
             OperationsAndHandlers operationsAndHandlers) {
-        try {
-            log.newline();
-            Manifest manifest = ManifestFactory.read(source);
-            describeName(manifest);
-            describeProvenanceInfo(manifest);
-            describeContents(artifact, source);
-            describeOperations(artifact, operationsAndHandlers);
-            describeDependencies(manifest);
-            describeInvokeArchive();
-        }
-        catch (ManifestException e) {
-            throw new RunnerException(e);
-        }
+        log.newline();
+        Manifest manifest = ManifestFactory.read(source);
+        describeName(manifest);
+        describeProvenanceInfo(manifest);
+        describeContents(artifact, source);
+        describeOperations(artifact, operationsAndHandlers);
+        describeDependencies(manifest);
+        describeInvokeArchive();
     }
 
     private void describeArchive(OperationsAndHandlers operationsAndHandlers,
@@ -241,7 +234,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 .stream().sorted((o1, o2) -> o1.name().compareTo(o2.name()))
                 .collect(Collectors.toList());
         log.newline();
-       
+
         if (!generators.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
             listOperations(artifact, generators);
