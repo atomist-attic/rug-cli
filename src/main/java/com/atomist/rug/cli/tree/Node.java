@@ -63,7 +63,7 @@ public class Node {
     }
 
     public enum Type {
-        DIRECTORY, FILE
+        DIRECTORY, FILE, UNKNOWN
     }
 
 }
