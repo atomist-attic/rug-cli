@@ -51,6 +51,7 @@ _rug() {
         default
         extension
         search
+        tree
     )
 
     local i command_re special special_index
@@ -87,7 +88,7 @@ _rug() {
         command_options+=( -a --archive-version )
         command_options+=( -l --local )
     fi
-    if [[ $special == @(edit|generate|test) ]]; then
+    if [[ $special == @(edit|generate|test|tree) ]]; then
        command_options+=( -C --change-dir )
     fi
     if [[ $special == edit ]]; then
