@@ -13,6 +13,7 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.tree.TreeNodeTreeCreator;
 import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.kind.DefaultTypeRegistry$;
 import com.atomist.rug.kind.core.ProjectMutableView;
 import com.atomist.source.ArtifactSource;
@@ -35,7 +36,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
             @Option("change-dir") String rootName) {
 
         PathExpression pathExpression = PathExpressionParser$.MODULE$.parseString(expression);
-        
+
         File root = FileUtils.createProjectRoot(rootName);
         ArtifactSource source = ArtifactSourceUtils.createArtifactSource(root);
 
@@ -47,12 +48,14 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
 
         Collection<TreeNode> treeNodes = JavaConverters
                 .asJavaCollectionConverter(result.right().get()).asJavaCollection();
-        
+
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Path Expression"));
         log.info("  %s", expression);
         log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Match") + " (" + treeNodes.size() + " found)");
+        log.info(Style.cyan(Constants.DIVIDER) + " "
+                + Style.bold(StringUtils.puralize("Match", "Matches", treeNodes)) + " ("
+                + treeNodes.size() + " found)");
         if (!treeNodes.isEmpty()) {
             TreeNodeTreeCreator.visitTree(treeNodes, new LogVisitor(log));
         }

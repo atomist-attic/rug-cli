@@ -7,7 +7,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.21.4...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.22.1...HEAD
+
+### Changed
+
+-   New `tree` command to evaluate path expressions against a project as per
+ 	https://github.com/atomist/rug-cli/issues/96
+
+
+## [0.22.0] - 2017-02-02
+
+[0.22.0]: https://github.com/atomist/rug-cli/compare/0.21.4...0.22.0
+
+### Changed
+
+-   Updates to support Rug 0.11.0
+    
+-   Correctly removed `project_name` parameter as per
+	https://github.com/atomist/rug-cli/issues/85
+	
+-   Add support for Rug log entries as per
+	https://github.com/atomist/rug-cli/issues/87
+	
+-   `describe` command now allows `-O` to specify output format
+	https://github.com/atomist/rug-cli/issues/86
 
 ## [0.21.4] - 2017-01-27
 
