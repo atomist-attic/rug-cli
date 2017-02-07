@@ -44,11 +44,15 @@ public abstract class StringUtils {
     }
 
     public static String puralize(String value, Collection<?> items) {
+        return puralize(value, value + "s", items);
+    }
+
+    public static String puralize(String singular, String pural, Collection<?> items) {
         if (items.size() > 1) {
-            return value + "s";
+            return pural;
         }
         else {
-            return value;
+            return singular;
         }
     }
 

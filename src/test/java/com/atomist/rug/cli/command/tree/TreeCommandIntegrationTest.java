@@ -13,7 +13,7 @@ public class TreeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testMultipleJava() throws Exception {
-        assertSuccess("Match (2 found)", "tree", "/src/main/java/com/atomist/springrest/*/JavaType()");
+        assertSuccess("Matches (2 found)", "tree", "/src/main/java/com/atomist/springrest/*/JavaType()");
     }
 
     @Test
