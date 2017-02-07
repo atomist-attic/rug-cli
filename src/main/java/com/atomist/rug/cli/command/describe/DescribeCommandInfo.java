@@ -67,7 +67,7 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
     
     public Options options() {
         Options options = super.options();
-        options.addOption(Option.builder("O").argName("FORMAT").desc("Specify output format")
+        options.addOption(Option.builder("O").argName("FORMAT").desc("Specify output FORMAT")
                 .longOpt("output").hasArg(true).required(false).build());
         return options;
     }
