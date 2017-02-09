@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command.tree;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.function.Function;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -33,7 +34,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(@Argument(index = 1, defaultValue = "") String expression,
-            @Option("change-dir") String rootName) {
+            @Option("change-dir") String rootName, @Option("values") boolean values) {
 
         PathExpression pathExpression = PathExpressionParser$.MODULE$.parseString(expression);
 
@@ -57,11 +58,39 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                 + Style.bold(StringUtils.puralize("Match", "Matches", treeNodes)) + " ("
                 + treeNodes.size() + " found)");
         if (!treeNodes.isEmpty()) {
-            TreeNodeTreeCreator.visitTree(treeNodes, new LogVisitor(log));
+            TreeNodeTreeCreator.visitTree(treeNodes,
+                    (values ? new ValueNodeToStringFunction() : new NodeToStringFunction()),
+                    new LogVisitor(log));
         }
         else {
             log.info(Style.yellow("  No matches"));
         }
         log.newline();
+    }
+
+    private static class ValueNodeToStringFunction implements Function<TreeNode, String> {
+
+        @Override
+        public String apply(TreeNode node) {
+            return node.nodeName() + ": ["
+                    + org.springframework.util.StringUtils.collectionToDelimitedString(
+                            JavaConverters.asJavaCollectionConverter(node.nodeTags())
+                                    .asJavaCollection(),
+                            ", ")
+                    + "] " + node.value();
+        }
+    }
+
+    private static class NodeToStringFunction implements Function<TreeNode, String> {
+
+        @Override
+        public String apply(TreeNode node) {
+            return node.nodeName() + ": ["
+                    + org.springframework.util.StringUtils.collectionToDelimitedString(
+                            JavaConverters.asJavaCollectionConverter(node.nodeTags())
+                                    .asJavaCollection(),
+                            ", ")
+                    + "]";
+        }
     }
 }
