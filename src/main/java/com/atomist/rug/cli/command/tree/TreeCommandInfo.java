@@ -18,7 +18,8 @@ public class TreeCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String detail() {
-        return "EXPRESSION can be any valid Rug tree expression.  Depending on your expression you might need to put it in quotes.";
+        return "EXPRESSION can be any valid Rug tree expression.  Depending on your expression you might need to put it in quotes.  "
+                + "Use '--values' to display values of tree nodes; caution as this option might lead to a lot of data being printed.";
     }
 
     @Override
@@ -27,6 +28,7 @@ public class TreeCommandInfo extends AbstractRugScopedCommandInfo {
         options.addOption(Option.builder("C").longOpt("change-dir").argName("DIR").hasArg(true)
                 .desc("Evaluate expression against project in directory DIR, default is '.'")
                 .required(false).build());
+        options.addOption("v", "values", false, "Displays tree node values");
         return options;
     }
 
