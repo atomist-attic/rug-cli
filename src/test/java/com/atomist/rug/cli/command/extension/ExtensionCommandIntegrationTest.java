@@ -1,5 +1,11 @@
 package com.atomist.rug.cli.command.extension;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -8,6 +14,17 @@ import com.atomist.rug.cli.AbstractCommandTest;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ExtensionCommandIntegrationTest extends AbstractCommandTest {
+    
+    private static final File extDir = new File(System.getProperty("user.home") + File.separator + ".atomist" + File.separator + "ext");
+    private static final File extTestsDir = new File(System.getProperty("user.home") + File.separator + ".atomist" + File.separator + "ext-tests");
+    
+    @BeforeClass
+    public static void init() throws IOException {
+        if (extDir.exists()) {
+            FileUtils.deleteQuietly(extTestsDir);
+            FileUtils.moveDirectory(extDir, extTestsDir);
+        }
+    }
 
     @Test
     public void testASuccessfullInstall() throws Exception {
@@ -60,5 +77,13 @@ public class ExtensionCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfullWithMissingSubCommand() throws Exception {
         assertFailure("Not enough or invalid arguments provided", "extension", "bla");
+    }
+    
+    @AfterClass
+    public static void cleanup() throws IOException {
+        if (extTestsDir.exists()) {
+            FileUtils.deleteQuietly(extDir);
+            FileUtils.moveDirectory(extTestsDir, extDir);
+        }
     }
 }
