@@ -1,7 +1,7 @@
 package com.atomist.rug.cli.command;
 
-import java.io.Console;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +11,15 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.History;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.UserInterruptException;
+import org.jline.reader.impl.DefaultHighlighter;
+import org.jline.reader.impl.completer.StringsCompleter;
+import org.jline.reader.impl.history.DefaultHistory;
+import org.jline.terminal.TerminalBuilder;
 import org.springframework.util.StringUtils;
 
 import com.atomist.rug.cli.Constants;
@@ -80,22 +89,56 @@ public class ReflectiveCommandRunner {
 
         invokeCommand(args, artifact, dependencies, info);
         if (CommandLineOptions.hasOption("repl")) {
-            Console console = System.console();
-            if (console != null) {
+            try {
+                
+                // TODO this has to go to somewhere else and become resuable
+                History history = new DefaultHistory();
+                LineReader reader = LineReaderBuilder.builder().terminal(TerminalBuilder.builder().build())
+                        .history(history)
+                        .variable(LineReader.HISTORY_FILE,
+                                new File(System.getProperty("user.home") + File.separator
+                                        + ".atomist" + File.separator + "cli.history"))
+                        .completer(new StringsCompleter("edit", "generate", "describe", "list",
+                                "search", "install", "test", "publish", "archive", "editor", "generator"))
+                        .highlighter(new DefaultHighlighter())
+                        .build();
+                history.attach(reader);
+                String prompt = Style.yellow("rug") + " " + Style.cyan(Constants.DIVIDER) + " ";
+
                 while (true) {
-                    log.newline();
-                    String input = console.readLine(Style.yellow("rug") + " " + Constants.DIVIDER + " ");
-                    args = StringUtils.tokenizeToStringArray(input, " ");
-                    
-                    commandLine = parseCommandline(args);
-                    info = registry.findCommand(commandLine);
-                    
-                    invokeCommand(args, artifact, dependencies, info);
+                    String line = null;
+                    try {
+                        log.newline();
+                        line = reader.readLine(prompt);
+                        
+                        if ("exit".equals(line)) {
+                            throw new EndOfFileException();
+                        }
+                        
+                        args = StringUtils.tokenizeToStringArray(line, " ");
+
+                        commandLine = parseCommandline(args);
+                        info = registry.findCommand(commandLine);
+
+                        invokeCommand(args, artifact, dependencies, info);
+                    }
+                    catch (UserInterruptException e) {
+                    }
+                    catch (EndOfFileException e) {
+                        log.info("good-bye");
+                        return;
+                    }
+                    finally {
+                        history.save();
+                    }
                 }
+            }
+            catch (IOException e1) {
+                // TODO handle
             }
         }
     }
-    
+
     // TODO fixme this shouldn't be here.
     private CommandLine parseCommandline(String[] args) {
         try {

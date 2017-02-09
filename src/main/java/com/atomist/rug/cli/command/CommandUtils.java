@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command;
 import java.io.File;
 import java.util.Optional;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.utils.FileUtils;
@@ -34,8 +35,8 @@ public abstract class CommandUtils {
         options.addOption("?", "help", false, "Print help information");
         options.addOption("h", "help", false, "Print help information");
         options.addOption("q", "quiet", false, "Do not display progress messages");
-        // TODO fixme not sure what the short opt should be; maybe none
-        options.addOption("p", "repl", false, "Repl");
+        options.addOption(Option.builder().longOpt("repl").desc("Start a REPL for given archive")
+                .hasArg(false).build());
         return options;
     }
 
