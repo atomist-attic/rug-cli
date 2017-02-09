@@ -32,7 +32,8 @@ public abstract class AbstractCommandInfo implements CommandInfo {
         options.addOption("t", "timer", false, "Print timing information");
         options.addOption("r", "resolver-report", false, "Print dependency tree");
         options.addOption("u", "update", false, "Update dependency resolution");
-
+        // TODO fixme not sure what the short opt should be; maybe none
+        options.addOption("p", "repl", false, "Repl");
         return options;
     }
 

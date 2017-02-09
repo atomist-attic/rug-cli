@@ -34,6 +34,8 @@ public abstract class CommandUtils {
         options.addOption("?", "help", false, "Print help information");
         options.addOption("h", "help", false, "Print help information");
         options.addOption("q", "quiet", false, "Do not display progress messages");
+        // TODO fixme not sure what the short opt should be; maybe none
+        options.addOption("p", "repl", false, "Repl");
         return options;
     }
 

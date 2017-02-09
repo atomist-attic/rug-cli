@@ -1,5 +1,6 @@
 package com.atomist.rug.cli.command;
 
+import java.io.Console;
 import java.io.File;
 import java.net.URI;
 import java.util.Collections;
@@ -7,15 +8,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.ParseException;
+import org.springframework.util.StringUtils;
 
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.classloading.ClassLoaderFactory;
 import com.atomist.rug.cli.classloading.ClasspathEntryProvider;
 import com.atomist.rug.cli.command.utils.DependencyResolverExceptionProcessor;
+import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.resolver.DependencyResolverFactory;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
@@ -25,6 +35,7 @@ import com.atomist.rug.resolver.DependencyResolverException;
 public class ReflectiveCommandRunner {
 
     private final CommandInfoRegistry registry;
+    private final Log log = new Log(ReflectiveCommandRunner.class);
 
     public ReflectiveCommandRunner(CommandInfoRegistry registry) {
         this.registry = registry;
@@ -59,13 +70,47 @@ public class ReflectiveCommandRunner {
 
             // Setup the new classloader for the command to execute in
             if (info instanceof ClasspathEntryProvider) {
-                ClassLoaderFactory.setupClassLoader(artifact, dependencies, (ClasspathEntryProvider) info);
+                ClassLoaderFactory.setupClassLoader(artifact, dependencies,
+                        (ClasspathEntryProvider) info);
             }
             else {
                 ClassLoaderFactory.setupClassLoader(rootArtifact, dependencies);
             }
         }
 
+        invokeCommand(args, artifact, dependencies, info);
+        if (CommandLineOptions.hasOption("repl")) {
+            Console console = System.console();
+            if (console != null) {
+                while (true) {
+                    log.newline();
+                    String input = console.readLine(Style.yellow("rug") + " " + Constants.DIVIDER + " ");
+                    args = StringUtils.tokenizeToStringArray(input, " ");
+                    
+                    commandLine = parseCommandline(args);
+                    info = registry.findCommand(commandLine);
+                    
+                    invokeCommand(args, artifact, dependencies, info);
+                }
+            }
+        }
+    }
+    
+    // TODO fixme this shouldn't be here.
+    private CommandLine parseCommandline(String[] args) {
+        try {
+            CommandLineParser parser = new DefaultParser();
+            CommandLine commandLine = parser.parse(registry.allOptions(), args);
+            CommandLineOptions.set(commandLine);
+            return commandLine;
+        }
+        catch (ParseException e) {
+            throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
+        }
+    }
+
+    private void invokeCommand(String[] args, ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies, CommandInfo info) {
         try {
             // Invoke the run method on the command class
             new ReflectiveCommandRunMethodRunner().invokeCommand(artifact, info, args,
@@ -83,7 +128,7 @@ public class ReflectiveCommandRunner {
             throw new RunnerException(e);
         }
     }
-    
+
     private List<URI> getZipDependencies(List<ArtifactDescriptor> dependencies) {
         return dependencies.stream().map(ad -> new File(ad.uri()))
                 .filter(f -> f.getName().endsWith(".zip")).map(File::toURI)
@@ -106,5 +151,4 @@ public class ReflectiveCommandRunner {
         }
     }
 
-    
 }
