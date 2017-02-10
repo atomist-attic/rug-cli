@@ -1,3 +1,4 @@
+com.atomist.rug.cli.command.shell.ShellCommandInfo
 com.atomist.rug.cli.command.tree.TreeCommandInfo
 com.atomist.rug.cli.command.search.SearchCommandInfo
 com.atomist.rug.cli.command.list.ListCommandInfo

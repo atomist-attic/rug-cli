@@ -17,6 +17,8 @@ import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultHighlighter;
+import org.jline.reader.impl.completer.AggregateCompleter;
+import org.jline.reader.impl.completer.FileNameCompleter;
 import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.reader.impl.history.DefaultHistory;
 import org.jline.terminal.TerminalBuilder;
@@ -88,7 +90,7 @@ public class ReflectiveCommandRunner {
         }
 
         invokeCommand(args, artifact, dependencies, info);
-        if (CommandLineOptions.hasOption("repl")) {
+        if ("shell".equals(info.name())) {
             try {
                 
                 // TODO this has to go to somewhere else and become resuable
@@ -97,9 +99,9 @@ public class ReflectiveCommandRunner {
                         .history(history)
                         .variable(LineReader.HISTORY_FILE,
                                 new File(System.getProperty("user.home") + File.separator
-                                        + ".atomist" + File.separator + "cli.history"))
-                        .completer(new StringsCompleter("edit", "generate", "describe", "list",
-                                "search", "install", "test", "publish", "archive", "editor", "generator"))
+                                        + ".atomist" + File.separator + ".cli-history"))
+                        .completer(new AggregateCompleter(new StringsCompleter("edit", "generate", "describe", "list",
+                                "search", "install", "test", "publish", "archive", "editor", "generator"), new FileNameCompleter()))
                         .highlighter(new DefaultHighlighter())
                         .build();
                 history.attach(reader);
@@ -125,7 +127,7 @@ public class ReflectiveCommandRunner {
                     catch (UserInterruptException e) {
                     }
                     catch (EndOfFileException e) {
-                        log.info("good-bye");
+                        log.info("Goodbye!");
                         return;
                     }
                     finally {

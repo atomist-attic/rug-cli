@@ -3,7 +3,8 @@ package com.atomist.rug.cli.command;
 import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
-import java.io.Console;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,6 +12,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.text.WordUtils;
+import org.jline.reader.History;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.DefaultHighlighter;
+import org.jline.reader.impl.history.DefaultHistory;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValue;
@@ -20,6 +28,7 @@ import com.atomist.project.ProjectOperation;
 import com.atomist.project.ProjectOperationArguments;
 import com.atomist.project.SimpleProjectOperationArguments;
 import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -34,60 +43,77 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         Collection<Parameter> parameters = asJavaCollection(operation.parameters());
         if (CommandLineOptions.hasOption("I") && !parameters.isEmpty()) {
 
-            Console console = System.console();
-            if (console != null) {
-                List<ParameterValue> newValues = new ArrayList<>();
+            LineReader reader = lineReader();
 
+            List<ParameterValue> newValues = new ArrayList<>();
+
+            log.newline();
+            log.info(Style.cyan(Constants.DIVIDER) + " "
+                    + Style.bold("Please specify parameter values"));
+            log.info(Constants.LEFT_PADDING
+                    + "Press 'Enter' to accept default or provided values. '*' indicates required parameters.");
+
+            for (Parameter parameter : parameters) {
                 log.newline();
-                log.info(Style.cyan(Constants.DIVIDER) + " "
-                        + Style.bold("Please specify parameter values"));
-                log.info(Constants.LEFT_PADDING
-                        + "Press 'Enter' to accept default or provided values. '*' indicates required parameters.");
 
-                for (Parameter parameter : parameters) {
-                    log.newline();
+                ParameterValue pv = JavaConversions.mapAsJavaMap(arguments.parameterValueMap())
+                        .get(parameter.getName());
+                String defaultValue = (pv != null ? pv.getValue().toString()
+                        : parameter.getDefaultValue());
 
-                    ParameterValue pv = JavaConversions.mapAsJavaMap(arguments.parameterValueMap())
-                            .get(parameter.getName());
-                    String defaultValue = (pv != null ? pv.getValue().toString()
-                            : parameter.getDefaultValue());
+                log.info("  " + WordUtils.wrap(parameter.getDescription(), Constants.WRAP_LENGTH,
+                        "\n  ", false));
 
-                    log.info("  " + WordUtils.wrap(parameter.getDescription(),
-                            Constants.WRAP_LENGTH, "\n  ", false));
+                pv = readParameter(reader, parameter, defaultValue);
 
-                    pv = readParameter(console, parameter, defaultValue);
-
-                    boolean firstAttempt = true;
-                    while (isInvalid(operation, pv)
-                            || ((pv.getValue() == null || pv.getValue().toString().length() == 0)
-                                    && parameter.isRequired())) {
-                        log.info(Style.red("  Provided value '%s' is not valid", pv.getValue()));
-                        if (firstAttempt) {
-                            log.newline();
-                            log.info("  pattern: %s, min length: %s, max length: %s",
-                                    parameter.getPattern(),
-                                    (parameter.getMinLength() >= 0 ? parameter.getMinLength()
-                                            : "not defined"),
-                                    (parameter.getMaxLength() >= 0 ? parameter.getMaxLength()
-                                            : "not defined"));
-                            firstAttempt = false;
-                        }
-
-                        pv = readParameter(console, parameter, defaultValue);
+                boolean firstAttempt = true;
+                while (isInvalid(operation, pv)
+                        || ((pv.getValue() == null || pv.getValue().toString().length() == 0)
+                                && parameter.isRequired())) {
+                    log.info(Style.red("  Provided value '%s' is not valid", pv.getValue()));
+                    if (firstAttempt) {
+                        log.newline();
+                        log.info("  pattern: %s, min length: %s, max length: %s",
+                                parameter.getPattern(),
+                                (parameter.getMinLength() >= 0 ? parameter.getMinLength()
+                                        : "not defined"),
+                                (parameter.getMaxLength() >= 0 ? parameter.getMaxLength()
+                                        : "not defined"));
+                        firstAttempt = false;
                     }
 
-                    // add the new and validated parameter to project operations arguments
-                    newValues.add(pv);
+                    pv = readParameter(reader, parameter, defaultValue);
                 }
-                arguments = new SimpleProjectOperationArguments(arguments.name(),
-                        JavaConversions.asScalaBuffer(newValues));
-                log.newline();
+
+                // add the new and validated parameter to project operations arguments
+                newValues.add(pv);
             }
-            else {
-                log.error("Can't enable interactive mode due to missing console");
-            }
+            arguments = new SimpleProjectOperationArguments(arguments.name(),
+                    JavaConversions.asScalaBuffer(newValues));
+            log.newline();
         }
         return arguments;
+    }
+
+    private LineReader lineReader() {
+        History history = new DefaultHistory();
+        LineReader reader = LineReaderBuilder.builder()
+                .terminal(terminal()).history(history)
+                .variable(LineReader.HISTORY_FILE,
+                        new File(System.getProperty("user.home") + File.separator + ".atomist"
+                                + File.separator + ".interactive-history"))
+                .highlighter(new DefaultHighlighter()).build();
+        history.attach(reader);
+        return reader;
+    }
+
+    private Terminal terminal() {
+        try {
+            return TerminalBuilder.builder().build();
+        }
+        catch (IOException e) {
+            throw new RunnerException(e);
+        }
     }
 
     private boolean isInvalid(ProjectOperation operation, ParameterValue pv) {
@@ -102,7 +128,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                         + (parameter.isRequired() ? "*:" : ":"));
     }
 
-    private ParameterValue readParameter(Console console, Parameter parameter,
+    private ParameterValue readParameter(LineReader console, Parameter parameter,
             String defaultValue) {
         String value = console.readLine(getPrompt(parameter, defaultValue));
 
@@ -148,7 +174,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         validateCollectedParameters(artifact, operation, arguments);
         return arguments;
     }
-    
+
     protected ProjectOperationArguments mergeParameters(ProjectOperationArguments arguments,
             ParameterValue... pv) {
         List<ParameterValue> pvs = new ArrayList<>();
