@@ -32,9 +32,14 @@ public class DependencyResolverFactory {
             return t;
         });
         MavenProperties properties = MavenPropertiesFactory
-                .create(CommandLineOptions.hasOption("o"), !CommandLineOptions.hasOption("u"));
+                .create(CommandLineOptions.hasOption("offline"), !CommandLineOptions.hasOption("u"));
         MavenBasedDependencyResolver resolver = new MavenBasedDependencyResolver(
                 MavenPropertiesFactory.repositorySystem(), properties, executorService) {
+
+            @Override
+            public String toString() {
+                return super.toString() + "[MavenBasedDependencyResolver with dependency root " + artifact + "]";
+            }
 
             @Override
             protected Dependency createDependencyRoot(ArtifactDescriptor artifact) {
@@ -90,6 +95,11 @@ public class DependencyResolverFactory {
     private DependencyResolver wrapDependencyResolver(DependencyResolver resolver,
             String repoHome) {
         return new CachingDependencyResolver(resolver, repoHome) {
+
+            @Override
+            public String toString() {
+                return super.toString() + "[Caching dependency resolver around " + resolver +"]";
+            }
 
             @Override
             protected boolean isOutdated(ArtifactDescriptor artifact, File file) {
