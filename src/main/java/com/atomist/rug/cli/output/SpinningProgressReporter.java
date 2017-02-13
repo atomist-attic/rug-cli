@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SpinningProgressReporter extends Thread implements ProgressReporter {
 
-    //    private static final String animNix = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
     private static final String animNix = org.apache.commons.lang3.StringUtils.reverse("⣾⣽⣻⢿⡿⣟⣯⣷");
     private static final String animWin32 = "|/-\\";
     private static final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
@@ -43,9 +42,9 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
     @Override
     public void report(String message) {
         String[] messages = message.split("\n");
-        for (String message1 : messages) {
-            if (message1 != "") {
-                additionalMessages.offer(message1);
+        for (String msg : messages) {
+            if (msg != "") {
+                additionalMessages.offer(msg);
             }
         }
     }
