@@ -14,16 +14,17 @@ public class Log {
     
     // There is a performance hit to have a logger per clazz
     private static final Logger logger = LoggerFactory.getLogger(Log.class.getName());
-//    private static final boolean CONSOLE_CONNECTED = System.console() != null;
 
     public Log(Class<?> clazz) {
     }
 
     public void error(String message, Object... tokens) {
+        newline();
         info(Style.red(message), (Object[]) tokens);
     }
 
     public void error(Throwable e) {
+        newline();
         e.printStackTrace(System.err);
         logger.error(e.getMessage(), e);
     }
@@ -60,7 +61,6 @@ public class Log {
                 System.out.println(message);
             }
             else {
-                //if (CONSOLE_CONNECTED) {
                 System.err.println(message);
             }
         }
