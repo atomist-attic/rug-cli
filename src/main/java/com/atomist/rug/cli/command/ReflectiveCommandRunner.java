@@ -1,9 +1,11 @@
 package com.atomist.rug.cli.command;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +13,8 @@ import org.apache.commons.cli.CommandLine;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
+import org.jline.reader.impl.LineReaderImpl;
+import org.springframework.boot.loader.tools.RunProcess;
 
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
@@ -70,25 +74,40 @@ public class ReflectiveCommandRunner {
         LineReader reader = ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
                 new ChangeDirCompleter(), new OperationCompleter(),
                 new CommandInfoCompleter(registry));
-        while (true) {
-            String line = null;
-            try {
-                line = reader.readLine(ShellUtils.DEFAULT_PROMPT);
 
+        String line = null;
+        try {
+            while ((line = reader.readLine(ShellUtils.DEFAULT_PROMPT)) != null) {
+                
+                // TODO move those into shell only command implementations
                 if ("exit".equals(line.trim()) || "quit".equals(line.trim())
                         || "q".equals(line.trim())) {
                     throw new EndOfFileException();
                 }
-
-                String[] args = CommandUtils.splitCommandline(line);
-                invokeCommand(args, artifact, dependencies, null);
+                else if ("clear".equals(line.trim())) {
+                    ((LineReaderImpl) reader).clearScreen();
+                }
+                else if (line.trim().startsWith("!")) {
+                    String[] args = CommandUtils.splitCommandline(line.substring(1));
+                    RunProcess process = new RunProcess(args[0]);
+                    try {
+                        process.run(true, Arrays.copyOfRange(args, 1, args.length));
+                    }
+                    catch (IOException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+                else {
+                    String[] args = CommandUtils.splitCommandline(line);
+                    invokeCommand(args, artifact, dependencies, null);
+                }
+                
             }
-            catch (UserInterruptException e) {
-            }
-            catch (EndOfFileException e) {
-                log.info("Goodbye!");
-                return;
-            }
+        }
+        catch (UserInterruptException e) {
+        }
+        catch (EndOfFileException e) {
+            log.info("Goodbye!");
         }
     }
 

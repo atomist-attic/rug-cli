@@ -35,10 +35,6 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
 
-                    log.newline();
-                    log.info(banner, StringUtils
-                            .leftPad(VersionUtils.readVersion().orElse("0.0.0").split("-")[0], 18));
-                    log.newline();
 
                     CommandEventListener listener = new OperationsLoadedEventListener(source,
                             artifact);
@@ -46,6 +42,12 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
                     CommandEventListenerRegistry.register(listener);
                     return null;
                 });
+
+        log.newline();
+        log.info(banner, StringUtils
+                .leftPad(VersionUtils.readVersion().orElse("0.0.0").split("-")[0], 18));
+        log.newline();
+        log.info("Press 'Tab' to complete. Type 'help' and hit 'Return' for help, and 'exit' to quit.");
     }
 
     private static class OperationsLoadedEventListener implements CommandEventListener {
