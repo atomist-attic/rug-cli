@@ -65,7 +65,8 @@ public class ReflectiveCommandRunner {
         return rc;
     }
 
-    private void invokeCommandInLoop(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+    private void invokeCommandInLoop(ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies) {
         LineReader reader = ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
                 new ChangeDirCompleter(), new OperationCompleter(),
                 new CommandInfoCompleter(registry));
@@ -74,7 +75,8 @@ public class ReflectiveCommandRunner {
             try {
                 line = reader.readLine(ShellUtils.DEFAULT_PROMPT);
 
-                if ("exit".equals(line.trim()) || "q".equals(line.trim())) {
+                if ("exit".equals(line.trim()) || "quit".equals(line.trim())
+                        || "q".equals(line.trim())) {
                     throw new EndOfFileException();
                 }
 
