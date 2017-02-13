@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.cli.Options;
 
 public interface CommandInfo {
@@ -14,6 +17,8 @@ public interface CommandInfo {
 
     String name();
 
+    String usage();
+
     default Options options() {
         return new Options();
     }
@@ -22,6 +27,12 @@ public interface CommandInfo {
         // Per default commands to the end of the list
         return Integer.MAX_VALUE;
     }
-
-    String usage();
+    
+    default boolean loadArtifactSource() {
+        return true;
+    }
+    
+    default List<String> subCommands() {
+        return Collections.emptyList();
+    }
 }

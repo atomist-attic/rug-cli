@@ -62,5 +62,9 @@ public abstract class AbstractRugScopedCommandInfo extends AbstractLocalArtifact
         }
         return version;
     }
-
+    
+    @Override
+    public boolean loadArtifactSource() {
+        return false;
+    }
 }

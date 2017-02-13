@@ -1,11 +1,17 @@
 package com.atomist.rug.cli.command.extension;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
 public class ExtensionCommandInfo extends AbstractRugScopedCommandInfo {
+
+    private static final List<String> commands = Arrays
+            .asList(new String[] { "list", "install", "uninstall" });
 
     public ExtensionCommandInfo() {
         super(ExtensionCommand.class, "extension");
@@ -27,7 +33,7 @@ public class ExtensionCommandInfo extends AbstractRugScopedCommandInfo {
     public String usage() {
         return "extension SUBCOMMAND [OPTION]... [EXTENSION]";
     }
-    
+
     @Override
     public int order() {
         return 90;
@@ -39,5 +45,10 @@ public class ExtensionCommandInfo extends AbstractRugScopedCommandInfo {
         options.addOption(Option.builder("a").longOpt("extension-version").argName("EV")
                 .hasArg(true).required(false).desc("Version EV of extension to install").build());
         return options;
+    }
+
+    @Override
+    public List<String> subCommands() {
+        return commands;
     }
 }

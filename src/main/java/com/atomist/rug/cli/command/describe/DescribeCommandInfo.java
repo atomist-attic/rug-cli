@@ -81,4 +81,9 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
     public String usage() {
         return "describe [OPTION]... TYPE ARTIFACT";
     }
+    
+    @Override
+    public List<String> subCommands() {
+        return commands;
+    }
 }

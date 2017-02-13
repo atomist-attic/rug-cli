@@ -22,7 +22,7 @@ import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public abstract class AbstractCommand implements com.atomist.rug.cli.command.Command {
 
-    private CommandInfoRegistry registry = new ServiceLoadingCommandInfoRegistry();
+    protected CommandInfoRegistry registry = new ServiceLoadingCommandInfoRegistry();
 
     public final void run(String... args) {
 

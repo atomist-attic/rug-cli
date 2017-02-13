@@ -1,10 +1,19 @@
 package com.atomist.rug.cli.command;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.StringTokenizer;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
+import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class CommandUtils {
@@ -37,4 +46,77 @@ public abstract class CommandUtils {
         return options;
     }
 
+    public static CommandLine parseCommandline(String[] args, CommandInfoRegistry registry) {
+        try {
+            CommandLineParser parser = new DefaultParser();
+            CommandLine commandLine = parser
+                    .parse(registry.allOptions(), args);
+            CommandLineOptions.set(commandLine);
+            return commandLine;
+        }
+        catch (ParseException e) {
+            throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
+        }
+    }
+    
+    public static String[] splitCommandline(String toProcess) {
+        if (toProcess == null || toProcess.length() == 0) {
+            //no command? no string
+            return new String[0];
+        }
+        // parse with a simple finite state machine
+
+        int normal = 0;
+        final int inQuote = 1;
+        final int inDoubleQuote = 2;
+        int state = normal;
+        StringTokenizer tok = new StringTokenizer(toProcess, "\"\' ", true);
+        List<String> result = new ArrayList<String>();
+        StringBuilder current = new StringBuilder();
+        boolean lastTokenHasBeenQuoted = false;
+
+        while (tok.hasMoreTokens()) {
+            String nextTok = tok.nextToken();
+            switch (state) {
+            case inQuote:
+                if ("\'".equals(nextTok)) {
+                    lastTokenHasBeenQuoted = true;
+                    state = normal;
+                } else {
+                    current.append(nextTok);
+                }
+                break;
+            case inDoubleQuote:
+                if ("\"".equals(nextTok)) {
+                    lastTokenHasBeenQuoted = true;
+                    state = normal;
+                } else {
+                    current.append(nextTok);
+                }
+                break;
+            default:
+                if ("\'".equals(nextTok)) {
+                    state = inQuote;
+                } else if ("\"".equals(nextTok)) {
+                    state = inDoubleQuote;
+                } else if (" ".equals(nextTok)) {
+                    if (lastTokenHasBeenQuoted || current.length() != 0) {
+                        result.add(current.toString());
+                        current.setLength(0);
+                    }
+                } else {
+                    current.append(nextTok);
+                }
+                lastTokenHasBeenQuoted = false;
+                break;
+            }
+        }
+        if (lastTokenHasBeenQuoted || current.length() != 0) {
+            result.add(current.toString());
+        }
+        if (state == inQuote || state == inDoubleQuote) {
+            throw new RuntimeException("unbalanced quotes in " + toProcess);
+        }
+        return result.toArray(new String[result.size()]);
+    }
 }
