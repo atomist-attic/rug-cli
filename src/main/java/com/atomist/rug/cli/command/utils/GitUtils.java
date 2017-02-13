@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.utils;
+package com.atomist.rug.cli.command.utils;
 
 import java.io.File;
 import java.io.IOException;
