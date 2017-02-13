@@ -80,13 +80,17 @@ public class OperationCompleter implements Completer {
             if (name.isPresent()) {
                 List<String> parameterNames = ctx.read(String
                         .format("$.%s[?(@.name=='%s')].parameters[*].name", kind, name.get()));
-                // public Candidate(String value, String displ, String group, String descr, String
-                // suffix, String key, boolean complete) {
-                parameterNames.forEach(n -> candidates
-                        .add(new Candidate(n + "=", n, "parameter", null, null, null, false)));
+                parameterNames.stream()
+                        .filter(p -> !kind.equals("generators")
+                                || (kind.equals("generators") && !p.equals("project_name")))
+                        .filter(p -> !words.stream().filter(w -> w.startsWith(p + "=")).findAny()
+                                .isPresent())
+                        .forEach(n -> candidates.add(
+                                new Candidate(n + "=", n, "parameter", null, null, null, false)));
             }
             else {
-                names.forEach(n -> candidates.add(new Candidate(n, n, kind, null, null, null, true)));
+                names.forEach(
+                        n -> candidates.add(new Candidate(n, n, kind, null, null, null, true)));
             }
         }
     }

@@ -111,8 +111,7 @@ public class ReflectiveCommandRunner {
                     throw new EndOfFileException();
                 }
                 
-                // TODO we need to handle quoted strings
-                args = StringUtils.tokenizeToStringArray(line, " ");
+                args = CommandUtils.splitCommandline(line);
                 invokeCommand(args, artifact, dependencies, null);
             }
             catch (UserInterruptException e) {
