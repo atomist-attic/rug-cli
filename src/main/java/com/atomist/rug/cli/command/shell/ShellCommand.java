@@ -21,11 +21,13 @@ import com.atomist.source.FileArtifact;
 
 public class ShellCommand extends AbstractAnnotationBasedCommand {
 
-    private static final String banner = "  ____                 ____ _     ___ \n"
+    private static final String banner = "" 
+            + "  ____                 ____ _     ___ \n"
             + " |  _ \\ _   _  __ _   / ___| |   |_ _|\n"
             + " | |_) | | | |/ _` | | |   | |    | | \n"
             + " |  _ <| |_| | (_| | | |___| |___ | | \n"
-            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" + "              |___/ %s";
+            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" 
+            + " Atomist      |___/ %s";
 
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
