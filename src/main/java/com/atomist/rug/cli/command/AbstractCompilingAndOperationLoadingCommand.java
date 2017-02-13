@@ -52,12 +52,17 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     protected final void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
         OperationsAndHandlers operationsAndHandlers = null;
         ArtifactSource source = null;
-        if (artifact != null && artifact.extension() == Extension.ZIP) {
+        if (artifact != null && artifact.extension() == Extension.ZIP
+                && registry.findCommand(commandLine).loadArtifactSource()) {
             source = ArtifactSourceUtils.createArtifactSource(artifact);
             printArtifactSource(artifact, source);
             source = compile(artifact, source);
-            operationsAndHandlers = loadOperationsAndHandlers(artifact, source,
+            OperationsAndHandlers operations = loadOperationsAndHandlers(artifact, source,
                     createOperationsLoader(uri));
+
+            CommandEventListenerRegistry.raiseEvent((c) -> c.operationsLoaded(operations));
+
+            operationsAndHandlers = operations;
         }
         run(operationsAndHandlers, artifact, source, commandLine);
     }

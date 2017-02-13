@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 
+// TODO rename to CommandLineHolder
 public abstract class CommandLineOptions {
 
     private static InheritableThreadLocal<List<Option>> options = new InheritableThreadLocal<>();
