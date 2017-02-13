@@ -26,6 +26,8 @@ public class CommandInfoCompleter implements Completer {
         List<String> words = line.words();
         if (words.size() == 1) {
             registry.commands().forEach(c -> candidates.add(new Candidate(c.name())));
+            candidates.add(new Candidate("exit"));
+            candidates.add(new Candidate("quit"));
         }
         else if (words.size() > 1) {
             String word = words.get(0);
