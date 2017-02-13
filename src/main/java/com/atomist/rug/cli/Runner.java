@@ -46,7 +46,7 @@ public class Runner {
                 else {
                     log.error(e.getMessage());
                 }
-                System.exit(1);
+                returnCode = 1;
             }
 
             if (versionThread.getVersion().isPresent()) {
