@@ -1,42 +1,32 @@
 package com.atomist.rug.cli.command;
 
 import java.io.File;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.ParseException;
 import org.jline.reader.EndOfFileException;
-import org.jline.reader.History;
 import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
-import org.jline.reader.impl.DefaultHighlighter;
-import org.jline.reader.impl.completer.AggregateCompleter;
-import org.jline.reader.impl.completer.FileNameCompleter;
-import org.jline.reader.impl.completer.StringsCompleter;
-import org.jline.reader.impl.history.DefaultHistory;
-import org.jline.terminal.TerminalBuilder;
 import org.springframework.util.StringUtils;
 
-import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.classloading.ClassLoaderFactory;
 import com.atomist.rug.cli.classloading.ClasspathEntryProvider;
+import com.atomist.rug.cli.command.shell.ChangeDirCompleter;
+import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
+import com.atomist.rug.cli.command.shell.OperationCompleter;
+import com.atomist.rug.cli.command.shell.ShellUtils;
 import com.atomist.rug.cli.command.utils.DependencyResolverExceptionProcessor;
-import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
-import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.resolver.DependencyResolverFactory;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
-import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.cli.utils.Timing;
 import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
@@ -45,15 +35,17 @@ import com.atomist.rug.resolver.DependencyResolverException;
 
 public class ReflectiveCommandRunner {
 
-    private final CommandInfoRegistry registry;
     private final Log log = new Log(ReflectiveCommandRunner.class);
+    private final CommandInfoRegistry registry;
 
     public ReflectiveCommandRunner(CommandInfoRegistry registry) {
         this.registry = registry;
     }
 
-    public void runCommand(String[] args, CommandLine commandLine) {
+    public int runCommand(String[] args, CommandLine commandLine) {
 
+        Timing timing = new Timing();
+        
         // Validate the JDK version
         VersionUtils.validateJdkVersion();
 
@@ -89,72 +81,101 @@ public class ReflectiveCommandRunner {
             }
         }
 
-        invokeCommand(args, artifact, dependencies, info);
-        if ("shell".equals(info.name())) {
+        int rc = invokeCommand(args, artifact, dependencies, timing);
+
+        if (rc == 0 && "shell".equals(info.name())) {
+            LineReader reader = ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
+                    new ChangeDirCompleter(), new OperationCompleter(), new CommandInfoCompleter(registry));
+            promptLoop(artifact, dependencies, reader);
+        }
+        
+        return rc;
+    }
+
+    private void promptLoop(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
+            LineReader reader) {
+        String[] args;
+        while (true) {
+            String line = null;
             try {
-                
-                // TODO this has to go to somewhere else and become resuable
-                History history = new DefaultHistory();
-                LineReader reader = LineReaderBuilder.builder().terminal(TerminalBuilder.builder().build())
-                        .history(history)
-                        .variable(LineReader.HISTORY_FILE,
-                                new File(System.getProperty("user.home") + File.separator
-                                        + ".atomist" + File.separator + ".cli-history"))
-                        .completer(new AggregateCompleter(new StringsCompleter("edit", "generate", "describe", "list",
-                                "search", "install", "test", "publish", "archive", "editor", "generator"), new FileNameCompleter()))
-                        .highlighter(new DefaultHighlighter())
-                        .build();
-                history.attach(reader);
-                String prompt = Style.yellow("rug") + " " + Style.cyan(Constants.DIVIDER) + " ";
+                line = reader.readLine(ShellUtils.DEFAULT_PROMPT);
 
-                while (true) {
-                    String line = null;
-                    try {
-                        log.newline();
-                        line = reader.readLine(prompt);
-                        
-                        if ("exit".equals(line)) {
-                            throw new EndOfFileException();
-                        }
-                        
-                        args = StringUtils.tokenizeToStringArray(line, " ");
-
-                        commandLine = parseCommandline(args);
-                        info = registry.findCommand(commandLine);
-
-                        invokeCommand(args, artifact, dependencies, info);
-                    }
-                    catch (UserInterruptException e) {
-                    }
-                    catch (EndOfFileException e) {
-                        log.info("Goodbye!");
-                        return;
-                    }
-                    finally {
-                        history.save();
-                    }
+                // TODO should that be an exit command
+                if ("exit".equals(line)) {
+                    throw new EndOfFileException();
                 }
+                
+                // TODO we need to handle quoted strings
+                args = StringUtils.tokenizeToStringArray(line, " ");
+                invokeCommand(args, artifact, dependencies, null);
             }
-            catch (IOException e1) {
-                // TODO handle
+            catch (UserInterruptException e) {
+            }
+            catch (EndOfFileException e) {
+                log.info("Goodbye!");
+                return;
             }
         }
     }
 
-    // TODO fixme this shouldn't be here.
-    private CommandLine parseCommandline(String[] args) {
+    private Throwable extractRootCause(Throwable t) {
+        if (t instanceof InvocationTargetException) {
+            return extractRootCause(((InvocationTargetException) t).getTargetException());
+        }
+        else if (t instanceof CommandException) {
+            return t;
+        }
+        else if (t instanceof RuntimeException) {
+            if (t.getCause() != null) {
+                return extractRootCause(t.getCause());
+            }
+        }
+        return t;
+    }
+
+    private List<URI> getZipDependencies(List<ArtifactDescriptor> dependencies) {
+        return dependencies.stream().map(ad -> new File(ad.uri()))
+                .filter(f -> f.getName().endsWith(".zip")).map(File::toURI)
+                .collect(Collectors.toList());
+    }
+
+    private int invokeCommand(String[] args, ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies, Timing timing) {
+        
+        if (timing == null) {
+            timing = new Timing();
+        }
+        
+        CommandLine commandLine = null;
         try {
-            CommandLineParser parser = new DefaultParser();
-            CommandLine commandLine = parser.parse(registry.allOptions(), args);
-            CommandLineOptions.set(commandLine);
-            return commandLine;
+            commandLine = CommandUtils.parseCommandline(args, registry);
+            CommandInfo info = registry.findCommand(commandLine);
+
+            invokeReflectiveCommand(args, artifact, dependencies, info);
         }
-        catch (ParseException e) {
-            throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
+        catch (Throwable e) {
+            // Extract root exception; cycle through nested exceptions to extract root cause
+            e = extractRootCause(e);
+
+            // Print stacktraces only if requested from the command line
+            log.newline();
+            if (commandLine != null && commandLine.hasOption('X')) {
+                log.error(e);
+            }
+            else {
+                log.error(e.getMessage());
+            }
+            return 1;
         }
+        finally {
+            if (commandLine != null && commandLine.hasOption('t')) {
+                printTimer(timing);
+            }
+        }
+        return 0;
     }
 
-    private void invokeCommand(String[] args, ArtifactDescriptor artifact,
+    private void invokeReflectiveCommand(String[] args, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, CommandInfo info) {
         try {
             // Invoke the run method on the command class
@@ -174,12 +195,6 @@ public class ReflectiveCommandRunner {
         }
     }
 
-    private List<URI> getZipDependencies(List<ArtifactDescriptor> dependencies) {
-        return dependencies.stream().map(ad -> new File(ad.uri()))
-                .filter(f -> f.getName().endsWith(".zip")).map(File::toURI)
-                .collect(Collectors.toList());
-    }
-
     private List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
             ProgressReporter indicator) {
         DependencyResolver resolver = new DependencyResolverFactory()
@@ -195,5 +210,8 @@ public class ReflectiveCommandRunner {
                     .process(ArtifactDescriptorFactory.copyFrom(artifact, version), e));
         }
     }
-
+    
+    private void printTimer(Timing timing) {
+        log.info("Command completed in " + timing.duration() + "s");
+    }
 }

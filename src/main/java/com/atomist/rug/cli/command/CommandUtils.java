@@ -3,8 +3,14 @@ package com.atomist.rug.cli.command;
 import java.io.File;
 import java.util.Optional;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
+import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class CommandUtils {
@@ -35,6 +41,19 @@ public abstract class CommandUtils {
         options.addOption("h", "help", false, "Print help information");
         options.addOption("q", "quiet", false, "Do not display progress messages");
         return options;
+    }
+
+    public static CommandLine parseCommandline(String[] args, CommandInfoRegistry registry) {
+        try {
+            CommandLineParser parser = new DefaultParser();
+            CommandLine commandLine = parser
+                    .parse(registry.allOptions(), args);
+            CommandLineOptions.set(commandLine);
+            return commandLine;
+        }
+        catch (ParseException e) {
+            throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
+        }
     }
 
 }

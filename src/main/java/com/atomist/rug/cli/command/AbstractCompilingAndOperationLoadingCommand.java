@@ -56,8 +56,14 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
             source = ArtifactSourceUtils.createArtifactSource(artifact);
             printArtifactSource(artifact, source);
             source = compile(artifact, source);
-            operationsAndHandlers = loadOperationsAndHandlers(artifact, source,
+            OperationsAndHandlers operations = loadOperationsAndHandlers(artifact, source,
                     createOperationsLoader(uri));
+
+            CommandEventListenerRegistry
+                    .raiseEvent((c) -> c.operationsLoaded(operations));
+            
+            operationsAndHandlers = operations;
+
         }
         run(operationsAndHandlers, artifact, source, commandLine);
     }
