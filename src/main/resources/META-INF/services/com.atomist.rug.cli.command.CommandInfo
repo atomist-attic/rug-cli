@@ -10,3 +10,6 @@ com.atomist.rug.cli.command.publish.PublishCommandInfo
 com.atomist.rug.cli.command.config.ConfigCommandInfo
 
 com.atomist.rug.cli.command.extension.ExtensionCommandInfo
+
+com.atomist.rug.cli.command.shell.ShellCommandInfo
+com.atomist.rug.cli.command.shell.HelpCommandInfo
