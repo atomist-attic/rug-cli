@@ -25,9 +25,11 @@ public class CommandInfoCompleter implements Completer {
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
         List<String> words = line.words();
         if (words.size() == 1) {
-            registry.commands().forEach(c -> candidates.add(new Candidate(c.name())));
-            candidates.add(new Candidate("exit"));
-            candidates.add(new Candidate("quit"));
+            registry.commands().forEach(c -> candidates
+                    .add(new Candidate(c.name(), c.name(), "Commands", null, null, null, true)));
+            candidates.add(new Candidate("exit", "exit", "Commands", null, null, "q", true));
+            candidates.add(new Candidate("quit", "quit", "Commands", null, null, "q", true));
+            candidates.add(new Candidate("q", "q", "Commands", null, null, "q", true));
         }
         else if (words.size() > 1) {
             String word = words.get(0);
@@ -43,7 +45,8 @@ public class CommandInfoCompleter implements Completer {
                             .add(new Candidate(s, s, "Subcommands", null, null, null, true)));
                 }
 
-                completeOptions(info.get().globalOptions().getOptions(), candidates, words, "Global Options");
+                completeOptions(info.get().globalOptions().getOptions(), candidates, words,
+                        "Global Options");
                 completeOptions(info.get().options().getOptions(), candidates, words, "Options");
             }
         }
@@ -63,12 +66,12 @@ public class CommandInfoCompleter implements Completer {
             return true;
         }).forEach(o -> {
             if (o.hasLongOpt()) {
-                candidates.add(new Candidate("--" + o.getLongOpt(), "--" + o.getLongOpt(),
-                        group, null, null, o.toString(), true));
+                candidates.add(new Candidate("--" + o.getLongOpt(), "--" + o.getLongOpt(), group,
+                        null, null, o.toString(), true));
             }
             if (o.getOpt() != null) {
-                candidates.add(new Candidate("-" + o.getOpt(), "-" + o.getOpt(), group, null,
-                        null, o.toString(), true));
+                candidates.add(new Candidate("-" + o.getOpt(), "-" + o.getOpt(), group, null, null,
+                        o.toString(), true));
             }
         });
     }
