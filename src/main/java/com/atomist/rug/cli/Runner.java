@@ -6,7 +6,6 @@ import org.apache.commons.cli.ParseException;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.ReflectiveCommandRunner;
-import com.atomist.rug.cli.command.utils.CommandHelpFormatter;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.version.VersionThread;
 import com.atomist.rug.cli.version.VersionUtils;
@@ -25,7 +24,7 @@ public class Runner {
     public void run(String[] args) throws ParseException {
 
         int returnCode = 0;
-        
+
         if (args.length == 1 && (args[0].equals("-v") || args[0].equals("--version"))) {
             printVersion();
         }
@@ -54,14 +53,6 @@ public class Runner {
         System.exit(returnCode);
     }
 
-    private void printCommandHelp(CommandLine commandLine) {
-        log.info(new CommandHelpFormatter().printCommandHelp(registry.findCommand(commandLine)));
-    }
-
-    private void printHelp() {
-        log.info(new CommandHelpFormatter().printHelp(registry, CommandUtils.options()));
-    }
-
     private void printNewVersion(String version) {
         log.info(Style.yellow("Newer version of rug %s is available", version));
     }
@@ -77,14 +68,15 @@ public class Runner {
     private int runCommand(String[] args, CommandLine commandLine) {
         if ((commandLine.hasOption('?') || commandLine.hasOption('h'))
                 && commandLine.getArgList().isEmpty()) {
-            printHelp();
+            args = new String[] { "help" };
+            commandLine = CommandUtils.parseCommandline(args, registry);
+            new ReflectiveCommandRunner(registry).runCommand(args, commandLine);
         }
         else if (commandLine.getArgList().isEmpty()) {
-            printHelp();
+            args = new String[] { "help" };
+            commandLine = CommandUtils.parseCommandline(args, registry);
+            new ReflectiveCommandRunner(registry).runCommand(args, commandLine);
             return 1;
-        }
-        else if (commandLine.hasOption('?') || commandLine.hasOption('h')) {
-            printCommandHelp(commandLine);
         }
         else if (commandLine.getArgList().size() >= 1) {
             return new ReflectiveCommandRunner(registry).runCommand(args, commandLine);

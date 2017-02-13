@@ -21,6 +21,7 @@ import com.atomist.rug.cli.command.shell.ChangeDirCompleter;
 import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
 import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.command.utils.CommandHelpFormatter;
 import com.atomist.rug.cli.command.utils.DependencyResolverExceptionProcessor;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
@@ -45,7 +46,12 @@ public class ReflectiveCommandRunner {
     public int runCommand(String[] args, CommandLine commandLine) {
 
         Timing timing = new Timing();
-        
+
+        if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
+            printCommandHelp(commandLine);
+            return 0;
+        }
+
         // Validate the JDK version
         VersionUtils.validateJdkVersion();
 
@@ -85,10 +91,11 @@ public class ReflectiveCommandRunner {
 
         if (rc == 0 && "shell".equals(info.name())) {
             LineReader reader = ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
-                    new ChangeDirCompleter(), new OperationCompleter(), new CommandInfoCompleter(registry));
+                    new ChangeDirCompleter(), new OperationCompleter(),
+                    new CommandInfoCompleter(registry));
             promptLoop(artifact, dependencies, reader);
         }
-        
+
         return rc;
     }
 
@@ -100,8 +107,7 @@ public class ReflectiveCommandRunner {
             try {
                 line = reader.readLine(ShellUtils.DEFAULT_PROMPT);
 
-                // TODO should that be an exit command
-                if ("exit".equals(line)) {
+                if ("exit".equals(line.trim()) || "q".equals(line.trim())) {
                     throw new EndOfFileException();
                 }
                 
@@ -141,22 +147,28 @@ public class ReflectiveCommandRunner {
 
     private int invokeCommand(String[] args, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, Timing timing) {
-        
+
         if (timing == null) {
             timing = new Timing();
         }
-        
+
         CommandLine commandLine = null;
         try {
             commandLine = CommandUtils.parseCommandline(args, registry);
             CommandInfo info = registry.findCommand(commandLine);
 
-            invokeReflectiveCommand(args, artifact, dependencies, info);
+            if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
+                printCommandHelp(commandLine);
+                return 0;
+            }
+            else {
+                invokeReflectiveCommand(args, artifact, dependencies, info);
+            }
         }
         catch (Throwable e) {
             // Extract root exception; cycle through nested exceptions to extract root cause
             e = extractRootCause(e);
-
+            
             // Print stacktraces only if requested from the command line
             log.newline();
             if (commandLine != null && commandLine.hasOption('X')) {
@@ -210,8 +222,14 @@ public class ReflectiveCommandRunner {
                     .process(ArtifactDescriptorFactory.copyFrom(artifact, version), e));
         }
     }
-    
+
     private void printTimer(Timing timing) {
         log.info("Command completed in " + timing.duration() + "s");
     }
+
+    private void printCommandHelp(CommandLine commandLine) {
+        new Log(getClass()).info(
+                new CommandHelpFormatter().printCommandHelp(registry.findCommand(commandLine)));
+    }
+
 }

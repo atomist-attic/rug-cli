@@ -29,17 +29,18 @@ public class CommandInfoCompleter implements Completer {
         }
         else if (words.size() > 1) {
             String word = words.get(0);
-            if ("describe".equals(word)) {
-                candidates.add(new Candidate("archive"));
-                candidates.add(new Candidate("editor"));
-                candidates.add(new Candidate("generator"));
-                candidates.add(new Candidate("executor"));
-                candidates.add(new Candidate("reviewer"));
-            }
 
             Optional<CommandInfo> info = registry.commands().stream()
                     .filter(c -> c.name().equals(word)).findFirst();
             if (info.isPresent()) {
+
+                // only complete subCommand if none exists already
+                if (words.size() <= 2
+                        || (words.size() > 2 && !info.get().subCommands().contains(words.get(1)))) {
+                    info.get().subCommands().stream().forEach(s -> candidates
+                            .add(new Candidate(s, s, "subcommand", null, null, null, true)));
+                }
+
                 completeOptions(info.get().globalOptions().getOptions(), candidates, words);
                 completeOptions(info.get().options().getOptions(), candidates, words);
             }

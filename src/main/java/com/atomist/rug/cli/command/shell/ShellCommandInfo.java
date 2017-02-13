@@ -20,7 +20,7 @@ public class ShellCommandInfo extends AbstractVersionCommandInfo {
 
     @Override
     public int order() {
-        return Integer.MAX_VALUE;
+        return Integer.MAX_VALUE - 20;
     }
 
     @Override
