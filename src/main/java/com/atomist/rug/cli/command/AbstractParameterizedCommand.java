@@ -3,8 +3,6 @@ package com.atomist.rug.cli.command;
 import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,13 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.text.WordUtils;
-import org.jline.reader.History;
 import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.impl.DefaultHighlighter;
-import org.jline.reader.impl.history.DefaultHistory;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
 
 import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValue;
@@ -28,7 +20,7 @@ import com.atomist.project.ProjectOperation;
 import com.atomist.project.ProjectOperationArguments;
 import com.atomist.project.SimpleProjectOperationArguments;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.cli.command.shell.ShellUtils;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -43,7 +35,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         Collection<Parameter> parameters = asJavaCollection(operation.parameters());
         if (CommandLineOptions.hasOption("I") && !parameters.isEmpty()) {
 
-            LineReader reader = lineReader();
+            LineReader reader = ShellUtils.lineReader(ShellUtils.INTERACTIVE_HISTORY);
 
             List<ParameterValue> newValues = new ArrayList<>();
 
@@ -93,27 +85,6 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
             log.newline();
         }
         return arguments;
-    }
-
-    private LineReader lineReader() {
-        History history = new DefaultHistory();
-        LineReader reader = LineReaderBuilder.builder()
-                .terminal(terminal()).history(history)
-                .variable(LineReader.HISTORY_FILE,
-                        new File(System.getProperty("user.home") + File.separator + ".atomist"
-                                + File.separator + ".interactive-history"))
-                .highlighter(new DefaultHighlighter()).build();
-        history.attach(reader);
-        return reader;
-    }
-
-    private Terminal terminal() {
-        try {
-            return TerminalBuilder.builder().build();
-        }
-        catch (IOException e) {
-            throw new RunnerException(e);
-        }
     }
 
     private boolean isInvalid(ProjectOperation operation, ParameterValue pv) {

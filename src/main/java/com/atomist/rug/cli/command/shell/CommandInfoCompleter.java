@@ -38,17 +38,17 @@ public class CommandInfoCompleter implements Completer {
                 if (words.size() <= 2
                         || (words.size() > 2 && !info.get().subCommands().contains(words.get(1)))) {
                     info.get().subCommands().stream().forEach(s -> candidates
-                            .add(new Candidate(s, s, "subcommand", null, null, null, true)));
+                            .add(new Candidate(s, s, "Subcommands", null, null, null, true)));
                 }
 
-                completeOptions(info.get().globalOptions().getOptions(), candidates, words);
-                completeOptions(info.get().options().getOptions(), candidates, words);
+                completeOptions(info.get().globalOptions().getOptions(), candidates, words, "Global Options");
+                completeOptions(info.get().options().getOptions(), candidates, words, "Options");
             }
         }
     }
 
     private void completeOptions(Collection<Option> options, List<Candidate> candidates,
-            List<String> words) {
+            List<String> words, String group) {
         // public Candidate(String value, String displ, String group, String descr, String suffix,
         // String key, boolean complete) {
         options.stream().filter(o -> {
@@ -62,10 +62,10 @@ public class CommandInfoCompleter implements Completer {
         }).forEach(o -> {
             if (o.hasLongOpt()) {
                 candidates.add(new Candidate("--" + o.getLongOpt(), "--" + o.getLongOpt(),
-                        "options", null, null, o.toString(), true));
+                        group, null, null, o.toString(), true));
             }
             if (o.getOpt() != null) {
-                candidates.add(new Candidate("-" + o.getOpt(), "-" + o.getOpt(), "options", null,
+                candidates.add(new Candidate("-" + o.getOpt(), "-" + o.getOpt(), group, null,
                         null, o.toString(), true));
             }
         });

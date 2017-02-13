@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -86,11 +87,11 @@ public class OperationCompleter implements Completer {
                         .filter(p -> !words.stream().filter(w -> w.startsWith(p + "=")).findAny()
                                 .isPresent())
                         .forEach(n -> candidates.add(
-                                new Candidate(n + "=", n, "parameter", null, null, null, false)));
+                                new Candidate(n + "=", n, "Parameters", null, null, null, false)));
             }
             else {
-                names.forEach(
-                        n -> candidates.add(new Candidate(n, n, kind, null, null, null, true)));
+                names.forEach(n -> candidates.add(
+                        new Candidate(n, n, StringUtils.capitalize(kind), null, null, null, true)));
             }
         }
     }

@@ -22,7 +22,10 @@ public class Runner {
     }
 
     public void run(String[] args) throws ParseException {
-
+        
+        // Validate the JDK version
+        VersionUtils.validateJdkVersion();
+        
         int returnCode = 0;
 
         if (args.length == 1 && (args[0].equals("-v") || args[0].equals("--version"))) {

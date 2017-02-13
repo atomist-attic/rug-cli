@@ -19,13 +19,15 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.output.Style;
 
 public abstract class ShellUtils {
-    
+
     public static final File SHELL_OPERATIONS = new File(System.getProperty("user.home")
             + File.separator + ".atomist" + File.separator + ".cli-operations");
 
-
     public static final File SHELL_HISTORY = new File(System.getProperty("user.home")
             + File.separator + ".atomist" + File.separator + ".cli-history");
+
+    public static final File INTERACTIVE_HISTORY = new File(System.getProperty("user.home")
+            + File.separator + ".atomist" + File.separator + ".interactive-history");
 
     public static final String DEFAULT_PROMPT = Style.yellow("rug") + " "
             + Style.cyan(Constants.DIVIDER) + " ";
