@@ -14,7 +14,7 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         Optional<ProgressReporter> progressReporterOption = ProgressReporterUtils
                 .getActiveProgressReporter();
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
-            progressReporterOption.get().report("$  " + l.replace("\n", "\n  ").replace("\n\r", "\n\r  "));
+            report(l, progressReporterOption);
         }
         else if (l.startsWith("$")) {
             super.print(l.substring(1));
@@ -28,7 +28,7 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         Optional<ProgressReporter> progressReporterOption = ProgressReporterUtils
                 .getActiveProgressReporter();
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
-            progressReporterOption.get().report("$  " + l.replace("\n", "\n  ").replace("\n\r", "\n\r  "));
+            report(l, progressReporterOption);
         }
         else if (l.startsWith("$")) {
             super.println(l.substring(1));
@@ -44,8 +44,7 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         Optional<ProgressReporter> progressReporterOption = ProgressReporterUtils
                 .getActiveProgressReporter();
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
-            progressReporterOption.get()
-                    .report("$  " + l.replace("\n", "\n  ").replace("\n\r", "\n\r  "));
+            report(l, progressReporterOption);
         }
         else if (l.startsWith("$")) {
             super.write(l.substring(1).getBytes());
@@ -61,7 +60,7 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         Optional<ProgressReporter> progressReporterOption = ProgressReporterUtils
                 .getActiveProgressReporter();
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
-            progressReporterOption.get().report("$  " + l.replace("\n", "\n  ").replace("\n\r", "\n\r  "));
+            report(l, progressReporterOption);
         }
         else if (l.startsWith("$")) {
             buf = l.substring(1).getBytes();
@@ -70,5 +69,10 @@ public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
         else {
             super.write(buf, off, len);
         }
+    }
+    
+    private void report(String l, Optional<ProgressReporter> progressReporterOption) {
+        progressReporterOption.get()
+                .report("$  " + l.replace("\n", "\n  ").replace("\n\r", "\n\r  "));
     }
 }
