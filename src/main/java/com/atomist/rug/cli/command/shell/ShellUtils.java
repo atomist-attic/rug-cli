@@ -17,6 +17,7 @@ import org.jline.terminal.TerminalBuilder;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class ShellUtils {
 
@@ -33,12 +34,15 @@ public abstract class ShellUtils {
             + Style.cyan(Constants.DIVIDER) + " ";
 
     public static LineReader lineReader(File historyPath, Completer... completers) {
+        // Protect the history file
+        FileUtils.setPermissionsToOwnerOnly(historyPath);
+        
+        // Create JLine LineReader
         History history = new DefaultHistory();
         LineReader reader = LineReaderBuilder.builder().terminal(terminal()).history(history)
                 .parser(new DefaultParser()).variable(LineReader.HISTORY_FILE, historyPath)
                 .completer(new AggregateCompleter(completers)).highlighter(new DefaultHighlighter())
                 .build();
-
         history.attach(reader);
         return reader;
     }
