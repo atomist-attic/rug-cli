@@ -21,7 +21,7 @@ abstract class MavenPropertiesFactory {
         properties.setOffline(offline);
         properties.setCacheMetadata(cacheMetadata);
 
-        Settings settings = new SettingsReader().read();
+        Settings settings = SettingsReader.read();
 
         properties.setRepoLocation(settings.getLocalRepository().path());
         properties.setRepos(settings.getRemoteRepositories().entrySet().stream()

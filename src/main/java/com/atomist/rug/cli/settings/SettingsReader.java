@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class SettingsReader {
+public abstract class SettingsReader {
 
     public static final String PATH = org.apache.commons.io.FileUtils.getUserDirectoryPath()
             + File.separator + Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME;
 
     private static Log log = new Log(SettingsReader.class);
 
-    public Settings read() {
+    public static Settings read() {
         File settingsFile = new File(PATH);
         if (!CommandLineOptions.hasOption("s") && !settingsFile.exists()) {
             createDefaultSettingsFile(settingsFile);
@@ -39,7 +39,7 @@ public class SettingsReader {
     }
 
     @SuppressWarnings("unchecked")
-    public Settings settingsFromFile(File settingsFile) {
+    public static Settings settingsFromFile(File settingsFile) {
         try {
             Yaml yaml = new Yaml();
             Map<String, Object> data = (Map<String, Object>) yaml
@@ -98,12 +98,12 @@ public class SettingsReader {
         }
     }
 
-    private void createDefaultSettingsFile(File settingsFile) {
+    private static void createDefaultSettingsFile(File settingsFile) {
         try {
             if (!settingsFile.getParentFile().exists()) {
                 settingsFile.getParentFile().mkdirs();
             }
-            IOUtils.copy(getClass().getClassLoader().getResourceAsStream(Constants.CLI_CONFIG_NAME),
+            IOUtils.copy(SettingsReader.class.getClassLoader().getResourceAsStream(Constants.CLI_CONFIG_NAME),
                     new FileOutputStream(settingsFile));
             FileUtils.setPermissionsToOwnerOnly(settingsFile);
             log.info("Created default configuration file at %s", settingsFile.getAbsolutePath());
@@ -114,7 +114,7 @@ public class SettingsReader {
         }
     }
 
-    private void readProjectSettings(Settings settings) {
+    private static void readProjectSettings(Settings settings) {
         if (!CommandLineOptions.hasOption("s")) {
             Settings projectSettings = null;
             Optional<File> userDir = FileUtils.getWorkingDirectory();

@@ -91,7 +91,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         private File projectRoot;
 
         public RepositoryCommandMavenDeployer(CommandLine commandLine, File projectRoot) {
-            super(new SettingsReader().read().getLocalRepository().path());
+            super(SettingsReader.read().getLocalRepository().path());
             this.commandLine = commandLine;
             this.projectRoot = projectRoot;
             registerEventListener(new ReportingDeployerEventListener());
