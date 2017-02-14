@@ -19,7 +19,7 @@ public class CommandHelpFormatter {
 
     public static String HELP_FOOTER = "\n\nPlease report issues at https://github.com/atomist/rug-cli";
 
-    private static int WRAP = 90;
+    private static int WRAP = Constants.WRAP_LENGTH;
 
     public String createString(int length) {
         char[] chars = new char[length];
