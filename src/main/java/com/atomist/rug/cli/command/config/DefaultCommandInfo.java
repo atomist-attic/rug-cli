@@ -10,7 +10,7 @@ import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
 public class DefaultCommandInfo extends AbstractRugScopedCommandInfo {
 
-    private static final List<String> commands = Arrays.asList(new String[] { "save", "delete" });
+    private static final List<String> commands = Arrays.asList("save", "delete");
 
     public DefaultCommandInfo() {
         super(DefaultCommand.class, "default");

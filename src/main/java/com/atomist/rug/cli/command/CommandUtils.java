@@ -71,7 +71,7 @@ public abstract class CommandUtils {
         final int inDoubleQuote = 2;
         int state = normal;
         StringTokenizer tok = new StringTokenizer(toProcess, "\"\' ", true);
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         StringBuilder current = new StringBuilder();
         boolean lastTokenHasBeenQuoted = false;
 

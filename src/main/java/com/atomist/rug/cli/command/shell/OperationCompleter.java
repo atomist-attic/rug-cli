@@ -18,8 +18,8 @@ import com.jayway.jsonpath.ReadContext;
 
 public class OperationCompleter implements Completer {
 
-    private static final List<String> COMMANDS = Arrays.asList(new String[] { "edit", "ed",
-            "generate", "gen", "execute", "executo-remote", "describe", "desc" });
+    private static final List<String> COMMANDS = Arrays.asList("edit", "ed",
+            "generate", "gen", "execute", "executo-remote", "describe", "desc");
 
     private long timestamp = -1;
 
@@ -87,8 +87,7 @@ public class OperationCompleter implements Completer {
                 parameterNames.stream()
                         .filter(p -> !kind.equals("generators")
                                 || (kind.equals("generators") && !p.equals("project_name")))
-                        .filter(p -> !words.stream().filter(w -> w.startsWith(p + "=")).findAny()
-                                .isPresent())
+                        .filter(p -> !words.stream().anyMatch(w -> w.startsWith(p + "=")))
                         .forEach(n -> candidates.add(
                                 new Candidate(n + "=", n, "Parameters", null, null, null, false)));
             }
