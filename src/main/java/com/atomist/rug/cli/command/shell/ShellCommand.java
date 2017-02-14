@@ -44,7 +44,12 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
                     CommandEventListenerRegistry.register(listener);
                     return null;
                 });
+        
+        printBanner();
+    }
 
+    private void printBanner() {
+        log.newline();
         log.info(banner, StringUtils
                 .leftPad(VersionUtils.readVersion().orElse("0.0.0").split("-")[0], 18));
         log.newline();
