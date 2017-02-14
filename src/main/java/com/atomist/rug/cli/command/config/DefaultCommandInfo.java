@@ -8,12 +8,12 @@ import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
-public class ConfigCommandInfo extends AbstractRugScopedCommandInfo {
+public class DefaultCommandInfo extends AbstractRugScopedCommandInfo {
 
     private static final List<String> commands = Arrays.asList(new String[] { "save", "delete" });
 
-    public ConfigCommandInfo() {
-        super(ConfigCommand.class, "default");
+    public DefaultCommandInfo() {
+        super(DefaultCommand.class, "default");
     }
 
     @Override

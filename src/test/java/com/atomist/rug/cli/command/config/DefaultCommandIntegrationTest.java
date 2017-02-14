@@ -7,7 +7,7 @@ import org.junit.runners.MethodSorters;
 import com.atomist.rug.cli.AbstractCommandTest;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ConfigCommandIntegrationTest extends AbstractCommandTest {
+public class DefaultCommandIntegrationTest extends AbstractCommandTest {
 
 	@Test
 	public void testAGlobalWrite() throws Exception {
