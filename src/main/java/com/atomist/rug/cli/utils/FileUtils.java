@@ -24,6 +24,9 @@ public abstract class FileUtils {
     }
 
     public static void setPermissionsToOwnerOnly(File file) {
+        if (file == null) {
+            return;
+        }
         try {
             Set<PosixFilePermission> perms = new HashSet<>();
             perms.add(PosixFilePermission.OWNER_READ);
