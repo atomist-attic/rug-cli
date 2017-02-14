@@ -7,12 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.22.1...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.23.0...HEAD
+
+### Changed
+
+## [0.23.0] - 2017-02-14
+
+[0.23.0]: https://github.com/atomist/rug-cli/compare/0.22.0...0.23.0
 
 ### Changed
 
 -   New `tree` command to evaluate path expressions against a project as per
  	https://github.com/atomist/rug-cli/issues/96
+ 	
+-   New `shell` command to step into a repl session within the scope of the 
+    selected Rug archive. 	
 
 
 ## [0.22.0] - 2017-02-02
