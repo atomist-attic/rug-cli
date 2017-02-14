@@ -10,7 +10,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.text.WordUtils;
+import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 
 import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValue;
@@ -101,13 +103,21 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
 
     private ParameterValue readParameter(LineReader console, Parameter parameter,
             String defaultValue) {
-        String value = console.readLine(getPrompt(parameter, defaultValue));
+        try {
+            String value = console.readLine(getPrompt(parameter, defaultValue));
 
-        if (value == null || value.length() == 0) {
-            value = defaultValue;
+            if (value == null || value.length() == 0) {
+                value = defaultValue;
+            }
+
+            return new SimpleParameterValue(parameter.getName(), value);
         }
-
-        return new SimpleParameterValue(parameter.getName(), value);
+        catch (UserInterruptException e) {
+            throw new CommandException("Canceled!");
+        }
+        catch (EndOfFileException e) {
+            throw new CommandException("Canceled!");
+        }
     }
 
     private void validateCollectedParameters(ArtifactDescriptor artifact,
