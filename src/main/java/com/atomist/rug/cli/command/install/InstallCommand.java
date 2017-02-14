@@ -1,8 +1,13 @@
 package com.atomist.rug.cli.command.install;
 
-import java.io.File;
-import java.net.URI;
-
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.AbstractRepositoryCommand;
+import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.output.ProgressReportingTransferListener;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.resolver.manifest.Manifest;
+import com.atomist.source.ArtifactSource;
 import org.apache.commons.cli.CommandLine;
 import org.eclipse.aether.AbstractRepositoryListener;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -13,21 +18,15 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.installation.InstallRequest;
 import org.eclipse.aether.installation.InstallResult;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.AbstractRepositoryCommand;
-import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
-import com.atomist.rug.cli.output.ProgressReportingTransferListener;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.FileUtils;
-import com.atomist.rug.manifest.Manifest;
-import com.atomist.source.ArtifactSource;
+import java.io.File;
+import java.net.URI;
 
 public class InstallCommand extends AbstractRepositoryCommand {
 
     @Override
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-            ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom,
-            Artifact metadata, CommandLine commandLine) {
+                                           ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom,
+                                           Artifact metadata, CommandLine commandLine) {
 
         new ProgressReportingOperationRunner<InstallResult>(
                 "Installing archive into local repository").run(indicator -> {

@@ -1,6 +1,6 @@
 package com.atomist.rug.cli.command;
 
-import com.atomist.rug.loader.OperationsAndHandlers;
+import com.atomist.project.archive.Rugs;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 
@@ -12,8 +12,7 @@ public interface CommandEventListener {
     
     void artifactSourceCompiled(ArtifactDescriptor artifact, ArtifactSource source);
     
-    void operationsLoaded(ArtifactDescriptor artifact, OperationsAndHandlers operations);
+    void operationsLoaded(ArtifactDescriptor artifact, Rugs operations);
     
     void finished(CommandInfo info, ArtifactDescriptor artifact);
-    
 }

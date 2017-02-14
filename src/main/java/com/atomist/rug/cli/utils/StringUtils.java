@@ -1,18 +1,16 @@
 package com.atomist.rug.cli.utils;
 
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import org.springframework.util.SystemPropertyUtils;
+import scala.collection.Seq;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.util.SystemPropertyUtils;
-
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-
-import scala.collection.Seq;
 
 import static scala.collection.JavaConversions.asJavaCollection;
 

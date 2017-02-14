@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomist</groupId>
 	<artifactId>rug-cli</artifactId>
-	<version>0.24.1-SNAPSHOT</version>
+	<version>0.25-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>rug-cli</name>
 	<description>CLI for creating and running Rugs</description>
@@ -15,8 +15,8 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
-		<rug.version>0.12.0</rug.version>
-		<rug-resolver.version>0.13.0</rug-resolver.version>
+		<rug.version>0.13.0-SNAPSHOT</rug.version>
+		<rug-resolver.version>0.13.1-SNAPSHOT</rug-resolver.version>
 	</properties>
 	<licenses>
 		<license>
@@ -32,7 +32,7 @@
 			<dependency>
 				<groupId>com.atomist</groupId>
 				<artifactId>atomist-bom</artifactId>
-				<version>0.6.0</version>
+				<version>0.8.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -333,9 +333,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19.1</version>
-				<configuration>
-					<workingDirectory>src/test/resources/common-editors</workingDirectory>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

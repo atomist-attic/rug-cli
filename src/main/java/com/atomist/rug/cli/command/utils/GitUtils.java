@@ -1,8 +1,13 @@
 package com.atomist.rug.cli.command.utils;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.atomist.param.ParameterValues;
+import com.atomist.project.ProjectOperation;
+import com.atomist.project.generate.ProjectGenerator;
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.resolver.project.ProvenanceInfoWriter;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -10,21 +15,15 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
-import com.atomist.project.ProjectOperation;
-import com.atomist.project.ProjectOperationArguments;
-import com.atomist.project.ProvenanceInfoWriter;
-import com.atomist.project.generate.ProjectGenerator;
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.RunnerException;
-import com.atomist.rug.cli.command.CommandException;
+import java.io.File;
+import java.io.IOException;
 
 public abstract class GitUtils {
 
     private static Log log = new Log(GitUtils.class);
 
     public static void initializeRepoAndCommitFiles(ProjectGenerator generator,
-            ProjectOperationArguments arguments, File root) {
+                                                    ParameterValues arguments, File root) {
         try (Git git = Git.init().setDirectory(root).call()) {
             log.info("Initialized a new git repository at " + git.getRepository().getDirectory());
             git.add().addFilepattern(".").call();
@@ -42,7 +41,7 @@ public abstract class GitUtils {
         }
     }
 
-    public static void commitFiles(ProjectOperation operation, ProjectOperationArguments arguments,
+    public static void commitFiles(ProjectOperation operation, ParameterValues arguments,
             File root) {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         try (Repository repository = builder.setGitDir(new File(root, ".git")).readEnvironment()

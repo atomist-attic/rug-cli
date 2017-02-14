@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-cli/compare/0.24.0...HEAD
 
+### Added
+
+-  Support for describing handlers
+
+### Changed
+
+-  Removed executors
+-  Upgraded to rug 0.13.+ and rug-resolver
+
 ## [0.24.0] - 2017-02-20
 
 [0.24.0]: https://github.com/atomist/rug-cli/compare/0.23.0...0.24.0

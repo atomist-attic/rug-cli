@@ -1,5 +1,9 @@
 package com.atomist.rug.cli.classloading;
 
+import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,26 +12,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
-
-import com.atomist.rug.cli.RunnerException;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-
 /**
  * Sets up the context classloader.
  * At runtime, all dependencies come from the Rug Archive.
- * At dev/build time, the Rug version comes this project's pom, not from the Rug Archives used for
+ * At dev/build time, the Rug version comes from this project's pom, not from the Rug Archives used for
  * test.
  */
 public abstract class ClassLoaderFactory {
 
     public static void setupClassLoader(ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {
+                                        List<ArtifactDescriptor> dependencies) {
         setupClassLoader(artifact, dependencies, null);
     }
 
     public static void setupClassLoader(ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies, ClasspathEntryProvider classpathEntryProvider) {
+                                        List<ArtifactDescriptor> dependencies, ClasspathEntryProvider classpathEntryProvider) {
         List<URL> urls = getDependencies(dependencies);
 
         // Add the url to the enclosing JAR
@@ -43,10 +42,10 @@ public abstract class ClassLoaderFactory {
         // If running from an IDE we need a different classloader hierarchy
         if (codeLocation.toString().endsWith("jar")) {
             cls = createJarClassLoader(urls);
-        }
-        else {
+        } else {
             cls = createDevClassLoader(urls);
         }
+
         Thread.currentThread().setContextClassLoader(cls);
     }
 
@@ -79,17 +78,16 @@ public abstract class ClassLoaderFactory {
         if (j2v8.isPresent()) {
             try {
                 Thread.currentThread().setContextClassLoader(
-                        new J2V8ClassLoader(new URL[] { j2v8.get().uri().toURL() },
+                        new J2V8ClassLoader(new URL[]{j2v8.get().uri().toURL()},
                                 Thread.currentThread().getContextClassLoader()));
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 throw new RunnerException(e);
             }
         }
     }
 
     private static void addCommandExtensionsToClasspath(ArtifactDescriptor artifact,
-            ClasspathEntryProvider classpathEntryProvider, List<URL> urls) {
+                                                        ClasspathEntryProvider classpathEntryProvider, List<URL> urls) {
         if (classpathEntryProvider != null) {
             urls.addAll(classpathEntryProvider.classpathEntries(artifact));
         }
@@ -98,11 +96,10 @@ public abstract class ClassLoaderFactory {
     private static void addExtensionsToClasspath(List<URL> urls) {
         File extDir = new File(FileUtils.getUserDirectory(), ".atomist/ext");
         if (extDir.exists() && extDir.isDirectory()) {
-            FileUtils.listFiles(extDir, new String[] { "jar" }, true).forEach(f -> {
+            FileUtils.listFiles(extDir, new String[]{"jar"}, true).forEach(f -> {
                 try {
                     urls.add(f.toURI().toURL());
-                }
-                catch (MalformedURLException e) {
+                } catch (MalformedURLException e) {
                 }
             });
         }
@@ -112,8 +109,7 @@ public abstract class ClassLoaderFactory {
         return dependencies.stream().map(ad -> new File(ad.uri())).map(f -> {
             try {
                 return f.toURI().toURL();
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 throw new RunnerException("Error occured creating URL", e);
             }
         }).collect(Collectors.toList());

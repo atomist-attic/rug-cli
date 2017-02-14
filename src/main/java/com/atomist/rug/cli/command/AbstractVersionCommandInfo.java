@@ -1,19 +1,19 @@
 package com.atomist.rug.cli.command;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.DefaultArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import com.atomist.rug.cli.settings.Settings;
-import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
-import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
-import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-import com.atomist.rug.resolver.LocalArtifactDescriptor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import static com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 
 public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDescriptorProvider {
 
@@ -23,7 +23,7 @@ public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDe
     private int ix = -1;
 
     public AbstractVersionCommandInfo(Class<? extends Command> commandClass, String commandName,
-            int ix) {
+                                      int ix) {
         super(commandClass, commandName);
         this.ix = ix;
     }
@@ -91,13 +91,11 @@ public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDe
             // now we need at least one ':' hence groupCount == 2
             return new DefaultArtifactDescriptor(defaultGroup, matcher.group(1), version,
                     Extension.ZIP, Scope.COMPILE, null);
-        }
-        else if (defaultGroup != null && defaultArtifact != null) {
+        } else if (defaultGroup != null && defaultArtifact != null) {
             // now we can just use the defaults
             return new DefaultArtifactDescriptor(defaultGroup, defaultArtifact, version,
                     Extension.ZIP, Scope.COMPILE, null);
-        }
-        else if (defaultGroup != null && name != null && name.contains(":")) {
+        } else if (defaultGroup != null && name != null && name.contains(":")) {
             name = name.substring(0, name.indexOf(':'));
             return new DefaultArtifactDescriptor(defaultGroup, name, version, Extension.ZIP,
                     Scope.COMPILE, null);

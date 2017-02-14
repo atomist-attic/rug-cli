@@ -1,19 +1,6 @@
 package com.atomist.rug.cli.command;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-
-import java.io.File;
-import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
-import org.springframework.util.StringUtils;
-
-import com.atomist.event.SystemEvent;
-import com.atomist.plan.TreeMaterializer;
-import com.atomist.project.archive.Operations;
+import com.atomist.project.archive.Rugs;
 import com.atomist.rug.BadRugException;
 import com.atomist.rug.RugRuntimeException;
 import com.atomist.rug.cli.Log;
@@ -24,21 +11,26 @@ import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.compiler.Compiler;
 import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
 import com.atomist.rug.compiler.typescript.compilation.CompilerFactory;
-import com.atomist.rug.kind.service.ConsoleMessageBuilder;
-import com.atomist.rug.loader.DecoratingOperationsLoader;
-import com.atomist.rug.loader.HandlerOperationsLoader;
-import com.atomist.rug.loader.Handlers;
-import com.atomist.rug.loader.OperationsAndHandlers;
-import com.atomist.rug.loader.OperationsLoaderException;
-import com.atomist.rug.loader.OperationsLoaderRuntimeException;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.UriBasedDependencyResolver;
+import com.atomist.rug.resolver.loader.DecoratingRugLoader;
+import com.atomist.rug.resolver.loader.RugLoaderException;
+import com.atomist.rug.resolver.loader.RugLoaderRuntimeException;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.Deltas;
-import com.atomist.tree.TreeNode;
-import com.atomist.tree.pathexpression.PathExpression;
+import com.atomist.tree.TreeMaterializer;
+import org.apache.commons.cli.CommandLine;
+import org.springframework.util.StringUtils;
+
+import java.io.File;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import static scala.collection.JavaConversions.asJavaCollection;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 
@@ -50,18 +42,18 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 && registry.findCommand(commandLine).loadArtifactSource()) {
 
             if (CommandContext.contains(ArtifactSource.class)
-                    && CommandContext.contains(OperationsAndHandlers.class)) {
+                    && CommandContext.contains(Rugs.class)) {
                 ArtifactSource source = CommandContext.restore(ArtifactSource.class);
 
-                OperationsAndHandlers operationsAndHandlers = new ProgressReportingOperationRunner<OperationsAndHandlers>(
+                Rugs rugs = new ProgressReportingOperationRunner<Rugs>(
                         String.format("Loading %s",
                                 ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
-                                    return CommandContext.restore(OperationsAndHandlers.class);
+                                    return CommandContext.restore(Rugs.class);
                                 });
 
-                run(operationsAndHandlers, artifact, source, commandLine);
-            }
-            else {
+                run(rugs, artifact, source, commandLine);
+
+            } else {
                 ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
                 CommandEventListenerRegistry
                         .raiseEvent((c) -> c.artifactSourceLoaded(artifact, source));
@@ -70,15 +62,14 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 CommandEventListenerRegistry
                         .raiseEvent((c) -> c.artifactSourceCompiled(artifact, compiledSource));
 
-                OperationsAndHandlers operationsAndHandlers = loadOperationsAndHandlers(artifact,
-                        compiledSource, createOperationsLoader(uri));
+                Rugs rugs = loadRugs(artifact,
+                        compiledSource, createRugLoader(uri, "teamID", null));
                 CommandEventListenerRegistry
-                        .raiseEvent((c) -> c.operationsLoaded(artifact, operationsAndHandlers));
+                        .raiseEvent((c) -> c.operationsLoaded(artifact, rugs));
 
-                run(operationsAndHandlers, artifact, compiledSource, commandLine);
+                run(rugs, artifact, compiledSource, commandLine);
             }
-        }
-        else {
+        } else {
             run(null, artifact, null, commandLine);
         }
     }
@@ -94,25 +85,24 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
                 return new ProgressReportingOperationRunner<ArtifactSource>(
                         "Processing script sources").run(indicator -> {
-                            ArtifactSource compiledSource = source;
-                            for (Compiler compiler : compilers) {
-                                indicator.report(String.format("Invoking %s on %s script sources",
-                                        compiler.name(),
-                                        StringUtils.collectionToCommaDelimitedString(
-                                                compiler.extensions())));
-                                ArtifactSource cs = compiler.compile(compiledSource);
-                                Deltas deltas = cs.deltaFrom(compiledSource);
-                                if (deltas.empty()) {
-                                    indicator.report("  No files modified");
-                                }
-                                else {
-                                    asJavaCollection(deltas.deltas()).forEach(
-                                            d -> indicator.report("  Created " + d.path()));
-                                }
-                                compiledSource = cs;
-                            }
-                            return compiledSource;
-                        });
+                    ArtifactSource compiledSource = source;
+                    for (Compiler compiler : compilers) {
+                        indicator.report(String.format("Invoking %s on %s script sources",
+                                compiler.name(),
+                                StringUtils.collectionToCommaDelimitedString(
+                                        compiler.extensions())));
+                        ArtifactSource cs = compiler.compile(compiledSource);
+                        Deltas deltas = cs.deltaFrom(compiledSource);
+                        if (deltas.empty()) {
+                            indicator.report("  No files modified");
+                        } else {
+                            asJavaCollection(deltas.deltas()).forEach(
+                                    d -> indicator.report("  Created " + d.path()));
+                        }
+                        compiledSource = cs;
+                    }
+                    return compiledSource;
+                });
             }
         }
         return source;
@@ -122,11 +112,10 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         File root = new File(new File(artifact.uri()),
                 ".atomist" + File.separator + "target" + File.separator + ".jscache");
 
-        TypeScriptCompiler compiler = null;
+        TypeScriptCompiler compiler;
         if (CommandContext.contains(TypeScriptCompiler.class)) {
             compiler = CommandContext.restore(TypeScriptCompiler.class);
-        }
-        else {
+        } else {
             compiler = new TypeScriptCompiler(CompilerFactory
                     .cachingCompiler(CompilerFactory.create(), root.getAbsolutePath()));
             CommandContext.save(TypeScriptCompiler.class, compiler);
@@ -139,16 +128,17 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
         if (compiler.supports(source)) {
             return Collections.singletonList(compiler);
-        }
-        else {
+        } else {
             return Collections.emptyList();
         }
     }
 
-    private HandlerOperationsLoader createOperationsLoader(URI[] uri) {
-        HandlerOperationsLoader loader = new DecoratingOperationsLoader(
+    private DecoratingRugLoader createRugLoader(URI[] uri, String teamId, TreeMaterializer trees) {
+        DecoratingRugLoader loader = new DecoratingRugLoader(
                 new UriBasedDependencyResolver(uri,
-                        SettingsReader.read().getLocalRepository().path())) {
+                        SettingsReader.read().getLocalRepository().path()),
+                teamId,
+                trees) {
             @Override
             protected List<ArtifactDescriptor> postProcessArfifactDescriptors(
                     ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
@@ -161,38 +151,21 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         return loader;
     }
 
-    private OperationsAndHandlers doLoadOperationsAndHandlers(ArtifactDescriptor artifact,
-            ArtifactSource source, HandlerOperationsLoader loader) throws Exception {
+
+    private Rugs doLoadRugs(ArtifactDescriptor artifact,
+                            ArtifactSource source, DecoratingRugLoader loader) throws Exception {
         try {
-            Operations operations = loader.load(artifact, source);
-            Handlers handlers = loader.loadHandlers("", artifact, source,
-                    new ConsoleMessageBuilder("", null), new TreeMaterializer() {
-                        @Override
-                        public TreeNode rootNodeFor(SystemEvent systemEvent,
-                                PathExpression pathExpression) {
-                            return null;
-                        }
+            return loader.load(artifact, source);
+        } catch (Exception e) {
 
-                        @Override
-                        public TreeNode hydrate(String teamId, TreeNode treeNode,
-                                PathExpression pathExpression) {
-                            return null;
-                        }
-                    });
-
-            return new OperationsAndHandlers(operations, handlers);
-        }
-        catch (Exception e) {
             if (e instanceof BadRugException) {
                 throw new CommandException("Failed to load archive: \n" + e.getMessage(), e);
-            }
-            else if (e instanceof OperationsLoaderException
-                    || e instanceof OperationsLoaderRuntimeException) {
+            } else if (e instanceof RugLoaderException
+                    || e instanceof RugLoaderRuntimeException) {
                 if (e.getCause() instanceof BadRugException) {
                     throw new CommandException(
                             "Failed to load archive: \n" + e.getCause().getMessage(), e);
-                }
-                else if (e.getCause() instanceof RugRuntimeException) {
+                } else if (e.getCause() instanceof RugRuntimeException) {
                     throw new CommandException(
                             "Failed to load archive: \n" + e.getCause().getMessage(), e);
                 }
@@ -201,20 +174,20 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         }
     }
 
-    private OperationsAndHandlers loadOperationsAndHandlers(ArtifactDescriptor artifact,
-            ArtifactSource source, HandlerOperationsLoader loader) {
+    private Rugs loadRugs(ArtifactDescriptor artifact,
+                          ArtifactSource source, DecoratingRugLoader loader) {
         if (artifact == null || source == null) {
             return null;
         }
 
-        return new ProgressReportingOperationRunner<OperationsAndHandlers>(String
+        return new ProgressReportingOperationRunner<Rugs>(String
                 .format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run(indicator -> {
-                            return doLoadOperationsAndHandlers(artifact, source, loader);
+                            return doLoadRugs(artifact, source, loader);
                         });
     }
 
-    protected abstract void run(OperationsAndHandlers operationsAndHandlers,
-            ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine);
+    protected abstract void run(Rugs rugs,
+                                ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine);
 
 }

@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.atomist.project.archive.DefaultAtomistConfig$;
-import com.atomist.project.archive.Operations;
+import com.atomist.project.archive.Rugs;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -38,8 +38,8 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
     private Log log = new Log(getClass());
 
     @Command
-    public void run(Operations operations, ArtifactDescriptor artifact,
-            @Argument(index = 1) String testName) {
+    public void run(Rugs operations, ArtifactDescriptor artifact,
+                    @Argument(index = 1) String testName) {
 
         ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
 
@@ -115,13 +115,13 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
     }
 
     private TestReport runTests(Seq<TestScenario> scenarios, ArtifactSource source,
-            ArtifactDescriptor artifact, Operations operations) {
+            ArtifactDescriptor artifact, Rugs operations) {
         return new ProgressReportingOperationRunner<TestReport>(String.format(
                 "Running test scenarios in %s", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run(indicator -> {
                             TestRunner testRunner = new TestRunner(indicator::report);
 
-                            return testRunner.run(scenarios, source, operations.allOperations(),
+                            return testRunner.run(scenarios, source, operations.projectOperations(),
                                     scala.Option
                                             .apply(artifact.group() + "." + artifact.artifact()));
 

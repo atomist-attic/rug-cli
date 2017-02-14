@@ -12,12 +12,6 @@ import com.atomist.rug.cli.AbstractCommandTest;
 public class GenerateCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
-    public void testSuccessfulGenerate() throws Exception {
-        String id = System.currentTimeMillis() + "";
-        testGenerationAt(id, ".");
-    }
-
-    @Test
     public void testSuccessfulGenerateAtLocation() throws Exception {
         String id = System.currentTimeMillis() + "";
         testGenerationAt(id, System.getProperty("java.io.tmpdir"));
@@ -45,7 +39,7 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestServi");
     }
 
-    private void testGenerationAt(String name, String location) throws Exception {
+    void testGenerationAt(String name, String location) throws Exception {
         assertCommandLine(0, () -> {
             File root = new File(location, name);
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()

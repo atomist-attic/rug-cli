@@ -1,10 +1,17 @@
 package com.atomist.rug.cli.command;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.ReloadException;
+import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
+import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
+import com.atomist.rug.cli.command.shell.FileAndDirectoryNameCompleter;
+import com.atomist.rug.cli.command.shell.OperationCompleter;
+import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.StringUtils;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.SystemUtils;
 import org.jline.reader.EndOfFileException;
@@ -13,18 +20,10 @@ import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.LineReaderImpl;
 import org.springframework.boot.loader.tools.RunProcess;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.ReloadException;
-import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
-import com.atomist.rug.cli.command.shell.FileAndDirectoryNameCompleter;
-import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
-import com.atomist.rug.cli.command.shell.OperationCompleter;
-import com.atomist.rug.cli.command.shell.ShellUtils;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
-import com.atomist.rug.cli.utils.StringUtils;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.LocalArtifactDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class ShellCommandRunner extends ReflectiveCommandRunner {
 
@@ -45,7 +44,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {
+                                     List<ArtifactDescriptor> dependencies) {
 
         this.reader = lineReader();
 
@@ -55,8 +54,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
                 try {
                     line = reader.readLine(prompt(artifact));
-                }
-                catch (UserInterruptException e) {
+                } catch (UserInterruptException e) {
                     // Ignore Ctrl-C
                 }
 
@@ -68,19 +66,17 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 // Now ready to handle the input line
                 handleInput(artifact, dependencies, line);
             }
-        }
-        catch (EndOfFileException e) {
+        } catch (EndOfFileException e) {
             // Handle Ctrl-D
             log.info("Goodbye!");
-        }
-        finally {
+        } finally {
             // Jline creates some resources that need proper shutdown
             ShellUtils.shutdown(reader);
         }
     }
 
     private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
-            String line) {
+                             String line) {
         // Remove confusing whitespace from beginning and end
         line = line.trim();
 
@@ -101,14 +97,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
         if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
             exit();
-        }
-        else if ("/clear".equals(line) || "/cls".equals(line)) {
+        } else if ("/clear".equals(line) || "/cls".equals(line)) {
             clear();
-        }
-        else if (line.startsWith(ShellUtils.SHELL_ESCAPE)) {
+        } else if (line.startsWith(ShellUtils.SHELL_ESCAPE)) {
             sh(line);
-        }
-        else {
+        } else {
             invokeCommand(args, artifact, dependencies, null);
         }
     }
@@ -116,8 +109,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private String expandHistory(String line) {
         try {
             return reader.getExpander().expandHistory(reader.getHistory(), line);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
             return line;
         }
@@ -176,8 +168,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                         }
                     }
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 log.error(e.getMessage());
             }
         });
@@ -185,14 +176,13 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     @Override
     protected void artifactChanged(ArtifactDescriptor artifact, CommandInfo info,
-            CommandLine commandLine) {
+                                   CommandLine commandLine) {
         if (info instanceof ArtifactDescriptorProvider) {
             ArtifactDescriptor newArtifact = null;
             try {
                 newArtifact = ((ArtifactDescriptorProvider) info).artifactDescriptor(commandLine);
 
-            }
-            catch (CommandException e) {
+            } catch (CommandException e) {
                 // This is ok here as it means that no artifact information was provided on the
                 // commandline
                 return;
@@ -219,7 +209,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     @Override
     protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {
+                                    List<ArtifactDescriptor> dependencies) {
         if (rc == 0 && "shell".equals(info.name())) {
             invokeCommandInLoop(artifact, dependencies);
         }

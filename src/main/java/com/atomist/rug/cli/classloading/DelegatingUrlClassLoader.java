@@ -19,14 +19,14 @@ class DelegatingUrlClassLoader extends URLClassLoader {
 
     private ClassLoader parent;
 
-    public DelegatingUrlClassLoader(URL[] urls, ClassLoader parent) {
+    DelegatingUrlClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, null);
         this.parent = parent;
     }
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        if (delegatingPackages.stream().anyMatch(dp -> name.startsWith(dp))) {
+        if (delegatingPackages.stream().anyMatch(name::startsWith)) {
             return parent.loadClass(name);
         }
         else {

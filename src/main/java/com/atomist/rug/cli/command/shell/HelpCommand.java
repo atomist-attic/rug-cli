@@ -1,15 +1,14 @@
 package com.atomist.rug.cli.command.shell;
 
-import java.net.URI;
-
-import org.apache.commons.cli.CommandLine;
-
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractCommand;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.ServiceLoadingCommandInfoRegistry;
 import com.atomist.rug.cli.command.utils.CommandHelpFormatter;
 import com.atomist.rug.resolver.ArtifactDescriptor;
+import org.apache.commons.cli.CommandLine;
+
+import java.net.URI;
 
 public class HelpCommand extends AbstractCommand {
 
