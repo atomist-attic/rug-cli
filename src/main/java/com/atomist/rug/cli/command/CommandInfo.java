@@ -35,4 +35,8 @@ public interface CommandInfo {
     default List<String> subCommands() {
         return Collections.emptyList();
     }
+    
+    default String group() {
+        return "rug";
+    }
 }

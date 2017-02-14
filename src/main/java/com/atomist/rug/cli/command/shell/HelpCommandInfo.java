@@ -27,5 +27,10 @@ public class HelpCommandInfo extends AbstractCommandInfo {
     public String usage() {
         return "exit";
     }
+    
+    @Override
+    public String group() {
+        return "admin";
+    }
 
 }

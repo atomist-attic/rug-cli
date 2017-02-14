@@ -41,9 +41,10 @@ public class LoginCommand extends AbstractAnnotationBasedCommand {
             + "  \"note_url\": \"https://github.com/atomist/rug-cli\",\n"
             + "  \"fingerprint\": \"%s\"\n" + "}";
 
-    private static final String BANNER = "The command will create a GitHub Personal Access Token with scope 'read:org' which you can revoke\n"
-            + "any time on https://github.com/settings/tokens.  Your password will not be displayed or stored.\n"
-            + "Your sensitve information will not be sent to Atomist; only to api.github.com.";
+    private static final String BANNER = "The command will create a GitHub Personal Access Token with scope 'read:org'\n" + 
+            "which you can revoke any time on https://github.com/settings/tokens.  Your\n" + 
+            "password will not be displayed or stored. Your sensitive information will not\n" + 
+            "be sent to Atomist; only to api.github.com.";
 
     @Command
     public void run(@Option("username") String username, @Option("mfa-code") String code,
@@ -71,8 +72,8 @@ public class LoginCommand extends AbstractAnnotationBasedCommand {
 
         String banner = BANNER.replace("https://github.com/settings/tokens",
                 Style.underline("https://github.com/settings/tokens"));
-        banner = banner.replace("sensitve information will not be sent to Atomist",
-                Style.bold("sensitve information will not be sent to Atomist"));
+        banner = banner.replace("sensitve information will not\nbe sent to Atomist",
+                Style.bold("sensitve information will not\nbe sent to Atomist"));
         log.info(banner);
 
         log.newline();

@@ -78,16 +78,24 @@ public class ReflectiveCommandRunner {
         String line = null;
         try {
             while ((line = reader.readLine(ShellUtils.DEFAULT_PROMPT)) != null) {
+                if (line.length() == 0) {
+                    continue;
+                }
+                
+                line = line.trim();
+                if (line.startsWith("rug")) {
+                    line = line.substring(3).trim(); 
+                }
                 
                 // TODO move those into shell only command implementations
-                if ("exit".equals(line.trim()) || "quit".equals(line.trim())
-                        || "q".equals(line.trim())) {
+                if ("exit".equals(line) || "quit".equals(line)
+                        || "q".equals(line)) {
                     throw new EndOfFileException();
                 }
-                else if ("clear".equals(line.trim())) {
+                else if ("clear".equals(line)) {
                     ((LineReaderImpl) reader).clearScreen();
                 }
-                else if (line.trim().startsWith("!")) {
+                else if (line.startsWith("!")) {
                     String[] args = CommandUtils.splitCommandline(line.substring(1));
                     RunProcess process = new RunProcess(args[0]);
                     try {

@@ -36,17 +36,17 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
     }
 
     public CommandInfo findCommand(CommandLine commandLine) {
-        String commandName = commandLine.getArgList().get(0);
-        Optional<CommandInfo> helper = commands.stream().filter(c -> c.name().equals(commandName))
-                .findFirst();
-        if (helper.isPresent()) {
-            return helper.get();
+        if (commandLine.getArgList().size() >= 1) {
+            String commandName = commandLine.getArgList().get(0);
+            Optional<CommandInfo> helper = commands.stream()
+                    .filter(c -> c.name().equals(commandName)).findFirst();
+            if (helper.isPresent()) {
+                return helper.get();
+            }
+            throw new CommandException(String.format("%s is not a recognized command.%s",
+                    commandName, getAddtionalHelpMessage(commandName, commandLine)), (String) null);
         }
-        else {
-            throw new CommandException(
-                    String.format("%s is not a recognized command.%s", commandName,
-                            getAddtionalHelpMessage(commandName, commandLine)), (String) null);
-        }
+        throw new CommandException("Command is required.", (String) null);
     }
 
     private void init() {
@@ -59,14 +59,8 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
     private String getAddtionalHelpMessage(String commandName, CommandLine commandLine) {
         Optional<String> closestMatch = StringUtils.computeClosestMatch(commandName,
                 commands.stream().map(CommandInfo::name).collect(toList()));
-        return closestMatch.map(s -> new StringBuilder()
-                .append("\n\nDid you mean?\n")
-                .append("  ")
-                .append(Constants.COMMAND)
-                .append(" ")
-                .append(s)
-                .append(" ")
-                .append("")
-                .toString()).orElse("");
+        return closestMatch.map(s -> new StringBuilder().append("\n\nDid you mean?\n").append("  ")
+                .append(Constants.COMMAND).append(" ").append(s).append(" ").append("").toString())
+                .orElse("");
     }
 }
