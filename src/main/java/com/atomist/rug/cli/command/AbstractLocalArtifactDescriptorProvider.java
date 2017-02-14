@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.commons.cli.CommandLine;
 
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
+import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.manifest.Manifest;
 import com.atomist.rug.manifest.ManifestArtifactDescriptorCreator;
 import com.atomist.rug.manifest.ManifestFactory;
@@ -35,18 +36,21 @@ public abstract class AbstractLocalArtifactDescriptorProvider extends AbstractCo
             version = "latest";
         }
 
-        File projectRoot = CommandUtils.getRequiredWorkingDirectory();
-        ArtifactSource source = ArtifactSourceUtils.createManifestOnlyArtifactSource(projectRoot);
-        
-        try {
-            Manifest manifest = ManifestFactory.read(source);
-            if (manifest != null) {
-                return Optional.of(new ManifestArtifactDescriptorCreator().create(manifest,
-                        projectRoot.toURI()));
+        Optional<File> projectRoot = FileUtils.getWorkingDirectory();
+        if (projectRoot.isPresent()) {
+            ArtifactSource source = ArtifactSourceUtils
+                    .createManifestOnlyArtifactSource(projectRoot.get());
+
+            try {
+                Manifest manifest = ManifestFactory.read(source);
+                if (manifest != null) {
+                    return Optional.of(new ManifestArtifactDescriptorCreator().create(manifest,
+                            projectRoot.get().toURI()));
+                }
             }
-        }
-        catch (MissingManifestException e) {
-            // We accept the fact that the manifest is missing or invalid
+            catch (MissingManifestException e) {
+                // We accept the fact that the manifest is missing or invalid
+            }
         }
         return Optional.empty();
     }
