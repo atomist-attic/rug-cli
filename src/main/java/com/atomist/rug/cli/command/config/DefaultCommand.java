@@ -7,7 +7,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
@@ -20,9 +19,7 @@ import com.atomist.rug.cli.settings.SettingsWriter;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.StringUtils;
 
-public class ConfigCommand extends AbstractAnnotationBasedCommand {
-
-	private Log log = new Log(ConfigCommand.class);
+public class DefaultCommand extends AbstractAnnotationBasedCommand {
 
 	@Command
 	public void run(CommandLine commandLine, @Argument(index = 1) String command,
@@ -65,7 +62,7 @@ public class ConfigCommand extends AbstractAnnotationBasedCommand {
 		File settingsFile = settingsFile(global);
 		Settings settings = null;
 		if (settingsFile.exists()) {
-			settings = new SettingsReader().settingsFromFile(settingsFile);
+			settings = SettingsReader.settingsFromFile(settingsFile);
 		} else {
 			settings = new Settings();
 		}
@@ -74,7 +71,7 @@ public class ConfigCommand extends AbstractAnnotationBasedCommand {
 		settings.getDefaults().setArtifact(defaultArtifact);
 		settings.getDefaults().setVersion(defaultVersion);
 
-		new SettingsWriter().write(settings, settingsFile);
+		SettingsWriter.write(settings, settingsFile);
 
 		log.newline();
 		log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Default (%s)", (global ? "global" : "project")));
@@ -100,12 +97,12 @@ public class ConfigCommand extends AbstractAnnotationBasedCommand {
 		File settingsFile = settingsFile(global);
 		Settings settings = null;
 		if (settingsFile.exists()) {
-			settings = new SettingsReader().settingsFromFile(settingsFile);
+			settings = SettingsReader.settingsFromFile(settingsFile);
 		} else {
 			settings = new Settings();
 		}
 		settings.setDefaults(null);
-		new SettingsWriter().write(settings, settingsFile);
+		SettingsWriter.write(settings, settingsFile);
 
 		log.newline();
 		log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Default (%s)", (global ? "global" : "project")));
