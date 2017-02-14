@@ -68,12 +68,14 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             invoke(artifact, name, opt.get(), arguments, root, dryRun, repo);
         }
         else {
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-            asJavaCollection(operations.editors()).forEach(e -> log.info(Style.yellow("  %s",
-                    StringUtils.stripName(e.name(), artifact)) + "\n    "
-                    + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
-            StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
+            if (!operations.editors().isEmpty()) {
+                log.newline();
+                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
+                asJavaCollection(operations.editors()).forEach(e -> log.info(Style.yellow("  %s",
+                        StringUtils.stripName(e.name(), artifact)) + "\n    "
+                        + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
+                StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
+            }
             throw new CommandException(
                     String.format("Specified editor %s could not be found in %s:%s:%s",
                             StringUtils.stripName(name, artifact), artifact.group(),

@@ -271,15 +271,18 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             opt = ops.stream().filter(g -> g.name().equals(fqName)).findFirst();
         }
 
-        log.newline();
         if (opt.isPresent()) {
+            log.newline();
             describeProjectOperationInfo(artifact, opt.get(), labels.operation(), labels.command());
         }
         else {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold(labels.label()));
-            ops.forEach(e -> log.info("  " + Style.yellow(StringUtils.stripName(e.name(), artifact))
-                    + "\n    "
-                    + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
+            if (!ops.isEmpty()) {
+                log.newline();
+                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold(labels.label()));
+                ops.forEach(e -> log.info("  "
+                        + Style.yellow(StringUtils.stripName(e.name(), artifact)) + "\n    "
+                        + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
+            }
             if (name != null) {
                 StringUtils.printClosestMatch(StringUtils.stripName(fqName, artifact), artifact,
                         ops.stream().map(o -> o.name()).collect(Collectors.toList()));
