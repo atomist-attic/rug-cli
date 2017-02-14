@@ -10,9 +10,9 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
+import com.atomist.project.ProjectOperation;
 import com.atomist.project.ProjectOperationArguments;
 import com.atomist.project.ProvenanceInfoWriter;
-import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
@@ -30,7 +30,7 @@ public abstract class GitUtils {
             git.add().addFilepattern(".").call();
             RevCommit commit = git.commit().setAll(true)
                     .setMessage(
-                            String.format("Initial commit by generator %s\n\n%s", generator.name(),
+                            String.format("%s\n\n```%s```", generator.description(),
                                     new ProvenanceInfoWriter().write(generator, arguments,
                                             Constants.cliClient())))
                     .setAuthor("Atomist", "cli@atomist.com").call();
@@ -42,7 +42,7 @@ public abstract class GitUtils {
         }
     }
 
-    public static void commitFiles(ProjectEditor editor, ProjectOperationArguments arguments,
+    public static void commitFiles(ProjectOperation operation, ProjectOperationArguments arguments,
             File root) {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         try (Repository repository = builder.setGitDir(new File(root, ".git")).readEnvironment()
@@ -51,8 +51,8 @@ public abstract class GitUtils {
                 log.info("Committing to git repository at " + git.getRepository().getDirectory());
                 git.add().addFilepattern(".").call();
                 RevCommit commit = git.commit().setAll(true)
-                        .setMessage(String.format("Commit by editor %s\n\n%s", editor.name(),
-                                new ProvenanceInfoWriter().write(editor, arguments,
+                        .setMessage(String.format("%s\n\n```\n%s```", operation.description(),
+                                new ProvenanceInfoWriter().write(operation, arguments,
                                         Constants.cliClient())))
                         .setAuthor("Atomist", "cli@atomist.com").call();
                 log.info("Committed changes to git repository (%s)", commit.abbreviate(7).name());
