@@ -62,12 +62,14 @@ public class GenerateCommand extends AbstractParameterizedCommand {
             invoke(artifact, name, opt.get(), arguments, root, createRepo, overwrite);
         }
         else {
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            asJavaCollection(operations.generators())
-                    .forEach(e -> log.info(Style.yellow("  %s", e.name()) + "\n    " + WordUtils
-                            .wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
-            StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
+            if (!operations.generators().isEmpty()) {
+                log.newline();
+                log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
+                asJavaCollection(operations.generators())
+                        .forEach(e -> log.info(Style.yellow("  %s", e.name()) + "\n    " + WordUtils
+                                .wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
+                StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
+            }
             throw new CommandException(
                     String.format("Specified generator %s could not be found in %s:%s:%s", name,
                             artifact.group(), artifact.artifact(), artifact.version()));
