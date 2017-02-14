@@ -79,7 +79,7 @@ public class PublishCommand extends AbstractRepositoryCommand {
     }
 
     private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {
-        Settings settings = new SettingsReader().read();
+        Settings settings = SettingsReader.read();
         Map<String, RemoteRepository> deployRepositories = settings.getRemoteRepositories()
                 .entrySet().stream().filter(e -> e.getValue().isPublish())
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));

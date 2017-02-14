@@ -10,16 +10,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-public class SettingsWriter {
+public abstract class SettingsWriter {
 
-    public void write(Settings settings, File file) {
+    public static void write(Settings settings, File file) {
         if (file != null && !file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
         settingsToFile(settings, file);
     }
 
-    protected void cleanSettings(Settings settings) {
+    private static void cleanSettings(Settings settings) {
         if (settings.getLocalRepository() != null
                 && settings.getLocalRepository().getPath() == null) {
             settings.setLocalRepository(null);
@@ -29,7 +29,7 @@ public class SettingsWriter {
         }
     }
 
-    protected void settingsToFile(Settings settings, File settingsFile) {
+    private static void settingsToFile(Settings settings, File settingsFile) {
 
         cleanSettings(settings);
 

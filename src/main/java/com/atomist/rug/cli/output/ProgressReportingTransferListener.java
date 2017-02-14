@@ -24,12 +24,12 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
     private Map<String, String> repositories;
 
     public ProgressReportingTransferListener(ProgressReporter indicator, boolean reportTitle) {
-        this(new SettingsReader().read().getRemoteRepositories(), indicator);
+        this(SettingsReader.read().getRemoteRepositories(), indicator);
         this.reportTitle = reportTitle;
     }
 
     public ProgressReportingTransferListener(ProgressReporter indicator) {
-        this(new SettingsReader().read().getRemoteRepositories(), indicator);
+        this(SettingsReader.read().getRemoteRepositories(), indicator);
     }
 
     public ProgressReportingTransferListener(Map<String, RemoteRepository> repositories,

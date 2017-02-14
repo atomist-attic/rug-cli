@@ -53,7 +53,7 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
                     CommandUtils.getRequiredWorkingDirectory().toURI());
         }
         else {
-            File archive = new File(new SettingsReader().read().getLocalRepository().path(),
+            File archive = new File(SettingsReader.read().getLocalRepository().path(),
                     group.replace(".", File.separator) + File.separator + artifactId
                             + File.separator + version + File.separator + artifactId + "-" + version
                             + "." + extension.toLowerCase());

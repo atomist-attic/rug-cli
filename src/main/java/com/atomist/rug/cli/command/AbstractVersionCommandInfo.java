@@ -64,7 +64,7 @@ public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDe
         }
 
         // see if we got a default group and artifact
-        Settings settings = new SettingsReader().read();
+        Settings settings = SettingsReader.read();
         String defaultGroup = settings.getDefaults().getGroup();
         String defaultArtifact = settings.getDefaults().getArtifact();
         String defaultVersion = settings.getDefaults().getVersion();

@@ -130,7 +130,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     private HandlerOperationsLoader createOperationsLoader(URI[] uri) {
         HandlerOperationsLoader loader = new DecoratingOperationsLoader(
                 new UriBasedDependencyResolver(uri,
-                        new SettingsReader().read().getLocalRepository().path())) {
+                        SettingsReader.read().getLocalRepository().path())) {
             @Override
             protected List<ArtifactDescriptor> postProcessArfifactDescriptors(
                     ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {

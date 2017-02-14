@@ -137,7 +137,7 @@ public abstract class AbstractAnnotationBasedCommand
                 return commandLine;
             }
             else if (p.getType().equals(Settings.class)) {
-                return new SettingsReader().read();
+                return SettingsReader.read();
             }
             return null;
         }).collect(Collectors.toList());
