@@ -52,6 +52,8 @@ _rug() {
         extension
         search
         tree
+        shell
+        login
     )
 
     local i command_re special special_index
@@ -116,6 +118,13 @@ _rug() {
     fi
     if [[ $special == search ]]; then
         command_options+=( -T --tag )
+    fi
+    if [[ $special == shell ]]; then
+        command_options+=( -l --local )
+    fi
+    if [[ $special == login ]]; then
+        command_options+=( --username )
+        command_options+=( --mfa-code )
     fi
 
     local command_args=()

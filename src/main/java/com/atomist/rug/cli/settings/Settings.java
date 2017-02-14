@@ -28,7 +28,14 @@ public class Settings {
 
     @JsonProperty("remote-repositories")
     private Map<String, RemoteRepository> remoteRepositories = new HashMap<>();
+    
+    @JsonProperty("token")
+    private String token;
 
+    public String getToken() {
+        return token;
+    }
+    
     public Defaults getDefaults() {
         return defaults;
     }
@@ -62,6 +69,13 @@ public class Settings {
                 defaults.setVersion(project.getDefaults().getVersion());
             }
         }
+        if (project.getToken() != null) {
+            token = project.getToken();
+        }
+    }
+    
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public void setDefaults(Defaults defaults) {
