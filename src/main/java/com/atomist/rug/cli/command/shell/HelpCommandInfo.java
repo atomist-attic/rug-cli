@@ -32,5 +32,4 @@ public class HelpCommandInfo extends AbstractCommandInfo {
     public String group() {
         return "admin";
     }
-
 }

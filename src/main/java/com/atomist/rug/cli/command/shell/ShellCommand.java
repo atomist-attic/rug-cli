@@ -33,14 +33,11 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
             OperationsAndHandlers operations) {
-        
         // TODO make this a proper thing
         Constants.COMMAND = Constants.COMMAND + " " + Constants.DIVIDER;
         
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
-
-
                     CommandEventListener listener = new OperationsLoadedEventListener(source,
                             artifact);
                     listener.operationsLoaded(operations);
