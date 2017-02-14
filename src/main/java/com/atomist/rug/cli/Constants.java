@@ -6,7 +6,7 @@ import com.atomist.rug.cli.version.VersionUtils;
 
 public class Constants {
     
-    public static final String COMMAND = "rug";
+    public static String COMMAND = "rug";
     public static final String GROUP = "com.atomist";
     public static final String ARTIFACT = "rug-cli";
     

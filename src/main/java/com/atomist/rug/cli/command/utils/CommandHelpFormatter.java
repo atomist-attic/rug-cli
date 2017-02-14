@@ -2,6 +2,8 @@ package com.atomist.rug.cli.command.utils;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.Option;
@@ -48,9 +50,7 @@ public class CommandHelpFormatter {
         sb.append(String.format("Usage: %s [OPTION]... [COMMAND]...\n", Constants.COMMAND));
         sb.append("Work with Rugs like editors or generators.\n");
 
-        printOptions(options, sb, "Options");
-
-        sb.append("\n");
+        printOptions(options, sb, Style.bold("Options"));
 
         printCommands(sb, registry);
 
@@ -72,12 +72,19 @@ public class CommandHelpFormatter {
     }
 
     private void printCommands(StringBuilder sb, CommandInfoRegistry registry) {
-        sb.append("Available commands:\n");
+        sb.append("\n");
+        sb.append(Style.bold("Available commands:"));
         int length = registry.commands().stream()
                 .max(Comparator.comparingInt(o -> o.name().length())).get().name().length() + 1;
         String formatString = "  %-" + length + "s %s\n";
-        registry.commands().forEach(c -> sb.append(String.format(formatString, c.name(),
-                WordUtils.wrap(c.description(), WRAP - length, createString(length + 3), false))));
+
+        Map<String, List<CommandInfo>> commands = registry.commands().stream()
+                .collect(Collectors.groupingBy(CommandInfo::group));
+        commands.entrySet().forEach(e -> {
+            sb.append("\n");
+            e.getValue().forEach(c -> sb.append(String.format(formatString, c.name(), WordUtils
+                    .wrap(c.description(), WRAP - length, createString(length + 3), false))));
+        });
     }
 
     private void printOptions(Options options, StringBuilder sb, String label) {
@@ -99,11 +106,11 @@ public class CommandHelpFormatter {
                     String ops = e.getValue().stream()
                             .map(o -> (o.getOpt() != null ? "-" + o.getOpt() : null))
                             .filter(o -> o != null).collect(Collectors.joining(","));
-                    
+
                     if (ops.length() > 0) {
                         ops += ",";
                     }
-                    ops +=  "--" + opt.getLongOpt();
+                    ops += "--" + opt.getLongOpt();
                     if (opt.hasArgName()) {
                         ops += " " + opt.getArgName();
                     }

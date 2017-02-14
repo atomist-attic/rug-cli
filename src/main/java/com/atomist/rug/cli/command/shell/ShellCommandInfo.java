@@ -27,5 +27,4 @@ public class ShellCommandInfo extends AbstractVersionCommandInfo {
     public String usage() {
         return "shell [OPTION]... ARCHIVE";
     }
-
 }

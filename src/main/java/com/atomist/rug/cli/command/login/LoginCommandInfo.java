@@ -18,7 +18,9 @@ public class LoginCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String detail() {
-        return "";
+        return "The Rug CLI uses your GitHub token to verify your membership in GitHub organizations "
+                + "and Slack teams that have the Atomist Bot enrolled.  Those teams have acccess to "
+                + "additional features, eg. team private Rug archives.";
     }
 
     @Override
@@ -39,5 +41,10 @@ public class LoginCommandInfo extends AbstractRugScopedCommandInfo {
     @Override
     public String usage() {
         return "login [OPTION]...";
+    }
+    
+    @Override
+    public String group() {
+        return "admin";
     }
 }

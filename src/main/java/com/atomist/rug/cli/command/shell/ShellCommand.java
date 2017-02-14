@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandEventListener;
 import com.atomist.rug.cli.command.CommandEventListenerRegistry;
@@ -32,6 +33,10 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
             OperationsAndHandlers operations) {
+        
+        // TODO make this a proper thing
+        Constants.COMMAND = Constants.COMMAND + " " + Constants.DIVIDER;
+        
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
 
@@ -43,7 +48,6 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
                     return null;
                 });
 
-        log.newline();
         log.info(banner, StringUtils
                 .leftPad(VersionUtils.readVersion().orElse("0.0.0").split("-")[0], 18));
         log.newline();
