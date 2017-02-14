@@ -51,4 +51,12 @@ public class HttpClientFactory {
         return builder.build();
     }
 
+    public static HttpClient createHttpClient(String url, String userAgent,
+            CredentialsProvider credentialsProvider) {
+        HttpClientBuilder builder = HttpClientBuilder.create().setUserAgent(userAgent)
+                .useSystemProperties().setDefaultCredentialsProvider(credentialsProvider);
+        configureProxy(builder, url);
+        return builder.build();
+    }
+
 }
