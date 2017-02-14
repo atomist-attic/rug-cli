@@ -169,7 +169,48 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private String describeDescription(Parameter p) {
-        return WordUtils.wrap(p.getDescription(), Constants.WRAP_LENGTH, "\n    ", false);
+        StringBuilder sb = new StringBuilder();
+        if (p.getMinLength() >= 0) {
+            sb.append("min: ").append(p.getMinLength()).append(" ");
+        }
+        if (p.getMaxLength() >= 0) {
+            sb.append("max: ").append(p.getMaxLength()).append(" ");
+        }
+        if (p.getDefaultValue() != null && p.getDefaultValue().length() > 0) {
+            sb.append("default: ").append(p.getDefaultValue()).append(" ");
+        }
+        if (p.getValidInputDescription() != null && p.getValidInputDescription().length() > 0) {
+            sb.append("valid input: ").append(
+                    org.apache.commons.lang3.StringUtils.capitalize(p.getValidInputDescription()))
+                    .append(" ");
+        }
+        if (p.getPattern() != null && p.getPattern().length() > 0) {
+            if (p.getPattern().length() > 40) {
+                sb.append("pattern: ")
+                        .append(org.apache.commons.lang3.StringUtils.truncate(p.getPattern(), 40))
+                        .append("... ");
+            }
+            else {
+                sb.append("pattern: ").append(p.getPattern()).append(" ");
+            }
+        }
+        String detail = sb.toString();
+        sb = new StringBuilder();
+        if (p.description() != null && !p.name().equals(p.description())) {
+            sb.append(
+                    WordUtils.wrap(org.apache.commons.lang3.StringUtils.capitalize(p.description()),
+                            Constants.WRAP_LENGTH, "\n    ", false).trim());
+            sb.append("\n    ");
+        }
+        sb.append(WordUtils.wrap(detail, Constants.WRAP_LENGTH, "\n    ", false).trim());
+
+        String wrapped = sb.toString();
+        wrapped = wrapped.replace("min:", Style.underline("min") + ":");
+        wrapped = wrapped.replace("max:", Style.underline("max") + ":");
+        wrapped = wrapped.replace("default:", Style.underline("default") + ":");
+        wrapped = wrapped.replace("valid input:", Style.underline("valid input") + ":");
+        wrapped = wrapped.replace("pattern:", Style.underline("pattern") + ":");
+        return wrapped;
 
     }
 
@@ -297,14 +338,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeParameters(List<Parameter> parameters) {
-        parameters.forEach(p -> log.info(
-                "  " + Style.yellow(p.getName())
-                        + " %s\n    %s\n      pattern: %s, min length: %s, max length: %s%s",
-                describeDisplayName(p), describeDescription(p), describePattern(p),
-                (p.getMinLength() >= 0 ? p.getMinLength() : "not defined"),
-                (p.getMaxLength() >= 0 ? p.getMaxLength() : "not defined"),
-                (p.getDefaultValue() != null && p.getDefaultValue().length() > 0
-                        ? ", default: " + p.getDefaultValue() : "")));
+        parameters.forEach(p -> log.info("  " + Style.yellow(p.getName()) + " %s\n    %s",
+                describeDisplayName(p), describeDescription(p)));
     }
 
     private void describeParameters(Parameterized parameterized) {
@@ -330,10 +365,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Parameters"));
             log.info("  no parameters needed");
         }
-    }
-
-    private String describePattern(Parameter p) {
-        return p.getPattern();
     }
 
     private void describeProjectOperationInfo(ArtifactDescriptor artifact,
@@ -368,7 +399,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         operations.forEach(e -> {
             ProjectOperationInfo info = (ProjectOperationInfo) e;
             log.info("  " + Style.yellow(StringUtils.stripName(info.name(), artifact)) + "\n    "
-                    + WordUtils.wrap(info.description(), Constants.WRAP_LENGTH, "\n    ", false));
+                    + WordUtils.wrap(
+                            org.apache.commons.lang3.StringUtils.capitalize(info.description()),
+                            Constants.WRAP_LENGTH, "\n    ", false));
         });
     }
 
