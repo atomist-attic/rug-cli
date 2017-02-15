@@ -14,4 +14,4 @@ com.atomist.rug.cli.command.extension.ExtensionCommandInfo
 com.atomist.rug.cli.command.shell.ShellCommandInfo
 com.atomist.rug.cli.command.shell.HelpCommandInfo
 
-com.atomist.rug.cli.command.login.LoginCommandInfo
+com.atomist.rug.cli.command.repo.RepositoriesCommandInfo
