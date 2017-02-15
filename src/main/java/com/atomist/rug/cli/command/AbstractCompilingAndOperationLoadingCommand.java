@@ -112,18 +112,24 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     }
 
     private Collection<Compiler> loadCompilers(ArtifactDescriptor artifact, ArtifactSource source) {
+        File root = new File(new File(artifact.uri()),
+                ".atomist" + File.separator + "target" + File.separator + ".jscache");
+
         TypeScriptCompiler compiler = null;
         if (CommandContext.contains(TypeScriptCompiler.class)) {
             compiler = CommandContext.restore(TypeScriptCompiler.class);
         }
         else {
-            String root = new File(new File(artifact.uri()),
-                    ".atomist" + File.separator + "target" + File.separator + ".jscache")
-                            .getAbsolutePath();
-            compiler = new TypeScriptCompiler(
-                    CompilerFactory.cachingCompiler(CompilerFactory.create(), root));
+            compiler = new TypeScriptCompiler(CompilerFactory
+                    .cachingCompiler(CompilerFactory.create(), root.getAbsolutePath()));
             CommandContext.save(TypeScriptCompiler.class, compiler);
         }
+        
+        // Make sure the target dir for the compiler exists; eg. install command deletes it
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+        
         if (compiler.supports(source)) {
             return Collections.singletonList(compiler);
         }
