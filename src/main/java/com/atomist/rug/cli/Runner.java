@@ -75,9 +75,10 @@ public class Runner {
             new ShellCommandRunner(registry).runCommand(args, commandLine);
         }
         else if (commandLine.getArgList().isEmpty()) {
-            args = new String[] { "help" };
-            commandLine = CommandUtils.parseCommandline(args, registry);
-            new ShellCommandRunner(registry).runCommand(args, commandLine);
+            log.error("Missing command argument.\n" + 
+                    "\n" + 
+                    "Run the following command for usage help:\n" + 
+                    "  rug --help");
             return 1;
         }
         else if (commandLine.getArgList().size() >= 1) {
