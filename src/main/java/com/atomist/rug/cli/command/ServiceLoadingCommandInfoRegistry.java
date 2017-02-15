@@ -39,7 +39,8 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
         if (commandLine.getArgList().size() >= 1) {
             String commandName = commandLine.getArgList().get(0);
             Optional<CommandInfo> helper = commands.stream()
-                    .filter(c -> c.name().equals(commandName)).findFirst();
+                    .filter(c -> c.name().equals(commandName) || c.aliases().contains(commandName))
+                    .findFirst();
             if (helper.isPresent()) {
                 return helper.get();
             }

@@ -35,6 +35,10 @@ public interface CommandInfo {
     default List<String> subCommands() {
         return Collections.emptyList();
     }
+
+    default List<String> aliases() {
+        return Collections.emptyList();
+    }
     
     default String group() {
         return "rug";

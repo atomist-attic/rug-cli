@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.list;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
@@ -40,5 +43,10 @@ public class ListCommandInfo extends AbstractRugScopedCommandInfo {
     @Override
     public String usage() {
         return "list [OPTION]...";
+    }
+    
+    @Override
+    public List<String> aliases() {
+        return Collections.singletonList("ls");
     }
 }

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.text.WordUtils;
+import org.springframework.util.StringUtils;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.CommandInfo;
@@ -30,7 +31,15 @@ public class CommandHelpFormatter {
     public String printCommandHelp(CommandInfo description) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("Usage: %s %s\n", Constants.COMMAND, description.usage()));
+        sb.append(String.format("Usage: %s %s\n", Style.bold(Constants.COMMAND),
+                Style.bold(description.usage())));
+        if (!description.aliases().isEmpty()) {
+            sb.append(String.format("%s: %s\n",
+                    com.atomist.rug.cli.utils.StringUtils.puralize("Alias", "Aliases",
+                            description.aliases()),
+                    Style.bold(
+                            StringUtils.collectionToDelimitedString(description.aliases(), ", "))));
+        }
         sb.append(String.format("%s.\n", description.description()));
 
         printOptions(description.globalOptions(), sb, Style.bold("Options"));
@@ -47,7 +56,8 @@ public class CommandHelpFormatter {
     public String printHelp(CommandInfoRegistry registry, Options options) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("Usage: %s [OPTION]... [COMMAND]...\n", Constants.COMMAND));
+        sb.append(String.format("Usage: %s\n",
+                Style.bold(Constants.COMMAND + " [OPTION]... [COMMAND]...")));
         sb.append("Work with Rugs like editors or generators.\n");
 
         printOptions(options, sb, Style.bold("Options"));

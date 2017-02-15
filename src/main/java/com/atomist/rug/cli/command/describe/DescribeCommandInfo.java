@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.command.describe;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -85,5 +86,10 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
     @Override
     public List<String> subCommands() {
         return commands;
+    }
+    
+    @Override
+    public List<String> aliases() {
+        return Collections.singletonList("desc");
     }
 }

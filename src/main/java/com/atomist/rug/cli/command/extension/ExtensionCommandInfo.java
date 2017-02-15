@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.command.extension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.cli.Option;
@@ -55,5 +56,10 @@ public class ExtensionCommandInfo extends AbstractRugScopedCommandInfo {
     @Override
     public String group() {
         return "admin";
+    }
+    
+    @Override
+    public List<String> aliases() {
+        return Collections.singletonList("ext");
     }
 }
