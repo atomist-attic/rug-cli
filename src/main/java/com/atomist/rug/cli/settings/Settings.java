@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+
 
 @JsonInclude(Include.NON_EMPTY)
 public class Settings {
@@ -29,11 +31,33 @@ public class Settings {
     @JsonProperty("remote-repositories")
     private Map<String, RemoteRepository> remoteRepositories = new HashMap<>();
     
+    @JsonProperty("config")
+    private Map<String, Object> config = new HashMap<>();
+    
     @JsonProperty("token")
     private String token;
 
     public String getToken() {
         return token;
+    }
+    
+    public Map<String, Object> getConfig() {
+        return config;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getConfigValue(String key, Class<T> cls) {
+        return Optional.ofNullable((T) config.get(key));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getConfigValue(String key, T defaultValue) {
+        if (config.containsKey(key)) {
+            return (T) config.get(key);
+        }
+        else {
+            return (T) defaultValue;
+        }
     }
     
     public Defaults getDefaults() {
@@ -72,10 +96,21 @@ public class Settings {
         if (project.getToken() != null) {
             token = project.getToken();
         }
+        if (project.getConfig() != null) {
+            config.putAll(project.getConfig());
+        }
     }
     
     public void setToken(String token) {
         this.token = token;
+    }
+    
+    public void setConfig(Map<String, Object> config) {
+        this.config = config;
+    }
+    
+    public void setConfigValue(String key, String value) {
+        config.put(key, value);
     }
 
     public void setDefaults(Defaults defaults) {

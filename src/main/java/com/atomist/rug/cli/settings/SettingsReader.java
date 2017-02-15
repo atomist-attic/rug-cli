@@ -89,6 +89,16 @@ public abstract class SettingsReader {
                 List<String> urls = (List<String>) data.get("catalogs");
                 urls.forEach(u -> settings.getCatalogs().addUrl(u));
             }
+            
+            if (data.containsKey("token")) {
+                String token = (String) data.get("token");
+                settings.setToken(token);
+            }
+            
+            if (data.containsKey("config")) {
+                Map<String, Object> config = (Map<String, Object>) data.get("config");
+                settings.setConfig(config);
+            }
 
             return settings;
         }
