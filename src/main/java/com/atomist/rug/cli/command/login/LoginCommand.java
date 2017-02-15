@@ -102,7 +102,7 @@ public class LoginCommand extends AbstractAnnotationBasedCommand {
 
     private Status post(String username, String password, String code, Settings settings) {
         HttpClient client = HttpClientFactory.createHttpClient(GITHUB_ENDPOINT,
-                "rug-cli-" + VersionUtils.readVersion().orElse("0.0.0"));
+                Constants.ARTIFACT + "-" + VersionUtils.readVersion().orElse("0.0.0"));
         HttpPost post = new HttpPost(GITHUB_ENDPOINT);
 
         if (code != null) {

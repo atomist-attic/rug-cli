@@ -111,7 +111,7 @@ public abstract class VersionUtils {
 
         if (isOutdated()) {
             HttpClient httpClient = HttpClientFactory.createHttpClient(URL,
-                    "rug-cli-" + readVersion().orElse("0.0.0"));
+                    Constants.ARTIFACT + "-" + readVersion().orElse("0.0.0"));
             HttpGet httpget = new HttpGet(URL);
             try {
                 HttpResponse response = httpClient.execute(httpget);
