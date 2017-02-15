@@ -14,6 +14,7 @@ import com.atomist.rug.cli.command.CommandEventListenerRegistry;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.loader.OperationsAndHandlers;
@@ -25,6 +26,8 @@ import com.atomist.source.FileArtifact;
 
 public class ShellCommand extends AbstractAnnotationBasedCommand {
 
+    private static final String BANNER_CONFIG_KEY = "shell-banner-enable";
+
     private static final String banner = "" 
             + "  ____                 ____ _     ___ \n"
             + " |  _ \\ _   _  __ _   / ___| |   |_ _|\n"
@@ -35,18 +38,18 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
-            OperationsAndHandlers operations) {
+            OperationsAndHandlers operations, Settings settings) {
         // TODO make this a proper thing
         Constants.COMMAND = Constants.COMMAND + " " + Constants.DIVIDER;
-        
+
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
                     registerFileSystemWatcherEventListener(artifact);
                     registerOperationsEventListener(source, artifact, operations);
                     return null;
                 });
-        
-        printBanner();
+
+        printBanner(settings);
     }
 
     private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact) {
@@ -62,10 +65,12 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         CommandEventListenerRegistry.register(listener);
     }
 
-    private void printBanner() {
-        log.newline();
-        log.info(banner, StringUtils
-                .leftPad(VersionUtils.readVersion().orElse("0.0.0").split("-")[0], 18));
+    private void printBanner(Settings settings) {
+        if (settings.getConfigValue(BANNER_CONFIG_KEY, true)) {
+            log.newline();
+            log.info(banner, StringUtils
+                    .leftPad(VersionUtils.readVersion().orElse("0.0.0").split("-")[0], 18));
+        }
         log.newline();
         log.info("Press 'Tab' to complete. Type 'help' and hit 'Return' for help, and 'exit' to quit.");
     }
@@ -79,7 +84,8 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         }
 
         @Override
-        public void operationsLoaded(ArtifactDescriptor artifact, OperationsAndHandlers operations) {
+        public void operationsLoaded(ArtifactDescriptor artifact,
+                OperationsAndHandlers operations) {
 
             FileArtifact file = MetadataWriter.create(operations, artifact, source, null);
 
