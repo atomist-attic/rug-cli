@@ -17,6 +17,11 @@ import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.junit.rules.TestName;
 import org.springframework.util.StringUtils;
 
+import com.atomist.rug.cli.command.CommandContext;
+import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
+import com.atomist.rug.loader.OperationsAndHandlers;
+import com.atomist.source.ArtifactSource;
+
 public abstract class AbstractCommandTest {
 
     @Rule
@@ -37,6 +42,10 @@ public abstract class AbstractCommandTest {
         systemOutRule.clearLog();
         System.out.println("");
         System.out.println(">>> " + getClass().getSimpleName() + "." + name.getMethodName());
+        
+        CommandContext.delete(ArtifactSource.class);
+        CommandContext.delete(OperationsAndHandlers.class);
+        CommandContext.delete(TypeScriptCompiler.class);
     }
 
     protected void assertCommandLine(int exitCode, Assertion assertion, String... tokens)
