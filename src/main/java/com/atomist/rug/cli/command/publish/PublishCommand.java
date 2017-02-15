@@ -72,10 +72,10 @@ public class PublishCommand extends AbstractRepositoryCommand {
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("URL"));
         log.info("  %s", Style.underline(artifactUrl));
-        
+
         log.newline();
-        log.info(Style.green("Successfully published archive for %s:%s:%s",
-                manifest.group(), manifest.artifact(), manifest.version()));
+        log.info(Style.green("Successfully published archive for %s:%s:%s", manifest.group(),
+                manifest.artifact(), manifest.version()));
     }
 
     private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {
@@ -90,18 +90,22 @@ public class PublishCommand extends AbstractRepositoryCommand {
             }
             else {
                 throw new CommandException(String.format(
-                        "Specified repository with id %s doesn't exist or is not enabled for publishing. Please review your ~/.atomist/cli.yml",
-                        repoId));
+                        "Specified repository with id %s doesn't exist or is not enabled for publishing.\nPlease review your ~/.atomist/cli.yml.",
+                        repoId), "publish");
             }
         }
 
         if (deployRepositories.size() > 1) {
-            throw new CommandException(
-                    "More than one repository enabled for publishing. Please review your ~/.atomist/cli.yml");
+            throw new CommandException(String.format(
+                    "More than one repository enabled for publishing.\nPlease review your ~/.atomist/cli.yml or specify a repository with --id.\nValid repository ids are: %s",
+                    org.springframework.util.StringUtils
+                            .collectionToDelimitedString(deployRepositories.keySet(), ", ")),
+                    "publish");
         }
         else if (deployRepositories.size() == 0) {
             throw new CommandException(
-                    "No repository enabled for publishing. Please review your ~/.atomist/cli.yml");
+                    "No repository enabled for publishing.\nPlease review your ~/.atomist/cli.yml.",
+                    "publish");
         }
 
         Entry<String, RemoteRepository> remoteRepository = deployRepositories.entrySet().stream()
