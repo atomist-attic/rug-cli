@@ -18,8 +18,8 @@ import com.jayway.jsonpath.ReadContext;
 
 public class OperationCompleter implements Completer {
 
-    private static final List<String> COMMANDS = Arrays
-            .asList(new String[] { "edit", "generate", "execute", "executo-remote", "describe" });
+    private static final List<String> COMMANDS = Arrays.asList(new String[] { "edit", "ed",
+            "generate", "gen", "execute", "executo-remote", "describe", "desc" });
 
     private long timestamp = -1;
 
@@ -37,9 +37,11 @@ public class OperationCompleter implements Completer {
 
                 switch (command) {
                 case "edit":
+                case "ed":
                     completeBasedOnJsonpathMatches("editors", line.words(), candidates);
                     break;
                 case "generate":
+                case "gen":
                     completeBasedOnJsonpathMatches("generators", line.words(), candidates);
                     break;
                 case "execute":
@@ -49,6 +51,7 @@ public class OperationCompleter implements Completer {
                     completeBasedOnJsonpathMatches("executors", line.words(), candidates);
                     break;
                 case "describe":
+                case "desc":
                     if (line.words().size() >= 2) {
                         String subCommand = line.words().get(1);
                         switch (subCommand) {
