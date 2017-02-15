@@ -28,6 +28,8 @@ public class SearchCommandInfo extends AbstractRugScopedCommandInfo {
                 .desc("Specify a TAG to filter search").longOpt("tag").optionalArg(true).build());
         options.addOption(Option.builder().argName("TYPE").hasArg(true)
                 .desc("Specify a TYPE to filter search based on Rug type").longOpt("type").optionalArg(true).build());
+        options.addOption(Option.builder().hasArg(false)
+                .desc("Show operations in search output").longOpt("operations").optionalArg(true).build());
         return options;
     }
 

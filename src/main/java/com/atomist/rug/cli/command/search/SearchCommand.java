@@ -1,6 +1,8 @@
 package com.atomist.rug.cli.command.search;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -38,7 +40,8 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(Settings settings, @Argument(index = 1) String search,
-            @Option("tag") Properties tags, @Option("type") String type) {
+            @Option("tag") Properties tags, @Option("type") String type,
+            @Option("operations") boolean showOps) {
 
         if (settings.getCatalogs().getUrls().isEmpty()) {
             throw new CommandException("No catalog endpoints configured in cli.yml.");
@@ -48,7 +51,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
                 "Searching catalogs").run(indicator -> {
                     List<Operation> results = settings.getCatalogs().getUrls().stream().map(u -> {
                         indicator.report("  Searching " + u);
-                        return collectResults(u, search, type, tags);
+                        return collectResults(u, search, type, tags, settings);
                     }).flatMap(List::stream).collect(Collectors.toList());
 
                     return results.stream()
@@ -68,20 +71,42 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         }
         else {
             operations.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
-                    .forEach(a -> printArchive(a.getValue()));
+                    .forEach(a -> printArchive(a.getValue(), showOps));
             log.info("\nFor more information on specific archive version, run:\n"
                     + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND);
         }
     }
 
-    private void printArchive(List<Operation> operations) {
+    private void printArchive(List<Operation> operations, boolean showOps) {
         Archive archive = operations.get(0).getArchive();
         log.info("  %s (%s)", Style.yellow("%s:%s", archive.getGroup(), archive.getArtifact()),
                 archive.getVersion().getValue());
+        if (showOps) {
+            printOperations(operations, "generator", "Generators");
+            printOperations(operations, "editor", "Editors");
+            printOperations(operations, "executor", "Executors");
+        }
+    }
+
+    private void printOperations(List<Operation> operations, String kind, String label) {
+        Collection<Operation> ops = operations.stream().filter(o -> o.getType().equals(kind))
+                .sorted(Comparator.comparing(Operation::getName)).collect(Collectors.toList());
+        Operation last = ops.stream().reduce((a, b) -> b).orElse(null);
+        if (!ops.isEmpty()) {
+            log.info("    %s", Style.bold(label));
+            ops.forEach(o -> {
+                if (o.equals(last)) {
+                    log.info("    %s%s", Constants.LAST_TREE_NODE, o.getName());
+                }
+                else {
+                    log.info("    %s%s", Constants.TREE_NODE, o.getName());
+                }
+            });
+        }
     }
 
     private List<Operation> collectResults(String endpoint, String search, String type,
-            Properties tags) {
+            Properties tags, Settings settings) {
 
         if (!endpoint.endsWith(Constants.CATALOG_PATH)) {
             if (!endpoint.endsWith("/")) {
@@ -93,6 +118,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         HttpClient client = HttpClientFactory.createHttpClient(endpoint,
                 Constants.ARTIFACT + "-" + VersionUtils.readVersion().orElse("0.0.0"));
         HttpPost post = new HttpPost(endpoint);
+        HttpClientFactory.addAuthorizationHeader(post, settings.getToken());
 
         StringEntity requestEntity = new StringEntity(getSearchQuery(search, type, tags),
                 ContentType.APPLICATION_JSON);
@@ -116,17 +142,20 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
 
     private String getSearchQuery(String search, String type, Properties tags) {
         StringBuilder sb = new StringBuilder();
+        // {"queries": [ { "search": "spring", "tags": ["spring"], "operation": {"type": "editor" }
+        // } ]}
         sb.append("{ \"queries\": [{ ");
-        sb.append("\"archive\": { \"scope\": \"public\" }");
+        List<String> queries = new ArrayList<>();
         if (search != null && search.length() > 0) {
-            sb.append(String.format(", \"search\": \"%s\"", search));
+            queries.add(String.format("\"search\": \"%s\"", search));
         }
         if (tags.size() > 0) {
-            sb.append(String.format(", \"tags\": [%s]", toCommaSeperatedList(tags)));
+            queries.add(String.format("\"tags\": [%s]", toCommaSeperatedList(tags)));
         }
         if (type != null) {
-            sb.append(String.format(", \"operation\": { \"type\": \"%s\" }", type));
+            queries.add(String.format("\"operation\": { \"type\": \"%s\" }", type));
         }
+        sb.append(StringUtils.collectionToCommaDelimitedString(queries));
         sb.append(" }]}");
         return sb.toString();
     }
