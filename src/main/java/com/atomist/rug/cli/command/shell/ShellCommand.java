@@ -9,14 +9,17 @@ import org.apache.commons.lang3.StringUtils;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandEventListener;
+import com.atomist.rug.cli.command.CommandEventListenerAdapter;
 import com.atomist.rug.cli.command.CommandEventListenerRegistry;
 import com.atomist.rug.cli.command.annotation.Command;
+import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.metadata.MetadataWriter;
 import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
 
@@ -38,14 +41,25 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
-                    CommandEventListener listener = new OperationsLoadedEventListener(source,
-                            artifact);
-                    listener.operationsLoaded(operations);
-                    CommandEventListenerRegistry.register(listener);
+                    registerFileSystemWatcherEventListener(artifact);
+                    registerOperationsEventListener(source, artifact, operations);
                     return null;
                 });
         
         printBanner();
+    }
+
+    private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact) {
+        if (artifact instanceof LocalArtifactDescriptor) {
+            ArtifactSourceFileWatcherFactory.create(artifact);
+        }
+    }
+
+    private void registerOperationsEventListener(ArtifactSource source, ArtifactDescriptor artifact,
+            OperationsAndHandlers operations) {
+        CommandEventListener listener = new OperationsLoadedEventListener(source);
+        listener.operationsLoaded(artifact, operations);
+        CommandEventListenerRegistry.register(listener);
     }
 
     private void printBanner() {
@@ -56,18 +70,16 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         log.info("Press 'Tab' to complete. Type 'help' and hit 'Return' for help, and 'exit' to quit.");
     }
 
-    private static class OperationsLoadedEventListener implements CommandEventListener {
+    private static class OperationsLoadedEventListener extends CommandEventListenerAdapter {
 
-        private ArtifactDescriptor artifact;
         private ArtifactSource source;
 
-        public OperationsLoadedEventListener(ArtifactSource source, ArtifactDescriptor artifact) {
-            this.artifact = artifact;
+        public OperationsLoadedEventListener(ArtifactSource source) {
             this.source = source;
         }
 
         @Override
-        public void operationsLoaded(OperationsAndHandlers operations) {
+        public void operationsLoaded(ArtifactDescriptor artifact, OperationsAndHandlers operations) {
 
             FileArtifact file = MetadataWriter.create(operations, artifact, source, null);
 
@@ -81,5 +93,4 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
             }
         }
     }
-
 }
