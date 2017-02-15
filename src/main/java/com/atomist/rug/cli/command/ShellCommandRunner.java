@@ -17,22 +17,22 @@ import com.atomist.rug.cli.command.shell.ShellUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
 public class ShellCommandRunner extends ReflectiveCommandRunner {
-    
+
     private CommandInfoRegistry registry;
-    
+
     public ShellCommandRunner(CommandInfoRegistry registry) {
         super(registry);
         this.registry = registry;
     }
-    
-    @Override
-    protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {
-        if (rc == 0 && "shell".equals(info.name())) {
-            invokeCommandInLoop(artifact, dependencies);
-        }
+
+    private void clear(LineReader reader) {
+        ((LineReaderImpl) reader).clearScreen();
     }
-    
+
+    private void exit() {
+        throw new EndOfFileException();
+    }
+
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
         
@@ -53,23 +53,15 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                     line = line.substring(3).trim(); 
                 }
                 
-                // TODO move those into shell only command implementations
                 if ("exit".equals(line) || "quit".equals(line)
                         || "q".equals(line)) {
-                    throw new EndOfFileException();
+                    exit();
                 }
-                else if ("clear".equals(line)) {
-                    ((LineReaderImpl) reader).clearScreen();
+                else if ("clear".equals(line) || "cls".equals(line)) {
+                    clear(reader);
                 }
                 else if (line.startsWith("!")) {
-                    String[] args = CommandUtils.splitCommandline(line.substring(1));
-                    RunProcess process = new RunProcess(args[0]);
-                    try {
-                        process.run(true, Arrays.copyOfRange(args, 1, args.length));
-                    }
-                    catch (IOException e) {
-                        log.error(e.getMessage());
-                    }
+                    ps(line);
                 }
                 else {
                     String[] args = CommandUtils.splitCommandline(line);
@@ -82,6 +74,25 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         }
         catch (EndOfFileException e) {
             log.info("Goodbye!");
+        }
+    }
+
+    private void ps(String line) {
+        String[] args = CommandUtils.splitCommandline(line.substring(1));
+        RunProcess process = new RunProcess(args[0]);
+        try {
+            process.run(true, Arrays.copyOfRange(args, 1, args.length));
+        }
+        catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @Override
+    protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies) {
+        if (rc == 0 && "shell".equals(info.name())) {
+            invokeCommandInLoop(artifact, dependencies);
         }
     }
 }
