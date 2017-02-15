@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.shell;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.atomist.rug.cli.command.AbstractVersionCommandInfo;
 
 public class ShellCommandInfo extends AbstractVersionCommandInfo {
@@ -26,5 +29,10 @@ public class ShellCommandInfo extends AbstractVersionCommandInfo {
     @Override
     public String usage() {
         return "shell [OPTION]... ARCHIVE";
+    }
+
+    @Override
+    public List<String> aliases() {
+        return Arrays.asList(new String[] { "sh", "repl" });
     }
 }
