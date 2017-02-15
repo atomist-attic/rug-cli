@@ -3,7 +3,6 @@ package com.atomist.rug.cli.command.test;
 import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +14,6 @@ import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
@@ -43,8 +41,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
     public void run(Operations operations, ArtifactDescriptor artifact,
             @Argument(index = 1) String testName) {
 
-        File workingDir = CommandUtils.getRequiredWorkingDirectory();
-        ArtifactSource source = ArtifactSourceUtils.createArtifactSource(workingDir);
+        ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
 
         TestLoader testLoader = new TestLoader(DefaultAtomistConfig$.MODULE$);
         Seq<TestScenario> scenarios = testLoader.loadTestScenarios(source);
