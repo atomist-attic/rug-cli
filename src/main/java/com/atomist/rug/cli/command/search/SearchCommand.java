@@ -91,7 +91,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         }
 
         HttpClient client = HttpClientFactory.createHttpClient(endpoint,
-                "rug-cli-" + VersionUtils.readVersion().orElse("0.0.0"));
+                Constants.ARTIFACT + "-" + VersionUtils.readVersion().orElse("0.0.0"));
         HttpPost post = new HttpPost(endpoint);
 
         StringEntity requestEntity = new StringEntity(getSearchQuery(search, type, tags),
