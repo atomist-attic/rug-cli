@@ -34,7 +34,7 @@ public abstract class ShellUtils {
             + Style.cyan(Constants.DIVIDER) + " ";
 
     public static LineReader lineReader(File historyPath, Completer... completers) {
-        // Protect the history file
+        // Protect the history file as may contain sensitive information
         FileUtils.setPermissionsToOwnerOnly(historyPath);
         
         // Create JLine LineReader
@@ -55,5 +55,4 @@ public abstract class ShellUtils {
             throw new CommandException("Error creating Terminal for Shell", e);
         }
     }
-
 }
