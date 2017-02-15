@@ -171,27 +171,27 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private String describeDescription(Parameter p) {
         StringBuilder sb = new StringBuilder();
         if (p.getMinLength() >= 0) {
-            sb.append("min: ").append(p.getMinLength()).append(" ");
+            sb.append("min: ").append(p.getMinLength()).append("  ");
         }
         if (p.getMaxLength() >= 0) {
-            sb.append("max: ").append(p.getMaxLength()).append(" ");
+            sb.append("max: ").append(p.getMaxLength()).append("  ");
         }
         if (p.getDefaultValue() != null && p.getDefaultValue().length() > 0) {
-            sb.append("default: ").append(p.getDefaultValue()).append(" ");
+            sb.append("default: ").append(p.getDefaultValue()).append("  ");
         }
         if (p.getValidInputDescription() != null && p.getValidInputDescription().length() > 0) {
             sb.append("valid input: ").append(
                     org.apache.commons.lang3.StringUtils.capitalize(p.getValidInputDescription()))
-                    .append(" ");
+                    .append("  ");
         }
         if (p.getPattern() != null && p.getPattern().length() > 0) {
             if (p.getPattern().length() > 40) {
                 sb.append("pattern: ")
                         .append(org.apache.commons.lang3.StringUtils.truncate(p.getPattern(), 40))
-                        .append("... ");
+                        .append("...");
             }
             else {
-                sb.append("pattern: ").append(p.getPattern()).append(" ");
+                sb.append("pattern: ").append(p.getPattern());
             }
         }
         String detail = sb.toString();
