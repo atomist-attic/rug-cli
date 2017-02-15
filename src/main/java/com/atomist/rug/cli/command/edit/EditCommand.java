@@ -71,9 +71,12 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
             if (!operations.editors().isEmpty()) {
                 log.newline();
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-                asJavaCollection(operations.editors()).forEach(e -> log.info(Style.yellow("  %s",
-                        StringUtils.stripName(e.name(), artifact)) + "\n    "
-                        + WordUtils.wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
+                asJavaCollection(operations.editors()).forEach(e -> log.info(
+                        Style.yellow("  %s", StringUtils.stripName(e.name(), artifact)) + "\n    "
+                                + WordUtils.wrap(
+                                        org.apache.commons.lang3.StringUtils
+                                                .capitalize(e.description()),
+                                        Constants.WRAP_LENGTH, "\n    ", false)));
                 StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
             }
             throw new CommandException(

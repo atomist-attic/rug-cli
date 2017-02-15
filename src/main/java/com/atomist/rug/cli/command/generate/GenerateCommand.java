@@ -66,8 +66,11 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                 log.newline();
                 log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
                 asJavaCollection(operations.generators())
-                        .forEach(e -> log.info(Style.yellow("  %s", e.name()) + "\n    " + WordUtils
-                                .wrap(e.description(), Constants.WRAP_LENGTH, "\n    ", false)));
+                        .forEach(e -> log.info(Style.yellow("  %s", e.name()) + "\n    "
+                                + WordUtils.wrap(
+                                        org.apache.commons.lang3.StringUtils
+                                                .capitalize(e.description()),
+                                        Constants.WRAP_LENGTH, "\n    ", false)));
                 StringUtils.printClosestMatch(name, artifact, operations.generatorNames());
             }
             throw new CommandException(
