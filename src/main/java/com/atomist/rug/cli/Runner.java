@@ -5,7 +5,7 @@ import org.apache.commons.cli.ParseException;
 
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 import com.atomist.rug.cli.command.CommandUtils;
-import com.atomist.rug.cli.command.ReflectiveCommandRunner;
+import com.atomist.rug.cli.command.ShellCommandRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.version.VersionThread;
 import com.atomist.rug.cli.version.VersionUtils;
@@ -72,16 +72,16 @@ public class Runner {
                 && commandLine.getArgList().isEmpty()) {
             args = new String[] { "help" };
             commandLine = CommandUtils.parseCommandline(args, registry);
-            new ReflectiveCommandRunner(registry).runCommand(args, commandLine);
+            new ShellCommandRunner(registry).runCommand(args, commandLine);
         }
         else if (commandLine.getArgList().isEmpty()) {
             args = new String[] { "help" };
             commandLine = CommandUtils.parseCommandline(args, registry);
-            new ReflectiveCommandRunner(registry).runCommand(args, commandLine);
+            new ShellCommandRunner(registry).runCommand(args, commandLine);
             return 1;
         }
         else if (commandLine.getArgList().size() >= 1) {
-            return new ReflectiveCommandRunner(registry).runCommand(args, commandLine);
+            return new ShellCommandRunner(registry).runCommand(args, commandLine);
         }
         return 0;
     }
