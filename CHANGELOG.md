@@ -9,13 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-cli/compare/0.23.0...HEAD
 
-### Changed
-
 ## [0.23.0] - 2017-02-14
 
 [0.23.0]: https://github.com/atomist/rug-cli/compare/0.22.0...0.23.0
 
-### Changed
+### Added
 
 -   New `tree` command to evaluate path expressions against a project as per
  	https://github.com/atomist/rug-cli/issues/96
@@ -45,7 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [0.21.4]: https://github.com/atomist/rug-cli/compare/0.21.3...0.21.4
 
-### Changed
+### Fixed
 
 -   Fix leading `.` in operation names of metadata.json
     https://github.com/atomist/rug-cli/issues/88
