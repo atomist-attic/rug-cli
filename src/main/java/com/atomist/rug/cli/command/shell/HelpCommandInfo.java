@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.shell;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.atomist.rug.cli.command.AbstractCommandInfo;
 
 public class HelpCommandInfo extends AbstractCommandInfo {
@@ -10,12 +13,12 @@ public class HelpCommandInfo extends AbstractCommandInfo {
 
     @Override
     public String description() {
-        return "Print usage";
+        return "Print usage help";
     }
 
     @Override
     public String detail() {
-        return "";
+        return "Prints this usage help.";
     }
 
     @Override
@@ -25,11 +28,16 @@ public class HelpCommandInfo extends AbstractCommandInfo {
 
     @Override
     public String usage() {
-        return "exit";
+        return "help";
     }
-    
+
     @Override
     public String group() {
         return "admin";
+    }
+
+    @Override
+    public List<String> aliases() {
+        return Arrays.asList(new String[] { "h", "?" });
     }
 }

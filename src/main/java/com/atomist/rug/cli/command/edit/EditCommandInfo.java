@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.edit;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
@@ -42,6 +45,11 @@ public class EditCommandInfo extends AbstractVersionCommandInfo {
     @Override
     public String usage() {
         return "edit [OPTION]... EDITOR [PARAMETER]...";
+    }
+    
+    @Override
+    public List<String> aliases() {
+        return Collections.singletonList("ed");
     }
 
 }

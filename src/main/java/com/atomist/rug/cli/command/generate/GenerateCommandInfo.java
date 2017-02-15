@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.generate;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
@@ -47,5 +50,10 @@ public class GenerateCommandInfo extends AbstractVersionCommandInfo {
     @Override
     public String usage() {
         return "generate [OPTION]... GENERATOR PROJECT_NAME [PARAMETER]...";
+    }
+    
+    @Override
+    public List<String> aliases() {
+        return Collections.singletonList("gen");
     }
 }

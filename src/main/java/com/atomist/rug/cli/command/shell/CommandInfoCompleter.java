@@ -54,8 +54,6 @@ public class CommandInfoCompleter implements Completer {
 
     private void completeOptions(Collection<Option> options, List<Candidate> candidates,
             List<String> words, String group) {
-        // public Candidate(String value, String displ, String group, String descr, String suffix,
-        // String key, boolean complete) {
         options.stream().filter(o -> {
             if (o.hasLongOpt() && words.contains("--" + o.getLongOpt())) {
                 return false;

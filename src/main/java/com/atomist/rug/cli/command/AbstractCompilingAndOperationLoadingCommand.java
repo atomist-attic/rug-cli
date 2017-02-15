@@ -7,7 +7,6 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.springframework.util.StringUtils;
@@ -23,7 +22,6 @@ import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.compiler.Compiler;
-import com.atomist.rug.compiler.ServiceLoaderCompilerRegistry;
 import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
 import com.atomist.rug.compiler.typescript.compilation.CompilerFactory;
 import com.atomist.rug.kind.service.ConsoleMessageBuilder;
