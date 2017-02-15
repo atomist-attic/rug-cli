@@ -1,14 +1,21 @@
-package com.atomist.rug.cli.command.login;
+package com.atomist.rug.cli.command.repo;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
-public class LoginCommandInfo extends AbstractRugScopedCommandInfo {
+public class RepositoriesCommandInfo extends AbstractRugScopedCommandInfo {
 
-    public LoginCommandInfo() {
-        super(LoginCommand.class, "login");
+    private static final List<String> commands = Arrays
+            .asList(new String[] { "login", "configure" });
+
+    public RepositoriesCommandInfo() {
+        super(RepositoriesCommand.class, "repositories");
     }
 
     @Override
@@ -40,11 +47,21 @@ public class LoginCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String usage() {
-        return "login [OPTION]...";
+        return "repositories SUBCOMMAND [OPTION]...";
     }
-    
+
+    @Override
+    public List<String> subCommands() {
+        return commands;
+    }
+
     @Override
     public String group() {
         return "admin";
+    }
+
+    @Override
+    public List<String> aliases() {
+        return Collections.singletonList("repo");
     }
 }
