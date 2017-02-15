@@ -32,7 +32,6 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulEditWithLogs() throws Exception {
         assertSuccess("Added valid program in Whitespace(tm) programming language", "edit",
                 "LogEntriesTesting", "-l", "-d");
-
     }
 
     @Test
