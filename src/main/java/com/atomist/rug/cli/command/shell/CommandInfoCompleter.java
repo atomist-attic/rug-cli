@@ -35,7 +35,7 @@ public class CommandInfoCompleter implements Completer {
             String word = words.get(0);
 
             Optional<CommandInfo> info = registry.commands().stream()
-                    .filter(c -> c.name().equals(word)).findFirst();
+                    .filter(c -> c.name().equals(word) || c.aliases().contains(word)).findFirst();
             if (info.isPresent()) {
 
                 // only complete subCommand if none exists already
