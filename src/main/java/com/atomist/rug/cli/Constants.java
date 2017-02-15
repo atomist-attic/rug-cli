@@ -1,5 +1,8 @@
 package com.atomist.rug.cli;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.apache.commons.lang3.SystemUtils;
 
 import com.atomist.rug.cli.version.VersionUtils;
@@ -32,10 +35,24 @@ public class Constants {
     
     public static final String CATALOG_PATH = "operation/search";
     public static final String CATALOG_URL = "https://api.atomist.com/catalog";
+    public static final String REPO_URL = "https://api-staging.atomist.services/user/team";
     
     
     public static String cliClient() {
         return ARTIFACT + " " + VersionUtils.readVersion().orElse("0.0.0");
+    }
+
+    public static String httpClient() {
+        return ARTIFACT + "-" + VersionUtils.readVersion().orElse("0.0.0");
+    }
+    
+    public static String hostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        }
+        catch (UnknownHostException e) {
+            return "unkown";
+        }
     }
 
 }

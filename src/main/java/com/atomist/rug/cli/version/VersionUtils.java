@@ -110,8 +110,7 @@ public abstract class VersionUtils {
         String version = null;
 
         if (isOutdated()) {
-            HttpClient httpClient = HttpClientFactory.createHttpClient(URL,
-                    Constants.ARTIFACT + "-" + readVersion().orElse("0.0.0"));
+            HttpClient httpClient = HttpClientFactory.httpClient(URL);
             HttpGet httpget = new HttpGet(URL);
             try {
                 HttpResponse response = httpClient.execute(httpget);
