@@ -25,7 +25,6 @@ public abstract class ArtifactSourceFileWatcherFactory {
 
     private static class ArtifactSourceFileWatcherWithSunCreator {
 
-        @SuppressWarnings("restriction")
         public void create(ArtifactDescriptor artifact) {
             new ArtifactSourceFileWatcherThread(artifact,
                     com.sun.nio.file.SensitivityWatchEventModifier.HIGH);
