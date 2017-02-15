@@ -5,7 +5,9 @@ import static scala.collection.JavaConversions.asJavaCollection;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.springframework.util.StringUtils;
@@ -19,11 +21,7 @@ import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
-import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
-import com.atomist.rug.cli.utils.CommandLineOptions;
-import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.compiler.Compiler;
 import com.atomist.rug.compiler.ServiceLoaderCompilerRegistry;
 import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
@@ -50,29 +48,33 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
     @Override
     protected final void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
-        OperationsAndHandlers operationsAndHandlers = null;
-        ArtifactSource source = null;
         if (artifact != null && artifact.extension() == Extension.ZIP
                 && registry.findCommand(commandLine).loadArtifactSource()) {
-            source = ArtifactSourceUtils.createArtifactSource(artifact);
-            printArtifactSource(artifact, source);
-            source = compile(artifact, source);
-            OperationsAndHandlers operations = loadOperationsAndHandlers(artifact, source,
-                    createOperationsLoader(uri));
 
-            CommandEventListenerRegistry.raiseEvent((c) -> c.operationsLoaded(operations));
+            if (CommandContext.contains(ArtifactSource.class)
+                    && CommandContext.contains(OperationsAndHandlers.class)) {
+                run(CommandContext.restore(OperationsAndHandlers.class), artifact,
+                        CommandContext.restore(ArtifactSource.class), commandLine);
+            }
+            else {
+                ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
+                CommandEventListenerRegistry
+                        .raiseEvent((c) -> c.artifactSourceLoaded(artifact, source));
 
-            operationsAndHandlers = operations;
+                ArtifactSource compiledSource = compile(artifact, source);
+                CommandEventListenerRegistry
+                        .raiseEvent((c) -> c.artifactSourceCompiled(artifact, compiledSource));
+
+                OperationsAndHandlers operationsAndHandlers = loadOperationsAndHandlers(artifact,
+                        compiledSource, createOperationsLoader(uri));
+                CommandEventListenerRegistry
+                        .raiseEvent((c) -> c.operationsLoaded(artifact, operationsAndHandlers));
+
+                run(operationsAndHandlers, artifact, compiledSource, commandLine);
+            }
         }
-        run(operationsAndHandlers, artifact, source, commandLine);
-    }
-
-    private void printArtifactSource(ArtifactDescriptor artifact, ArtifactSource source) {
-        if (CommandLineOptions.hasOption("V") && source != null) {
-            log.info("Loaded archive sources for %s",
-                    ArtifactDescriptorUtils.coordinates(artifact));
-            log.info("  " + FileUtils.relativize(artifact.uri()));
-            ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
+        else {
+            run(null, artifact, null, commandLine);
         }
     }
 
@@ -80,13 +82,8 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         // Only compile local archives
         if (artifact instanceof LocalArtifactDescriptor) {
 
-            String root = new File(new File(artifact.uri()),
-                    ".atomist" + File.separator + "target" + File.separator + ".jscache")
-                            .getAbsolutePath();
-
             // Get all registered and supported compilers
-            Collection<Compiler> compilers = asJavaCollection(
-                    ServiceLoaderCompilerRegistry.findAll(source));
+            Collection<Compiler> compilers = loadCompilers(artifact, source);
 
             if (!compilers.isEmpty()) {
 
@@ -94,7 +91,6 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                         "Processing script sources").run(indicator -> {
                             ArtifactSource compiledSource = source;
                             for (Compiler compiler : compilers) {
-                                compiler = wrapCompiler(compiler, root);
                                 indicator.report(String.format("Invoking %s on %s script sources",
                                         compiler.name(),
                                         StringUtils.collectionToCommaDelimitedString(
@@ -117,13 +113,24 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         return source;
     }
 
-    private Compiler wrapCompiler(Compiler compiler, String root) {
-        if (compiler instanceof TypeScriptCompiler) {
-            return new TypeScriptCompiler(
-                    CompilerFactory.cachingCompiler(CompilerFactory.create(), root));
+    private Collection<Compiler> loadCompilers(ArtifactDescriptor artifact, ArtifactSource source) {
+        TypeScriptCompiler compiler = null;
+        if (CommandContext.contains(TypeScriptCompiler.class)) {
+            compiler = CommandContext.restore(TypeScriptCompiler.class);
         }
         else {
-            return compiler;
+            String root = new File(new File(artifact.uri()),
+                    ".atomist" + File.separator + "target" + File.separator + ".jscache")
+                            .getAbsolutePath();
+            compiler = new TypeScriptCompiler(
+                    CompilerFactory.cachingCompiler(CompilerFactory.create(), root));
+            CommandContext.save(TypeScriptCompiler.class, compiler);
+        }
+        if (compiler.supports(source)) {
+            return Collections.singletonList(compiler);
+        }
+        else {
+            return Collections.emptyList();
         }
     }
 
