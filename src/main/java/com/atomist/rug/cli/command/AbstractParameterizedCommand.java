@@ -97,7 +97,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
     private String getPrompt(Parameter parameter, String defaultValue) {
         return String.format("  %s %s %s ", Style.cyan(Constants.DIVIDER),
                 Style.yellow(parameter.getName()),
-                (defaultValue != null && defaultValue.length() > 0 ? "[" + defaultValue + "] " : "")
+                (defaultValue != null && defaultValue.length() > 0 ? "[" + defaultValue + "]" : "")
                         + (parameter.isRequired() ? "*:" : ":"));
     }
 
