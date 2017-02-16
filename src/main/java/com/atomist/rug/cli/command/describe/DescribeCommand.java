@@ -205,11 +205,11 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         sb.append(WordUtils.wrap(detail, Constants.WRAP_LENGTH, "\n    ", false).trim());
 
         String wrapped = sb.toString();
-        wrapped = wrapped.replace("min:", Style.underline("min") + ":");
-        wrapped = wrapped.replace("max:", Style.underline("max") + ":");
-        wrapped = wrapped.replace("default:", Style.underline("default") + ":");
-        wrapped = wrapped.replace("valid input:", Style.underline("valid input") + ":");
-        wrapped = wrapped.replace("pattern:", Style.underline("pattern") + ":");
+        wrapped = wrapped.replace("min:", Style.gray("min:"));
+        wrapped = wrapped.replace("max:", Style.gray("max:"));
+        wrapped = wrapped.replace("default:", Style.gray("default:"));
+        wrapped = wrapped.replace("valid input:", Style.gray("valid input:"));
+        wrapped = wrapped.replace("pattern:", Style.gray("pattern:"));
         return wrapped;
 
     }

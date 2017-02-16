@@ -2,7 +2,8 @@ package com.atomist.rug.cli.command.tree;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.function.Function;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -20,6 +21,8 @@ import com.atomist.rug.kind.DefaultTypeRegistry$;
 import com.atomist.rug.kind.core.ProjectMutableView;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.EmptyArtifactSource;
+import com.atomist.tree.ContainerTreeNode;
+import com.atomist.tree.TerminalTreeNode;
 import com.atomist.tree.TreeNode;
 import com.atomist.tree.pathexpression.ExpressionEngine;
 import com.atomist.tree.pathexpression.PathExpression;
@@ -36,7 +39,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
     @Command
     public void run(@Argument(index = 1, defaultValue = "") String expression,
             @Option("change-dir") String rootName, @Option("values") boolean values) {
-        
+
         Collection<TreeNode> treeNodes = new ProgressReportingOperationRunner<Collection<TreeNode>>(
                 "Evaluating path expression against project").run((indicator) -> {
 
@@ -79,29 +82,39 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
         log.info(Style.green("Successfully evaluated tree expression"));
     }
 
-    private static class ValueNodeToStringFunction implements Function<TreeNode, String> {
+    private static class ValueNodeToStringFunction
+            implements BiFunction<Integer, TreeNode, String> {
 
         @Override
-        public String apply(TreeNode node) {
-            return node.nodeName() + ": ["
-                    + org.springframework.util.StringUtils.collectionToDelimitedString(
-                            JavaConverters.asJavaCollectionConverter(node.nodeTags())
-                                    .asJavaCollection(),
-                            ", ")
-                    + "] " + node.value();
+        public String apply(Integer id, TreeNode node) {
+            return Style
+                    .yellow(node
+                            .nodeName())
+                    + Style.gray(" [" + org.springframework.util.StringUtils
+                            .collectionToDelimitedString(JavaConverters
+                                    .asJavaCollectionConverter(node.nodeTags()).asJavaCollection()
+                                    .stream().filter(n -> !n.equals("-dynamic"))
+                                    .collect(Collectors.toList()), ", ")
+                            + "]")
+                    + (!(node instanceof TerminalTreeNode) && id > 0 ? " {" + id + "}" : "")
+                    + (!(node instanceof ContainerTreeNode) ? " " + node.value() : "");
         }
     }
 
-    private static class NodeToStringFunction implements Function<TreeNode, String> {
+    private static class NodeToStringFunction implements BiFunction<Integer, TreeNode, String> {
 
         @Override
-        public String apply(TreeNode node) {
-            return node.nodeName() + ": ["
-                    + org.springframework.util.StringUtils.collectionToDelimitedString(
-                            JavaConverters.asJavaCollectionConverter(node.nodeTags())
-                                    .asJavaCollection(),
-                            ", ")
-                    + "]";
+        public String apply(Integer id, TreeNode node) {
+            return Style
+                    .yellow(node
+                            .nodeName())
+                    + Style.gray(" [" + org.springframework.util.StringUtils
+                            .collectionToDelimitedString(JavaConverters
+                                    .asJavaCollectionConverter(node.nodeTags()).asJavaCollection()
+                                    .stream().filter(n -> !n.equals("-dynamic"))
+                                    .collect(Collectors.toList()), ", ")
+                            + "]")
+                    + (!(node instanceof TerminalTreeNode) && id > 0 ? " {" + id + "}" : "");
         }
     }
 }
