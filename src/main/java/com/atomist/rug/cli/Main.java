@@ -6,15 +6,33 @@ import java.util.Arrays;
 import com.atomist.rug.cli.command.ServiceLoadingCommandInfoRegistry;
 import com.atomist.rug.cli.output.ConsoleUtils;
 
+/**
+ * Main entry point into the CLI
+ */
 public class Main {
 
     public static void main(String[] args) throws Exception {
+        // For attaching a profiler, we are waiting for user input when -w is specified on the
+        // commandline
         args = waitForInput(args);
         
+        // Some setup
         configureEnv();
+        
+        // Wrap streams so that we can intercept calls to System.out.println etc
         configureStreams();
 
-        new Runner(new ServiceLoadingCommandInfoRegistry()).run(args);
+        invokeRunner(args);
+    }
+
+    private static void invokeRunner(String[] args) {
+        try {
+            new Runner(new ServiceLoadingCommandInfoRegistry()).run(args);
+        }
+        catch (ReloadException e) {
+            // Request to reload the current shell session received
+            invokeRunner(e.args());
+        }
     }
 
     private static String[] waitForInput(String[] args) throws IOException {
@@ -32,6 +50,5 @@ public class Main {
     private static void configureStreams() {
         ConsoleUtils.configureStreams();
     }
-
 
 }

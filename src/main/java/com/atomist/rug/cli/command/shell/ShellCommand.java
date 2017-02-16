@@ -28,13 +28,11 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
 
     private static final String BANNER_CONFIG_KEY = "shell-banner-enable";
 
-    private static final String banner = "" 
-            + "  ____                 ____ _     ___ \n"
+    private static final String banner = "" + "  ____                 ____ _     ___ \n"
             + " |  _ \\ _   _  __ _   / ___| |   |_ _|\n"
             + " | |_) | | | |/ _` | | |   | |    | | \n"
             + " |  _ <| |_| | (_| | | |___| |___ | | \n"
-            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" 
-            + " Atomist      |___/ %s";
+            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" + " Atomist      |___/ %s";
 
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
@@ -44,7 +42,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
 
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
-                    registerFileSystemWatcherEventListener(artifact);
+                    registerFileSystemWatcherEventListener(artifact, operations);
                     registerOperationsEventListener(source, artifact, operations);
                     return null;
                 });
@@ -52,8 +50,9 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         printBanner(settings);
     }
 
-    private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact) {
-        if (artifact instanceof LocalArtifactDescriptor) {
+    private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact,
+            OperationsAndHandlers operations) {
+        if (artifact instanceof LocalArtifactDescriptor && operations != null) {
             ArtifactSourceFileWatcherFactory.create(artifact);
         }
     }
@@ -72,7 +71,8 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
                     .leftPad(VersionUtils.readVersion().orElse("0.0.0").split("-")[0], 18));
         }
         log.newline();
-        log.info("Press 'Tab' to complete. Type 'help' and hit 'Return' for help, and 'exit' to quit.");
+        log.info(
+                "Press 'Tab' to complete. Type 'help' and hit 'Return' for help, and 'exit' to quit.");
     }
 
     private static class OperationsLoadedEventListener extends CommandEventListenerAdapter {
@@ -86,16 +86,18 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         @Override
         public void operationsLoaded(ArtifactDescriptor artifact,
                 OperationsAndHandlers operations) {
+            if (artifact != null && operations != null) {
 
-            FileArtifact file = MetadataWriter.create(operations, artifact, source, null);
+                FileArtifact file = MetadataWriter.create(operations, artifact, source, null);
 
-            try {
-                FileUtils.write(ShellUtils.SHELL_OPERATIONS, file.content(),
-                        StandardCharsets.ISO_8859_1);
-                FileUtils.forceDeleteOnExit(ShellUtils.SHELL_OPERATIONS);
-            }
-            catch (IOException e) {
-                // We can't write the operations out to a file, so what?
+                try {
+                    FileUtils.write(ShellUtils.SHELL_OPERATIONS, file.content(),
+                            StandardCharsets.ISO_8859_1);
+                    FileUtils.forceDeleteOnExit(ShellUtils.SHELL_OPERATIONS);
+                }
+                catch (IOException e) {
+                    // We can't write the operations out to a file, so what?
+                }
             }
         }
     }
