@@ -54,9 +54,7 @@ public abstract class AbstractAnnotationBasedCommand
     private void invokeValidateMethod(List<Object> arguments) {
         Optional<Method> validateMethod = annotatedMethodWith(Validator.class);
 
-        if (validateMethod.isPresent()) {
-            invokeMethod(validateMethod.get(), arguments);
-        }
+        validateMethod.ifPresent(method -> invokeMethod(method, arguments));
     }
 
     private Object prepareArgumentMethodArgument(CommandLine commandLine, Parameter p,
