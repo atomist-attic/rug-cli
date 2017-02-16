@@ -104,7 +104,6 @@ public class SearchOperations {
         public Archive archive() {
             return archive;
         }
-
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -115,6 +114,9 @@ public class SearchOperations {
         private String artifact;
         @JsonProperty
         private Version version;
+        @JsonProperty
+        private String scope;
+
 
         public String group() {
             return group;
@@ -129,7 +131,11 @@ public class SearchOperations {
         }
 
         public String key() {
-            return String.format("%s:%s:%s", group, artifact, version.value);
+            return String.format("%s:%s:%s:%s", group, artifact, version.value, scope);
+        }
+        
+        public String scope() {
+            return !"global".equals(scope) ? scope.toLowerCase() : null;
         }
     }
 
