@@ -13,6 +13,7 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDescriptorProvider {
 
@@ -100,6 +101,12 @@ public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDe
         throw new CommandException(
                 "No valid ARTIFACT provided, no default artifact defined and not in local mode.",
                 name());
+    }
+
+    @Override
+    public boolean enabled(ArtifactDescriptor artifact) {
+        return artifact instanceof LocalArtifactDescriptor
+                || artifact.extension().equals(Extension.ZIP);
     }
 
 }

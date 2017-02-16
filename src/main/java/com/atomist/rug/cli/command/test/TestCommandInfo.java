@@ -1,6 +1,9 @@
 package com.atomist.rug.cli.command.test;
 
 import com.atomist.rug.cli.command.AbstractLocalArtifactDescriptorProvider;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
+import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 
 public class TestCommandInfo extends AbstractLocalArtifactDescriptorProvider {
 
@@ -31,5 +34,11 @@ public class TestCommandInfo extends AbstractLocalArtifactDescriptorProvider {
     @Override
     public String group() {
         return "2";
+    }
+    
+    @Override
+    public boolean enabled(ArtifactDescriptor artifact) {
+        return artifact instanceof LocalArtifactDescriptor
+                || artifact.extension().equals(Extension.ZIP);
     }
 }
