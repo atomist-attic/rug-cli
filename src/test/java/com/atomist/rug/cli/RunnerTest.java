@@ -35,6 +35,11 @@ public class RunnerTest extends AbstractCommandTest {
     }
 
     @Test
+    public void testWithNothing() throws Exception {
+        assertFailure("Missing command argument.");
+    }
+
+    @Test
     public void testInstallHelp() throws Exception {
         assertSuccess("Usage: rug install", "install", "--help");
     }
