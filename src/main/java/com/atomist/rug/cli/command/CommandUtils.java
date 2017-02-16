@@ -1,10 +1,16 @@
 package com.atomist.rug.cli.command;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -17,7 +23,9 @@ import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class CommandUtils {
-
+    
+    private static final String RUG_VERSION = ".*<rug.version>(.*)<\\/rug.version>.*";
+    
     public static File getRequiredWorkingDirectory() {
         Optional<File> projectDir = FileUtils.getWorkingDirectory();
         return projectDir.orElseThrow(() -> new CommandException(
@@ -118,5 +126,28 @@ public abstract class CommandUtils {
             throw new RuntimeException("unbalanced quotes in " + toProcess);
         }
         return result.toArray(new String[result.size()]);
+    }
+    
+    public static String readRugVersionFromPom() {
+        String version = "latest";
+        Pattern pattern = Pattern.compile(RUG_VERSION);
+        try (InputStream is = AbstractRugScopedCommandInfo.class.getClassLoader()
+                .getResourceAsStream("META-INF/maven/com.atomist/rug-cli/pom.xml")) {
+            if (is != null) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(is));
+                String line;
+                while ((line = in.readLine()) != null) {
+                    Matcher matcher = pattern.matcher(line);
+                    if (matcher.matches()) {
+                        version = matcher.group(1);
+                        break;
+                    }
+                }
+            }
+        }
+        catch (IOException e) {
+            // just use latest as fallback
+        }
+        return version;
     }
 }

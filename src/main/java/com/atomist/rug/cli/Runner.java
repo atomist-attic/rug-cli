@@ -1,7 +1,6 @@
 package com.atomist.rug.cli;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.ParseException;
 
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 import com.atomist.rug.cli.command.CommandUtils;
@@ -11,6 +10,9 @@ import com.atomist.rug.cli.version.VersionThread;
 import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.cli.version.VersionUtils.VersionInformation;
 
+/**
+ * Simple command runner that takes are of most basic command.
+ */
 public class Runner {
 
     private final Log log = new Log(getClass());
@@ -21,11 +23,11 @@ public class Runner {
         this.registry = registry;
     }
 
-    public void run(String[] args) throws ParseException {
-        
+    public void run(String[] args) {
+
         // Validate the JDK version
         VersionUtils.validateJdkVersion();
-        
+
         int returnCode = 0;
 
         if (args.length == 1 && (args[0].equals("-v") || args[0].equals("--version"))) {
@@ -37,26 +39,35 @@ public class Runner {
                 commandLine = CommandUtils.parseCommandline(args, registry);
                 returnCode = runCommand(args, commandLine);
             }
+            catch (ReloadException e) {
+                throw e;
+            }
             catch (Throwable e) {
-                // Print stacktraces only if requested from the command line
-                if (commandLine != null && commandLine.hasOption('X')) {
-                    log.error(e);
-                }
-                else {
-                    log.error(e.getMessage());
-                }
+                logException(commandLine, e);
                 returnCode = 1;
             }
 
-            if (versionThread.getVersion().isPresent()) {
-                printNewVersion(versionThread.getVersion().get());
-            }
+            printNewVersion();
         }
         System.exit(returnCode);
+
     }
 
-    private void printNewVersion(String version) {
-        log.info(Style.yellow("Newer version of rug %s is available", version));
+    private void logException(CommandLine commandLine, Throwable e) {
+        // Print stacktraces only if requested from the command line
+        if (commandLine != null && commandLine.hasOption('X')) {
+            log.error(e);
+        }
+        else {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void printNewVersion() {
+        if (versionThread.getVersion().isPresent()) {
+            log.info(Style.yellow("Newer version of rug %s is available",
+                    versionThread.getVersion().get()));
+        }
     }
 
     private void printVersion() {
@@ -75,10 +86,8 @@ public class Runner {
             new ShellCommandRunner(registry).runCommand(args, commandLine);
         }
         else if (commandLine.getArgList().isEmpty()) {
-            log.error("Missing command argument.\n" + 
-                    "\n" + 
-                    "Run the following command for usage help:\n" + 
-                    "  rug --help");
+            log.error("Missing command argument.\n" + "\n"
+                    + "Run the following command for usage help:\n" + "  rug --help");
             return 1;
         }
         else if (commandLine.getArgList().size() >= 1) {

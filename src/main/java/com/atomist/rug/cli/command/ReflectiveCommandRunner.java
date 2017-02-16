@@ -30,6 +30,7 @@ public class ReflectiveCommandRunner {
 
     protected final Log log = new Log(getClass());
     private final CommandInfoRegistry registry;
+    private ClassLoader classLoader;
 
     public ReflectiveCommandRunner(CommandInfoRegistry registry) {
         this.registry = registry;
@@ -49,13 +50,21 @@ public class ReflectiveCommandRunner {
 
         ArtifactDescriptor artifact = loadArtifactAndinitializeEnvironment(commandLine,
                 dependencies, info);
-        int rc = invokeCommand(args, artifact, dependencies, timing);
+        try {
+            int rc = invokeCommand(args, artifact, dependencies, timing);
 
-        commandCompleted(rc, info, artifact, dependencies);
+            commandCompleted(rc, info, artifact, dependencies);
 
-        return rc;
+            return rc;
+        }
+        finally {
+            // Restore old class loader
+            if (classLoader != null) {
+                Thread.currentThread().setContextClassLoader(classLoader);
+            }
+        }
     }
-    
+
     private Throwable extractRootCause(Throwable t) {
         if (t instanceof InvocationTargetException) {
             return extractRootCause(((InvocationTargetException) t).getTargetException());
@@ -114,6 +123,11 @@ public class ReflectiveCommandRunner {
                     .filter(a -> a.group().equals(rootArtifact.group())
                             && a.artifact().equals(rootArtifact.artifact()))
                     .findFirst().orElse(rootArtifact);
+            
+            ClassLoaderFactory.setupJ2V8ClassLoader(dependencies);
+            
+            // Hold on to old class loader
+            classLoader = Thread.currentThread().getContextClassLoader();
 
             // Setup the new classloader for the command to execute in
             if (info instanceof ClasspathEntryProvider) {
@@ -153,7 +167,8 @@ public class ReflectiveCommandRunner {
     }
 
     protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {}
+            List<ArtifactDescriptor> dependencies) {
+    }
 
     protected int invokeCommand(String[] args, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, Timing timing) {
@@ -166,6 +181,7 @@ public class ReflectiveCommandRunner {
         try {
             commandLine = CommandUtils.parseCommandline(args, registry);
             CommandInfo info = registry.findCommand(commandLine);
+            commandEnabled(artifact, info);
 
             if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
                 printCommandHelp(commandLine);
@@ -194,6 +210,13 @@ public class ReflectiveCommandRunner {
             }
         }
         return 0;
+    }
+
+    private void commandEnabled(ArtifactDescriptor artifact, CommandInfo info) {
+        if (!info.enabled(artifact)) {
+            throw new CommandException("%s command currently not enabled as no archive is loaded.",
+                    (String) null);
+        }
     }
 
 }

@@ -10,6 +10,7 @@ import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.LineReaderImpl;
 import org.springframework.boot.loader.tools.RunProcess;
 
+import com.atomist.rug.cli.ReloadException;
 import com.atomist.rug.cli.command.shell.ChangeDirCompleter;
 import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
@@ -35,26 +36,25 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
-        
-        LineReader reader = ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
-                new ChangeDirCompleter(), new OperationCompleter(),
-                new CommandInfoCompleter(registry));
-        
-        
+
+        LineReader reader = lineReader();
+
         String line = null;
         try {
             while ((line = reader.readLine(ShellUtils.DEFAULT_PROMPT)) != null) {
                 if (line.length() == 0) {
                     continue;
                 }
-                
+
                 line = line.trim();
                 if (line.startsWith("rug")) {
-                    line = line.substring(3).trim(); 
+                    line = line.substring(3).trim();
                 }
-                
-                if ("exit".equals(line) || "quit".equals(line)
-                        || "q".equals(line)) {
+                if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("sh")
+                        || line.startsWith("repl")) {
+                    reload(line);
+                }
+                else if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
                     exit();
                 }
                 else if ("clear".equals(line) || "cls".equals(line)) {
@@ -67,14 +67,23 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                     String[] args = CommandUtils.splitCommandline(line);
                     invokeCommand(args, artifact, dependencies, null);
                 }
-                
             }
         }
-        catch (UserInterruptException e) {
-        }
-        catch (EndOfFileException e) {
+        catch (EndOfFileException | UserInterruptException e) {
             log.info("Goodbye!");
         }
+    }
+
+    private void reload(String line) {
+        String[] args = CommandUtils.splitCommandline(line);
+        throw new ReloadException(args);
+    }
+
+    private LineReader lineReader() {
+        LineReader reader = ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
+                new ChangeDirCompleter(), new OperationCompleter(),
+                new CommandInfoCompleter(registry));
+        return reader;
     }
 
     private void ps(String line) {

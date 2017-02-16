@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.cli.Options;
 
+import com.atomist.rug.resolver.ArtifactDescriptor;
+
 public interface CommandInfo {
 
     String className();
@@ -18,6 +20,10 @@ public interface CommandInfo {
     String name();
 
     String usage();
+    
+    default boolean enabled(ArtifactDescriptor artifact) {
+        return true;
+    }
 
     default Options options() {
         return new Options();
