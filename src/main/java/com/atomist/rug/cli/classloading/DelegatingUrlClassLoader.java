@@ -23,7 +23,7 @@ class DelegatingUrlClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        if (delegatingPackages.stream().filter(dp -> name.startsWith(dp)).findFirst().isPresent()) {
+        if (delegatingPackages.stream().anyMatch(dp -> name.startsWith(dp))) {
             return parent.loadClass(name);
         }
         else {
