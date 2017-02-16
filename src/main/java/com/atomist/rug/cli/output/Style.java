@@ -53,6 +53,13 @@ public class Style {
         return format(msg, tokens);
     }
 
+    public static String gray(String msg, Object... tokens) {
+        if (Chalk.isColorEnabled()) {
+            return Chalk.on(format(msg, tokens)).gray().toString();
+        }
+        return format(msg, tokens);
+    }
+
     private static String format(String msg, Object... tokens) {
         if (tokens == null || tokens.length == 0) {
             return msg;
