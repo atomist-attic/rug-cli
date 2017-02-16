@@ -41,7 +41,6 @@ public abstract class ShellUtils {
         History history = new DefaultHistory();
         LineReader reader = LineReaderBuilder.builder().terminal(terminal()).history(history)
                 .parser(new DefaultParser()).variable(LineReader.HISTORY_FILE, historyPath)
-                .variable(LineReader.HISTORY_FILE_SIZE, 50)
                 .completer(new AggregateCompleter(completers)).highlighter(new DefaultHighlighter())
                 .build();
         history.attach(reader);
