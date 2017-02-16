@@ -19,7 +19,7 @@ import com.jayway.jsonpath.ReadContext;
 public class OperationCompleter implements Completer {
 
     private static final List<String> COMMANDS = Arrays.asList("edit", "ed",
-            "generate", "gen", "execute", "executo-remote", "describe", "desc");
+            "generate", "gen", "execute", "execute-remote", "describe", "desc");
 
     private long timestamp = -1;
 
