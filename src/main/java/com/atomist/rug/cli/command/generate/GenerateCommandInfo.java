@@ -56,4 +56,9 @@ public class GenerateCommandInfo extends AbstractVersionCommandInfo {
     public List<String> aliases() {
         return Collections.singletonList("gen");
     }
+    
+    @Override
+    public String group() {
+        return "2";
+    }
 }

@@ -27,7 +27,7 @@ public class TreeCommandInfo extends AbstractRugScopedCommandInfo {
         Options options = super.options();
         options.addOption(Option.builder("C").longOpt("change-dir").argName("DIR").hasArg(true)
                 .desc("Evaluate expression against project in directory DIR, default is '.'")
-                .required(false).build());
+                .build());
         options.addOption("v", "values", false, "Displays tree node values");
         return options;
     }
@@ -40,5 +40,10 @@ public class TreeCommandInfo extends AbstractRugScopedCommandInfo {
     @Override
     public String usage() {
         return "tree [OPTION]... [EXPRESSION]";
+    }
+    
+    @Override
+    public String group() {
+        return "3";
     }
 }

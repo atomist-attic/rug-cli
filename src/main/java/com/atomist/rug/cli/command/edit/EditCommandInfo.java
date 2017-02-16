@@ -52,4 +52,8 @@ public class EditCommandInfo extends AbstractVersionCommandInfo {
         return Collections.singletonList("ed");
     }
 
+    @Override
+    public String group() {
+        return "2";
+    }
 }

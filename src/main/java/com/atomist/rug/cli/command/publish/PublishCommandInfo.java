@@ -50,4 +50,9 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
     public String usage() {
         return "publish [OPTION]...";
     }
+    
+    @Override
+    public String group() {
+        return "2";
+    }
 }

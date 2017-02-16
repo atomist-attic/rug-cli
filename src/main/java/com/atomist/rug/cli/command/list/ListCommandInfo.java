@@ -49,4 +49,9 @@ public class ListCommandInfo extends AbstractRugScopedCommandInfo {
     public List<String> aliases() {
         return Collections.singletonList("ls");
     }
+    
+    @Override
+    public String group() {
+        return "1";
+    }
 }

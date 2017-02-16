@@ -55,7 +55,7 @@ public class ExtensionCommandInfo extends AbstractRugScopedCommandInfo {
     
     @Override
     public String group() {
-        return "admin";
+        return "4";
     }
     
     @Override
