@@ -5,6 +5,9 @@ import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.command.AbstractLocalArtifactDescriptorProvider;
 import com.atomist.rug.cli.command.CommandInfo;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
+import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 
 public class InstallCommandInfo extends AbstractLocalArtifactDescriptorProvider
         implements CommandInfo {
@@ -45,5 +48,11 @@ public class InstallCommandInfo extends AbstractLocalArtifactDescriptorProvider
     @Override
     public String group() {
         return "2";
+    }
+    
+    @Override
+    public boolean enabled(ArtifactDescriptor artifact) {
+        return artifact instanceof LocalArtifactDescriptor
+                || artifact.extension().equals(Extension.ZIP);
     }
 }
