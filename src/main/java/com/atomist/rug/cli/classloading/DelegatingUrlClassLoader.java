@@ -9,8 +9,11 @@ class DelegatingUrlClassLoader extends URLClassLoader {
 
     // Nashorn and some of the scripting classes need to come from the system classloader;
     // everything else we need to isolate and not delegate to the parent class loader
+    
+    // J2V8 also doesn't like to be loaded by different class loaders and for the shell reload
+    // we end up doing that.
     private static final String[] DEFAULT_DELEGATING_PACKAGES = new String[] { "org.slf4j",
-            "jdk.nashorn", "javax.scripting" };
+            "jdk.nashorn", "javax.scripting", "com.eclipsesource.v8" };
 
     private List<String> delegatingPackages = Arrays.asList(DEFAULT_DELEGATING_PACKAGES);
 
