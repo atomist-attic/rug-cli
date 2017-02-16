@@ -20,14 +20,15 @@ public class RepositoriesCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String description() {
-        return "Login to GitHub to obtain a Personal Access Token";
+        return "Login and configure team-scoped repositories";
     }
 
     @Override
     public String detail() {
         return "The Rug CLI uses your GitHub token to verify your membership in GitHub organizations "
                 + "and Slack teams that have the Atomist Bot enrolled.  Those teams have acccess to "
-                + "additional features, eg. team private Rug archives.";
+                + "additional features, eg. team private Rug archives.  You can use the 'login' subcommand "
+                + "to login and then 'configure' to provision the list of repositories you have access to.";
     }
 
     @Override
