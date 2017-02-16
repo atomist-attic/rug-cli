@@ -92,4 +92,9 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
     public List<String> aliases() {
         return Collections.singletonList("desc");
     }
+    
+    @Override
+    public String group() {
+        return "1";
+    }
 }

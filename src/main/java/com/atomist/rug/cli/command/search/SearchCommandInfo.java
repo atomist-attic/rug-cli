@@ -42,4 +42,9 @@ public class SearchCommandInfo extends AbstractRugScopedCommandInfo {
     public String usage() {
         return "search [OPTION]... [SEARCH]";
     }
+    
+    @Override
+    public String group() {
+        return "1";
+    }
 }

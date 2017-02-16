@@ -56,6 +56,10 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                             .asJavaCollection();
                 });
 
+        printResult(expression, values, treeNodes);
+    }
+
+    protected void printResult(String expression, boolean values, Collection<TreeNode> treeNodes) {
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Path Expression"));
         log.info("  %s", expression);
@@ -72,6 +76,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
             log.info(Style.yellow("  No matches"));
         }
         log.newline();
+        log.info(Style.green("Successfully evaluated tree expression"));
     }
 
     private static class ValueNodeToStringFunction implements Function<TreeNode, String> {

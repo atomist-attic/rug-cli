@@ -41,4 +41,9 @@ public class InstallCommandInfo extends AbstractLocalArtifactDescriptorProvider
     public String usage() {
         return "install [OPTION]...";
     }
+    
+    @Override
+    public String group() {
+        return "2";
+    }
 }

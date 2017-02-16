@@ -56,6 +56,6 @@ public class DefaultCommandInfo extends AbstractRugScopedCommandInfo {
     
     @Override
     public String group() {
-        return "admin";
+        return "4";
     }
 }

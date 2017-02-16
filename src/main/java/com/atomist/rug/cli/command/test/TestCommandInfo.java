@@ -27,4 +27,9 @@ public class TestCommandInfo extends AbstractLocalArtifactDescriptorProvider {
     public String usage() {
         return "test [OPTION]... [TEST]";
     }
+    
+    @Override
+    public String group() {
+        return "2";
+    }
 }

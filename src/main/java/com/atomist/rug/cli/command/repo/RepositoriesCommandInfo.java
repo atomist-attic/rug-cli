@@ -57,7 +57,7 @@ public class RepositoriesCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String group() {
-        return "admin";
+        return "4";
     }
 
     @Override
