@@ -1,17 +1,25 @@
 package com.atomist.rug.cli.command.search;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.springframework.util.StringUtils;
 
 import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.shell.ShellUtils;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.utils.HttpClientFactory;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class SearchOperations {
-    
+
     public List<Operation> collectResults(String endpoint, String search, String type,
             Properties tags, Settings settings) {
 
@@ -36,13 +44,37 @@ public class SearchOperations {
         HttpClientFactory.body(post, getSearchQuery(search, type, tags));
 
         Optional<Operations> operations = HttpClientFactory.executeAndRead(client, post,
-                new TypeReference<Operations>() {});
-        
+                new TypeReference<Operations>() {
+                });
+
         if (operations.isPresent()) {
+            safeToCache(operations);
             return operations.get().operations();
         }
         else {
             return Collections.emptyList();
+        }
+    }
+
+    private void safeToCache(Optional<Operations> operations) {
+        Set<String> archives = new HashSet<>();
+        if (ShellUtils.SHELL_ARCHIVES.exists()) {
+            try {
+                IOUtils.lineIterator(new FileInputStream(ShellUtils.SHELL_ARCHIVES),
+                        StandardCharsets.UTF_8).forEachRemaining((l) -> archives.add(l));
+            }
+            catch (IOException e) {
+            }
+        }
+        archives.addAll(operations.get().operations().stream()
+                .collect(Collectors
+                        .groupingBy(o -> o.archive().group() + ":" + o.archive().artifact()))
+                .keySet());
+        try {
+            IOUtils.writeLines(archives, "\n", new FileOutputStream(ShellUtils.SHELL_ARCHIVES),
+                    StandardCharsets.UTF_8);
+        }
+        catch (IOException e) {
         }
     }
 
@@ -117,7 +149,6 @@ public class SearchOperations {
         @JsonProperty
         private String scope;
 
-
         public String group() {
             return group;
         }
@@ -133,7 +164,7 @@ public class SearchOperations {
         public String key() {
             return String.format("%s:%s:%s:%s", group, artifact, version.value, scope);
         }
-        
+
         public String scope() {
             return !"global".equals(scope) ? scope.toLowerCase() : "public";
         }
@@ -147,4 +178,4 @@ public class SearchOperations {
             return value;
         }
     }
-}   
+}

@@ -29,6 +29,9 @@ public abstract class ShellUtils {
 
     public static final File INTERACTIVE_HISTORY = new File(System.getProperty("user.home")
             + File.separator + ".atomist" + File.separator + ".interactive-history");
+    
+    public static final File SHELL_ARCHIVES = new File(System.getProperty("user.home")
+            + File.separator + ".atomist" + File.separator + ".cli-archives");
 
     public static final String DEFAULT_PROMPT = Style.yellow("rug") + " "
             + Style.cyan(Constants.DIVIDER) + " ";
