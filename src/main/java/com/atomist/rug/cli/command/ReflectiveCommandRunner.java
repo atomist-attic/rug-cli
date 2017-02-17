@@ -65,14 +65,6 @@ public class ReflectiveCommandRunner {
         }
     }
 
-    private void commandEnabled(ArtifactDescriptor artifact, CommandInfo info) {
-        if (!info.enabled(artifact)) {
-            throw new CommandException(String.format(
-                    "%s command currently not enabled because no archive is loaded.\nPlease load an archive into this shell by running:\n  load group:artifact",
-                    info.name()), (String) null);
-        }
-    }
-
     private Throwable extractRootCause(Throwable t) {
         if (t instanceof InvocationTargetException) {
             return extractRootCause(((InvocationTargetException) t).getTargetException());
@@ -183,6 +175,14 @@ public class ReflectiveCommandRunner {
                     .process(ArtifactDescriptorFactory.copyFrom(artifact, version), e));
         }
     }
+    
+    protected void commandEnabled(ArtifactDescriptor artifact, CommandInfo info) {
+        if (!info.enabled(artifact)) {
+            throw new CommandException(String.format(
+                    "%s command currently not enabled because no archive is loaded.\nPlease load an archive into this shell by running:\n  load group:artifact",
+                    info.name()), (String) null);
+        }
+    }
 
     protected void artifactChanged(ArtifactDescriptor artifact, CommandInfo info,
             CommandLine commandLine) {
@@ -203,7 +203,9 @@ public class ReflectiveCommandRunner {
         try {
             commandLine = CommandUtils.parseCommandline(args, registry);
             CommandInfo info = registry.findCommand(commandLine);
+            // verify that command is enabled
             commandEnabled(artifact, info);
+            // check the artifact against the previous one
             artifactChanged(artifact, info, commandLine);
 
             if (commandLine.hasOption("?") || commandLine.hasOption("h")) {

@@ -109,7 +109,6 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     @Override
     protected void artifactChanged(ArtifactDescriptor artifact, CommandInfo info,
             CommandLine commandLine) {
-        
         if (info instanceof ArtifactDescriptorProvider) {
             ArtifactDescriptor newArtifact = null;
             try {
@@ -117,7 +116,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
             }
             catch (CommandException e) {
-                // This is ok here as it means that no artifact information was provided
+                // This is ok here as it means that no artifact information was provided on the commandline
                 return;
             }
             // Verify that in a shell session we don't support fq operation or archive name
