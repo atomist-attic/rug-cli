@@ -135,7 +135,7 @@ public class SearchOperations {
         }
         
         public String scope() {
-            return !"global".equals(scope) ? scope.toLowerCase() : null;
+            return !"global".equals(scope) ? scope.toLowerCase() : "public";
         }
     }
 
