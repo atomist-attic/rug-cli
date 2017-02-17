@@ -15,6 +15,7 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.repo.ConfigureOperations.Repo;
 import com.atomist.rug.cli.command.repo.LoginOperations.Status;
 import com.atomist.rug.cli.command.shell.ShellUtils;
@@ -32,6 +33,24 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
             + "password will not be displayed or stored. Your sensitive information will not\n"
             + "be sent to Atomist; only to api.github.com.";
 
+    @Validator
+    public void validate(@Argument(index = 1, defaultValue = "") String subcommand,
+            Settings settings) {
+        if ("".equals(subcommand)) {
+            throw new CommandException("No SUBCOMMAND provided.", "repositories");
+        }
+        if (!"login".equals(subcommand) && !"configure".equals(subcommand)) {
+            throw new CommandException(
+                    "Invalid SUBCOMMAND provided. Please specify login or configure.",
+                    "repositories");
+        }
+        if ("configure".equals(subcommand) && settings.getToken() == null) {
+            throw new CommandException(
+                    "No token configured. Please run repositories login before running this command.",
+                    "repositories configure");
+        }
+    }
+
     @Command
     public void run(@Argument(index = 1, defaultValue = "") String subcommand,
             @Option("username") String username, @Option("mfa-code") String code,
@@ -46,11 +65,6 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void configure(Settings settings) {
-        if (settings.getToken() == null) {
-            throw new CommandException("No token configured. Please run repositories login.",
-                    "repositories configure");
-        }
-
         List<Repo> remoteRepos = new ConfigureOperations().getForRepos(settings.getToken());
         Map<String, RemoteRepository> configuredRepos = settings.getRemoteRepositories();
 
@@ -81,7 +95,8 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
                 configuredRepo.setPublish(true);
                 configuredRepo.setAuthentication(auth);
             }
-            log.info("  %s\n    %s", Style.yellow(r.teamId().toLowerCase()), Style.underline(r.url()));
+            log.info("  %s\n    %s", Style.yellow(r.teamId().toLowerCase()),
+                    Style.underline(r.url()));
         });
 
         settings.setRemoteRepositories(configuredRepos);
