@@ -109,6 +109,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     @Override
     protected void artifactChanged(ArtifactDescriptor artifact, CommandInfo info,
             CommandLine commandLine) {
+        
         if (info instanceof ArtifactDescriptorProvider) {
             ArtifactDescriptor newArtifact = null;
             try {
@@ -117,17 +118,24 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             }
             catch (CommandException e) {
                 // This is ok here as it means that no artifact information was provided
+                return;
             }
             // Verify that in a shell session we don't support fq operation or archive name
-            if (Constants.IS_SHELL && newArtifact != null
-                    && !(artifact.group().equals(newArtifact.group())
-                            && artifact.artifact().equals(newArtifact.artifact()))) {
-                throw new CommandException(String.format(
-                        "Fully-qualified archive or operation names are not allowed for this command while running a shell.\nPlease load the archive by running:\n  load %s:%s",
-                        newArtifact.group(), newArtifact.artifact()), info.name());
+            if (Constants.IS_SHELL && newArtifact != null) {
+                // It is ok to load rug into the runtime; that just means we stay in current scope
+                if (newArtifact.group().equals(Constants.GROUP)
+                        && newArtifact.artifact().equals("rug")) {
+                    return;
+                }
+                // It is NOT ok to request a different archive without reloading
+                if (!(artifact.group().equals(newArtifact.group())
+                        && artifact.artifact().equals(newArtifact.artifact()))) {
+                    throw new CommandException(String.format(
+                            "Fully-qualified archive or Rug names are not allowed for this command while running a shell.\nTo load the archive into this shell, run:\n  shell %s:%s",
+                            newArtifact.group(), newArtifact.artifact()), info.name());
+                }
             }
         }
-
     }
 
     @Override
