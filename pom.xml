@@ -359,6 +359,48 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-dockerfile</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/docker</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/docker</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.12</version>
+				<configuration>
+					<imageName>atomist-docker.jfrog.io/${project.name}</imageName>
+					<dockerDirectory>${project.build.directory}/docker</dockerDirectory>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}-bin.tar.gz</include>
+						</resource>
+					</resources>
+					<useConfigFile>true</useConfigFile>
+					<imageTags>
+						<imageTag>${project.version}</imageTag>
+					</imageTags>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<repositories>
