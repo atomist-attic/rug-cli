@@ -14,6 +14,7 @@ import com.atomist.rug.cli.command.CommandEventListenerRegistry;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.version.VersionUtils;
@@ -28,11 +29,13 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
 
     private static final String BANNER_CONFIG_KEY = "shell-banner-enable";
 
-    private static final String banner = "" + "  ____                 ____ _     ___ \n"
+    private static final String banner = "" 
+            + "  ____                 ____ _     ___ \n"
             + " |  _ \\ _   _  __ _   / ___| |   |_ _|\n"
             + " | |_) | | | |/ _` | | |   | |    | | \n"
             + " |  _ <| |_| | (_| | | |___| |___ | | \n"
-            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" + " Atomist      |___/ %s";
+            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" 
+            + " %s      |___/ %s";
 
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
@@ -70,7 +73,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         if (settings.getConfigValue(BANNER_CONFIG_KEY, true)) {
             String version = VersionUtils.readVersion().orElse("0.0.0");
             log.newline();
-            log.info(banner, StringUtils.leftPad(version, 18));
+            log.info(banner, Style.gray("Atomist"), Style.gray(StringUtils.leftPad(version, 18)));
         }
         log.newline();
         log.info(
