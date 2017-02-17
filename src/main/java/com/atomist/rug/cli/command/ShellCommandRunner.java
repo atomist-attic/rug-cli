@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
@@ -38,7 +39,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
-        
+
         configureEnv();
         LineReader reader = lineReader();
 
@@ -89,9 +90,9 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     private LineReader lineReader() {
-        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
-                new ChangeDirCompleter(), new OperationCompleter(),
-                new CommandInfoCompleter(registry), new ArchiveNameCompleter());
+        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY, new ChangeDirCompleter(),
+                new OperationCompleter(), new CommandInfoCompleter(registry),
+                new ArchiveNameCompleter());
     }
 
     private void ps(String line) {
@@ -104,7 +105,31 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             log.error(e.getMessage());
         }
     }
-    
+
+    @Override
+    protected void artifactChanged(ArtifactDescriptor artifact, CommandInfo info,
+            CommandLine commandLine) {
+        if (info instanceof ArtifactDescriptorProvider) {
+            ArtifactDescriptor newArtifact = null;
+            try {
+                newArtifact = ((ArtifactDescriptorProvider) info).artifactDescriptor(commandLine);
+
+            }
+            catch (CommandException e) {
+                // This is ok here as it means that no artifact information was provided
+            }
+            // Verify that in a shell session we don't support fq operation or archive name
+            if (Constants.IS_SHELL && newArtifact != null
+                    && !(artifact.group().equals(newArtifact.group())
+                            && artifact.artifact().equals(newArtifact.artifact()))) {
+                throw new CommandException(String.format(
+                        "Fully-qualified archive or operation names are not allowed for this command while running a shell.\nPlease load the archive by running:\n  load %s:%s",
+                        newArtifact.group(), newArtifact.artifact()), info.name());
+            }
+        }
+
+    }
+
     @Override
     protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {

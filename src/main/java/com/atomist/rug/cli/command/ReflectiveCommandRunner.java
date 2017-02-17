@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 
-import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.classloading.ClassLoaderFactory;
@@ -63,6 +62,14 @@ public class ReflectiveCommandRunner {
             if (classLoader != null) {
                 Thread.currentThread().setContextClassLoader(classLoader);
             }
+        }
+    }
+
+    private void commandEnabled(ArtifactDescriptor artifact, CommandInfo info) {
+        if (!info.enabled(artifact)) {
+            throw new CommandException(String.format(
+                    "%s command currently not enabled because no archive is loaded.\nPlease load an archive into this shell by running:\n  load group:artifact",
+                    info.name()), (String) null);
         }
     }
 
@@ -147,6 +154,16 @@ public class ReflectiveCommandRunner {
                 new CommandHelpFormatter().printCommandHelp(registry.findCommand(commandLine)));
     }
 
+    private void printError(CommandLine commandLine, Throwable e) {
+        // Print stacktraces only if requested from the command line
+        if (commandLine != null && commandLine.hasOption('X')) {
+            log.error(e);
+        }
+        else {
+            log.error(e.getMessage());
+        }
+    }
+
     private void printTimer(Timing timing) {
         log.info("Command completed in " + timing.duration() + "s");
     }
@@ -165,6 +182,10 @@ public class ReflectiveCommandRunner {
             throw new CommandException(DependencyResolverExceptionProcessor
                     .process(ArtifactDescriptorFactory.copyFrom(artifact, version), e));
         }
+    }
+
+    protected void artifactChanged(ArtifactDescriptor artifact, CommandInfo info,
+            CommandLine commandLine) {
     }
 
     protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
@@ -195,15 +216,7 @@ public class ReflectiveCommandRunner {
         }
         catch (Throwable e) {
             // Extract root exception; cycle through nested exceptions to extract root cause
-            e = extractRootCause(e);
-
-            // Print stacktraces only if requested from the command line
-            if (commandLine != null && commandLine.hasOption('X')) {
-                log.error(e);
-            }
-            else {
-                log.error(e.getMessage());
-            }
+            printError(commandLine, extractRootCause(e));
             return 1;
         }
         finally {
@@ -212,36 +225,6 @@ public class ReflectiveCommandRunner {
             }
         }
         return 0;
-    }
-
-    protected void artifactChanged(ArtifactDescriptor artifact, CommandInfo info,
-            CommandLine commandLine) {
-        if (info instanceof ArtifactDescriptorProvider) {
-            ArtifactDescriptor newArtifact = null;
-            try {
-                newArtifact = ((ArtifactDescriptorProvider) info).artifactDescriptor(commandLine);
-
-            }
-            catch (CommandException e) {
-                // This is ok here as it means that no artifact information was provided
-            }
-            // Verify that in a shell session we don't support fq operation or archive name
-            if (Constants.IS_SHELL && newArtifact != null
-                    && !(artifact.group().equals(newArtifact.group())
-                            && artifact.artifact().equals(newArtifact.artifact()))) {
-                throw new CommandException(String.format(
-                        "Fully-qualified archive or operation names are not allowed for this command while running a shell.\nPlease load the archive by running:\n  load %s:%s",
-                        newArtifact.group(), newArtifact.artifact()), info.name());
-            }
-        }
-    }
-
-    private void commandEnabled(ArtifactDescriptor artifact, CommandInfo info) {
-        if (!info.enabled(artifact)) {
-            throw new CommandException(String.format(
-                    "%s command currently not enabled because no archive is loaded.\nPlease load an archive into this shell by running:\n  load group:artifact",
-                    info.name()), (String) null);
-        }
     }
 
 }
