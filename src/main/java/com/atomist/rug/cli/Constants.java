@@ -9,7 +9,9 @@ import com.atomist.rug.cli.version.VersionUtils;
 
 public class Constants {
     
-    public static String COMMAND = "rug";
+    public static final String DEFAULT_COMMAND = "rug";
+    public static String COMMAND = DEFAULT_COMMAND;
+    public static boolean IS_SHELL = false;
     public static final String GROUP = "com.atomist";
     public static final String ARTIFACT = "rug-cli";
     

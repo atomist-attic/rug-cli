@@ -10,7 +10,9 @@ import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.LineReaderImpl;
 import org.springframework.boot.loader.tools.RunProcess;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.ReloadException;
+import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
 import com.atomist.rug.cli.command.shell.ChangeDirCompleter;
 import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
@@ -36,7 +38,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
-
+        
+        configureEnv();
         LineReader reader = lineReader();
 
         String line = null;
@@ -74,16 +77,21 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         }
     }
 
+    private void configureEnv() {
+        // TODO this is hacky
+        Constants.COMMAND = Constants.DEFAULT_COMMAND + " " + Constants.DIVIDER;
+        Constants.IS_SHELL = true;
+    }
+
     private void reload(String line) {
         String[] args = CommandUtils.splitCommandline(line);
         throw new ReloadException(args);
     }
 
     private LineReader lineReader() {
-        LineReader reader = ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
+        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY,
                 new ChangeDirCompleter(), new OperationCompleter(),
-                new CommandInfoCompleter(registry));
-        return reader;
+                new CommandInfoCompleter(registry), new ArchiveNameCompleter());
     }
 
     private void ps(String line) {
@@ -96,7 +104,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             log.error(e.getMessage());
         }
     }
-
+    
     @Override
     protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {

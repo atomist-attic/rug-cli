@@ -53,8 +53,13 @@ public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDe
         return options;
     }
 
-    protected final ArtifactDescriptor findArtifact(String name, String version) {
+    @Override
+    public boolean enabled(ArtifactDescriptor artifact) {
+        return artifact instanceof LocalArtifactDescriptor
+                || artifact.extension().equals(Extension.ZIP);
+    }
 
+    protected final ArtifactDescriptor findArtifact(String name, String version) {
         Pattern pattern = Pattern.compile(COORDINATE_PATTERN_STRING);
         Matcher matcher = pattern.matcher((name != null ? name : ""));
 
@@ -102,11 +107,4 @@ public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDe
                 "No valid ARTIFACT provided, no default artifact defined and not in local mode.",
                 name());
     }
-
-    @Override
-    public boolean enabled(ArtifactDescriptor artifact) {
-        return artifact instanceof LocalArtifactDescriptor
-                || artifact.extension().equals(Extension.ZIP);
-    }
-
 }
