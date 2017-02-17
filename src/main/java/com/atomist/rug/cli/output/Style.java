@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.output;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import com.github.tomaslanger.chalk.Chalk;
 
 public class Style {
@@ -52,9 +54,12 @@ public class Style {
         }
         return format(msg, tokens);
     }
-
+    
+    /**
+     * Careful: gray doesn't work on Windows!
+     */
     public static String gray(String msg, Object... tokens) {
-        if (Chalk.isColorEnabled()) {
+        if (Chalk.isColorEnabled() && !SystemUtils.IS_OS_WINDOWS) {
             return Chalk.on(format(msg, tokens)).gray().toString();
         }
         return format(msg, tokens);
