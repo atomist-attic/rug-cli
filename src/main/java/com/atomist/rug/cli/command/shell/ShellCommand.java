@@ -37,6 +37,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
             OperationsAndHandlers operations, Settings settings) {
+
         // TODO make this a proper thing
         Constants.COMMAND = Constants.DEFAULT_COMMAND + " " + Constants.DIVIDER;
         Constants.IS_SHELL = true;
@@ -67,9 +68,9 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
 
     private void printBanner(Settings settings) {
         if (settings.getConfigValue(BANNER_CONFIG_KEY, true)) {
+            String version = VersionUtils.readVersion().orElse("0.0.0");
             log.newline();
-            log.info(banner, StringUtils
-                    .leftPad(VersionUtils.readVersion().orElse("0.0.0").split("-")[0], 18));
+            log.info(banner, StringUtils.leftPad(version, 18));
         }
         log.newline();
         log.info(
