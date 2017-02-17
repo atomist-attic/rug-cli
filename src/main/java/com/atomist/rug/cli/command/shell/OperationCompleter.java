@@ -16,6 +16,9 @@ import org.jline.reader.ParsedLine;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 
+/**
+ * {@link Completer} for completion of operation names, like Editor and Generator names. 
+ */
 public class OperationCompleter implements Completer {
 
     private static final List<String> COMMANDS = Arrays.asList("edit", "ed",
