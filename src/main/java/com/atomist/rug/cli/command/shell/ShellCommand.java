@@ -38,7 +38,8 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
             OperationsAndHandlers operations, Settings settings) {
         // TODO make this a proper thing
-        Constants.COMMAND = Constants.COMMAND + " " + Constants.DIVIDER;
+        Constants.COMMAND = Constants.DEFAULT_COMMAND + " " + Constants.DIVIDER;
+        Constants.IS_SHELL = true;
 
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {

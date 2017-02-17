@@ -25,7 +25,6 @@ import com.atomist.project.archive.Operations;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Option;
-import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -49,12 +48,6 @@ public abstract class AbstractAnnotationBasedCommand
         catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new RunnerException(e);
         }
-    }
-
-    private void invokeValidateMethod(List<Object> arguments) {
-        Optional<Method> validateMethod = annotatedMethodWith(Validator.class);
-
-        validateMethod.ifPresent(method -> invokeMethod(method, arguments));
     }
 
     private Object prepareArgumentMethodArgument(CommandLine commandLine, Parameter p,
@@ -164,14 +157,20 @@ public abstract class AbstractAnnotationBasedCommand
     protected void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
             ArtifactSource source, CommandLine commandLine) {
 
-        Optional<Method> method = annotatedMethodWith(com.atomist.rug.cli.command.annotation.Command.class);
+        Optional<Method> commandMethod = annotatedMethodWith(
+                com.atomist.rug.cli.command.annotation.Command.class);
+        Optional<Method> validatorMethod = annotatedMethodWith(
+                com.atomist.rug.cli.command.annotation.Validator.class);
 
-        if (method.isPresent()) {
-            List<Object> arguments = prepareMethodArguments(method.get(), operations, artifact,
+        if (commandMethod.isPresent()) {
+            if (validatorMethod.isPresent()) {
+                List<Object> validatorArgs = prepareMethodArguments(validatorMethod.get(),
+                        operations, artifact, source, commandLine);
+                invokeMethod(validatorMethod.get(), validatorArgs);
+            }
+            List<Object> runArgs = prepareMethodArguments(commandMethod.get(), operations, artifact,
                     source, commandLine);
-
-            invokeValidateMethod(arguments);
-            invokeMethod(method.get(), arguments);
+            invokeMethod(commandMethod.get(), runArgs);
         }
         else {
             throw new CommandException("Command class does not have an @Command-annotated method.");

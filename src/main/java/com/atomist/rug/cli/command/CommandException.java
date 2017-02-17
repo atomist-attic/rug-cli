@@ -20,7 +20,7 @@ public class CommandException extends RuntimeException {
 
     private static String getHelpText(String command) {
         if (command == null) {
-            return String.format("\n\nRun the following command for usage help:\n  %s --help",
+            return String.format("\n\nRun the following command for usage help:\n  %s help",
                     Constants.COMMAND);
         }
         else {
