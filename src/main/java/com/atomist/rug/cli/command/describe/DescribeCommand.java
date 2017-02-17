@@ -55,8 +55,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             "Reviewers");
 
     @Validator
-    public void validate(OperationsAndHandlers operationsAndHandlers, ArtifactDescriptor artifact,
-            ArtifactSource source, String kind, String name, String format) {
+    public void validate(@Argument(index = 1, defaultValue = "") String kind,
+            @Argument(index = 2) String name, @Option("output") String format) {
         switch (kind) {
         case "editor":
             break;
@@ -234,10 +234,16 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             asJavaCollection(info.parameters())
                     .forEach(p -> invokeSb.append(p.getName()).append("=VALUE "));
         }
-        log.info("  %s %s \"%s:%s:%s\" -a %s%s %s", Constants.COMMAND, command, artifact.group(),
-                artifact.artifact(), StringUtils.stripName(info.name(), artifact),
-                artifact.version(), (CommandLineOptions.hasOption("l") ? " -l" : ""),
-                invokeSb.toString());
+        if (Constants.IS_SHELL) {
+            log.info("  %s %s %s %s", Constants.COMMAND, command,
+                    StringUtils.stripName(info.name(), artifact), invokeSb.toString());
+        }
+        else {
+            log.info("  %s %s \"%s:%s:%s\" -a %s%s %s", Constants.COMMAND, command,
+                    artifact.group(), artifact.artifact(),
+                    StringUtils.stripName(info.name(), artifact), artifact.version(),
+                    (CommandLineOptions.hasOption("l") ? " -l" : ""), invokeSb.toString());
+        }
     }
 
     private void describeInvokeArchive() {
@@ -251,7 +257,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         String name = info.name();
         log.info(Style.bold(Style.yellow(StringUtils.stripName(name, artifact))));
         log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
-        log.info(info.description());
+        log.info(org.apache.commons.lang3.StringUtils.capitalize(info.description()));
     }
 
     private void describeName(Manifest manifest) {
