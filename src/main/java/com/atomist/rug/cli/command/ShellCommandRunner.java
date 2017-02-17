@@ -18,7 +18,10 @@ import com.atomist.rug.cli.command.shell.ChangeDirCompleter;
 import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
 import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public class ShellCommandRunner extends ReflectiveCommandRunner {
 
@@ -45,7 +48,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
         String line = null;
         try {
-            while ((line = reader.readLine(ShellUtils.DEFAULT_PROMPT)) != null) {
+            while ((line = reader.readLine(prompt(artifact))) != null) {
                 if (line.length() == 0) {
                     continue;
                 }
@@ -76,6 +79,14 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         catch (EndOfFileException | UserInterruptException e) {
             log.info("Goodbye!");
         }
+    }
+
+    private String prompt(ArtifactDescriptor artifact) {
+        if (artifact != null && !(artifact.group().equals(Constants.GROUP)
+                && artifact.artifact().equals("rug"))) {
+            log.info(Style.gray(ArtifactDescriptorUtils.coordinates(artifact)));
+        }
+        return ShellUtils.DEFAULT_PROMPT;
     }
 
     private void configureEnv() {
@@ -116,11 +127,13 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
             }
             catch (CommandException e) {
-                // This is ok here as it means that no artifact information was provided on the commandline
+                // This is ok here as it means that no artifact information was provided on the
+                // commandline
                 return;
             }
             // Verify that in a shell session we don't support fq operation or archive name
-            if (Constants.IS_SHELL && newArtifact != null) {
+            if (Constants.IS_SHELL && newArtifact != null
+                    && !(newArtifact instanceof LocalArtifactDescriptor)) {
                 // It is ok to load rug into the runtime; that just means we stay in current scope
                 if (newArtifact.group().equals(Constants.GROUP)
                         && newArtifact.artifact().equals("rug")) {
