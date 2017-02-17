@@ -15,31 +15,31 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 
 public abstract class CommandEventListenerRegistry {
-    
+
     private static List<CommandEventListener> listeners = new ArrayList<>();
     static {
         register(new ArtifactSourcePrintingCommandEventListener());
         register(new CommandContextManagingCommandEventListener());
     }
-    
+
     public static void register(CommandEventListener listener) {
         listeners.add(listener);
     }
-    
+
     public static void raiseEvent(Consumer<CommandEventListener> consumer) {
         listeners.forEach(l -> consumer.accept(l));
     }
-    
-    
-    private static class ArtifactSourcePrintingCommandEventListener extends CommandEventListenerAdapter {
-        
+
+    private static class ArtifactSourcePrintingCommandEventListener
+            extends CommandEventListenerAdapter {
+
         private static Log log = new Log(ArtifactSourcePrintingCommandEventListener.class);
-        
+
         @Override
         public void artifactSourceLoaded(ArtifactDescriptor artifact, ArtifactSource source) {
             printArtifactSource(artifact, source);
         }
-        
+
         private void printArtifactSource(ArtifactDescriptor artifact, ArtifactSource source) {
             if (CommandLineOptions.hasOption("V") && source != null) {
                 log.info("Loaded archive sources for %s",
@@ -49,14 +49,15 @@ public abstract class CommandEventListenerRegistry {
             }
         }
     }
-    
-    private static class CommandContextManagingCommandEventListener extends CommandEventListenerAdapter {
-        
+
+    private static class CommandContextManagingCommandEventListener
+            extends CommandEventListenerAdapter {
+
         @Override
         public void artifactSourceCompiled(ArtifactDescriptor artifact, ArtifactSource source) {
             CommandContext.save(ArtifactSource.class, source);
         }
-        
+
         @Override
         public void operationsLoaded(ArtifactDescriptor artifact,
                 OperationsAndHandlers operations) {
