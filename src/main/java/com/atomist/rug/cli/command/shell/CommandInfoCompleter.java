@@ -13,6 +13,9 @@ import org.jline.reader.ParsedLine;
 import com.atomist.rug.cli.command.CommandInfo;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 
+/**
+ * {@link Completer} for command, sub-command as well as options. 
+ */
 public class CommandInfoCompleter implements Completer {
 
     private CommandInfoRegistry registry;

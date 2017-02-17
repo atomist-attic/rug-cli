@@ -7,8 +7,12 @@ import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.impl.completer.FileNameCompleter;
 
+/**
+ * Extension to JLine's {@link FileNameCompleter} that only completes on <code>-C</code> or
+ * <code>--change-dir</code> arguments.
+ */
 public class ChangeDirCompleter extends FileNameCompleter {
-    
+
     @Override
     public void complete(LineReader reader, ParsedLine commandLine, List<Candidate> candidates) {
         if (commandLine.words().size() > 1) {
