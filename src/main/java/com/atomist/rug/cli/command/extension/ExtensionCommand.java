@@ -218,9 +218,9 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                     return true;
                 }
                 else {
-                    log.info("Extension %s:%s:%s requires %s of %s", extension.group(),
+                    log.info("Extension %s:%s:%s requires %s of %s:%s", extension.group(),
                             extension.artifact(), extension.version(), constraint.toString(),
-                            Constants.COMMAND);
+                            Constants.GROUP, Constants.RUG_ARTIFACT);
                     return false;
                 }
             }

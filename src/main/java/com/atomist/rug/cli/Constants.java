@@ -9,9 +9,8 @@ import com.atomist.rug.cli.version.VersionUtils;
 
 public class Constants {
     
-    public static final String DEFAULT_COMMAND = "rug";
-    public static String COMMAND = DEFAULT_COMMAND;
-    public static boolean IS_SHELL = false;
+    private static final String COMMAND = "rug ";
+    
     public static final String GROUP = "com.atomist";
     public static final String ARTIFACT = "rug-cli";
     
@@ -37,7 +36,7 @@ public class Constants {
     
     public static final String CATALOG_PATH = "operation/search";
     public static final String CATALOG_URL = "https://api.atomist.com/catalog";
-    public static final String REPO_URL = "https://api-staging.atomist.services/user/team";
+    public static final String REPO_URL = "https://api.atomist.com/user/team";
     
     
     public static String cliClient() {
@@ -56,5 +55,24 @@ public class Constants {
             return "unkown";
         }
     }
-
+    
+    // We need to persist this setting in the System properties as we are dealing with different
+    // class loaders throughout the app and can't use static fields
+    public static Boolean isShell() {
+        return Boolean.valueOf(System.getProperty("RUG_CLI_SHELL", "false"));
+    }
+    
+    public static void setShell(Boolean isShell) {
+        System.setProperty("RUG_CLI_SHELL", isShell.toString());
+    }
+    
+    public static String command() {
+        // When running inside the shell we don't need command to show in help and error msg
+        if (isShell()) {
+            return "";
+        }
+        else {
+            return COMMAND;
+        }
+    }
 }

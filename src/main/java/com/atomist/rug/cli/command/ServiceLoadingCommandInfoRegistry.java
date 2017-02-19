@@ -61,7 +61,7 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
         Optional<String> closestMatch = StringUtils.computeClosestMatch(commandName,
                 commands.stream().map(CommandInfo::name).collect(toList()));
         return closestMatch.map(s -> new StringBuilder().append("\n\nDid you mean?\n").append("  ")
-                .append(Constants.COMMAND).append(" ").append(s).append(" ").append("").toString())
+                .append(Constants.command()).append(s).append(" ").append("").toString())
                 .orElse("");
     }
 }

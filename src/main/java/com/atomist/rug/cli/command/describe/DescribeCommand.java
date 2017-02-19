@@ -234,12 +234,12 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             asJavaCollection(info.parameters())
                     .forEach(p -> invokeSb.append(p.getName()).append("=VALUE "));
         }
-        if (Constants.IS_SHELL) {
-            log.info("  %s %s %s %s", Constants.COMMAND, command,
-                    StringUtils.stripName(info.name(), artifact), invokeSb.toString());
+        if (Constants.isShell()) {
+            log.info("  %s %s %s", command, StringUtils.stripName(info.name(), artifact),
+                    invokeSb.toString());
         }
         else {
-            log.info("  %s %s \"%s:%s:%s\" -a %s%s %s", Constants.COMMAND, command,
+            log.info("  %s%s \"%s:%s:%s\" -a %s%s %s", Constants.command(), command,
                     artifact.group(), artifact.artifact(),
                     StringUtils.stripName(info.name(), artifact), artifact.version(),
                     (CommandLineOptions.hasOption("l") ? " -l" : ""), invokeSb.toString());
@@ -249,7 +249,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeInvokeArchive() {
         log.newline();
         log.info("To get more information on any of the Rugs listed above, run:");
-        log.info("  %s %s editor|generator|executor|reviewer ARTIFACT %s", Constants.COMMAND,
+        log.info("  %s%s editor|generator|executor|reviewer ARTIFACT %s", Constants.command(),
                 "describe", (CommandLineOptions.hasOption("l") ? "-l" : ""));
     }
 

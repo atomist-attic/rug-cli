@@ -40,19 +40,18 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact,
             OperationsAndHandlers operations, Settings settings) {
-
-        // TODO make this a proper thing
-        Constants.COMMAND = Constants.DEFAULT_COMMAND + " " + Constants.DIVIDER;
-        Constants.IS_SHELL = true;
-
+        
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
                     registerFileSystemWatcherEventListener(artifact, operations);
                     registerOperationsEventListener(source, artifact, operations);
                     return null;
                 });
-
-        printBanner(settings);
+        
+        if (!Constants.isShell()) {
+            printBanner(settings);
+        }
+        Constants.setShell(true);
     }
 
     private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact,

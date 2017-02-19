@@ -31,7 +31,7 @@ public class CommandHelpFormatter {
     public String printCommandHelp(CommandInfo description) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("Usage: %s %s\n", Style.bold(Constants.COMMAND),
+        sb.append(String.format("Usage: %s%s\n", Style.bold(Constants.command()),
                 Style.bold(description.usage())));
         if (!description.aliases().isEmpty()) {
             sb.append(String.format("%s: %s\n",
@@ -57,7 +57,7 @@ public class CommandHelpFormatter {
         StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("Usage: %s\n",
-                Style.bold(Constants.COMMAND + " [OPTION]... [COMMAND]...")));
+                Style.bold(Constants.command() + "[OPTION]... [COMMAND]...")));
         sb.append("Work with Rugs like editors or generators.\n");
 
         printOptions(options, sb, Style.bold("Options"));
@@ -65,8 +65,8 @@ public class CommandHelpFormatter {
         printCommands(sb, registry);
 
         sb.append("\n");
-        sb.append(String.format("Run '%s COMMAND --help' for more detailed information on COMMAND.",
-                Constants.COMMAND));
+        sb.append(String.format("Run '%sCOMMAND --help' for more detailed information on COMMAND.",
+                Constants.command()));
         sb.append(HELP_FOOTER);
 
         return sb.toString();
