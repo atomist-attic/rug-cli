@@ -15,10 +15,10 @@ public class Main {
         // For attaching a profiler, we are waiting for user input when -w is specified on the
         // commandline
         args = waitForInput(args);
-        
+
         // Some setup
         configureEnv();
-        
+
         // Wrap streams so that we can intercept calls to System.out.println etc
         configureStreams();
 
@@ -26,12 +26,17 @@ public class Main {
     }
 
     private static void invokeRunner(String[] args) {
-        try {
-            new Runner(new ServiceLoadingCommandInfoRegistry()).run(args);
-        }
-        catch (ReloadException e) {
-            // Request to reload the current shell session received
-            invokeRunner(e.args());
+        boolean shouldContinue = true;
+        
+        while (shouldContinue) {
+            try {
+                shouldContinue = false;
+                new Runner(new ServiceLoadingCommandInfoRegistry()).run(args);
+            }
+            catch (ReloadException e) {
+                args = e.args();
+                shouldContinue = true;
+            }
         }
     }
 
