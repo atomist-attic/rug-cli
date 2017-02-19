@@ -57,7 +57,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 }
 
                 // Empty line
-                if (line.length() == 0) {
+                if (line == null || line.length() == 0) {
                     continue;
                 }
 
