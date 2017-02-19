@@ -47,36 +47,51 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
         String line = null;
         try {
-            while ((line = reader.readLine(prompt(artifact))) != null) {
+            while (true) {
+
+                try {
+                    line = reader.readLine(prompt(artifact));
+                }
+                catch (UserInterruptException e) {
+                    // Ignore Ctrl-C
+                }
+
+                // Empty line
                 if (line.length() == 0) {
                     continue;
                 }
 
-                line = line.trim();
-                if (line.startsWith("rug")) {
-                    line = line.substring(3).trim();
-                }
-                if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("sh")
-                        || line.startsWith("repl")) {
-                    reload(line);
-                }
-                else if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
-                    exit();
-                }
-                else if ("clear".equals(line) || "cls".equals(line)) {
-                    clear(reader);
-                }
-                else if (line.startsWith("!")) {
-                    ps(line);
-                }
-                else {
-                    String[] args = CommandUtils.splitCommandline(line);
-                    invokeCommand(args, artifact, dependencies, null);
-                }
+                handleInput(artifact, dependencies, reader, line);
             }
         }
-        catch (EndOfFileException | UserInterruptException e) {
+        catch (EndOfFileException e) {
+            // Handle Ctrl-D
             log.info("Goodbye!");
+        }
+    }
+
+    private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
+            LineReader reader, String line) {
+        line = line.trim();
+        if (line.startsWith("rug")) {
+            line = line.substring(3).trim();
+        }
+        if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("sh")
+                || line.startsWith("repl")) {
+            reload(line);
+        }
+        else if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
+            exit();
+        }
+        else if ("clear".equals(line) || "cls".equals(line)) {
+            clear(reader);
+        }
+        else if (line.startsWith("!")) {
+            ps(line);
+        }
+        else {
+            String[] args = CommandUtils.splitCommandline(line);
+            invokeCommand(args, artifact, dependencies, null);
         }
     }
 
@@ -89,8 +104,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     private void reload(String line) {
-        String[] args = CommandUtils.splitCommandline(line);
-        throw new ReloadException(args);
+        throw new ReloadException(CommandUtils.splitCommandline(line));
     }
 
     private LineReader lineReader() {
@@ -136,7 +150,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 if (!(artifact.group().equals(newArtifact.group())
                         && artifact.artifact().equals(newArtifact.artifact()))) {
                     throw new CommandException(String.format(
-                            "Fully-qualified archive or Rug names are not allowed for this command while running a shell.\nTo load the archive into this shell, run:\n  shell %s:%s",
+                            "Fully-qualified archive or Rug names are not allowed for this command "
+                            + "while running a shell.\nTo load the archive into this shell, run:\n  shell %s:%s",
                             newArtifact.group(), newArtifact.artifact()), info.name());
                 }
             }
