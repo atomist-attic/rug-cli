@@ -51,9 +51,15 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
             if (CommandContext.contains(ArtifactSource.class)
                     && CommandContext.contains(OperationsAndHandlers.class)) {
-                
-                run(CommandContext.restore(OperationsAndHandlers.class), artifact,
-                        CommandContext.restore(ArtifactSource.class), commandLine);
+                ArtifactSource source = CommandContext.restore(ArtifactSource.class);
+
+                OperationsAndHandlers operationsAndHandlers = new ProgressReportingOperationRunner<OperationsAndHandlers>(
+                        String.format("Restoring runtime for %s",
+                                ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
+                                    return CommandContext.restore(OperationsAndHandlers.class);
+                                });
+
+                run(operationsAndHandlers, artifact, source, commandLine);
             }
             else {
                 ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
@@ -125,12 +131,12 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                     .cachingCompiler(CompilerFactory.create(), root.getAbsolutePath()));
             CommandContext.save(TypeScriptCompiler.class, compiler);
         }
-        
+
         // Make sure the target dir for the compiler exists; eg. install command deletes it
         if (!root.exists()) {
             root.mkdirs();
         }
-        
+
         if (compiler.supports(source)) {
             return Collections.singletonList(compiler);
         }
