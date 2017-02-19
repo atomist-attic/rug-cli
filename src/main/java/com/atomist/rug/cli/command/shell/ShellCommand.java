@@ -72,7 +72,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         if (settings.getConfigValue(BANNER_CONFIG_KEY, true)) {
             String version = VersionUtils.readVersion().orElse("0.0.0");
             log.newline();
-            log.info(banner, Style.gray("Atomist"), Style.gray(StringUtils.leftPad(version, 18)));
+            log.info(banner, "Atomist", StringUtils.leftPad(version, 18));
         }
         log.newline();
         log.info(
