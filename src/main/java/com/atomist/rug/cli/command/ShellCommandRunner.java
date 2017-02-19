@@ -43,7 +43,6 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
 
-        configureEnv();
         LineReader reader = lineReader();
 
         String line = null;
@@ -83,16 +82,10 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private String prompt(ArtifactDescriptor artifact) {
         if (artifact != null && !(artifact.group().equals(Constants.GROUP)
-                && artifact.artifact().equals("rug"))) {
+                && artifact.artifact().equals(Constants.RUG_ARTIFACT))) {
             log.info(Style.gray(ArtifactDescriptorUtils.coordinates(artifact)));
         }
         return ShellUtils.DEFAULT_PROMPT;
-    }
-
-    private void configureEnv() {
-        // TODO this is hacky
-        Constants.COMMAND = Constants.DEFAULT_COMMAND + " " + Constants.DIVIDER;
-        Constants.IS_SHELL = true;
     }
 
     private void reload(String line) {
@@ -132,11 +125,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 return;
             }
             // Verify that in a shell session we don't support fq operation or archive name
-            if (Constants.IS_SHELL && newArtifact != null
+            if (Constants.isShell() && newArtifact != null
                     && !(newArtifact instanceof LocalArtifactDescriptor)) {
                 // It is ok to load rug into the runtime; that just means we stay in current scope
                 if (newArtifact.group().equals(Constants.GROUP)
-                        && newArtifact.artifact().equals("rug")) {
+                        && newArtifact.artifact().equals(Constants.RUG_ARTIFACT)) {
                     return;
                 }
                 // It is NOT ok to request a different archive without reloading

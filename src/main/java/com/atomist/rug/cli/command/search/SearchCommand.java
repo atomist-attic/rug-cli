@@ -58,15 +58,14 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         else {
             operations.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
                     .forEach(a -> printArchive(a.getValue(), showOps));
-            if (Constants.IS_SHELL) {
+            if (Constants.isShell()) {
                 log.info(
                         "\nFor more information on specific archive version, run:\n"
-                                + "  %s shell ARCHIVE -a VERSION\nfollowed by:\n  %s describe archive",
-                        Constants.COMMAND, Constants.COMMAND);
+                                + "  shell ARCHIVE -a VERSION\nfollowed by:\n  describe archive");
             }
             else {
                 log.info("\nFor more information on specific archive version, run:\n"
-                        + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND);
+                        + "  %sdescribe archive ARCHIVE -a VERSION", Constants.command());
             }
         }
     }

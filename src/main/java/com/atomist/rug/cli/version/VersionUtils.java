@@ -150,7 +150,7 @@ public abstract class VersionUtils {
         String sha = properties.getProperty("git.commit.id.abbrev", "n/a");
         String date = properties.getProperty("git.commit.time", "n/a");
 
-        return new VersionInformation("rug", version, repo, version, sha, date);
+        return new VersionInformation(Constants.command(), version, repo, version, sha, date);
     }
 
     private static boolean isOutdated() {

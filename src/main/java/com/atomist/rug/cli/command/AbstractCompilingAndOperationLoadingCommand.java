@@ -51,6 +51,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
             if (CommandContext.contains(ArtifactSource.class)
                     && CommandContext.contains(OperationsAndHandlers.class)) {
+                
                 run(CommandContext.restore(OperationsAndHandlers.class), artifact,
                         CommandContext.restore(ArtifactSource.class), commandLine);
             }

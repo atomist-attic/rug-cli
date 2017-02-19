@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractVersionCommandInfo;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.CommandUtils;
@@ -54,11 +55,11 @@ public class ShellCommandInfo extends AbstractVersionCommandInfo {
             return super.artifactDescriptor(commandLine);
         }
         catch (CommandException e) {
-            return new DefaultArtifactDescriptor("com.atomist", "rug",
+            return new DefaultArtifactDescriptor(Constants.GROUP, Constants.RUG_ARTIFACT,
                     CommandUtils.readRugVersionFromPom(), Extension.JAR);
         }
     }
-    
+
     @Override
     public boolean enabled(ArtifactDescriptor artifact) {
         return true;

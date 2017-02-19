@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.jline.reader.Completer;
 import org.jline.reader.History;
 import org.jline.reader.LineReader;
+import org.jline.reader.LineReader.Option;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.DefaultHighlighter;
 import org.jline.reader.impl.DefaultParser;
@@ -33,7 +34,7 @@ public abstract class ShellUtils {
     public static final File SHELL_ARCHIVES = new File(System.getProperty("user.home")
             + File.separator + ".atomist" + File.separator + ".cli-archives");
 
-    public static final String DEFAULT_PROMPT = Style.yellow("rug") + " "
+    public static final String DEFAULT_PROMPT = Style.yellow(Constants.RUG_ARTIFACT) + " "
             + Style.cyan(Constants.DIVIDER) + " ";
 
     public static LineReader lineReader(File historyPath, Completer... completers) {
@@ -47,6 +48,16 @@ public abstract class ShellUtils {
                 .completer(new AggregateCompleter(completers)).highlighter(new DefaultHighlighter())
                 .build();
         history.attach(reader);
+        
+        reader.setOpt(Option.DISABLE_EVENT_EXPANSION);
+
+        reader.unsetOpt(Option.AUTO_MENU);
+        reader.unsetOpt(Option.GROUP);
+        reader.unsetOpt(Option.MENU_COMPLETE);
+        
+        reader.setOpt(Option.AUTO_LIST);
+        reader.setOpt(Option.LIST_AMBIGUOUS);
+        
         return reader;
     }
 
