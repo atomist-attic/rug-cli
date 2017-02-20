@@ -54,7 +54,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 ArtifactSource source = CommandContext.restore(ArtifactSource.class);
 
                 OperationsAndHandlers operationsAndHandlers = new ProgressReportingOperationRunner<OperationsAndHandlers>(
-                        String.format("Restoring runtime for %s",
+                        String.format("Restoring %s into runtime",
                                 ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
                                     return CommandContext.restore(OperationsAndHandlers.class);
                                 });
