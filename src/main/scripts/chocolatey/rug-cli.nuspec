@@ -6,9 +6,9 @@
     <title>Atomist Rug CLI (Install)</title>
     <authors>Atomist, Inc.</authors>
     <owners>Atomist, Inc.</owners>
-    <licenseUrl>https://github.com/atomist/rug-cli/blob/master/LICENSE</licenseUrl>
+    <licenseUrl>https://github.com/atomist/rug-cli/blob/master/src/main/content/LICENSE</licenseUrl>
     <projectUrl>https://www.atomist.com/</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Atomist Rug CLI to consume, build, execute and test rugs</description>
     <summary>Atomist rug CLI to generate and apply rugs</summary>
     <copyright>2016 Atomist, Inc.</copyright>
