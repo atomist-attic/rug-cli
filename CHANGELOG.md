@@ -7,7 +7,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.23.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.24.0...HEAD
+
+## [0.24.0] - 2017-02-20
+
+[0.24.0]: https://github.com/atomist/rug-cli/compare/0.23.0...0.24.0
+
+### Added
+
+-   New `repositories` command to login and provision your team-scoped
+	Rug archive repositories.
+
+-   Lots of enhancement on the `shell`.
+
+	-		`shell` can now be	started
+	from any directory as per https://github.com/atomist/rug-cli/issues/112
+
+	- 	Tab completion for archive, operation and parameter names in the `shell`.
+
+	- 	Ability to execute any command by escaping the `shell` with `/sh`. Use `!` for
+		event expansion.
+
+-	Added short aliases for commands. Inspect the command help for a list
+	of aliases.
+
+### Changed
+
+- 	Merged PR contributed by @janekdb cleaning up some code as per
+	https://github.com/atomist/rug-cli/pull/107	 	
 
 ## [0.23.0] - 2017-02-14
 
@@ -17,10 +44,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   New `tree` command to evaluate path expressions against a project as per
  	https://github.com/atomist/rug-cli/issues/96
- 	
--   New `shell` command to step into a repl session within the scope of the 
-    selected Rug archive. 	
 
+-   New `shell` command to step into a repl session within the scope of the
+    selected Rug archive. 	
 
 ## [0.22.0] - 2017-02-02
 
@@ -29,13 +55,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 -   Updates to support Rug 0.11.0
-    
+
 -   Correctly removed `project_name` parameter as per
 	https://github.com/atomist/rug-cli/issues/85
-	
+
 -   Add support for Rug log entries as per
 	https://github.com/atomist/rug-cli/issues/87
-	
+
 -   `describe` command now allows `-O` to specify output format
 	https://github.com/atomist/rug-cli/issues/86
 
@@ -47,7 +73,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Fix leading `.` in operation names of metadata.json
     https://github.com/atomist/rug-cli/issues/88
-    
+
 ## [0.21.3] - 2017-01-25
 
 [0.21.3]: https://github.com/atomist/rug-cli/compare/0.21.2...0.21.3
@@ -56,7 +82,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Allow `.` (period) in archive group ids as per
     https://github.com/atomist/rug-cli/issues/84
-    
+
 -   Styled output of `rug help` and `rug -v` a bit as per
     https://github.com/atomist/rug-cli/issues/83
 
@@ -66,7 +92,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
--   Fixed NPE when running `rug install` and rug archive is not in a git repo 
+-   Fixed NPE when running `rug install` and rug archive is not in a git repo
 
 ### Changed
 
