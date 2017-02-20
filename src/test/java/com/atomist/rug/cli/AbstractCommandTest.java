@@ -56,8 +56,7 @@ public abstract class AbstractCommandTest {
     protected void assertCommandLine(int exitCode, Assertion assertion, boolean includeConf,
             String... tokens) throws Exception {
         String[] commandLine = commandLine(includeConf, tokens);
-        System.out.println(">>> " + Constants.COMMAND + " "
-                + StringUtils.arrayToDelimitedString(commandLine, " "));
+        System.out.println(">>> " + Constants.command() + StringUtils.arrayToDelimitedString(commandLine, " "));
         System.out.println("");
         systemOutRule.clearLog();
 

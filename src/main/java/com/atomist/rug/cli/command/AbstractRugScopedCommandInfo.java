@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.apache.commons.cli.CommandLine;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
@@ -26,7 +27,7 @@ public abstract class AbstractRugScopedCommandInfo extends AbstractLocalArtifact
                     Extension.JAR);
         }
         else {
-            return new DefaultArtifactDescriptor("com.atomist", "rug",
+            return new DefaultArtifactDescriptor(Constants.GROUP, Constants.RUG_ARTIFACT,
                     CommandUtils.readRugVersionFromPom(), Extension.JAR);
         }
     }

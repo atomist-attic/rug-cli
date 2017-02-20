@@ -1,10 +1,12 @@
 package com.atomist.rug.cli.command;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.lang3.SystemUtils;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
@@ -14,25 +16,27 @@ import org.springframework.boot.loader.tools.RunProcess;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.ReloadException;
 import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
-import com.atomist.rug.cli.command.shell.ChangeDirCompleter;
+import com.atomist.rug.cli.command.shell.FileAndDirectoryNameCompleter;
 import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
 import com.atomist.rug.cli.command.shell.ShellUtils;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private CommandInfoRegistry registry;
+    private LineReader reader;
 
     public ShellCommandRunner(CommandInfoRegistry registry) {
         super(registry);
         this.registry = registry;
     }
 
-    private void clear(LineReader reader) {
+    private void clear() {
         ((LineReaderImpl) reader).clearScreen();
     }
 
@@ -43,78 +47,136 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
 
-        configureEnv();
-        LineReader reader = lineReader();
+        this.reader = lineReader();
 
         String line = null;
         try {
-            while ((line = reader.readLine(prompt(artifact))) != null) {
-                if (line.length() == 0) {
+            while (true) {
+
+                try {
+                    line = reader.readLine(prompt(artifact));
+                }
+                catch (UserInterruptException e) {
+                    // Ignore Ctrl-C
+                }
+
+                // Empty line
+                if (line == null || line.length() == 0) {
                     continue;
                 }
 
-                line = line.trim();
-                if (line.startsWith("rug")) {
-                    line = line.substring(3).trim();
-                }
-                if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("sh")
-                        || line.startsWith("repl")) {
-                    reload(line);
-                }
-                else if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
-                    exit();
-                }
-                else if ("clear".equals(line) || "cls".equals(line)) {
-                    clear(reader);
-                }
-                else if (line.startsWith("!")) {
-                    ps(line);
-                }
-                else {
-                    String[] args = CommandUtils.splitCommandline(line);
-                    invokeCommand(args, artifact, dependencies, null);
-                }
+                // Now ready to handle the input line
+                handleInput(artifact, dependencies, line);
             }
         }
-        catch (EndOfFileException | UserInterruptException e) {
+        catch (EndOfFileException e) {
+            // Handle Ctrl-D
             log.info("Goodbye!");
+        }
+        finally {
+            // Jline creates some resources that need proper shutdown
+            ShellUtils.shutdown(reader);
+        }
+    }
+
+    private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
+            String line) {
+        // Remove confusing whitespace from beginning and end
+        line = line.trim();
+
+        // Expand history
+        line = expandHistory(line);
+
+        if (line.startsWith("rug")) {
+            line = line.substring(3).trim();
+        }
+        
+        String[] args = CommandUtils.splitCommandline(line);
+        
+        // Handle some internal commands
+        // Shell command might choose to exit. If not it probably means the user wants help
+        if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
+            reload(args);
+        }
+        
+        if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
+            exit();
+        }
+        else if ("/clear".equals(line) || "/cls".equals(line)) {
+            clear();
+        }
+        else if (line.startsWith(ShellUtils.SHELL_ESCAPE)) {
+            sh(line);
+        }
+        else {
+            invokeCommand(args, artifact, dependencies, null);
+        }
+    }
+
+    private String expandHistory(String line) {
+        try {
+            return reader.getExpander().expandHistory(reader.getHistory(), line);
+        }
+        catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return line;
         }
     }
 
     private String prompt(ArtifactDescriptor artifact) {
         if (artifact != null && !(artifact.group().equals(Constants.GROUP)
-                && artifact.artifact().equals("rug"))) {
+                && artifact.artifact().equals(Constants.RUG_ARTIFACT))) {
             log.info(Style.gray(ArtifactDescriptorUtils.coordinates(artifact)));
         }
         return ShellUtils.DEFAULT_PROMPT;
     }
 
-    private void configureEnv() {
-        // TODO this is hacky
-        Constants.COMMAND = Constants.DEFAULT_COMMAND + " " + Constants.DIVIDER;
-        Constants.IS_SHELL = true;
-    }
-
-    private void reload(String line) {
-        String[] args = CommandUtils.splitCommandline(line);
-        throw new ReloadException(args);
+    private void reload(String[] args) {
+        CommandLine commandLine = CommandUtils.parseCommandline(args, registry);
+        // Only trigger reload if not help is what is requested
+        if (!commandLine.hasOption("h") && !commandLine.hasOption("?")) {
+            throw new ReloadException(args);
+        }
     }
 
     private LineReader lineReader() {
-        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY, new ChangeDirCompleter(),
+        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY, new FileAndDirectoryNameCompleter(),
                 new OperationCompleter(), new CommandInfoCompleter(registry),
                 new ArchiveNameCompleter());
     }
 
-    private void ps(String line) {
-        String[] args = CommandUtils.splitCommandline(line.substring(1));
-        RunProcess process = new RunProcess(args[0]);
-        try {
-            process.run(true, Arrays.copyOfRange(args, 1, args.length));
-        }
-        catch (IOException e) {
-            log.error(e.getMessage());
-        }
+    private void sh(String line) {
+        // Remove leading command
+        line = line.substring(ShellUtils.SHELL_ESCAPE.length());
+        
+        // Expand all env variables
+        line = StringUtils.expandEnvironmentVarsAndHomeDir(line);
+
+        // Split multiple commands into several commands that we run one ofter the other
+        String[] cmds = line.split("&&");
+
+        // Iterator all commands
+        Arrays.stream(cmds).forEach(c -> {
+            String[] args = CommandUtils.splitCommandline(c);
+
+            RunProcess process = new RunProcess(SystemUtils.getUserDir(), args[0]);
+            try {
+                int rc = process.run(true, Arrays.copyOfRange(args, 1, args.length));
+                // Change the working directory of this shell
+                if (rc == 0 && "cd".equals(args[0])) {
+                    if (args.length > 1 && args[1].startsWith(".")) {
+                        File workingDir = new File(SystemUtils.getUserDir(), args[1]);
+                        System.setProperty("user.dir", workingDir.getCanonicalPath());
+                    }
+                    else {
+                        System.setProperty("user.dir", args[1]);
+                    }
+                }
+            }
+            catch (IOException e) {
+                log.error(e.getMessage());
+            }
+        });
     }
 
     @Override
@@ -132,18 +194,19 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 return;
             }
             // Verify that in a shell session we don't support fq operation or archive name
-            if (Constants.IS_SHELL && newArtifact != null
+            if (Constants.isShell() && newArtifact != null
                     && !(newArtifact instanceof LocalArtifactDescriptor)) {
                 // It is ok to load rug into the runtime; that just means we stay in current scope
                 if (newArtifact.group().equals(Constants.GROUP)
-                        && newArtifact.artifact().equals("rug")) {
+                        && newArtifact.artifact().equals(Constants.RUG_ARTIFACT)) {
                     return;
                 }
                 // It is NOT ok to request a different archive without reloading
                 if (!(artifact.group().equals(newArtifact.group())
                         && artifact.artifact().equals(newArtifact.artifact()))) {
                     throw new CommandException(String.format(
-                            "Fully-qualified archive or Rug names are not allowed for this command while running a shell.\nTo load the archive into this shell, run:\n  shell %s:%s",
+                            "Fully-qualified archive or Rug names are not allowed for this command "
+                                    + "while running a shell.\nTo load the archive into this shell, run:\n  shell %s:%s",
                             newArtifact.group(), newArtifact.artifact()), info.name());
                 }
             }

@@ -109,8 +109,8 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
     private void login(String username, String code, Settings settings) {
         printBanner();
 
+        LineReader reader = ShellUtils.lineReader(null);
         try {
-            LineReader reader = ShellUtils.lineReader(null);
             if (username == null) {
                 username = reader.readLine(getPrompt("Username"));
             }
@@ -119,6 +119,9 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
         }
         catch (EndOfFileException | UserInterruptException e) {
             log.error("Canceled!");
+        }
+        finally {
+            ShellUtils.shutdown(reader);
         }
     }
 
