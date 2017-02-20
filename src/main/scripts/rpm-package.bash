@@ -177,7 +177,7 @@ function create_package() {
         --prefix "/usr/share" \
         --description "Atomist rug CLI" \
         --url https://www.atomist.com \
-        --license "GPLv3" \
+        --license "Commercial" \
         --vendor "Atomist, Inc" \
         -d "java-1.8.0-openjdk-devel" \
         --directories "/usr/share/rug" \
