@@ -44,10 +44,14 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                                 Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
 
         log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives") + " ("
-                + archives.size() + " "
-                + com.atomist.rug.cli.utils.StringUtils.puralize("archive", archives.keySet())
-                + " found)");
+        log.info(
+                Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives")
+                        + (archives.keySet().size() > 0
+                                ? " (" + archives.keySet().size()
+                                        + " " + com.atomist.rug.cli.utils.StringUtils
+                                                .puralize("archive", archives.keySet())
+                                        + " found)"
+                                : ""));
 
         if (archives.isEmpty()) {
             log.info(Style.yellow("  No matching archives found"));

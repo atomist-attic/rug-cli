@@ -46,10 +46,14 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
                 });
 
         log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Remote Archives") + " ("
-                + operations.size() + " "
-                + com.atomist.rug.cli.utils.StringUtils.puralize("archive", operations.keySet())
-                + " found)");
+        log.info(
+                Style.cyan(Constants.DIVIDER) + " "
+                        + Style.bold(
+                                "Remote Archives")
+                        + (operations.keySet().size() > 0 ? " (" + operations.keySet().size() + " "
+                                + com.atomist.rug.cli.utils.StringUtils.puralize("archive",
+                                        operations.keySet())
+                                + " found)" : ""));
 
         if (operations.isEmpty()) {
             log.info(Style.yellow("  No matching archives found"));
@@ -59,9 +63,8 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
             operations.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
                     .forEach(a -> printArchive(a.getValue(), showOps));
             if (Constants.isShell()) {
-                log.info(
-                        "\nFor more information on specific archive version, run:\n"
-                                + "  shell ARCHIVE -a VERSION\nfollowed by:\n  describe archive");
+                log.info("\nFor more information on specific archive version, run:\n"
+                        + "  shell ARCHIVE -a VERSION\nfollowed by:\n  describe archive");
             }
             else {
                 log.info("\nFor more information on specific archive version, run:\n"
