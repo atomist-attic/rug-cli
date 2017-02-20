@@ -85,6 +85,8 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
             arguments = new SimpleProjectOperationArguments(arguments.name(),
                     JavaConversions.asScalaBuffer(newValues));
             log.newline();
+            
+            ShellUtils.shutdown(reader);
         }
         return arguments;
     }

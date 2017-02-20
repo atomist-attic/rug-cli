@@ -20,6 +20,8 @@ public class CommandHelpFormatter {
 
     public static String HELP_FOOTER = "\n\nPlease report issues at https://github.com/atomist/rug-cli";
 
+    public static String SHELL_HELP_FOOTER = "\n\nThis shell supports event expansion with '!' and executing other commands by prefixing the command with '/sh', eg. '/sh cd .atomist && ls -la'.";
+
     private static int WRAP = Constants.WRAP_LENGTH;
 
     public String createString(int length) {
@@ -31,7 +33,7 @@ public class CommandHelpFormatter {
     public String printCommandHelp(CommandInfo description) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("Usage: %s %s\n", Style.bold(Constants.COMMAND),
+        sb.append(String.format("Usage: %s%s\n", Style.bold(Constants.command()),
                 Style.bold(description.usage())));
         if (!description.aliases().isEmpty()) {
             sb.append(String.format("%s: %s\n",
@@ -47,7 +49,7 @@ public class CommandHelpFormatter {
 
         sb.append("\n");
         sb.append(WordUtils.wrap(description.detail(), WRAP));
-        sb.append(HELP_FOOTER);
+        sb.append(WordUtils.wrap(HELP_FOOTER, WRAP));
 
         return sb.toString();
 
@@ -57,7 +59,7 @@ public class CommandHelpFormatter {
         StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("Usage: %s\n",
-                Style.bold(Constants.COMMAND + " [OPTION]... [COMMAND]...")));
+                Style.bold(Constants.command() + "[OPTION]... [COMMAND]...")));
         sb.append("Work with Rugs like editors or generators.\n");
 
         printOptions(options, sb, Style.bold("Options"));
@@ -65,9 +67,13 @@ public class CommandHelpFormatter {
         printCommands(sb, registry);
 
         sb.append("\n");
-        sb.append(String.format("Run '%s COMMAND --help' for more detailed information on COMMAND.",
-                Constants.COMMAND));
-        sb.append(HELP_FOOTER);
+        sb.append(String.format("Run '%sCOMMAND --help' for more detailed information on COMMAND.",
+                Constants.command()));
+        
+        if (Constants.isShell()) {
+            sb.append(WordUtils.wrap(SHELL_HELP_FOOTER, WRAP));
+        }
+        sb.append(WordUtils.wrap(HELP_FOOTER, WRAP));
 
         return sb.toString();
     }

@@ -1,8 +1,6 @@
 package com.atomist.rug.cli.command.list;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +32,6 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-import com.atomist.source.file.ZipFileArtifactSourceReader;
-import com.atomist.source.file.ZipFileInput;
 
 public class ListCommand extends AbstractAnnotationBasedCommand {
 
@@ -48,10 +44,14 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                                 Collectors.groupingBy(a -> a.group() + ":" + a.artifact())));
 
         log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives") + " ("
-                + archives.size() + " "
-                + com.atomist.rug.cli.utils.StringUtils.puralize("archive", archives.keySet())
-                + " found)");
+        log.info(
+                Style.cyan(Constants.DIVIDER) + " " + Style.bold("Local Archives")
+                        + (archives.keySet().size() > 0
+                                ? " (" + archives.keySet().size()
+                                        + " " + com.atomist.rug.cli.utils.StringUtils
+                                                .puralize("archive", archives.keySet())
+                                        + " found)"
+                                : ""));
 
         if (archives.isEmpty()) {
             log.info(Style.yellow("  No matching archives found"));
@@ -60,15 +60,13 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
         else {
             archives.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
                     .forEach(a -> printArchive(a.getKey(), a.getValue()));
-            if (Constants.IS_SHELL) {
-                log.info(
-                        "\nFor more information on specific archive version, run:\n"
-                                + "  %s shell ARCHIVE -a VERSION\nfollowed by:\n  %s describe archive",
-                        Constants.COMMAND, Constants.COMMAND);
+            if (Constants.isShell()) {
+                log.info("\nFor more information on specific archive version, run:\n"
+                        + "  shell ARCHIVE -a VERSION\nfollowed by:\n  describe archive");
             }
             else {
                 log.info("\nFor more information on specific archive version, run:\n"
-                        + "  %s describe archive ARCHIVE -a VERSION", Constants.COMMAND);
+                        + "  %sdescribe archive ARCHIVE -a VERSION", Constants.command());
             }
         }
     }
@@ -127,15 +125,10 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                 }
             }
             return archives.stream().filter(f -> {
-                try {
-                    // filter out all non-Rug archives
-                    return ZipFileArtifactSourceReader
-                            .fromZipSource(new ZipFileInput(new FileInputStream(f)))
-                            .findDirectory(".atomist").isDefined();
-                }
-                catch (FileNotFoundException e) {
-                    return false;
-                }
+                // filter out all non-Rug archives
+                File metadata = new File(f.getParentFile(),
+                        f.getName().replaceAll(".zip$", "-metadata.json"));
+                return metadata.exists();
             }).map(f -> {
                 URI relativeUri = repoHome.relativize(f.toURI());
                 List<String> segments = new ArrayList<>(

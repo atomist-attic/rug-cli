@@ -14,7 +14,7 @@ import com.atomist.rug.cli.command.CommandInfo;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 
 /**
- * {@link Completer} for command, sub-command as well as options. 
+ * {@link Completer} for command, sub-command as well as options.
  */
 public class CommandInfoCompleter implements Completer {
 
@@ -29,16 +29,15 @@ public class CommandInfoCompleter implements Completer {
         List<String> words = line.words();
         if (words.size() == 1) {
             registry.commands().forEach(c -> {
-                candidates.add(
-                        new Candidate(c.name(), c.name(), "Commands", null, null, c.name(), true));
-                c.aliases().forEach(a -> candidates
-                        .add(new Candidate(a, a, "Commands", null, null, c.name(), true)));
+                candidates.add(new Candidate(c.name(), c.name(), null, null, null, c.name(), true));
+                c.aliases().forEach(
+                        a -> candidates.add(new Candidate(a, a, null, null, null, c.name(), true)));
             });
-            candidates.add(new Candidate("exit", "exit", "Commands", null, null, "q", true));
-            candidates.add(new Candidate("quit", "quit", "Commands", null, null, "q", true));
-            candidates.add(new Candidate("q", "q", "Commands", null, null, "q", true));
-            candidates.add(new Candidate("clear", "clear", "Commands", null, null, "cls", true));
-            candidates.add(new Candidate("cls", "cls", "Commands", null, null, "cls", true));
+            candidates.add(new Candidate("exit", "exit", null, null, null, "q", true));
+            candidates.add(new Candidate("quit", "quit", null, null, null, "q", true));
+            candidates.add(new Candidate("q", "q", null, null, null, "q", true));
+            candidates.add(new Candidate("clear", "clear", null, null, null, "cls", true));
+            candidates.add(new Candidate("cls", "cls", null, null, null, "cls", true));
         }
         else if (words.size() > 1) {
             String word = words.get(0);
@@ -50,19 +49,18 @@ public class CommandInfoCompleter implements Completer {
                 // only complete subCommand if none exists already
                 if (words.size() <= 2
                         || (words.size() > 2 && !info.get().subCommands().contains(words.get(1)))) {
-                    info.get().subCommands().stream().forEach(s -> candidates
-                            .add(new Candidate(s, s, "Subcommands", null, null, null, true)));
+                    info.get().subCommands().stream()
+                            .forEach(s -> candidates.add(new Candidate(s)));
                 }
 
-                completeOptions(info.get().globalOptions().getOptions(), candidates, words,
-                        "Global Options");
-                completeOptions(info.get().options().getOptions(), candidates, words, "Options");
+                completeOptions(info.get().globalOptions().getOptions(), candidates, words);
+                completeOptions(info.get().options().getOptions(), candidates, words);
             }
         }
     }
 
     private void completeOptions(Collection<Option> options, List<Candidate> candidates,
-            List<String> words, String group) {
+            List<String> words) {
         options.stream().filter(o -> {
             if (o.hasLongOpt() && words.contains("--" + o.getLongOpt())) {
                 return false;
@@ -73,11 +71,11 @@ public class CommandInfoCompleter implements Completer {
             return true;
         }).forEach(o -> {
             if (o.hasLongOpt()) {
-                candidates.add(new Candidate("--" + o.getLongOpt(), "--" + o.getLongOpt(), group,
+                candidates.add(new Candidate("--" + o.getLongOpt(), "--" + o.getLongOpt(), null,
                         null, null, o.toString(), true));
             }
             if (o.getOpt() != null) {
-                candidates.add(new Candidate("-" + o.getOpt(), "-" + o.getOpt(), group, null, null,
+                candidates.add(new Candidate("-" + o.getOpt(), "-" + o.getOpt(), null, null, null,
                         o.toString(), true));
             }
         });

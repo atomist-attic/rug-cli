@@ -185,7 +185,7 @@ function create_package() {
         -m "$Author" \
         --description "Atomist rug CLI" \
         --url https://www.atomist.com \
-        --license "GPL-3.0" \
+        --license "Commercial" \
         --vendor "Atomist, Inc" \
         --deb-suggests "openjdk-8-jdk" \
         --deb-changelog target/linux/deb/changelog \

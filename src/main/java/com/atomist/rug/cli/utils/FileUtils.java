@@ -59,11 +59,11 @@ public abstract class FileUtils {
                 : file.getAbsolutePath().toString());
         return path;
     }
-    
+
     public static Optional<File> getWorkingDirectory() {
         return getWorkingDirectory(System.getProperty("user.dir"));
     }
-    
+
     public static Optional<File> getWorkingDirectory(String root) {
         if (root == null) {
             root = System.getProperty("user.dir");
@@ -83,7 +83,8 @@ public abstract class FileUtils {
             return root.getParentFile();
         }
         // inside any sub-folder of .atomist
-        if (root.getParentFile().getName().equals(Constants.ATOMIST_ROOT)) {
+        if (root.getParent() != null
+                && root.getParentFile().getName().equals(Constants.ATOMIST_ROOT)) {
             return root.getParentFile().getParentFile();
         }
         return null;

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -92,11 +91,11 @@ public class OperationCompleter implements Completer {
                                 || (kind.equals("generators") && !p.equals("project_name")))
                         .filter(p -> !words.stream().anyMatch(w -> w.startsWith(p + "=")))
                         .forEach(n -> candidates.add(
-                                new Candidate(n + "=", n, "Parameters", null, null, null, false)));
+                                new Candidate(n + "=", n, null, null, null, null, false)));
             }
             else {
                 names.forEach(n -> candidates.add(
-                        new Candidate(n, n, StringUtils.capitalize(kind), null, null, null, true)));
+                        new Candidate(n)));
             }
         }
     }

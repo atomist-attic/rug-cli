@@ -33,13 +33,13 @@ public class ArchiveNameCompleter implements Completer {
                     String group = word.split(":")[0] + ":";
                     archivesFromCache().stream().filter(a -> a.startsWith(group))
                             .collect(Collectors.toSet()).forEach(a -> candidates
-                                    .add(new Candidate(a, a, "Archives", null, null, null, true)));
+                                    .add(new Candidate(a)));
                 }
                 // sill completing group
                 else {
                     archivesFromCache().stream().map(a -> a.split(":")[0])
                             .collect(Collectors.toSet()).forEach(a -> candidates
-                                    .add(new Candidate(a + ":", a, "Archives", null, null, null, false)));
+                                    .add(new Candidate(a + ":", a, null, null, null, null, false)));
                 }
             }
         }

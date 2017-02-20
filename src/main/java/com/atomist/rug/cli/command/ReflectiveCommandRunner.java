@@ -121,7 +121,8 @@ public class ReflectiveCommandRunner {
 
             artifact = dependencies.stream()
                     .filter(a -> a.group().equals(rootArtifact.group())
-                            && a.artifact().equals(rootArtifact.artifact()))
+                            && a.artifact().equals(rootArtifact.artifact())
+                            && a.extension() == rootArtifact.extension())
                     .findFirst().orElse(rootArtifact);
 
             ClassLoaderFactory.setupJ2V8ClassLoader(dependencies);
@@ -175,7 +176,7 @@ public class ReflectiveCommandRunner {
                     .process(ArtifactDescriptorFactory.copyFrom(artifact, version), e));
         }
     }
-    
+
     protected void commandEnabled(ArtifactDescriptor artifact, CommandInfo info) {
         if (!info.enabled(artifact)) {
             throw new CommandException(String.format(

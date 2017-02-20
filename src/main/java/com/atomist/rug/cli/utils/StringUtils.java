@@ -55,6 +55,14 @@ public abstract class StringUtils {
             return singular;
         }
     }
+    
+    public static String expandEnvironmentVarsAndHomeDir(String text) {
+        if (text == null) {
+            return text;
+        }
+        text = text.replace("~", "${user.home}");
+        return expandEnvironmentVars(text);
+    }
 
     public static String expandEnvironmentVars(String text) {
         if (text == null) {
