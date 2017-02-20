@@ -76,6 +76,14 @@ function main() {
             err "failed to push git tags"
             return 1
         fi
+
+        # Build the Docker image only on releases
+        if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            if ! $mvn package docker:build -DskipTests -DpushImageTag; then
+                err "maven docker build or push failed"
+                return 1
+            fi
+        fi
     fi
 }
 

@@ -13,7 +13,8 @@ for more detailed information.
 
 ## Installation
 
-See [Rug CLI Installation][install] for installation instructions.
+See [Rug CLI Installation][install] for installation instructions
+or on how to run the CLI in a Docker container.
 
 [install]: http://docs.atomist.com/rug/rug-cli/rug-cli-install/
 
