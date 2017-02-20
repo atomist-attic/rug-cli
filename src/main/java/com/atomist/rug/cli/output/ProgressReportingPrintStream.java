@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Optional;
 
-public class ProgressReportingPrintStream extends Slf4jFilteringPrintStream {
+public class ProgressReportingPrintStream extends FilteringPrintStream {
 
     public ProgressReportingPrintStream(OutputStream out) {
         super(out);
