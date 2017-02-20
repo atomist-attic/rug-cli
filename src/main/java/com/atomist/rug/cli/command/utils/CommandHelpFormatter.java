@@ -20,6 +20,8 @@ public class CommandHelpFormatter {
 
     public static String HELP_FOOTER = "\n\nPlease report issues at https://github.com/atomist/rug-cli";
 
+    public static String SHELL_HELP_FOOTER = "\n\nThis shell supports event expansion with '!' and executing other commands by prefixing the command with '/', eg. '/cd .atomist && ls -la'";
+
     private static int WRAP = Constants.WRAP_LENGTH;
 
     public String createString(int length) {
@@ -47,7 +49,7 @@ public class CommandHelpFormatter {
 
         sb.append("\n");
         sb.append(WordUtils.wrap(description.detail(), WRAP));
-        sb.append(HELP_FOOTER);
+        sb.append(WordUtils.wrap(HELP_FOOTER, WRAP));
 
         return sb.toString();
 
@@ -67,7 +69,11 @@ public class CommandHelpFormatter {
         sb.append("\n");
         sb.append(String.format("Run '%sCOMMAND --help' for more detailed information on COMMAND.",
                 Constants.command()));
-        sb.append(HELP_FOOTER);
+        
+        if (Constants.isShell()) {
+            sb.append(WordUtils.wrap(SHELL_HELP_FOOTER, WRAP));
+        }
+        sb.append(WordUtils.wrap(HELP_FOOTER, WRAP));
 
         return sb.toString();
     }
