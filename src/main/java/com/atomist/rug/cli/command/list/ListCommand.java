@@ -1,8 +1,6 @@
 package com.atomist.rug.cli.command.list;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +32,6 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-import com.atomist.source.file.ZipFileArtifactSourceReader;
-import com.atomist.source.file.ZipFileInput;
 
 public class ListCommand extends AbstractAnnotationBasedCommand {
 
@@ -125,15 +121,10 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                 }
             }
             return archives.stream().filter(f -> {
-                try {
-                    // filter out all non-Rug archives
-                    return ZipFileArtifactSourceReader
-                            .fromZipSource(new ZipFileInput(new FileInputStream(f)))
-                            .findDirectory(".atomist").isDefined();
-                }
-                catch (FileNotFoundException e) {
-                    return false;
-                }
+                // filter out all non-Rug archives
+                File metadata = new File(f.getParentFile(),
+                        f.getName().replaceAll(".zip$", "-metadata.json"));
+                return metadata.exists();
             }).map(f -> {
                 URI relativeUri = repoHome.relativize(f.toURI());
                 List<String> segments = new ArrayList<>(
