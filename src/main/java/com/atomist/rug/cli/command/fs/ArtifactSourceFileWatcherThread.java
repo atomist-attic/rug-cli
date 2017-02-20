@@ -44,6 +44,7 @@ class ArtifactSourceFileWatcherThread extends Thread {
         this.artifact = artifact;
         this.modifiers = modifiers;
         setDaemon(true);
+        setName("FS File Watcher Thread");
         init();
         start();
     }
