@@ -36,6 +36,8 @@ public abstract class ShellUtils {
 
     public static final String DEFAULT_PROMPT = Style.yellow(Constants.RUG_ARTIFACT) + " "
             + Style.cyan(Constants.DIVIDER) + " ";
+    
+    public static final String SHELL_ESCAPE_CHAR = "/";
 
     public static LineReader lineReader(File historyPath, Completer... completers) {
         // Protect the history file as may contain sensitive information
@@ -49,7 +51,7 @@ public abstract class ShellUtils {
                 .build();
         history.attach(reader);
         
-        reader.setOpt(Option.DISABLE_EVENT_EXPANSION);
+//        reader.setOpt(Option.DISABLE_EVENT_EXPANSION);
 
         reader.unsetOpt(Option.AUTO_MENU);
         reader.unsetOpt(Option.GROUP);
@@ -59,6 +61,14 @@ public abstract class ShellUtils {
         reader.setOpt(Option.LIST_AMBIGUOUS);
         
         return reader;
+    }
+    
+    public static void shutdown(LineReader lineReader) {
+        try {
+            lineReader.getTerminal().close();
+        }
+        catch (IOException e) {
+        }
     }
 
     private static Terminal terminal() {
