@@ -14,6 +14,7 @@ import com.atomist.rug.cli.command.CommandEventListenerRegistry;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.version.VersionUtils;
@@ -71,7 +72,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         if (settings.getConfigValue(BANNER_CONFIG_KEY, true)) {
             String version = VersionUtils.readVersion().orElse("0.0.0");
             log.newline();
-            log.info(banner, "Atomist", StringUtils.leftPad(version, 18));
+            log.info(banner, Style.gray("Atomist"), Style.gray(StringUtils.leftPad(version, 18)));
         }
         log.newline();
         log.info(
