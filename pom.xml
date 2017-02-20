@@ -387,7 +387,7 @@
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>0.4.12</version>
 				<configuration>
-					<imageName>atomist-docker.jfrog.io/${project.name}</imageName>
+					<imageName>${ATOMIST_DOCKER_REGISTRY}/${project.name}</imageName>
 					<dockerDirectory>${project.build.directory}/docker</dockerDirectory>
 					<resources>
 						<resource>
