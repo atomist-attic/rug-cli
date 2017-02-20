@@ -36,7 +36,7 @@ public class Constants {
     
     public static final String CATALOG_PATH = "operation/search";
     public static final String CATALOG_URL = "https://api.atomist.com/catalog";
-    public static final String REPO_URL = "https://api.atomist.com/user/team";
+    public static final String REPO_URL = "https://api-staging.atomist.services/user/team";
     
     
     public static String cliClient() {

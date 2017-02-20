@@ -7,7 +7,7 @@ remote-repositories:
   local:
     publish: true
     url: "file://${user.home}/.atomist/repository-publish/"
-  maven-central:
+  central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"
   rug-types:
