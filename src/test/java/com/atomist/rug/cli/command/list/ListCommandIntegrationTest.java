@@ -3,22 +3,20 @@ package com.atomist.rug.cli.command.list;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.atomist.rug.cli.AbstractCommandTest;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ListCommandIntegrationTest extends AbstractCommandTest {
 
-//    private boolean resolved = false;
-
-//    @Before
-//    public void init() throws Exception {
-//        if (!resolved) {
-//            assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
-//                    "0.5.0");
-//            resolved = true;
-//        }
-//    }
+    @Test
+    public void test1Setup() throws Exception {
+        assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
+                "0.5.0");
+    }
 
     @Test
     public void testFullArtifactFiltered() throws Exception {
