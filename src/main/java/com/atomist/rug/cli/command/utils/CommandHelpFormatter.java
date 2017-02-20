@@ -20,7 +20,7 @@ public class CommandHelpFormatter {
 
     public static String HELP_FOOTER = "\n\nPlease report issues at https://github.com/atomist/rug-cli";
 
-    public static String SHELL_HELP_FOOTER = "\n\nThis shell supports event expansion with '!' and executing other commands by prefixing the command with '/', eg. '/cd .atomist && ls -la'";
+    public static String SHELL_HELP_FOOTER = "\n\nThis shell supports event expansion with '!' and executing other commands by prefixing the command with '/sh', eg. '/sh cd .atomist && ls -la'.";
 
     private static int WRAP = Constants.WRAP_LENGTH;
 

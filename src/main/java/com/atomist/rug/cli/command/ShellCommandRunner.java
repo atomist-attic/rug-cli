@@ -95,19 +95,18 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         
         // Handle some internal commands
         // Shell command might choose to exit. If not it probably means the user wants help
-        if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("sh")
-                || line.startsWith("repl")) {
+        if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
             reload(args);
         }
         
         if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
             exit();
         }
-        else if ("clear".equals(line) || "cls".equals(line)) {
+        else if ("/clear".equals(line) || "/cls".equals(line)) {
             clear();
         }
-        else if (line.startsWith(ShellUtils.SHELL_ESCAPE_CHAR)) {
-            ps(line);
+        else if (line.startsWith(ShellUtils.SHELL_ESCAPE)) {
+            sh(line);
         }
         else {
             invokeCommand(args, artifact, dependencies, null);
@@ -146,12 +145,15 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 new ArchiveNameCompleter());
     }
 
-    private void ps(String line) {
+    private void sh(String line) {
+        // Remove leading command
+        line = line.substring(ShellUtils.SHELL_ESCAPE.length());
+        
         // Expand all env variables
         line = StringUtils.expandEnvironmentVarsAndHomeDir(line);
 
         // Split multiple commands into several commands that we run one ofter the other
-        String[] cmds = line.substring(1).split("&&");
+        String[] cmds = line.split("&&");
 
         // Iterator all commands
         Arrays.stream(cmds).forEach(c -> {

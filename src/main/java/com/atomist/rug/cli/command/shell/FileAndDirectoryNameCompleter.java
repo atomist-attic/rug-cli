@@ -20,7 +20,7 @@ public class FileAndDirectoryNameCompleter extends FileNameCompleter {
             if ("-C".equals(word) || "--change-dir".equals(word)) {
                 super.complete(reader, commandLine, candidates);
             }
-            else if (commandLine.line().startsWith(ShellUtils.SHELL_ESCAPE_CHAR)) {
+            else if (commandLine.line().startsWith(ShellUtils.SHELL_ESCAPE)) {
                 super.complete(reader, commandLine, candidates);
             }
         }

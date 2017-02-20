@@ -41,7 +41,7 @@ public class ShellCommandInfo extends AbstractVersionCommandInfo {
 
     @Override
     public List<String> aliases() {
-        return Arrays.asList(new String[] { "sh", "repl", "load" });
+        return Arrays.asList(new String[] { "repl", "load" });
     }
 
     @Override
