@@ -14,7 +14,6 @@ import com.atomist.rug.cli.command.CommandEventListenerRegistry;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
-import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.version.VersionUtils;
