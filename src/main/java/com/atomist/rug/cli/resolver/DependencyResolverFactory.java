@@ -14,6 +14,7 @@ import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.CachingDependencyResolver;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.rug.resolver.DependencyResolver;
@@ -31,14 +32,15 @@ public class DependencyResolverFactory {
             t.setDaemon(true);
             return t;
         });
-        MavenProperties properties = MavenPropertiesFactory
-                .create(CommandLineOptions.hasOption("offline"), !CommandLineOptions.hasOption("u"));
+        MavenProperties properties = MavenPropertiesFactory.create(
+                CommandLineOptions.hasOption("offline"), !CommandLineOptions.hasOption("u"));
         MavenBasedDependencyResolver resolver = new MavenBasedDependencyResolver(
                 MavenPropertiesFactory.repositorySystem(), properties, executorService) {
 
             @Override
             public String toString() {
-                return super.toString() + "[MavenBasedDependencyResolver with dependency root " + artifact + "]";
+                return super.toString() + "[MavenBasedDependencyResolver with dependency root "
+                        + artifact + "]";
             }
 
             @Override
@@ -52,6 +54,13 @@ public class DependencyResolverFactory {
                     return super.createDependencyRoot(newArtifact);
                 }
                 else {
+                    if (artifact.extension() == Extension.ZIP) {
+                        // add in the metadata.json for the root archive as dependency
+                        DefaultArtifactDescriptor metadataArtifact = new DefaultArtifactDescriptor(
+                                artifact.group(), artifact.artifact(), artifact.version(),
+                                Extension.JSON, Scope.COMPILE, "metadata", null);
+                        artifact.dependencies().add(metadataArtifact);
+                    }
                     return super.createDependencyRoot(artifact);
                 }
             }
@@ -88,8 +97,8 @@ public class DependencyResolverFactory {
     private void addExclusions(MavenBasedDependencyResolver resolver) {
         // This is exclusion is needed to prevent multiple versions of slf4j bindings on the
         // classpath
-//        resolver.setExclusions(Arrays.asList(new String[] { "ch.qos.logback:logback-classic",
-//                "ch.qos.logback:logback-access", "org.slf4j:jcl-over-slf4j" }));
+        // resolver.setExclusions(Arrays.asList(new String[] { "ch.qos.logback:logback-classic",
+        // "ch.qos.logback:logback-access", "org.slf4j:jcl-over-slf4j" }));
     }
 
     private DependencyResolver wrapDependencyResolver(DependencyResolver resolver,
@@ -98,7 +107,7 @@ public class DependencyResolverFactory {
 
             @Override
             public String toString() {
-                return super.toString() + "[Caching dependency resolver around " + resolver +"]";
+                return super.toString() + "[Caching dependency resolver around " + resolver + "]";
             }
 
             @Override
