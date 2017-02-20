@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -	Added short aliases for commands. Inspect the command help for a list
 	of aliases.
+	
+- 	Ability to run the CLI from a docker image as per 
+	https://github.com/atomist/rug-cli/issues/115
 
 ### Changed
 
