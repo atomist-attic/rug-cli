@@ -20,8 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Lots of enhancement on the `shell`.
 
-	-		`shell` can now be	started
-	from any directory as per https://github.com/atomist/rug-cli/issues/112
+	-	`shell` can now be started from any directory as per https://github.com/atomist/rug-cli/issues/112
 
 	- 	Tab completion for archive, operation and parameter names in the `shell`.
 
