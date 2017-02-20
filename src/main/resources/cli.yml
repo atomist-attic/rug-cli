@@ -8,12 +8,9 @@ remote-repositories:
   central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"
-  rug-types:
-    publish: false
-    url: "https://atomist.jfrog.io/atomist/libs-release"
   rugs:
     publish: false
-    url: "https://atomist.jfrog.io/atomist/rugs-release"
+    url: "https://atomist.jfrog.io/atomist/rugs"
 
 # Set up Rug catalog endpoints for searching
 catalogs:
