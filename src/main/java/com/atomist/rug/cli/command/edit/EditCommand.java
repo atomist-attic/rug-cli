@@ -68,8 +68,8 @@ public class EditCommand extends AbstractParameterizedCommand {
     private void invoke(ArtifactDescriptor artifact, ProjectEditor editor,
             ParameterValues arguments, String rootName, boolean dryRun, boolean commit) {
 
-        LocalGitProjectManagement management = new LocalGitProjectManagement(artifact, log,
-                rootName, false, false, commit, dryRun);
+        LocalGitProjectManagement management = new LocalGitProjectManagement(artifact, rootName,
+                false, false, commit, dryRun);
         management.edit(editor, arguments, rootName);
     }
 }
