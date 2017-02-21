@@ -49,7 +49,6 @@ public abstract class AbstractAnnotationBasedCommand
 
     private Object prepareArgumentMethodArgument(CommandLine commandLine, Parameter p,
             Argument argument) {
-        Object argumentValue = null;
         if (argument.start() != -1) {
             if (p.getType().equals(ParameterValues.class)) {
                 List<ParameterValue> pvs = new ArrayList<>();
@@ -70,17 +69,19 @@ public abstract class AbstractAnnotationBasedCommand
                         pvs.add(new SimpleParameterValue(name, value));
                     }
                 }
-                argumentValue = new SimpleParameterValues(asScalaBuffer(pvs));
+                return new SimpleParameterValues(asScalaBuffer(pvs));
             }
         }
-        else if (argument.start() == -1 && argument.index() < commandLine.getArgList().size()) {
-            argumentValue = commandLine.getArgList().get(argument.index());
+        String value = null;
+        if (argument.start() == -1 && argument.index() < commandLine.getArgList().size()) {
+            value = commandLine.getArgList().get(argument.index());
         }
-        if (argumentValue == null) {
-            argumentValue = (argument.defaultValue().equals(Argument.DEFAULT_NONE) ? null
+        if (value == null) {
+            value = (argument.defaultValue().equals(Argument.DEFAULT_NONE) ? null
                     : argument.defaultValue());
         }
-        return argumentValue;
+        value = StringUtils.expandEnvironmentVars(value);
+        return convert(p.getType(), value);
     }
 
     private ParameterValues prepareArguments(Properties props) {
@@ -95,7 +96,6 @@ public abstract class AbstractAnnotationBasedCommand
             ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
 
         return Arrays.stream(method.getParameters()).map(p -> {
-
             Argument argument = AnnotationUtils.getAnnotation(p, Argument.class);
             Option option = AnnotationUtils.getAnnotation(p, Option.class);
 
@@ -105,7 +105,6 @@ public abstract class AbstractAnnotationBasedCommand
             else if (option != null) {
                 return prepareOptionMethodArgument(commandLine, p, option);
             }
-
             else if (p.getType().equals(Rugs.class)) {
                 return rugs;
             }
@@ -137,8 +136,24 @@ public abstract class AbstractAnnotationBasedCommand
             return prepareArguments(commandLine.getOptionProperties(option.value()));
         }
         else {
-            return StringUtils.expandEnvironmentVars(commandLine.getOptionValue(option.value()));
+            String value = commandLine.getOptionValue(option.value());
+            if (value == null) {
+                value = (option.defaultValue().equals(Argument.DEFAULT_NONE) ? null
+                        : option.defaultValue());
+            }
+            value = StringUtils.expandEnvironmentVars(value);
+            return convert(p.getType(), value);
         }
+    }
+
+    private Object convert(Class<?> cls, String value) {
+        if (Integer.class.equals(cls) || int.class.equals(cls)) {
+            return Integer.valueOf(value);
+        }
+        else if (Boolean.class.equals(cls) || boolean.class.equals(cls)) {
+            return Boolean.valueOf(value);
+        }
+        return value;
     }
 
     @Override

@@ -118,11 +118,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             describeRugs(artifact, operationName, operations.commandHandlers(),
                     COMMAND_HANDLER_LABELS);
             break;
-
         case "event-handler":
             describeRugs(artifact, operationName, operations.eventHandlers(), EVENT_HANDLER_LABELS);
             break;
-
         case "response-handler":
             describeRugs(artifact, operationName, operations.responseHandlers(),
                     RESPONSE_HANDLER_LABELS);
