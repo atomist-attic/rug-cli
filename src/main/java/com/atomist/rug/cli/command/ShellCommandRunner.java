@@ -90,15 +90,15 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         if (line.startsWith("rug")) {
             line = line.substring(3).trim();
         }
-        
+
         String[] args = CommandUtils.splitCommandline(line);
-        
+
         // Handle some internal commands
         // Shell command might choose to exit. If not it probably means the user wants help
         if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
             reload(args);
         }
-        
+
         if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
             exit();
         }
@@ -148,7 +148,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private void sh(String line) {
         // Remove leading command
         line = line.substring(ShellUtils.SHELL_ESCAPE.length());
-        
+
         // Expand all env variables
         line = StringUtils.expandEnvironmentVarsAndHomeDir(line);
 
@@ -164,12 +164,16 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 int rc = process.run(true, Arrays.copyOfRange(args, 1, args.length));
                 // Change the working directory of this shell
                 if (rc == 0 && "cd".equals(args[0])) {
-                    if (args.length > 1 && args[1].startsWith(".")) {
-                        File workingDir = new File(SystemUtils.getUserDir(), args[1]);
-                        System.setProperty("user.dir", workingDir.getCanonicalPath());
-                    }
-                    else {
-                        System.setProperty("user.dir", args[1]);
+                    if (args.length > 1) {
+                        String path = args[1];
+                        File p = new File(path);
+                        if (p.exists()) {
+                            System.setProperty("user.dir", p.getCanonicalPath());
+                        }
+                        else {
+                            File workingDir = new File(SystemUtils.getUserDir(), path);
+                            System.setProperty("user.dir", workingDir.getCanonicalPath());
+                        }
                     }
                 }
             }
