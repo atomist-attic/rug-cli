@@ -4,12 +4,12 @@ catalogs:
 local-repository:
   path: "${user.home}/.atomist/repository-tests"
 remote-repositories:
-  local:
-    publish: true
-    url: "file://${user.home}/.atomist/repository-publish/"
   central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"
+  local:
+    publish: true
+    url: "file://${user.home}/.atomist/repository-publish/"
   rug-types:
     publish: false
     url: "https://atomist.jfrog.io/atomist/libs-release"

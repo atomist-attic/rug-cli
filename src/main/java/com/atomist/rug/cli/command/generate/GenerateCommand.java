@@ -61,32 +61,37 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                 asJavaCollection(rugs.generators())
                         .forEach(e -> log.info(Style.yellow("  %s", e.name()) + "\n    "
                                 + WordUtils.wrap(
-                                org.apache.commons.lang3.StringUtils
-                                        .capitalize(e.description()),
-                                Constants.WRAP_LENGTH, "\n    ", false)));
+                                        org.apache.commons.lang3.StringUtils
+                                                .capitalize(e.description()),
+                                        Constants.WRAP_LENGTH, "\n    ", false)));
                 StringUtils.printClosestMatch(generatorName, artifact, rugs.generatorNames());
             }
+            throw new CommandException(
+                    String.format("Specified generator %s could not be found in %s:%s:%s", generatorName,
+                            artifact.group(), artifact.artifact(), artifact.version()));
         }
     }
 
-    private void invoke(ArtifactDescriptor artifact,
-            ProjectGenerator generator, ParameterValues arguments, String rootName,
-            boolean createRepo, boolean overwrite) {
+    private void invoke(ArtifactDescriptor artifact, ProjectGenerator generator,
+            ParameterValues arguments, String rootName, boolean createRepo, boolean overwrite) {
 
         String projectName = projectName(generator, arguments);
 
-        LocalGitProjectPersister persister = new LocalGitProjectPersister(rootName, createRepo, overwrite);
+        LocalGitProjectPersister persister = new LocalGitProjectPersister(rootName, createRepo,
+                overwrite);
 
         ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
                 String.format("Running generator %s of %s", generator.name(),
                         ArtifactDescriptorUtils.coordinates(artifact)))
                                 .run(indicator -> generator.generate(projectName, arguments));
 
-        FileSystemArtifactSource output = persister.persist(generator, arguments, projectName, result);
+        FileSystemArtifactSource output = persister.persist(generator, arguments, projectName,
+                result);
 
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
-        log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(output.id().rootFile())),
+        log.info("  %s (%s in %s files)",
+                Style.underline(FileUtils.relativize(output.id().rootFile())),
                 FileUtils.sizeOf(output.id().rootFile()), result.allFiles().size());
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
@@ -96,7 +101,6 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         }
         log.newline();
         log.info(Style.green("Successfully generated new project %s", projectName));
-
 
     }
 

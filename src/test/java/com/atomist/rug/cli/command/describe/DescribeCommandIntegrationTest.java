@@ -149,8 +149,11 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulDescribeOffline() throws Exception {
         assertFailure(
-                "No valid ARTIFACT provided, no default artifact defined and not in local mode.\n\n"
-                        + "Run the following command for usage help:\n" + "  rug describe --help",
+                "No valid ARTIFACT provided, no default artifact defined and not in local mode.\n" + 
+                "Please specify a valid artifact identifier or run with -l to load your local project.\n" + 
+                "\n" + 
+                "Run the following command for usage help:\n" + 
+                "  rug describe --help",
                 "-oX", "describe");
     }
 
