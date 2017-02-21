@@ -64,6 +64,7 @@ public abstract class AbstractCommandTest {
     protected void assertCommandLine(int exitCode, Assertion assertion, boolean includeConf,
             String... tokens) throws Exception {
         String[] commandLine = commandLine(includeConf, tokens);
+        printCWD();
         System.out.println(">>> " + Constants.command()
                 + StringUtils.arrayToDelimitedString(commandLine, " "));
         System.out.println("");
@@ -109,7 +110,7 @@ public abstract class AbstractCommandTest {
     }
 
     public static void printCWD() {
-        System.out.println("User Dir: " + System.getProperty("user.dir"));
+        System.out.println(">>> user dir: " + System.getProperty("user.dir"));
     }
 
     public static String getCWD() {

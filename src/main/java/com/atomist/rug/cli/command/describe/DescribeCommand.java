@@ -336,9 +336,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             DescribeLabels labels) {
         Collection<Rug> ops = (Collection<Rug>) asJavaCollection(operations);
         String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
-        Optional<Rug> opt = ops.stream().filter(g -> g.name().equals(name))
+        Optional<Rug> opt = ops.stream().filter(g -> g.name().equals(name)).findFirst();
 
-                .findFirst();
         if (!opt.isPresent()) {
             // try again with a proper namespaced name
             opt = ops.stream().filter(g -> g.name().equals(fqName)).findFirst();

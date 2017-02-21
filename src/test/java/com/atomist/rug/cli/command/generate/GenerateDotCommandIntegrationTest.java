@@ -40,7 +40,6 @@ public class GenerateDotCommandIntegrationTest extends AbstractCommandTest {
 
             String absLocation = getCWD() + File.separator + location;
             File root = new File(absLocation, name);
-            printCWD();
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("Successfully generated new project " + name));
             assertTrue(new File(root, "src/main/java/my/test/HomeController.java").exists());

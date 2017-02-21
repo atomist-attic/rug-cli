@@ -5,14 +5,23 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
+
     @Before
     public void before() throws Exception {
         setRelativeCWD("src/test/resources/handlers");
     }
 
     @Test
+    public void testSuccessfulArchiveDescribe() throws Exception {
+        assertSuccess(
+                "Command Handlers\n" + "  LicenseAdder\n"
+                        + "    Runs the SetLicense editor on a bunch of my repos\n"
+                        + "  ListIssuesHandler\n" + "    Lists open github issues in slack",
+                "describe", "-l", "archive");
+    }
+
+    @Test
     public void testSuccessfulCommandHandlerDescribe() throws Exception {
-        printCWD();
         assertSuccess(
                 "Command Handlers\n" + "  LicenseAdder\n"
                         + "    Runs the SetLicense editor on a bunch of my repos\n"
@@ -22,7 +31,6 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulSpecificCommandHandlerDescribe() throws Exception {
-        printCWD();
         assertSuccess(
                 "ListIssuesHandler\n" + "rug-cli-tests:handlers:0.12.0\n"
                         + "Lists open github issues in slack\n" + "\n" + "→ Intent\n"
@@ -36,7 +44,6 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulResponseHandlerDescribe() throws Exception {
-        printCWD();
         assertSuccess("Response Handlers\n" + "  IssueClosedResponder\n"
                 + "    Logs failed issue reopen attempts\n" + "  Kitties\n"
                 + "    Prints out kitty urls", "describe", "-l", "response-handler");
@@ -44,7 +51,6 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulSpecificResponseHandlerDescribe() throws Exception {
-        printCWD();
         assertSuccess(
                 "Kitties\n" + "rug-cli-tests:handlers:0.12.0\n" + "Prints out kitty urls\n" + "\n"
                         + "→ Parameters\n" + "  no parameters needed\n" + "\n"
@@ -55,14 +61,12 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulEventHandlerDescribe() throws Exception {
-        printCWD();
         assertSuccess("Event Handlers\n" + "  ClosedIssueReopener\n" + "    Reopens closed issues",
                 "describe", "-l", "event-handler");
     }
 
     @Test
     public void testSuccessfulSpecificEventHandlerDescribe() throws Exception {
-        printCWD();
         assertSuccess(
                 "ClosedIssueReopener\n" + "rug-cli-tests:handlers:0.12.0\n"
                         + "Reopens closed issues\n" + "\n" + "→ Root node\n" + "  issue\n"
