@@ -59,7 +59,8 @@ public class LocalGitProjectManagement implements ProjectManagement {
     private final boolean commit;
     private final boolean dryRun;
 
-    public LocalGitProjectManagement(ArtifactDescriptor artifact, Log log, String rootPath, boolean createRepo, boolean overwrite, boolean commit, boolean dryRun) {
+    public LocalGitProjectManagement(ArtifactDescriptor artifact, Log log, String rootPath,
+            boolean createRepo, boolean overwrite, boolean commit, boolean dryRun) {
         this.artifact = artifact;
         this.log = log;
         this.rootPath = rootPath;
@@ -86,13 +87,14 @@ public class LocalGitProjectManagement implements ProjectManagement {
     }
 
     @Override
-    public ArtifactSource generate(ProjectGenerator generator, ParameterValues arguments, String projectName) {
+    public ArtifactSource generate(ProjectGenerator generator, ParameterValues arguments,
+            String projectName) {
         final File root = createProjectRoot(rootPath, projectName, overwrite);
 
         ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
-                    String.format("Running generator %s of %s", generator.name(),
-                            ArtifactDescriptorUtils.coordinates(artifact)))
-                    .run(indicator -> generator.generate(projectName, arguments));
+                String.format("Running generator %s of %s", generator.name(),
+                        ArtifactDescriptorUtils.coordinates(artifact)))
+                                .run(indicator -> generator.generate(projectName, arguments));
 
         // Add provenance info to output
         result = new ProvenanceInfoWriter().write(result, generator, arguments,
@@ -104,11 +106,9 @@ public class LocalGitProjectManagement implements ProjectManagement {
         File resultFile = new FileSystemArtifactSourceWriter().write(result, fsid,
                 new SimpleSourceUpdateInfo(generator.name()));
 
-
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
-        log.info("  %s (%s in %s files)",
-                Style.underline(FileUtils.relativize(resultFile)),
+        log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(resultFile)),
                 FileUtils.sizeOf(resultFile), result.allFiles().size());
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
@@ -124,7 +124,8 @@ public class LocalGitProjectManagement implements ProjectManagement {
     }
 
     @Override
-    public ModificationAttempt edit(ProjectEditor editor, ParameterValues arguments, String projectName) {
+    public ModificationAttempt edit(ProjectEditor editor, ParameterValues arguments,
+            String projectName) {
         File root = FileUtils.createProjectRoot(projectName);
 
         if (commit) {
@@ -137,12 +138,12 @@ public class LocalGitProjectManagement implements ProjectManagement {
                 String.format("Running editor %s of %s",
                         StringUtils.stripName(editor.name(), artifact),
                         ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
-            ModificationAttempt r = editor.modify(source, arguments);
+                            ModificationAttempt r = editor.modify(source, arguments);
 
-            printLogEntries(indicator, r);
+                            printLogEntries(indicator, r);
 
-            return r;
-        });
+                            return r;
+                        });
 
         if (result instanceof SuccessfulModification) {
 
@@ -200,7 +201,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
     }
 
     protected void iterateDeltas(Collection<Delta> deltas, ArtifactSource source,
-                                 ArtifactSource resultSource, File root, boolean dryRun) {
+            ArtifactSource resultSource, File root, boolean dryRun) {
         FileSystemArtifactSourceWriter writer = new FileSystemArtifactSourceWriter();
         Delta lastDelta = deltas.stream().reduce((d1, d2) -> d2).orElse(null);
 
@@ -263,7 +264,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
     }
 
     protected void logOperation(String operation, String oldPath, String newPath, File root,
-                                boolean last) {
+            boolean last) {
         oldPath = (oldPath == null ? "" : oldPath);
         newPath = (newPath == null ? "" : newPath);
 
@@ -293,7 +294,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
     }
 
     protected void logPatch(String oldPath, String newPath, String existingContent,
-                            String newContent) {
+            String newContent) {
         difflib.Patch<String> patch = DiffUtils.diff(Arrays.asList(existingContent.split("\n")),
                 Arrays.asList(newContent.split("\n")));
         List<String> diffs = DiffUtils.generateUnifiedDiff(oldPath, newPath,
@@ -313,8 +314,10 @@ public class LocalGitProjectManagement implements ProjectManagement {
             }
         });
     }
+
     @Override
-    public ReviewResult review(ProjectReviewer reviewer, ParameterValues arguments, String projectName) {
+    public ReviewResult review(ProjectReviewer reviewer, ParameterValues arguments,
+            String projectName) {
         return null;
     }
 }

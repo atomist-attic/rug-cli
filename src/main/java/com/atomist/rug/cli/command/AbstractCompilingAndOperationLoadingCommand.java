@@ -49,7 +49,6 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                                 .run(indicator -> CommandContext.restore(Rugs.class));
 
                 run(rugs, artifact, source, commandLine);
-
             }
             else {
                 ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
@@ -60,8 +59,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 CommandEventListenerRegistry
                         .raiseEvent((c) -> c.artifactSourceCompiled(artifact, compiledSource));
 
-                Rugs rugs = loadRugs(artifact, compiledSource,
-                        createRugLoader(uri));
+                Rugs rugs = loadRugs(artifact, compiledSource, createRugLoader(uri));
                 CommandEventListenerRegistry.raiseEvent((c) -> c.operationsLoaded(artifact, rugs));
 
                 run(rugs, artifact, compiledSource, commandLine);
@@ -121,12 +119,11 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
             CommandContext.save(TypeScriptCompiler.class, compiler);
         }
 
-        // Make sure the target dir for the compiler exists; eg. install command deletes it
-        if (!root.exists()) {
-            root.mkdirs();
-        }
-
         if (compiler.supports(source)) {
+            // Make sure the target dir for the compiler exists; eg. install command deletes it
+            if (!root.exists()) {
+                root.mkdirs();
+            }
             return Collections.singletonList(compiler);
         }
         else {
