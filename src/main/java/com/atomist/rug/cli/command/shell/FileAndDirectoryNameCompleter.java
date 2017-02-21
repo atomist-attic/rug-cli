@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.command.shell;
 
+import com.atomist.rug.cli.Constants;
+
 import java.util.List;
 
 import org.jline.reader.Candidate;
@@ -20,7 +22,7 @@ public class FileAndDirectoryNameCompleter extends FileNameCompleter {
             if ("-C".equals(word) || "--change-dir".equals(word)) {
                 super.complete(reader, commandLine, candidates);
             }
-            else if (commandLine.line().startsWith(ShellUtils.SHELL_ESCAPE)) {
+            else if (commandLine.line().startsWith(Constants.SHELL_ESCAPE)) {
                 super.complete(reader, commandLine, candidates);
             }
         }

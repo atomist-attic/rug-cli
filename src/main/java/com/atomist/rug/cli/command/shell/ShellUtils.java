@@ -37,8 +37,6 @@ public abstract class ShellUtils {
     public static final String DEFAULT_PROMPT = Style.yellow(Constants.RUG_ARTIFACT) + " "
             + Style.cyan(Constants.DIVIDER) + " ";
 
-    public static final String SHELL_ESCAPE = "/";
-
     public static LineReader lineReader(File historyPath, Completer... completers) {
         // Protect the history file as may contain sensitive information
         FileUtils.setPermissionsToOwnerOnly(historyPath);

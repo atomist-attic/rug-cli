@@ -1,5 +1,10 @@
 package com.atomist.rug.cli.command.utils;
 
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.CommandInfo;
+import com.atomist.rug.cli.command.CommandInfoRegistry;
+import com.atomist.rug.cli.output.Style;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -11,19 +16,13 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.util.StringUtils;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.CommandInfo;
-import com.atomist.rug.cli.command.CommandInfoRegistry;
-import com.atomist.rug.cli.command.shell.ShellUtils;
-import com.atomist.rug.cli.output.Style;
-
 public class CommandHelpFormatter {
 
     public static String HELP_FOOTER = "\n\nPlease report issues at https://github.com/atomist/rug-cli";
 
     public static String SHELL_HELP_FOOTER = String.format(
             "\n\nThis shell supports event expansion with '!' and executing other commands by prefixing the command with '%s', eg. '%scd .atomist && ls -la'.",
-            ShellUtils.SHELL_ESCAPE, ShellUtils.SHELL_ESCAPE);
+            Constants.SHELL_ESCAPE, Constants.SHELL_ESCAPE);
 
     private static int WRAP = Constants.WRAP_LENGTH;
 

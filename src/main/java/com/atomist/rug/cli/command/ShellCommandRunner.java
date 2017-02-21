@@ -104,7 +104,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         else if ("/clear".equals(line) || "/cls".equals(line)) {
             clear();
         }
-        else if (line.startsWith(ShellUtils.SHELL_ESCAPE)) {
+        else if (line.startsWith(Constants.SHELL_ESCAPE)) {
             sh(line);
         }
         else {
@@ -146,7 +146,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void sh(String line) {
         // Remove leading command
-        line = line.substring(ShellUtils.SHELL_ESCAPE.length());
+        line = line.substring(Constants.SHELL_ESCAPE.length());
 
         // Expand all env variables
         line = StringUtils.expandEnvironmentVarsAndHomeDir(line);
