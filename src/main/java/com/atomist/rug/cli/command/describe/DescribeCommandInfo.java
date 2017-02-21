@@ -15,8 +15,8 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 
 public class DescribeCommandInfo extends AbstractVersionCommandInfo implements CommandInfo {
 
-    private static List<String> commands = Arrays
-            .asList("editor", "generator", "executor", "reviewer", "archive");
+    private static List<String> commands = Arrays.asList("editor", "generator", "executor",
+            "reviewer", "archive");
 
     public DescribeCommandInfo() {
         super(DescribeCommand.class, "describe", 2);
@@ -65,7 +65,7 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
                 + "If the name of the artifact has spaces in it, you need to put quotes around it.  "
                 + "FORMAT can be 'json' or 'yaml' and is only valid when describing an archive.";
     }
-    
+
     public Options options() {
         Options options = super.options();
         options.addOption(Option.builder("O").argName("FORMAT").desc("Specify output FORMAT")
@@ -77,22 +77,22 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
     public int order() {
         return 10;
     }
-    
+
     @Override
     public String usage() {
         return "describe [OPTION]... TYPE ARTIFACT";
     }
-    
+
     @Override
     public List<String> subCommands() {
         return commands;
     }
-    
+
     @Override
     public List<String> aliases() {
         return Collections.singletonList("desc");
     }
-    
+
     @Override
     public String group() {
         return "1";

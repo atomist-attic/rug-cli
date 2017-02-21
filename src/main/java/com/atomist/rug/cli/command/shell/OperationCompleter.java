@@ -19,8 +19,8 @@ import java.util.Optional;
  */
 public class OperationCompleter implements Completer {
 
-    private static final List<String> COMMANDS = Arrays.asList("edit", "ed",
-            "generate", "gen", "describe", "desc");
+    private static final List<String> COMMANDS = Arrays.asList("edit", "ed", "generate", "gen",
+            "describe", "desc");
 
     private long timestamp = -1;
 
@@ -37,42 +37,42 @@ public class OperationCompleter implements Completer {
                 init();
 
                 switch (command) {
-                    case "edit":
-                    case "ed":
-                        completeBasedOnJsonpathMatches("editors", line.words(), candidates);
-                        break;
-                    case "generate":
-                    case "gen":
-                        completeBasedOnJsonpathMatches("generators", line.words(), candidates);
-                        break;
-                    case "describe":
-                    case "desc":
-                        if (line.words().size() >= 2) {
-                            String subCommand = line.words().get(1);
-                            switch (subCommand) {
-                                case "editor":
-                                    completeBasedOnJsonpathMatches("editors", line.words(), candidates);
-                                    break;
-                                case "generator":
-                                    completeBasedOnJsonpathMatches("generators", line.words(), candidates);
-                                    break;
-                                case "reviewer":
-                                    completeBasedOnJsonpathMatches("reviewers", line.words(), candidates);
-                                    break;
-                            }
+                case "edit":
+                case "ed":
+                    completeBasedOnJsonpathMatches("editors", line.words(), candidates);
+                    break;
+                case "generate":
+                case "gen":
+                    completeBasedOnJsonpathMatches("generators", line.words(), candidates);
+                    break;
+                case "describe":
+                case "desc":
+                    if (line.words().size() >= 2) {
+                        String subCommand = line.words().get(1);
+                        switch (subCommand) {
+                        case "editor":
+                            completeBasedOnJsonpathMatches("editors", line.words(), candidates);
+                            break;
+                        case "generator":
+                            completeBasedOnJsonpathMatches("generators", line.words(), candidates);
+                            break;
+                        case "reviewer":
+                            completeBasedOnJsonpathMatches("reviewers", line.words(), candidates);
+                            break;
                         }
-                        break;
+                    }
+                    break;
                 }
             }
         }
     }
 
     private void completeBasedOnJsonpathMatches(String kind, List<String> words,
-                                                List<Candidate> candidates) {
+            List<Candidate> candidates) {
         if (ctx != null) {
             List<String> names = ctx.read(String.format("$.%s[*].name", kind));
-            Optional<String> name = names.stream().filter(words::contains)
-                    .map(String::toString).findFirst();
+            Optional<String> name = names.stream().filter(words::contains).map(String::toString)
+                    .findFirst();
             if (name.isPresent()) {
                 List<String> parameterNames = ctx.read(String
                         .format("$.%s[?(@.name=='%s')].parameters[*].name", kind, name.get()));
@@ -80,11 +80,11 @@ public class OperationCompleter implements Completer {
                         .filter(p -> !kind.equals("generators")
                                 || (kind.equals("generators") && !p.equals("project_name")))
                         .filter(p -> words.stream().noneMatch(w -> w.startsWith(p + "=")))
-                        .forEach(n -> candidates.add(
-                                new Candidate(n + "=", n, null, null, null, null, false)));
-            } else {
-                names.forEach(n -> candidates.add(
-                        new Candidate(n)));
+                        .forEach(n -> candidates
+                                .add(new Candidate(n + "=", n, null, null, null, null, false)));
+            }
+            else {
+                names.forEach(n -> candidates.add(new Candidate(n)));
             }
         }
     }
@@ -97,7 +97,8 @@ public class OperationCompleter implements Completer {
                 this.ctx = JsonPath.parse(FileUtils.readFileToString(ShellUtils.SHELL_OPERATIONS,
                         StandardCharsets.ISO_8859_1));
 
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
             }
         }
     }

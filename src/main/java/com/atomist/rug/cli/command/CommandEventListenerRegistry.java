@@ -59,8 +59,7 @@ public abstract class CommandEventListenerRegistry {
         }
 
         @Override
-        public void operationsLoaded(ArtifactDescriptor artifact,
-                Rugs operations) {
+        public void operationsLoaded(ArtifactDescriptor artifact, Rugs operations) {
             CommandContext.save(Rugs.class, operations);
         }
     }

@@ -28,24 +28,22 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
 
     private static final String BANNER_CONFIG_KEY = "shell-banner-enable";
 
-    private static final String banner = ""
-            + "  ____                 ____ _     ___ \n"
+    private static final String banner = "" + "  ____                 ____ _     ___ \n"
             + " |  _ \\ _   _  __ _   / ___| |   |_ _|\n"
             + " | |_) | | | |/ _` | | |   | |    | | \n"
             + " |  _ <| |_| | (_| | | |___| |___ | | \n"
-            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n"
-            + " %s      |___/ %s";
+            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" + " %s      |___/ %s";
 
     @Command
-    public void run(ArtifactSource source, ArtifactDescriptor artifact,
-                    Rugs operations, Settings settings) {
+    public void run(ArtifactSource source, ArtifactDescriptor artifact, Rugs operations,
+            Settings settings) {
 
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
-            registerFileSystemWatcherEventListener(artifact, operations);
-            registerOperationsEventListener(source, artifact, operations);
-            return null;
-        });
+                    registerFileSystemWatcherEventListener(artifact, operations);
+                    registerOperationsEventListener(source, artifact, operations);
+                    return null;
+                });
 
         if (!Constants.isShell()) {
             printBanner(settings);
@@ -54,14 +52,14 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact,
-                                                        Rugs operations) {
+            Rugs operations) {
         if (artifact instanceof LocalArtifactDescriptor && operations != null) {
             ArtifactSourceFileWatcherFactory.create(artifact);
         }
     }
 
     private void registerOperationsEventListener(ArtifactSource source, ArtifactDescriptor artifact,
-                                                 Rugs operations) {
+            Rugs operations) {
 
         CommandEventListener listener = new OperationsLoadedEventListener(source);
         listener.operationsLoaded(artifact, operations);
@@ -88,8 +86,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         }
 
         @Override
-        public void operationsLoaded(ArtifactDescriptor artifact,
-                                     Rugs operations) {
+        public void operationsLoaded(ArtifactDescriptor artifact, Rugs operations) {
             if (artifact != null && operations != null) {
 
                 FileArtifact file = MetadataWriter.create(operations, artifact, source, null);
@@ -98,7 +95,8 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
                     FileUtils.write(ShellUtils.SHELL_OPERATIONS, file.content(),
                             StandardCharsets.ISO_8859_1);
                     FileUtils.forceDeleteOnExit(ShellUtils.SHELL_OPERATIONS);
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     // We can't write the operations out to a file, so what?
                 }
             }

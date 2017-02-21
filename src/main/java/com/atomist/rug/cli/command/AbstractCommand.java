@@ -44,7 +44,7 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
     }
 
     private ArtifactDescriptor createArtifactDescriptor(String group, String artifactId,
-                                                        String version, String extension, boolean local) {
+            String version, String extension, boolean local) {
         ArtifactDescriptor artifact = null;
         if (local) {
             artifact = new LocalArtifactDescriptor(group, artifactId, version,

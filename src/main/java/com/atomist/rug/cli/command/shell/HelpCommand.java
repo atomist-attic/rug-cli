@@ -13,7 +13,7 @@ import java.net.URI;
 public class HelpCommand extends AbstractCommand {
 
     private static final Log log = new Log(HelpCommand.class);
-    
+
     @Override
     protected void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
         log.info(new CommandHelpFormatter().printHelp(new ServiceLoadingCommandInfoRegistry(),

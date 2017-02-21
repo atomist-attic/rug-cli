@@ -92,7 +92,7 @@ public abstract class AbstractAnnotationBasedCommand
     }
 
     private List<Object> prepareMethodArguments(Method method, Rugs rugs,
-                                                ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
+            ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
 
         return Arrays.stream(method.getParameters()).map(p -> {
 
@@ -142,8 +142,8 @@ public abstract class AbstractAnnotationBasedCommand
     }
 
     @Override
-    protected void run(Rugs rugs, ArtifactDescriptor artifact,
-            ArtifactSource source, CommandLine commandLine) {
+    protected void run(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
+            CommandLine commandLine) {
 
         Optional<Method> commandMethod = annotatedMethodWith(
                 com.atomist.rug.cli.command.annotation.Command.class);
@@ -152,8 +152,8 @@ public abstract class AbstractAnnotationBasedCommand
 
         if (commandMethod.isPresent()) {
             if (validatorMethod.isPresent()) {
-                List<Object> validatorArgs = prepareMethodArguments(validatorMethod.get(),
-                        rugs, artifact, source, commandLine);
+                List<Object> validatorArgs = prepareMethodArguments(validatorMethod.get(), rugs,
+                        artifact, source, commandLine);
                 invokeMethod(validatorMethod.get(), validatorArgs);
             }
             List<Object> runArgs = prepareMethodArguments(commandMethod.get(), rugs, artifact,

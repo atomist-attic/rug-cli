@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 import static scala.collection.JavaConversions.asJavaCollection;
 
 public abstract class StringUtils {
-    
+
     private static final Log log = new Log(StringUtils.class);
 
     public static void printClosestMatch(String name, ArtifactDescriptor artifact,
             Seq<String> nameOptions) {
         printClosestMatch(name, artifact, asJavaCollection(nameOptions));
     }
-    
+
     public static void printClosestMatch(String name, ArtifactDescriptor artifact,
             Collection<String> nameOptions) {
         Optional<String> closestMatch = StringUtils.computeClosestMatch(name, nameOptions);
@@ -53,7 +53,7 @@ public abstract class StringUtils {
             return singular;
         }
     }
-    
+
     public static String expandEnvironmentVarsAndHomeDir(String text) {
         if (text == null) {
             return text;

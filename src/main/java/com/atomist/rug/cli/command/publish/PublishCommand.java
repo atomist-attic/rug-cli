@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 public class PublishCommand extends AbstractRepositoryCommand {
 
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-                                           ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,
-                                           CommandLine commandLine) {
+            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,
+            CommandLine commandLine) {
 
         org.eclipse.aether.repository.RemoteRepository deployRepository = getDeployRepository(
                 commandLine.getOptionValue("i"));

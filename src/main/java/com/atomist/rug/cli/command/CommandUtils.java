@@ -23,9 +23,9 @@ import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class CommandUtils {
-    
+
     private static final String RUG_VERSION = ".*<rug.version>(.*)<\\/rug.version>.*";
-    
+
     public static File getRequiredWorkingDirectory() {
         Optional<File> projectDir = FileUtils.getWorkingDirectory();
         return projectDir.orElseThrow(() -> new CommandException(
@@ -57,8 +57,7 @@ public abstract class CommandUtils {
     public static CommandLine parseCommandline(String[] args, CommandInfoRegistry registry) {
         try {
             CommandLineParser parser = new DefaultParser();
-            CommandLine commandLine = parser
-                    .parse(registry.allOptions(), args);
+            CommandLine commandLine = parser.parse(registry.allOptions(), args);
             CommandLineOptions.set(commandLine);
             return commandLine;
         }
@@ -66,10 +65,10 @@ public abstract class CommandUtils {
             throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
         }
     }
-    
+
     public static String[] splitCommandline(String toProcess) {
         if (toProcess == null || toProcess.length() == 0) {
-            //no command? no string
+            // no command? no string
             return new String[0];
         }
         // parse with a simple finite state machine
@@ -90,7 +89,8 @@ public abstract class CommandUtils {
                 if ("\'".equals(nextTok)) {
                     lastTokenHasBeenQuoted = true;
                     state = normal;
-                } else {
+                }
+                else {
                     current.append(nextTok);
                 }
                 break;
@@ -98,21 +98,25 @@ public abstract class CommandUtils {
                 if ("\"".equals(nextTok)) {
                     lastTokenHasBeenQuoted = true;
                     state = normal;
-                } else {
+                }
+                else {
                     current.append(nextTok);
                 }
                 break;
             default:
                 if ("\'".equals(nextTok)) {
                     state = inQuote;
-                } else if ("\"".equals(nextTok)) {
+                }
+                else if ("\"".equals(nextTok)) {
                     state = inDoubleQuote;
-                } else if (" ".equals(nextTok)) {
+                }
+                else if (" ".equals(nextTok)) {
                     if (lastTokenHasBeenQuoted || current.length() != 0) {
                         result.add(current.toString());
                         current.setLength(0);
                     }
-                } else {
+                }
+                else {
                     current.append(nextTok);
                 }
                 lastTokenHasBeenQuoted = false;
@@ -127,7 +131,7 @@ public abstract class CommandUtils {
         }
         return result.toArray(new String[result.size()]);
     }
-    
+
     public static String readRugVersionFromPom() {
         String version = "latest";
         Pattern pattern = Pattern.compile(RUG_VERSION);

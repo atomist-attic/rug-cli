@@ -18,15 +18,13 @@ import static org.junit.Assert.assertTrue;
 public class GenerateDotCommandIntegrationTest extends AbstractCommandTest {
 
     @Before
-    public void before() throws Exception{
+    public void before() throws Exception {
 
         String tmp = System.getProperty("java.io.tmpdir") + File.separator + "generateTest";
         File output = new File(tmp);
         output.mkdirs();
-        IOUtils.copy(
-                new FileInputStream(
-                        new File("src/test/resources/cli.yml")),
-                        new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "cli.yml")));
+        IOUtils.copy(new FileInputStream(new File("src/test/resources/cli.yml")),
+                new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "cli.yml")));
 
         setCWD(tmp);
     }
@@ -37,20 +35,18 @@ public class GenerateDotCommandIntegrationTest extends AbstractCommandTest {
         testGenerationAt(id, ".");
     }
 
-
     void testGenerationAt(String name, String location) throws Exception {
         assertCommandLine(0, () -> {
 
-                    String absLocation = getCWD() + File.separator + location;
-                    File root = new File(absLocation, name);
-                    printCWD();
-                    assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                            .contains("Successfully generated new project " + name));
-                    assertTrue(new File(root, "src/main/java/my/test/HomeController.java").exists());
-                    assertTrue(new File(root, ".atomist.yml").exists());
-                    FileUtils.deleteQuietly(root);
-                }, "generate",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", name,
+            String absLocation = getCWD() + File.separator + location;
+            File root = new File(absLocation, name);
+            printCWD();
+            assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
+                    .contains("Successfully generated new project " + name));
+            assertTrue(new File(root, "src/main/java/my/test/HomeController.java").exists());
+            assertTrue(new File(root, ".atomist.yml").exists());
+            FileUtils.deleteQuietly(root);
+        }, "generate", "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", name,
                 "root_package=my.test", (!location.equals(".") ? "-C" : null),
                 (!location.equals(".") ? location : null));
     }

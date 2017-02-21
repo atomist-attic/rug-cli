@@ -1,7 +1,7 @@
 package com.atomist.rug.cli.command.utils;
 
 public class OperationUtils {
-    
+
     public static String extractRugTypeName(String name) {
         if (name != null) {
             String[] parts = name.split(":");
@@ -11,5 +11,5 @@ public class OperationUtils {
         }
         return name;
     }
-    
+
 }

@@ -21,120 +21,130 @@ import com.atomist.rug.cli.utils.StringUtils;
 
 public class DefaultCommand extends AbstractAnnotationBasedCommand {
 
-	@Command
-	public void run(CommandLine commandLine, @Argument(index = 1) String command,
-			@Option("archive-version") String version, @Option("global") boolean global,
-			@Option("delete") boolean delete) {
-		
-		switch (command) {
-			case "delete":
-				delete(global);
-				break;
-			case "save": 
-				configure(commandLine, global, version);
-				break;
-			default:
-				throw new CommandException("No or invalid ACTION provided.", "default");
-		}
-	}
+    @Command
+    public void run(CommandLine commandLine, @Argument(index = 1) String command,
+            @Option("archive-version") String version, @Option("global") boolean global,
+            @Option("delete") boolean delete) {
 
-	private void configure(CommandLine commandLine, boolean global, String version) {
-		String defaultGroup = null;
-		String defaultArtifact = null;
-		String defaultVersion = null;
+        switch (command) {
+        case "delete":
+            delete(global);
+            break;
+        case "save":
+            configure(commandLine, global, version);
+            break;
+        default:
+            throw new CommandException("No or invalid ACTION provided.", "default");
+        }
+    }
 
-		if (commandLine.getArgList().size() > 2) {
-			String coordinates = commandLine.getArgList().get(2);
-			if (coordinates != null) {
-				String[] parts = coordinates.split(":");
-				if (parts.length >= 1) {
-					defaultGroup = parts[0];
-				}
-				if (parts.length == 2) {
-					defaultArtifact = parts[1];
-				}
-				defaultVersion = version;
-			}
-		} else {
-			throw new CommandException("No valid ARCHIVE identifier specified.", "default");
-		}
+    private void configure(CommandLine commandLine, boolean global, String version) {
+        String defaultGroup = null;
+        String defaultArtifact = null;
+        String defaultVersion = null;
 
-		File settingsFile = settingsFile(global);
-		Settings settings = null;
-		if (settingsFile.exists()) {
-			settings = SettingsReader.settingsFromFile(settingsFile);
-		} else {
-			settings = new Settings();
-		}
+        if (commandLine.getArgList().size() > 2) {
+            String coordinates = commandLine.getArgList().get(2);
+            if (coordinates != null) {
+                String[] parts = coordinates.split(":");
+                if (parts.length >= 1) {
+                    defaultGroup = parts[0];
+                }
+                if (parts.length == 2) {
+                    defaultArtifact = parts[1];
+                }
+                defaultVersion = version;
+            }
+        }
+        else {
+            throw new CommandException("No valid ARCHIVE identifier specified.", "default");
+        }
 
-		settings.getDefaults().setGroup(defaultGroup);
-		settings.getDefaults().setArtifact(defaultArtifact);
-		settings.getDefaults().setVersion(defaultVersion);
+        File settingsFile = settingsFile(global);
+        Settings settings = null;
+        if (settingsFile.exists()) {
+            settings = SettingsReader.settingsFromFile(settingsFile);
+        }
+        else {
+            settings = new Settings();
+        }
 
-		SettingsWriter.write(settings, settingsFile);
+        settings.getDefaults().setGroup(defaultGroup);
+        settings.getDefaults().setArtifact(defaultArtifact);
+        settings.getDefaults().setVersion(defaultVersion);
 
-		log.newline();
-		log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Default (%s)", (global ? "global" : "project")));
-		log.info("  group: %s", Style.yellow(defaultGroup));
-		if (defaultArtifact != null) {
-			log.info("  artifact: %s", Style.yellow(defaultArtifact));
-		}
-		if (defaultVersion != null) {
-			log.info("  version: %s", Style.yellow(defaultVersion));
-		}
+        SettingsWriter.write(settings, settingsFile);
 
-		if (global) {
-			log.newline();
-			log.info(Style.green("Successfully configured global default archive configuration"));
-		} else {
-			log.newline();
-			log.info(Style.green("Successfully configured project default archive configuration"));
-		}
-	}
+        log.newline();
+        log.info(Style.cyan(Constants.DIVIDER) + " "
+                + Style.bold("Default (%s)", (global ? "global" : "project")));
+        log.info("  group: %s", Style.yellow(defaultGroup));
+        if (defaultArtifact != null) {
+            log.info("  artifact: %s", Style.yellow(defaultArtifact));
+        }
+        if (defaultVersion != null) {
+            log.info("  version: %s", Style.yellow(defaultVersion));
+        }
 
-	private void delete(boolean global) {
+        if (global) {
+            log.newline();
+            log.info(Style.green("Successfully configured global default archive configuration"));
+        }
+        else {
+            log.newline();
+            log.info(Style.green("Successfully configured project default archive configuration"));
+        }
+    }
 
-		File settingsFile = settingsFile(global);
-		Settings settings = null;
-		if (settingsFile.exists()) {
-			settings = SettingsReader.settingsFromFile(settingsFile);
-		} else {
-			settings = new Settings();
-		}
-		settings.setDefaults(null);
-		SettingsWriter.write(settings, settingsFile);
+    private void delete(boolean global) {
 
-		log.newline();
-		log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Default (%s)", (global ? "global" : "project")));
-		log.info("  Deleted");
-		if (global) {
-			log.newline();
-			log.info(Style.green("Successfully deleted global default archive"));
-		} else {
-			log.newline();
-			log.info(Style.green("Successfully deleted project default archive"));
-		}
+        File settingsFile = settingsFile(global);
+        Settings settings = null;
+        if (settingsFile.exists()) {
+            settings = SettingsReader.settingsFromFile(settingsFile);
+        }
+        else {
+            settings = new Settings();
+        }
+        settings.setDefaults(null);
+        SettingsWriter.write(settings, settingsFile);
 
-	}
+        log.newline();
+        log.info(Style.cyan(Constants.DIVIDER) + " "
+                + Style.bold("Default (%s)", (global ? "global" : "project")));
+        log.info("  Deleted");
+        if (global) {
+            log.newline();
+            log.info(Style.green("Successfully deleted global default archive"));
+        }
+        else {
+            log.newline();
+            log.info(Style.green("Successfully deleted project default archive"));
+        }
 
-	private File settingsFile(boolean global) {
-		File settingsFile = null;
-		Optional<String> settingsFileOption = CommandLineOptions.getOptionValue("s");
-		if (settingsFileOption.isPresent()) {
-			settingsFile = new File(StringUtils.expandEnvironmentVars(settingsFileOption.get()));
-		} else {
-			if (global) {
-				settingsFile = new File(SettingsReader.PATH);
-			} else {
-				File root = FileUtils.getUserDirectory();
-				if (root != null) {
-					settingsFile = new File(root, Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
-					if (!settingsFile.exists()) {
-						settingsFile.getParentFile().mkdirs();
-					}
-				}
-			}
-		}
-		return settingsFile;
-	}
+    }
+
+    private File settingsFile(boolean global) {
+        File settingsFile = null;
+        Optional<String> settingsFileOption = CommandLineOptions.getOptionValue("s");
+        if (settingsFileOption.isPresent()) {
+            settingsFile = new File(StringUtils.expandEnvironmentVars(settingsFileOption.get()));
+        }
+        else {
+            if (global) {
+                settingsFile = new File(SettingsReader.PATH);
+            }
+            else {
+                File root = FileUtils.getUserDirectory();
+                if (root != null) {
+                    settingsFile = new File(root,
+                            Constants.ATOMIST_ROOT + File.separator + Constants.CLI_CONFIG_NAME);
+                    if (!settingsFile.exists()) {
+                        settingsFile.getParentFile().mkdirs();
+                    }
+                }
+            }
+        }
+        return settingsFile;
+    }
 }

@@ -21,8 +21,7 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
     public void testUnSuccessfulGenerateWithInvalidParameter() throws Exception {
         assertFailure(
                 "Invalid parameter value\n  project_name = 1234567891234567891212345678912345678912",
-                "generate",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService",
+                "generate", "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService",
                 "1234567891234567891212345678912345678912");
     }
 
@@ -31,11 +30,10 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
         assertFailure("Missing parameter value\n  project_name", "generate",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService");
     }
-    
+
     @Test
     public void testUnSuccessfulGenerateWithInvalidName() throws Exception {
-        assertFailure("Did you mean?\n" + 
-                "  NewSpringBootRestService", "generate",
+        assertFailure("Did you mean?\n" + "  NewSpringBootRestService", "generate",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestServi");
     }
 
@@ -47,8 +45,7 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
             assertTrue(new File(root, "src/main/java/my/test/HomeController.java").exists());
             assertTrue(new File(root, ".atomist.yml").exists());
             FileUtils.deleteQuietly(root);
-        }, "generate",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", name,
+        }, "generate", "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", name,
                 "root_package=my.test", (!location.equals(".") ? "-C" : null),
                 (!location.equals(".") ? location : null));
     }

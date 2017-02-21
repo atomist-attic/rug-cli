@@ -54,7 +54,7 @@ public class Style {
         }
         return format(msg, tokens);
     }
-    
+
     /**
      * Careful: gray doesn't work on Windows!
      */

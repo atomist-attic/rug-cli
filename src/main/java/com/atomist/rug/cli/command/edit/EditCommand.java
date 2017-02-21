@@ -42,11 +42,9 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
 
     @Command
     public void run(Rugs operations, ArtifactDescriptor artifact,
-                    @Argument(index = 1) String fqArtifactName,
-                    @Argument(start = 2) ParameterValues arguments,
-                    @Option("change-dir") String root,
-                    @Option("dry-run") boolean dryRun,
-                    @Option("repo") boolean repo) {
+            @Argument(index = 1) String fqArtifactName,
+            @Argument(start = 2) ParameterValues arguments, @Option("change-dir") String root,
+            @Option("dry-run") boolean dryRun, @Option("repo") boolean repo) {
 
         String name = OperationUtils.extractRugTypeName(fqArtifactName);
         if (name == null) {
@@ -86,7 +84,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
     }
 
     private void invoke(ArtifactDescriptor artifact, String name, ProjectEditor editor,
-                        ParameterValues arguments, String rootName, boolean dryRun, boolean commit) {
+            ParameterValues arguments, String rootName, boolean dryRun, boolean commit) {
 
         File root = FileUtils.createProjectRoot(rootName);
 

@@ -46,14 +46,15 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 ArtifactSource source = CommandContext.restore(ArtifactSource.class);
 
                 Rugs rugs = new ProgressReportingOperationRunner<Rugs>(
-                        String.format("Loading %s",
-                                ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
+                        String.format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
+                                .run(indicator -> {
                                     return CommandContext.restore(Rugs.class);
                                 });
 
                 run(rugs, artifact, source, commandLine);
 
-            } else {
+            }
+            else {
                 ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
                 CommandEventListenerRegistry
                         .raiseEvent((c) -> c.artifactSourceLoaded(artifact, source));
@@ -62,14 +63,14 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 CommandEventListenerRegistry
                         .raiseEvent((c) -> c.artifactSourceCompiled(artifact, compiledSource));
 
-                Rugs rugs = loadRugs(artifact,
-                        compiledSource, createRugLoader(uri, "teamID", null));
-                CommandEventListenerRegistry
-                        .raiseEvent((c) -> c.operationsLoaded(artifact, rugs));
+                Rugs rugs = loadRugs(artifact, compiledSource,
+                        createRugLoader(uri, "teamID", null));
+                CommandEventListenerRegistry.raiseEvent((c) -> c.operationsLoaded(artifact, rugs));
 
                 run(rugs, artifact, compiledSource, commandLine);
             }
-        } else {
+        }
+        else {
             run(null, artifact, null, commandLine);
         }
     }
@@ -85,24 +86,25 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
                 return new ProgressReportingOperationRunner<ArtifactSource>(
                         "Processing script sources").run(indicator -> {
-                    ArtifactSource compiledSource = source;
-                    for (Compiler compiler : compilers) {
-                        indicator.report(String.format("Invoking %s on %s script sources",
-                                compiler.name(),
-                                StringUtils.collectionToCommaDelimitedString(
-                                        compiler.extensions())));
-                        ArtifactSource cs = compiler.compile(compiledSource);
-                        Deltas deltas = cs.deltaFrom(compiledSource);
-                        if (deltas.empty()) {
-                            indicator.report("  No files modified");
-                        } else {
-                            asJavaCollection(deltas.deltas()).forEach(
-                                    d -> indicator.report("  Created " + d.path()));
-                        }
-                        compiledSource = cs;
-                    }
-                    return compiledSource;
-                });
+                            ArtifactSource compiledSource = source;
+                            for (Compiler compiler : compilers) {
+                                indicator.report(String.format("Invoking %s on %s script sources",
+                                        compiler.name(),
+                                        StringUtils.collectionToCommaDelimitedString(
+                                                compiler.extensions())));
+                                ArtifactSource cs = compiler.compile(compiledSource);
+                                Deltas deltas = cs.deltaFrom(compiledSource);
+                                if (deltas.empty()) {
+                                    indicator.report("  No files modified");
+                                }
+                                else {
+                                    asJavaCollection(deltas.deltas()).forEach(
+                                            d -> indicator.report("  Created " + d.path()));
+                                }
+                                compiledSource = cs;
+                            }
+                            return compiledSource;
+                        });
             }
         }
         return source;
@@ -115,7 +117,8 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         TypeScriptCompiler compiler;
         if (CommandContext.contains(TypeScriptCompiler.class)) {
             compiler = CommandContext.restore(TypeScriptCompiler.class);
-        } else {
+        }
+        else {
             compiler = new TypeScriptCompiler(CompilerFactory
                     .cachingCompiler(CompilerFactory.create(), root.getAbsolutePath()));
             CommandContext.save(TypeScriptCompiler.class, compiler);
@@ -128,17 +131,15 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
         if (compiler.supports(source)) {
             return Collections.singletonList(compiler);
-        } else {
+        }
+        else {
             return Collections.emptyList();
         }
     }
 
     private DecoratingRugLoader createRugLoader(URI[] uri, String teamId, TreeMaterializer trees) {
-        DecoratingRugLoader loader = new DecoratingRugLoader(
-                new UriBasedDependencyResolver(uri,
-                        SettingsReader.read().getLocalRepository().path()),
-                teamId,
-                trees) {
+        DecoratingRugLoader loader = new DecoratingRugLoader(new UriBasedDependencyResolver(uri,
+                SettingsReader.read().getLocalRepository().path()), teamId, trees) {
             @Override
             protected List<ArtifactDescriptor> postProcessArfifactDescriptors(
                     ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
@@ -151,21 +152,22 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         return loader;
     }
 
-
-    private Rugs doLoadRugs(ArtifactDescriptor artifact,
-                            ArtifactSource source, DecoratingRugLoader loader) throws Exception {
+    private Rugs doLoadRugs(ArtifactDescriptor artifact, ArtifactSource source,
+            DecoratingRugLoader loader) throws Exception {
         try {
             return loader.load(artifact, source);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 
             if (e instanceof BadRugException) {
                 throw new CommandException("Failed to load archive: \n" + e.getMessage(), e);
-            } else if (e instanceof RugLoaderException
-                    || e instanceof RugLoaderRuntimeException) {
+            }
+            else if (e instanceof RugLoaderException || e instanceof RugLoaderRuntimeException) {
                 if (e.getCause() instanceof BadRugException) {
                     throw new CommandException(
                             "Failed to load archive: \n" + e.getCause().getMessage(), e);
-                } else if (e.getCause() instanceof RugRuntimeException) {
+                }
+                else if (e.getCause() instanceof RugRuntimeException) {
                     throw new CommandException(
                             "Failed to load archive: \n" + e.getCause().getMessage(), e);
                 }
@@ -174,20 +176,20 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         }
     }
 
-    private Rugs loadRugs(ArtifactDescriptor artifact,
-                          ArtifactSource source, DecoratingRugLoader loader) {
+    private Rugs loadRugs(ArtifactDescriptor artifact, ArtifactSource source,
+            DecoratingRugLoader loader) {
         if (artifact == null || source == null) {
             return null;
         }
 
-        return new ProgressReportingOperationRunner<Rugs>(String
-                .format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
+        return new ProgressReportingOperationRunner<Rugs>(
+                String.format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run(indicator -> {
                             return doLoadRugs(artifact, source, loader);
                         });
     }
 
-    protected abstract void run(Rugs rugs,
-                                ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine);
+    protected abstract void run(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
+            CommandLine commandLine);
 
 }

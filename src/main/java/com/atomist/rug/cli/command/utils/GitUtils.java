@@ -23,15 +23,14 @@ public abstract class GitUtils {
     private static Log log = new Log(GitUtils.class);
 
     public static void initializeRepoAndCommitFiles(ProjectGenerator generator,
-                                                    ParameterValues arguments, File root) {
+            ParameterValues arguments, File root) {
         try (Git git = Git.init().setDirectory(root).call()) {
             log.info("Initialized a new git repository at " + git.getRepository().getDirectory());
             git.add().addFilepattern(".").call();
             RevCommit commit = git.commit().setAll(true)
-                    .setMessage(
-                            String.format("%s\n\n```%s```", generator.description(),
-                                    new ProvenanceInfoWriter().write(generator, arguments,
-                                            Constants.cliClient())))
+                    .setMessage(String.format("%s\n\n```%s```", generator.description(),
+                            new ProvenanceInfoWriter().write(generator, arguments,
+                                    Constants.cliClient())))
                     .setAuthor("Atomist", "cli@atomist.com").call();
             log.info("Committed initial set of files to git repository (%s)",
                     commit.abbreviate(7).name());

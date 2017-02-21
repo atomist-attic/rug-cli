@@ -66,9 +66,9 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                                         Constants.WRAP_LENGTH, "\n    ", false)));
                 StringUtils.printClosestMatch(generatorName, artifact, rugs.generatorNames());
             }
-            throw new CommandException(
-                    String.format("Specified generator %s could not be found in %s:%s:%s", generatorName,
-                            artifact.group(), artifact.artifact(), artifact.version()));
+            throw new CommandException(String.format(
+                    "Specified generator %s could not be found in %s:%s:%s", generatorName,
+                    artifact.group(), artifact.artifact(), artifact.version()));
         }
     }
 

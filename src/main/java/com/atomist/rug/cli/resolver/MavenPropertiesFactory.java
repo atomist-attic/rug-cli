@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import static com.atomist.rug.resolver.maven.MavenProperties.*;
 
-
 abstract class MavenPropertiesFactory {
 
     public static MavenProperties create(boolean offline, boolean cacheMetadata) {

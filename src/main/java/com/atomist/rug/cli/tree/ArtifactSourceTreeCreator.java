@@ -41,15 +41,13 @@ public class ArtifactSourceTreeCreator {
                 Type type = null;
                 if (visitable instanceof FileMutableView) {
                     a = ((FileMutableView) visitable).currentBackingObject();
-                    pathElements = new ArrayList<>(
-                            asJavaCollection(a.pathElements()));
+                    pathElements = new ArrayList<>(asJavaCollection(a.pathElements()));
                     pathElements.add(a.name());
                     type = Type.FILE;
                 }
                 else if (visitable instanceof DirectoryMutableView) {
                     a = ((DirectoryMutableView) visitable).currentBackingObject();
-                    pathElements = new ArrayList<>(
-                            asJavaCollection(a.pathElements()));
+                    pathElements = new ArrayList<>(asJavaCollection(a.pathElements()));
                     type = Type.DIRECTORY;
                 }
                 return getOrAddNode(root, pathElements, 0, type);

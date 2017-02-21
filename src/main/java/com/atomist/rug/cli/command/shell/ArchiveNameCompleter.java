@@ -15,7 +15,7 @@ import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
 /**
- * {@link Completer} for Rug archive coordinates 
+ * {@link Completer} for Rug archive coordinates
  */
 public class ArchiveNameCompleter implements Completer {
 
@@ -26,14 +26,14 @@ public class ArchiveNameCompleter implements Completer {
         if (line.words().size() == 2) {
             String cmd = line.words().get(0);
             String word = line.word();
-            
+
             if (COMMANDS.contains(cmd)) {
                 // group is already specified; only provide artifacts now
                 if (word.contains(":")) {
                     String group = word.split(":")[0] + ":";
                     archivesFromCache().stream().filter(a -> a.startsWith(group))
-                            .collect(Collectors.toSet()).forEach(a -> candidates
-                                    .add(new Candidate(a)));
+                            .collect(Collectors.toSet())
+                            .forEach(a -> candidates.add(new Candidate(a)));
                 }
                 // sill completing group
                 else {
@@ -57,7 +57,7 @@ public class ArchiveNameCompleter implements Completer {
         }
         return archives;
     }
-    
+
     // private List<String> archivesFromRepository() {
     // List<String> archives = new ArrayList<>();
     //

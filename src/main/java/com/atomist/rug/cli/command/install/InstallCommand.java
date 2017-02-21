@@ -25,8 +25,8 @@ public class InstallCommand extends AbstractRepositoryCommand {
 
     @Override
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
-                                           ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom,
-                                           Artifact metadata, CommandLine commandLine) {
+            ArtifactSource source, Manifest manifest, Artifact artifact, Artifact pom,
+            Artifact metadata, CommandLine commandLine) {
 
         new ProgressReportingOperationRunner<InstallResult>(
                 "Installing archive into local repository").run(indicator -> {
@@ -59,7 +59,7 @@ public class InstallCommand extends AbstractRepositoryCommand {
                 FileUtils.sizeOf(artifact.getFile()), source.allFiles().size());
 
         printTree(source);
-        
+
         log.newline();
         log.info(Style.green("Successfully installed archive for %s:%s:%s", manifest.group(),
                 manifest.artifact(), manifest.version()));

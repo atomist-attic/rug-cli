@@ -9,7 +9,6 @@ import java.util.List;
 
 import static com.atomist.rug.resolver.maven.DependencyCollectionException.*;
 
-
 public class DependencyResolverExceptionProcessor {
 
     public static String process(ArtifactDescriptor artifact, DependencyResolverException e) {

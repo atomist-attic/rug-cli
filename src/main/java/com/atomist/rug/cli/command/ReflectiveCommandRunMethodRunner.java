@@ -10,7 +10,7 @@ import java.util.List;
 public class ReflectiveCommandRunMethodRunner {
 
     public void invokeCommand(ArtifactDescriptor artifact, CommandInfo info, String[] args,
-                              List<URI> uris) throws Exception {
+            List<URI> uris) throws Exception {
         Class<?> commandClass = Thread.currentThread().getContextClassLoader()
                 .loadClass(info.className());
 

@@ -97,7 +97,8 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                                     .collect(Collectors.toList()), ", ")
                             + "]")
                     + (!(node instanceof TerminalTreeNode) && id > 0 ? " {" + id + "}" : "")
-                    + ((!(node instanceof ContainerTreeNode) && node instanceof TreeNode) ? " " + ((TreeNode)node).value() : "");//TODO was .value - won't work!
+                    + ((!(node instanceof ContainerTreeNode) && node instanceof TreeNode)
+                            ? " " + ((TreeNode) node).value() : "");// TODO was .value - won't work!
         }
     }
 

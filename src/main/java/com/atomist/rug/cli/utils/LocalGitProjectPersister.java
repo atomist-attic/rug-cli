@@ -32,14 +32,16 @@ public class LocalGitProjectPersister implements ProjectPersister<FileSystemArti
     }
 
     /**
-     * Persist the artifact source to disk, init as git repo if required, and return new ArtifactSource
+     * Persist the artifact source to disk, init as git repo if required, and return new
+     * ArtifactSource
      *
      * @param projectName
      * @param result
      * @return
      */
     @Override
-    public FileSystemArtifactSource persist(ProjectGenerator generator, ParameterValues arguments, String projectName, ArtifactSource result) {
+    public FileSystemArtifactSource persist(ProjectGenerator generator, ParameterValues arguments,
+            String projectName, ArtifactSource result) {
 
         final File root = createProjectRoot(rootName, projectName, overwrite);
 
@@ -47,10 +49,10 @@ public class LocalGitProjectPersister implements ProjectPersister<FileSystemArti
         result = new ProvenanceInfoWriter().write(result, generator, arguments,
                 Constants.cliClient());
 
-        FileSystemArtifactSourceIdentifier fsid = new SimpleFileSystemArtifactSourceIdentifier(root);
+        FileSystemArtifactSourceIdentifier fsid = new SimpleFileSystemArtifactSourceIdentifier(
+                root);
 
-        new FileSystemArtifactSourceWriter().write(result,
-                fsid,
+        new FileSystemArtifactSourceWriter().write(result, fsid,
                 new SimpleSourceUpdateInfo(generator.name()));
 
         if (createRepo) {

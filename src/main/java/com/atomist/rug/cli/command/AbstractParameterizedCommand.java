@@ -29,8 +29,7 @@ import static scala.collection.JavaConversions.asScalaBuffer;
 
 public abstract class AbstractParameterizedCommand extends AbstractAnnotationBasedCommand {
 
-    private ParameterValues collectParameters(ParameterizedRug rug,
-                                              ParameterValues arguments) {
+    private ParameterValues collectParameters(ParameterizedRug rug, ParameterValues arguments) {
         Collection<Parameter> parameters = asJavaCollection(rug.parameters());
         if (CommandLineOptions.hasOption("I") && !parameters.isEmpty()) {
 
@@ -81,7 +80,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
             }
             arguments = new SimpleParameterValues(JavaConversions.asScalaBuffer(newValues));
             log.newline();
-            
+
             ShellUtils.shutdown(reader);
         }
         return arguments;
@@ -118,12 +117,11 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         }
     }
 
-    private void validateCollectedParameters(ArtifactDescriptor artifact,
-            ParameterizedRug rug, ParameterValues arguments) {
+    private void validateCollectedParameters(ArtifactDescriptor artifact, ParameterizedRug rug,
+            ParameterValues arguments) {
         Collection<ParameterValue> invalid = asJavaCollection(
                 rug.findInvalidParameterValues(arguments));
-        Collection<Parameter> missing = asJavaCollection(
-                rug.findMissingParameters(arguments));
+        Collection<Parameter> missing = asJavaCollection(rug.findMissingParameters(arguments));
 
         if (!invalid.isEmpty() || !missing.isEmpty()) {
             if (!CommandLineOptions.hasOption("I")) {
@@ -146,16 +144,15 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         }
     }
 
-    protected ParameterValues validate(ArtifactDescriptor artifact,
-            ParameterizedRug rug, ParameterValues arguments) {
+    protected ParameterValues validate(ArtifactDescriptor artifact, ParameterizedRug rug,
+            ParameterValues arguments) {
 
         arguments = collectParameters(rug, arguments);
         validateCollectedParameters(artifact, rug, arguments);
         return arguments;
     }
 
-    protected ParameterValues mergeParameters(ParameterValues arguments,
-            ParameterValue... pv) {
+    protected ParameterValues mergeParameters(ParameterValues arguments, ParameterValue... pv) {
         List<ParameterValue> pvs = new ArrayList<>();
         if (arguments != null) {
             pvs.addAll(asJavaCollection(arguments.parameterValues()));

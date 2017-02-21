@@ -46,7 +46,7 @@ public abstract class AbstractCommandTest {
     }
 
     @Before
-    public void setupRules(){
+    public void setupRules() {
         systemOutRule.clearLog();
         System.out.println("");
         System.out.println(">>> " + getClass().getSimpleName() + "." + name.getMethodName());
@@ -64,7 +64,8 @@ public abstract class AbstractCommandTest {
     protected void assertCommandLine(int exitCode, Assertion assertion, boolean includeConf,
             String... tokens) throws Exception {
         String[] commandLine = commandLine(includeConf, tokens);
-        System.out.println(">>> " + Constants.command() + StringUtils.arrayToDelimitedString(commandLine, " "));
+        System.out.println(">>> " + Constants.command()
+                + StringUtils.arrayToDelimitedString(commandLine, " "));
         System.out.println("");
         systemOutRule.clearLog();
 
@@ -107,18 +108,19 @@ public abstract class AbstractCommandTest {
         return commandLine.toArray(new String[commandLine.size()]);
     }
 
-    public static void printCWD(){
+    public static void printCWD() {
         System.out.println("User Dir: " + System.getProperty("user.dir"));
     }
-    public static String getCWD(){
+
+    public static String getCWD() {
         return System.getProperty("user.dir");
     }
 
-    public static void setCWD(String dir){
-        System.setProperty("user.dir",dir);
+    public static void setCWD(String dir) {
+        System.setProperty("user.dir", dir);
     }
 
-    public void setRelativeCWD(String dir){
+    public void setRelativeCWD(String dir) {
         setCWD(startingUserDir + "/" + dir);
     }
 

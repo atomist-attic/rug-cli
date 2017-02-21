@@ -43,7 +43,7 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
 
         return options;
     }
-    
+
     @Override
     public int order() {
         return 70;
@@ -53,12 +53,12 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
     public String usage() {
         return "publish [OPTION]...";
     }
-    
+
     @Override
     public String group() {
         return "2";
     }
-    
+
     @Override
     public boolean enabled(ArtifactDescriptor artifact) {
         return artifact instanceof LocalArtifactDescriptor

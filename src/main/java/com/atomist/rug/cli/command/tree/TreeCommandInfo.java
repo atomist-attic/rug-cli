@@ -41,7 +41,7 @@ public class TreeCommandInfo extends AbstractRugScopedCommandInfo {
     public String usage() {
         return "tree [OPTION]... [EXPRESSION]";
     }
-    
+
     @Override
     public String group() {
         return "3";

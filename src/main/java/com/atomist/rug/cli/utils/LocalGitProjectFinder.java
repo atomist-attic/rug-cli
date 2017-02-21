@@ -9,10 +9,11 @@ import scala.Option;
 /**
  * Find projects in git based on some context
  */
-public class LocalGitProjectFinder implements ProjectFinder{
+public class LocalGitProjectFinder implements ProjectFinder {
 
     @Override
-    public Option<ArtifactSource> findArtifactSource(ProjectOperation editor, ParameterValues arguments, String projectName) {
+    public Option<ArtifactSource> findArtifactSource(ProjectOperation editor,
+            ParameterValues arguments, String projectName) {
         return null;
     }
 }

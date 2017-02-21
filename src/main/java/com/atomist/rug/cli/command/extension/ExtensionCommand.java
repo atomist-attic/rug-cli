@@ -157,7 +157,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                     }
                     return Collections.emptyList();
                 });
-        
+
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extensions"));
 

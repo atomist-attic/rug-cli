@@ -17,8 +17,7 @@ public class Node {
 
     public void accept(NodeVisitor visitor) {
         visitor.visitEnter(this);
-        children.stream().sorted(Comparator.comparing(Node::id))
-                .forEach(c -> c.accept(visitor));
+        children.stream().sorted(Comparator.comparing(Node::id)).forEach(c -> c.accept(visitor));
         visitor.visitLeave(this);
     }
 

@@ -39,7 +39,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(Rugs operations, ArtifactDescriptor artifact,
-                    @Argument(index = 1) String testName) {
+            @Argument(index = 1) String testName) {
 
         ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
 

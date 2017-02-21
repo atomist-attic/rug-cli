@@ -35,10 +35,10 @@ import java.util.Optional;
 public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedCommand {
 
     @Command
-    public void run(Rugs operationsAndHandlers, ArtifactDescriptor artifact,
-                    ArtifactSource source, @Option("archive-group") String archiveGroup,
-                    @Option("archive-artifact") String archiveArtifact,
-                    @Option("archive-version") String archiveVersion, CommandLine commandLine)
+    public void run(Rugs operationsAndHandlers, ArtifactDescriptor artifact, ArtifactSource source,
+            @Option("archive-group") String archiveGroup,
+            @Option("archive-artifact") String archiveArtifact,
+            @Option("archive-version") String archiveVersion, CommandLine commandLine)
             throws IOException {
 
         artifact = ArtifactDescriptorFactory.copyFrom(artifact, archiveGroup, archiveArtifact,
@@ -122,7 +122,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
 
         @Override
         protected ArtifactSource generateMetadata(Rugs operationsAndHandlers,
-                                                  ArtifactDescriptor artifact, ArtifactSource source, Manifest manifest) {
+                ArtifactDescriptor artifact, ArtifactSource source, Manifest manifest) {
             return new ProgressReportingOperationRunner<ArtifactSource>(
                     "Generating archive metadata").run(indicator -> {
                         return super.generateMetadata(operationsAndHandlers, artifact, source,
