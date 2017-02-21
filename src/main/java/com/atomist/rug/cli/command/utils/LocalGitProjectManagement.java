@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.utils;
+package com.atomist.rug.cli.command.utils;
 
 import com.atomist.param.ParameterValues;
 import com.atomist.project.edit.FailedModificationAttempt;
@@ -12,13 +12,14 @@ import com.atomist.project.review.ReviewResult;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
-import com.atomist.rug.cli.command.utils.GitUtils;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.kind.core.ChangeLogEntry;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.project.ProvenanceInfoWriter;
