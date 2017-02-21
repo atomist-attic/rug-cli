@@ -21,8 +21,12 @@ public class Log implements Logger{
         logger.error(e.getMessage(), e);
     }
 
-    @Override
-    public void info(String message, Object... tokens) {
+    private void doError(String message, Object... tokens) {
+        newline();
+        info(Style.red(message), (Object[]) tokens);
+    }
+
+    private void doInfo(String message, Object... tokens) {
         if (tokens == null || tokens.length == 0) {
             println(message);
             logger.info(message);
@@ -34,12 +38,10 @@ public class Log implements Logger{
         }
     }
 
-    public Log(Class<?> clazz) {
-    }
 
-    public void error(String message, Object... tokens) {
-        newline();
-        info(Style.red(message), (Object[]) tokens);
+
+    public Log(Class<?> clazz) {
+
     }
 
     public void newline() {
@@ -234,17 +236,22 @@ public class Log implements Logger{
 
     @Override
     public void info(String msg) {
-        logger.info(msg);
+        doInfo(msg);
     }
 
     @Override
     public void info(String format, Object arg) {
-        logger.info(format,arg);
+        doInfo(format,arg);
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
-        logger.info(format,arg1,arg2);
+        doInfo(format,arg1,arg2);
+    }
+
+    @Override
+    public void info(String format, Object... arguments) {
+        doInfo(format,arguments);
     }
 
 
@@ -345,21 +352,26 @@ public class Log implements Logger{
 
     @Override
     public boolean isErrorEnabled() {
-        return logger.isErrorEnabled();
+        return true;
     }
 
     @Override
     public void error(String msg) {
-        logger.error(msg);
+        doError(msg);
     }
 
     @Override
     public void error(String format, Object arg) {
-        logger.error(format,arg);
+        doError(format,arg);
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
-        logger.error(format,arg1,arg2);
+        doError(format,arg1,arg2);
+    }
+
+    @Override
+    public void error(String format, Object... arguments) {
+        doError(format,arguments);
     }
 }
