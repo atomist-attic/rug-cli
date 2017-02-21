@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class ConfigureOperations {
-    
+
     public List<Repo> getForRepos(String token) {
 
         HttpClient client = HttpClientFactory.httpClient(Constants.REPO_URL);
@@ -36,7 +36,7 @@ public class ConfigureOperations {
                     "repositories configure");
         }
     }
-    
+
     public static class Repo {
         @JsonProperty("team-id")
         private String teamId;

@@ -22,8 +22,7 @@ import difflib.DiffUtils;
 public abstract class AbstractDeltaHandlingCommand extends AbstractParameterizedCommand {
 
     protected void iterateDeltas(Collection<Delta> deltas, ArtifactSource source,
-            ArtifactSource resultSource, File root,
-            boolean dryRun) {
+            ArtifactSource resultSource, File root, boolean dryRun) {
         FileSystemArtifactSourceWriter writer = new FileSystemArtifactSourceWriter();
         Delta lastDelta = deltas.stream().reduce((d1, d2) -> d2).orElse(null);
 
@@ -42,7 +41,8 @@ public abstract class AbstractDeltaHandlingCommand extends AbstractParameterized
                         existingContent = opt.get().content();
                     }
                     String newContent = delta.newFile().content();
-                    logPatch(delta.newFile().path(), delta.newFile().path(), existingContent, newContent);
+                    logPatch(delta.newFile().path(), delta.newFile().path(), existingContent,
+                            newContent);
                 }
             }
             else if (d instanceof FileUpdateDelta) {
@@ -69,8 +69,7 @@ public abstract class AbstractDeltaHandlingCommand extends AbstractParameterized
                 if (!dryRun) {
                     File file = new File(root, d.path());
                     file.delete();
-                    logOperation("deleted", d.path(), null, root,
-                            delta.equals(lastDelta));
+                    logOperation("deleted", d.path(), null, root, delta.equals(lastDelta));
                 }
                 else if (!(delta.oldFile() instanceof ByteArrayFileArtifact)) {
                     scala.Option<FileArtifact> opt = source.findFile(delta.oldFile().path());

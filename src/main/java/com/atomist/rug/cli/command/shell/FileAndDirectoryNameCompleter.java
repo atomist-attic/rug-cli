@@ -9,7 +9,7 @@ import org.jline.reader.impl.completer.FileNameCompleter;
 
 /**
  * Extension to JLine's {@link FileNameCompleter} that only completes on <code>-C</code> or
- * <code>--change-dir</code> arguments and <code>!</code> process executions    .
+ * <code>--change-dir</code> arguments and <code>!</code> process executions .
  */
 public class FileAndDirectoryNameCompleter extends FileNameCompleter {
 

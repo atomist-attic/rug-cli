@@ -27,7 +27,7 @@ public class Main {
 
     private static void invokeRunner(String[] args) {
         boolean shouldContinue = true;
-        
+
         while (shouldContinue) {
             try {
                 shouldContinue = false;

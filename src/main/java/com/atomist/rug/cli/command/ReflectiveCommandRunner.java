@@ -1,14 +1,5 @@
 package com.atomist.rug.cli.command;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.cli.CommandLine;
-
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.classloading.ClassLoaderFactory;
@@ -25,6 +16,14 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.rug.resolver.DependencyResolver;
 import com.atomist.rug.resolver.DependencyResolverException;
+import org.apache.commons.cli.CommandLine;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReflectiveCommandRunner {
 

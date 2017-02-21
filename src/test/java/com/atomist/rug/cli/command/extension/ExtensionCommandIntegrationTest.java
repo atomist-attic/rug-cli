@@ -14,10 +14,12 @@ import com.atomist.rug.cli.AbstractCommandTest;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ExtensionCommandIntegrationTest extends AbstractCommandTest {
-    
-    private static final File extDir = new File(System.getProperty("user.home") + File.separator + ".atomist" + File.separator + "ext");
-    private static final File extTestsDir = new File(System.getProperty("user.home") + File.separator + ".atomist" + File.separator + "ext-tests");
-    
+
+    private static final File extDir = new File(
+            System.getProperty("user.home") + File.separator + ".atomist" + File.separator + "ext");
+    private static final File extTestsDir = new File(System.getProperty("user.home")
+            + File.separator + ".atomist" + File.separator + "ext-tests");
+
     @BeforeClass
     public static void init() throws IOException {
         if (extDir.exists()) {
@@ -78,7 +80,7 @@ public class ExtensionCommandIntegrationTest extends AbstractCommandTest {
     public void testUnSuccessfullWithMissingSubCommand() throws Exception {
         assertFailure("Not enough or invalid arguments provided", "extension", "bla");
     }
-    
+
     @AfterClass
     public static void cleanup() throws IOException {
         if (extTestsDir.exists()) {

@@ -79,7 +79,7 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
         message.append(event.getResource().getResourceName());
         if (event.getRequestType().equals(RequestType.PUT)) {
             message.append(" ").append(Constants.DIVIDER).append(" ");
-        } 
+        }
         else {
             message.append(" ").append(Constants.REDIVID).append(" ");
         }

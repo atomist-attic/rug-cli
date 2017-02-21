@@ -70,7 +70,7 @@ public class ProgressReportingPrintStream extends FilteringPrintStream {
             super.write(buf, off, len);
         }
     }
-    
+
     private void report(String l, Optional<ProgressReporter> progressReporterOption) {
         progressReporterOption.get()
                 .report("$  " + l.replace("\n", "\n  ").replace("\n\r", "\n\r  "));

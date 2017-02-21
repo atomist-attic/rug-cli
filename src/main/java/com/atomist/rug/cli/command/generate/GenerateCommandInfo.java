@@ -51,12 +51,12 @@ public class GenerateCommandInfo extends AbstractVersionCommandInfo {
     public String usage() {
         return "generate [OPTION]... GENERATOR PROJECT_NAME [PARAMETER]...";
     }
-    
+
     @Override
     public List<String> aliases() {
         return Collections.singletonList("gen");
     }
-    
+
     @Override
     public String group() {
         return "2";

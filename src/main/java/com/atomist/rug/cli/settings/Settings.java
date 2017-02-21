@@ -15,10 +15,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-
 @JsonInclude(Include.NON_EMPTY)
 public class Settings {
-    
+
     @JsonProperty("catalogs")
     private Catalogs catalogs = new Catalogs();
 
@@ -30,21 +29,21 @@ public class Settings {
 
     @JsonProperty("remote-repositories")
     private Map<String, RemoteRepository> remoteRepositories = new HashMap<>();
-    
+
     @JsonProperty("config")
     private Map<String, Object> config = new HashMap<>();
-    
+
     @JsonProperty("token")
     private String token;
 
     public String getToken() {
         return token;
     }
-    
+
     public Map<String, Object> getConfig() {
         return config;
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getConfigValue(String key, Class<T> cls) {
         return Optional.ofNullable((T) config.get(key));
@@ -59,11 +58,11 @@ public class Settings {
             return (T) defaultValue;
         }
     }
-    
+
     public Defaults getDefaults() {
         return defaults;
     }
-    
+
     public Catalogs getCatalogs() {
         return catalogs;
     }
@@ -100,15 +99,15 @@ public class Settings {
             config.putAll(project.getConfig());
         }
     }
-    
+
     public void setToken(String token) {
         this.token = token;
     }
-    
+
     public void setConfig(Map<String, Object> config) {
         this.config = config;
     }
-    
+
     public void setConfigValue(String key, String value) {
         config.put(key, value);
     }
@@ -116,7 +115,7 @@ public class Settings {
     public void setDefaults(Defaults defaults) {
         this.defaults = defaults;
     }
-    
+
     public void setCatalogs(Catalogs catalogs) {
         this.catalogs = catalogs;
     }
@@ -202,16 +201,16 @@ public class Settings {
             this.path = path.replace("/", File.separator);
         }
     }
-    
+
     @JsonInclude(Include.NON_EMPTY)
     public static class Catalogs {
-        
+
         private List<String> urls = new ArrayList<>();
-        
+
         public void addUrl(String url) {
             urls.add(url);
         }
-        
+
         @JsonValue
         public List<String> getUrls() {
             if (urls == null || urls.size() == 0) {

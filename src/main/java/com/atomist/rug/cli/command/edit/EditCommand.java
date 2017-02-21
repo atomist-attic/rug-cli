@@ -1,18 +1,7 @@
 package com.atomist.rug.cli.command.edit;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.text.WordUtils;
-
-import com.atomist.project.ProjectOperationArguments;
-import com.atomist.project.ProvenanceInfoWriter;
-import com.atomist.project.archive.Operations;
+import com.atomist.param.ParameterValues;
+import com.atomist.project.archive.Rugs;
 import com.atomist.project.edit.FailedModificationAttempt;
 import com.atomist.project.edit.ModificationAttempt;
 import com.atomist.project.edit.NoModificationNeeded;
@@ -35,19 +24,27 @@ import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.kind.core.ChangeLogEntry;
 import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.project.ProvenanceInfoWriter;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.Delta;
-
+import org.apache.commons.lang3.text.WordUtils;
 import scala.collection.JavaConverters;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static scala.collection.JavaConversions.asJavaCollection;
 
 public class EditCommand extends AbstractDeltaHandlingCommand {
 
     @Command
-    public void run(Operations operations, ArtifactDescriptor artifact,
+    public void run(Rugs operations, ArtifactDescriptor artifact,
             @Argument(index = 1) String fqArtifactName,
-            @Argument(start = 2) ProjectOperationArguments arguments,
-            @Option("change-dir") String root, @Option("dry-run") boolean dryRun,
-            @Option("repo") boolean repo) {
+            @Argument(start = 2) ParameterValues arguments, @Option("change-dir") String root,
+            @Option("dry-run") boolean dryRun, @Option("repo") boolean repo) {
 
         String name = OperationUtils.extractRugTypeName(fqArtifactName);
         if (name == null) {
@@ -87,7 +84,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
     }
 
     private void invoke(ArtifactDescriptor artifact, String name, ProjectEditor editor,
-            ProjectOperationArguments arguments, String rootName, boolean dryRun, boolean commit) {
+            ParameterValues arguments, String rootName, boolean dryRun, boolean commit) {
 
         File root = FileUtils.createProjectRoot(rootName);
 

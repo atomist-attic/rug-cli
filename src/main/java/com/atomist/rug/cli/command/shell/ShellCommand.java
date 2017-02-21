@@ -1,11 +1,6 @@
 package com.atomist.rug.cli.command.shell;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
+import com.atomist.project.archive.Rugs;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandEventListener;
@@ -18,36 +13,38 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.version.VersionUtils;
-import com.atomist.rug.loader.OperationsAndHandlers;
-import com.atomist.rug.metadata.MetadataWriter;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
+import com.atomist.rug.resolver.metadata.MetadataWriter;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class ShellCommand extends AbstractAnnotationBasedCommand {
 
     private static final String BANNER_CONFIG_KEY = "shell-banner-enable";
 
-    private static final String banner = "" 
-            + "  ____                 ____ _     ___ \n"
+    private static final String banner = "" + "  ____                 ____ _     ___ \n"
             + " |  _ \\ _   _  __ _   / ___| |   |_ _|\n"
             + " | |_) | | | |/ _` | | |   | |    | | \n"
             + " |  _ <| |_| | (_| | | |___| |___ | | \n"
-            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" 
-            + " %s      |___/ %s";
+            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" + " %s      |___/ %s";
 
     @Command
-    public void run(ArtifactSource source, ArtifactDescriptor artifact,
-            OperationsAndHandlers operations, Settings settings) {
-        
+    public void run(ArtifactSource source, ArtifactDescriptor artifact, Rugs operations,
+            Settings settings) {
+
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
                     registerFileSystemWatcherEventListener(artifact, operations);
                     registerOperationsEventListener(source, artifact, operations);
                     return null;
                 });
-        
+
         if (!Constants.isShell()) {
             printBanner(settings);
         }
@@ -55,14 +52,15 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact,
-            OperationsAndHandlers operations) {
+            Rugs operations) {
         if (artifact instanceof LocalArtifactDescriptor && operations != null) {
             ArtifactSourceFileWatcherFactory.create(artifact);
         }
     }
 
     private void registerOperationsEventListener(ArtifactSource source, ArtifactDescriptor artifact,
-            OperationsAndHandlers operations) {
+            Rugs operations) {
+
         CommandEventListener listener = new OperationsLoadedEventListener(source);
         listener.operationsLoaded(artifact, operations);
         CommandEventListenerRegistry.register(listener);
@@ -88,8 +86,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         }
 
         @Override
-        public void operationsLoaded(ArtifactDescriptor artifact,
-                OperationsAndHandlers operations) {
+        public void operationsLoaded(ArtifactDescriptor artifact, Rugs operations) {
             if (artifact != null && operations != null) {
 
                 FileArtifact file = MetadataWriter.create(operations, artifact, source, null);

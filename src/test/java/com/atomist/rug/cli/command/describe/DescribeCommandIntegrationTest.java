@@ -1,14 +1,13 @@
 package com.atomist.rug.cli.command.describe;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-
+import com.atomist.rug.cli.AbstractCommandTest;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 
-import com.atomist.rug.cli.AbstractCommandTest;
+import java.io.File;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
@@ -45,8 +44,9 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulArchiveDescribe() throws Exception {
-        assertSuccess("rug describe editor|generator|executor|reviewer ARTIFACT", "describe",
-                "archive", "atomist-rugs:spring-boot-rest-service");
+        assertSuccess(
+                "rug describe editor|generator|reviewer|command-handler|event-handler|response-handler ARTIFACT",
+                "describe", "archive", "atomist-rugs:spring-boot-rest-service");
     }
 
     @Test
@@ -66,7 +66,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulArchiveDescribeYaml() throws Exception {
         assertCommandLine(0, new Assertion() {
-            
+
             @Override
             public void checkAssertion() throws Exception {
                 String sysout = systemOutRule.getLogWithNormalizedLineSeparator();
@@ -120,7 +120,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulDescribe() throws Exception {
         assertFailure(
-                "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, executor or reviewer.\n"
+                "com.atomist.rug.cli.command.CommandException: Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, reviewer, command-handler, event-handler, or response-handler \n"
                         + "\n" + "Run the following command for usage help:\n"
                         + "  rug describe --help",
                 "describe", "-l");
@@ -141,7 +141,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
         String editorIWantedToDescribe = "atomist-rugs:spring-boot-rest-service:NewBootyThing";
         assertFailure(
                 "Please tell me what kind of thing to describe. Try:\n"
-                        + "  rug describe editor|generator|executor|reviewer "
+                        + "  rug describe editor|generator|reviewer|event-handler|command-handler|response-handler "
                         + editorIWantedToDescribe + "\n" + "\n"
                         + "Run the following command for usage help:\n" + "  rug describe --help",
                 "describe", editorIWantedToDescribe);
@@ -150,8 +150,10 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulDescribeOffline() throws Exception {
         assertFailure(
-                "No valid ARTIFACT provided, no default artifact defined and not in local mode.\n\n"
-                        + "Run the following command for usage help:\n" + "  rug describe --help",
+                "No valid ARTIFACT provided, no default artifact defined and not in local mode.\n"
+                        + "Please specify a valid artifact identifier or run with -l to load your local project.\n"
+                        + "\n" + "Run the following command for usage help:\n"
+                        + "  rug describe --help",
                 "-oX", "describe");
     }
 

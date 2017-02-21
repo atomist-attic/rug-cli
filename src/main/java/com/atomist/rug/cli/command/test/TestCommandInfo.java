@@ -20,7 +20,7 @@ public class TestCommandInfo extends AbstractLocalArtifactDescriptorProvider {
     public String detail() {
         return "TEST is the name of a test scenario.  If no TEST is specified, all scenarios will run.";
     }
-    
+
     @Override
     public int order() {
         return 50;
@@ -30,12 +30,12 @@ public class TestCommandInfo extends AbstractLocalArtifactDescriptorProvider {
     public String usage() {
         return "test [OPTION]... [TEST]";
     }
-    
+
     @Override
     public String group() {
         return "2";
     }
-    
+
     @Override
     public boolean enabled(ArtifactDescriptor artifact) {
         return artifact instanceof LocalArtifactDescriptor

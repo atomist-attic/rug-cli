@@ -11,8 +11,7 @@ import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
 public class ExtensionCommandInfo extends AbstractRugScopedCommandInfo {
 
-    private static final List<String> commands = Arrays
-            .asList("list", "install", "uninstall");
+    private static final List<String> commands = Arrays.asList("list", "install", "uninstall");
 
     public ExtensionCommandInfo() {
         super(ExtensionCommand.class, "extension");
@@ -52,12 +51,12 @@ public class ExtensionCommandInfo extends AbstractRugScopedCommandInfo {
     public List<String> subCommands() {
         return commands;
     }
-    
+
     @Override
     public String group() {
         return "4";
     }
-    
+
     @Override
     public List<String> aliases() {
         return Collections.singletonList("ext");

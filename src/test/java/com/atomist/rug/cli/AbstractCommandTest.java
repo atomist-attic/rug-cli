@@ -6,9 +6,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.atomist.project.archive.Rugs;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.contrib.java.lang.system.Assertion;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
@@ -19,10 +22,11 @@ import org.springframework.util.StringUtils;
 
 import com.atomist.rug.cli.command.CommandContext;
 import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
-import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.source.ArtifactSource;
 
 public abstract class AbstractCommandTest {
+
+    private static String startingUserDir = getCWD();
 
     @Rule
     public ExpectedSystemExit exit = ExpectedSystemExit.none();
@@ -36,16 +40,20 @@ public abstract class AbstractCommandTest {
     @Rule
     public SystemOutRule systemOutRule = new SystemOutRule().enableLog();
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         System.setProperty("jansi.strip", "true");
+    }
+
+    @Before
+    public void setupRules() {
         systemOutRule.clearLog();
         System.out.println("");
         System.out.println(">>> " + getClass().getSimpleName() + "." + name.getMethodName());
-        
         CommandContext.delete(ArtifactSource.class);
-        CommandContext.delete(OperationsAndHandlers.class);
+        CommandContext.delete(Rugs.class);
         CommandContext.delete(TypeScriptCompiler.class);
+        setRelativeCWD("src/test/resources/common-editors");
     }
 
     protected void assertCommandLine(int exitCode, Assertion assertion, String... tokens)
@@ -56,7 +64,9 @@ public abstract class AbstractCommandTest {
     protected void assertCommandLine(int exitCode, Assertion assertion, boolean includeConf,
             String... tokens) throws Exception {
         String[] commandLine = commandLine(includeConf, tokens);
-        System.out.println(">>> " + Constants.command() + StringUtils.arrayToDelimitedString(commandLine, " "));
+        printCWD();
+        System.out.println(">>> " + Constants.command()
+                + StringUtils.arrayToDelimitedString(commandLine, " "));
         System.out.println("");
         systemOutRule.clearLog();
 
@@ -79,8 +89,7 @@ public abstract class AbstractCommandTest {
     }
 
     protected String[] commandLine(boolean includeConf, String... tokens) {
-        File config = new File("../cli.yml");
-
+        File config = new File(getCWD(), "../cli.yml");
         if (!config.exists()) {
             throw new RuntimeException(
                     "Config file missing at ../cli.yml\nLook, if you're running tests locally, try setting your working directory to src/test/resources/common-editors");
@@ -95,9 +104,25 @@ public abstract class AbstractCommandTest {
             commandLine.add("-t");
             commandLine.add("-V");
         }
-        commandLine = commandLine.stream().filter(c -> c != null).collect(Collectors.toList());
+        commandLine = commandLine.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
         return commandLine.toArray(new String[commandLine.size()]);
+    }
+
+    public static void printCWD() {
+        System.out.println(">>> user dir: " + System.getProperty("user.dir"));
+    }
+
+    public static String getCWD() {
+        return System.getProperty("user.dir");
+    }
+
+    public static void setCWD(String dir) {
+        System.setProperty("user.dir", dir);
+    }
+
+    public void setRelativeCWD(String dir) {
+        setCWD(startingUserDir + "/" + dir);
     }
 
     protected class SystemOutAssertion implements Assertion {
