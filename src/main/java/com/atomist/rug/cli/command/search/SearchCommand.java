@@ -31,7 +31,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
             @Option("operations") boolean showOps) {
 
         if (settings.getCatalogs().getUrls().isEmpty()) {
-            throw new CommandException("No catalog endpoints configured in cli.yml.");
+            throw new CommandException("No catalog endpoints configured in ~/.atomist/cli.yml.");
         }
 
         Map<String, List<Operation>> operations = new ProgressReportingOperationRunner<Map<String, List<Operation>>>(

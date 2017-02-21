@@ -180,7 +180,7 @@ public class ReflectiveCommandRunner {
     protected void commandEnabled(ArtifactDescriptor artifact, CommandInfo info) {
         if (!info.enabled(artifact)) {
             throw new CommandException(String.format(
-                    "%s command currently not enabled because no archive is loaded.\nPlease load an archive into this shell by running:\n  load group:artifact",
+                    "Command %s currently not enabled because no archive is loaded.\nPlease load an archive into this shell by running:\n  shell group:artifact",
                     info.name()), (String) null);
         }
     }

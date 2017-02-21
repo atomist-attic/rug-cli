@@ -71,7 +71,7 @@ public abstract class GitUtils {
                 Status status = git.status().call();
                 if (!status.isClean()) {
                     throw new CommandException(String.format(
-                            "Working tree at %s not clean. Please commit or stash your changes before running an editor with -R.",
+                            "Working tree at %s not clean.\nPlease commit or stash your changes before running an editor with -R.",
                             root.getAbsolutePath()), "edit");
                 }
             }

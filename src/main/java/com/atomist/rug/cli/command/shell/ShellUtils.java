@@ -74,7 +74,7 @@ public abstract class ShellUtils {
             return TerminalBuilder.builder().build();
         }
         catch (IOException e) {
-            throw new CommandException("Error creating Terminal for Shell", e);
+            throw new CommandException("Error creating terminal for Shell.", e);
         }
     }
 }

@@ -104,7 +104,7 @@ public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDe
         }
 
         throw new CommandException(
-                "No valid ARTIFACT provided, no default artifact defined and not in local mode.",
+                "No valid ARTIFACT provided, no default artifact defined and not in local mode.\nPlease specify a valid artifact identifier or run with -l to load your local project.",
                 name());
     }
 }

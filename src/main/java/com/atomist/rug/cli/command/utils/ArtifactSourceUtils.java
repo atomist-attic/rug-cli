@@ -37,10 +37,10 @@ public abstract class ArtifactSourceUtils {
                 source = source.plus(manifestFileArtifact);
             }
             catch (FileNotFoundException e) {
-                throw new CommandException("Error reading manifest.yml", e);
+                throw new CommandException("Error reading manifest.yml.", e);
             }
             catch (IOException e) {
-                throw new CommandException("Error reading manifest.yml", e);
+                throw new CommandException("Error reading manifest.yml.", e);
             }
         }
         return source;
