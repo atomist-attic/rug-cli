@@ -70,9 +70,9 @@ public class GenerateCommand extends AbstractParameterizedCommand {
 
         String projectName = projectName(generator, arguments);
 
-        LocalGitProjectManagement manager = new LocalGitProjectManagement(artifact, log, rootName, createRepo,
-                overwrite,false, false);
-        manager.generate(generator,arguments,projectName);
+        LocalGitProjectManagement manager = new LocalGitProjectManagement(artifact, log, rootName,
+                createRepo, overwrite, false, false);
+        manager.generate(generator, arguments, projectName);
     }
 
     private String projectName(ProjectGenerator generator, ParameterValues arguments) {
