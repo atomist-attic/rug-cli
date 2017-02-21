@@ -18,7 +18,8 @@ import java.util.Optional;
  * {@link Completer} for completion of operation names, like Editor and Generator names.
  */
 public class OperationCompleter implements Completer {
-
+    
+    // TODO add commands for new handlers
     private static final List<String> COMMANDS = Arrays.asList("edit", "ed", "generate", "gen",
             "describe", "desc");
 
@@ -58,6 +59,12 @@ public class OperationCompleter implements Completer {
                             break;
                         case "reviewer":
                             completeBasedOnJsonpathMatches("reviewers", line.words(), candidates);
+                        case "command-handler":
+                            completeBasedOnJsonpathMatches("command-handlers", line.words(), candidates);
+                        case "event-handler":
+                            completeBasedOnJsonpathMatches("event-handlers", line.words(), candidates);
+                        case "response-handler":
+                            completeBasedOnJsonpathMatches("response-handler", line.words(), candidates);
                             break;
                         }
                     }
