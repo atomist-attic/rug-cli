@@ -19,7 +19,6 @@ import com.atomist.rug.resolver.loader.RugLoaderException;
 import com.atomist.rug.resolver.loader.RugLoaderRuntimeException;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.Deltas;
-import com.atomist.tree.TreeMaterializer;
 import org.apache.commons.cli.CommandLine;
 import org.springframework.util.StringUtils;
 
@@ -47,9 +46,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
                 Rugs rugs = new ProgressReportingOperationRunner<Rugs>(
                         String.format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
-                                .run(indicator -> {
-                                    return CommandContext.restore(Rugs.class);
-                                });
+                                .run(indicator -> CommandContext.restore(Rugs.class));
 
                 run(rugs, artifact, source, commandLine);
 
@@ -64,7 +61,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                         .raiseEvent((c) -> c.artifactSourceCompiled(artifact, compiledSource));
 
                 Rugs rugs = loadRugs(artifact, compiledSource,
-                        createRugLoader(uri, "teamID", null));
+                        createRugLoader(uri));
                 CommandEventListenerRegistry.raiseEvent((c) -> c.operationsLoaded(artifact, rugs));
 
                 run(rugs, artifact, compiledSource, commandLine);
@@ -137,9 +134,9 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         }
     }
 
-    private DecoratingRugLoader createRugLoader(URI[] uri, String teamId, TreeMaterializer trees) {
+    private DecoratingRugLoader createRugLoader(URI[] uri) {
         DecoratingRugLoader loader = new DecoratingRugLoader(new UriBasedDependencyResolver(uri,
-                SettingsReader.read().getLocalRepository().path()), teamId, trees) {
+                SettingsReader.read().getLocalRepository().path())) {
             @Override
             protected List<ArtifactDescriptor> postProcessArfifactDescriptors(
                     ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
