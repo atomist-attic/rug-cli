@@ -449,7 +449,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void listOperations(ArtifactDescriptor artifact, Collection<?> operations) {
         operations.forEach(e -> {
-            ParameterizedRug info = (ParameterizedRug) e;
+            Rug info = (Rug) e;
             log.info("  " + Style.yellow(StringUtils.stripName(info.name(), artifact)) + "\n    "
                     + WordUtils.wrap(
                             org.apache.commons.lang3.StringUtils.capitalize(info.description()),
