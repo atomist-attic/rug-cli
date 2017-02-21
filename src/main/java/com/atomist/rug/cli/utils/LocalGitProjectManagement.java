@@ -50,19 +50,19 @@ import static scala.collection.JavaConversions.asJavaCollection;
  * Save artifact sources in local git
  */
 public class LocalGitProjectManagement implements ProjectManagement {
-
+    
+    private static final Log log = new Log(LocalGitProjectManagement.class);
+    
     private final String rootPath;
     private final boolean createRepo;
     private final boolean overwrite;
     private final ArtifactDescriptor artifact;
-    private final Log log;
     private final boolean commit;
     private final boolean dryRun;
 
-    public LocalGitProjectManagement(ArtifactDescriptor artifact, Log log, String rootPath,
+    public LocalGitProjectManagement(ArtifactDescriptor artifact, String rootPath,
             boolean createRepo, boolean overwrite, boolean commit, boolean dryRun) {
         this.artifact = artifact;
-        this.log = log;
         this.rootPath = rootPath;
         this.createRepo = createRepo;
         this.overwrite = overwrite;
