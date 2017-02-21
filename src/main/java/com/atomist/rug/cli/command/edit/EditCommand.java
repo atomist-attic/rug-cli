@@ -2,43 +2,25 @@ package com.atomist.rug.cli.command.edit;
 
 import com.atomist.param.ParameterValues;
 import com.atomist.project.archive.Rugs;
-import com.atomist.project.edit.FailedModificationAttempt;
-import com.atomist.project.edit.ModificationAttempt;
-import com.atomist.project.edit.NoModificationNeeded;
 import com.atomist.project.edit.ProjectEditor;
-import com.atomist.project.edit.SuccessfulModification;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.AbstractDeltaHandlingCommand;
+import com.atomist.rug.cli.command.AbstractParameterizedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
-import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
-import com.atomist.rug.cli.command.utils.GitUtils;
 import com.atomist.rug.cli.command.utils.OperationUtils;
-import com.atomist.rug.cli.output.ProgressReporter;
-import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
-import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.cli.utils.LocalGitProjectManagement;
 import com.atomist.rug.cli.utils.StringUtils;
-import com.atomist.rug.kind.core.ChangeLogEntry;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.project.ProvenanceInfoWriter;
-import com.atomist.source.ArtifactSource;
-import com.atomist.source.Delta;
 import org.apache.commons.lang3.text.WordUtils;
-import scala.collection.JavaConverters;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static scala.collection.JavaConversions.asJavaCollection;
 
-public class EditCommand extends AbstractDeltaHandlingCommand {
+public class EditCommand extends AbstractParameterizedCommand {
 
     @Command
     public void run(Rugs operations, ArtifactDescriptor artifact,
@@ -62,7 +44,7 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
 
         if (opt.isPresent()) {
             arguments = validate(artifact, opt.get(), arguments);
-            invoke(artifact, name, opt.get(), arguments, root, dryRun, repo);
+            invoke(artifact, opt.get(), arguments, root, dryRun, repo);
         }
         else {
             if (!operations.editors().isEmpty()) {
@@ -83,79 +65,10 @@ public class EditCommand extends AbstractDeltaHandlingCommand {
         }
     }
 
-    private void invoke(ArtifactDescriptor artifact, String name, ProjectEditor editor,
+    private void invoke(ArtifactDescriptor artifact, ProjectEditor editor,
             ParameterValues arguments, String rootName, boolean dryRun, boolean commit) {
 
-        File root = FileUtils.createProjectRoot(rootName);
-
-        if (commit) {
-            GitUtils.isClean(root);
-        }
-
-        ArtifactSource source = ArtifactSourceUtils.createArtifactSource(root);
-
-        ModificationAttempt result = new ProgressReportingOperationRunner<ModificationAttempt>(
-                String.format("Running editor %s of %s",
-                        StringUtils.stripName(editor.name(), artifact),
-                        ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
-                            ModificationAttempt r = editor.modify(source, arguments);
-
-                            printLogEntries(indicator, r);
-
-                            return r;
-                        });
-
-        if (result instanceof SuccessfulModification) {
-
-            ArtifactSource resultSource = new ProvenanceInfoWriter().write(
-                    ((SuccessfulModification) result).result(), editor, arguments,
-                    Constants.cliClient());
-
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
-            log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
-                    FileUtils.sizeOf(root), resultSource.allFiles().size());
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
-
-            List<Delta> deltas = asJavaCollection(resultSource.cachedDeltas()).stream()
-                    .collect(Collectors.toList());
-
-            iterateDeltas(deltas, source, resultSource, root, dryRun);
-            if (commit) {
-                log.newline();
-                GitUtils.commitFiles(editor, arguments, root);
-            }
-
-            log.newline();
-            log.info(Style.green("Successfully edited project %s", root.getName()));
-        }
-        else if (result instanceof NoModificationNeeded) {
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
-            log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
-                    FileUtils.sizeOf(root), source.allFiles().size());
-            log.newline();
-            log.info(Style.yellow("Editor made no changes to project %s", root.getName()));
-        }
-        else if (result instanceof FailedModificationAttempt) {
-            log.newline();
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
-            log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
-                    FileUtils.sizeOf(root), source.allFiles().size());
-            log.newline();
-            throw new CommandException(String.format(
-                    "Editor failed to make changes to project %s:\n  %s", root.getName(),
-                    ((FailedModificationAttempt) result).failureExplanation()));
-        }
-    }
-
-    private void printLogEntries(ProgressReporter indicator, ModificationAttempt r) {
-        if (r instanceof SuccessfulModification) {
-            Collection<ChangeLogEntry<ArtifactSource>> logEntries = JavaConverters
-                    .asJavaCollectionConverter(((SuccessfulModification) r).changeLogEntries())
-                    .asJavaCollection();
-            logEntries.forEach(l -> indicator.report("  " + l.comment()));
-        }
+        LocalGitProjectManagement management = new LocalGitProjectManagement(artifact,log,rootName,false,false,commit,dryRun);
+        management.edit(editor,arguments,rootName);
     }
 }
