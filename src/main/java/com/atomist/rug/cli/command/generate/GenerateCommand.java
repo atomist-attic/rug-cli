@@ -12,17 +12,10 @@ import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.OperationUtils;
-import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
-import com.atomist.rug.cli.tree.LogVisitor;
-import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
-import com.atomist.rug.cli.utils.FileUtils;
-import com.atomist.rug.cli.utils.LocalGitProjectPersister;
+import com.atomist.rug.cli.utils.LocalGitProjectManagement;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.source.ArtifactSource;
-import com.atomist.source.file.FileSystemArtifactSource;
 import org.apache.commons.lang3.text.WordUtils;
 import scala.collection.JavaConverters;
 
@@ -77,31 +70,9 @@ public class GenerateCommand extends AbstractParameterizedCommand {
 
         String projectName = projectName(generator, arguments);
 
-        LocalGitProjectPersister persister = new LocalGitProjectPersister(rootName, createRepo,
+        LocalGitProjectManagement manager = new LocalGitProjectManagement(artifact, log, rootName, createRepo,
                 overwrite);
-
-        ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
-                String.format("Running generator %s of %s", generator.name(),
-                        ArtifactDescriptorUtils.coordinates(artifact)))
-                                .run(indicator -> generator.generate(projectName, arguments));
-
-        FileSystemArtifactSource output = persister.persist(generator, arguments, projectName,
-                result);
-
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
-        log.info("  %s (%s in %s files)",
-                Style.underline(FileUtils.relativize(output.id().rootFile())),
-                FileUtils.sizeOf(output.id().rootFile()), result.allFiles().size());
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
-        ArtifactSourceTreeCreator.visitTree(result, new LogVisitor(log));
-        if (createRepo) {
-            log.newline();
-        }
-        log.newline();
-        log.info(Style.green("Successfully generated new project %s", projectName));
-
+        manager.generate(generator,arguments,projectName);
     }
 
     private String projectName(ProjectGenerator generator, ParameterValues arguments) {
