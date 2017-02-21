@@ -205,8 +205,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 if (!(artifact.group().equals(newArtifact.group())
                         && artifact.artifact().equals(newArtifact.artifact()))) {
                     throw new CommandException(String.format(
-                            "Fully-qualified archive or Rug names are not allowed for this command "
-                                    + "while running a shell.\nTo load the archive into this shell, run:\n  shell %s:%s",
+                            "Fully-qualified archive or Rug names are not allowed "
+                                    + "within a shell session.\nTo load an archive into the shell, run:\n  shell %s:%s",
                             newArtifact.group(), newArtifact.artifact()), info.name());
                 }
             }

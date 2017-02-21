@@ -32,7 +32,7 @@ public class ConfigureOperations {
             });
         }
         else {
-            throw new CommandException("Failed to configure team-scoped repositories",
+            throw new CommandException("Failed to configure team-scoped repositories.",
                     "repositories configure");
         }
     }
