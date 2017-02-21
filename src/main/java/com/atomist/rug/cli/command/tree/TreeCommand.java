@@ -17,22 +17,23 @@ import com.atomist.rug.kind.DefaultTypeRegistry$;
 import com.atomist.rug.kind.core.ProjectMutableView;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.EmptyArtifactSource;
-import com.atomist.tree.ContainerTreeNode;
 import com.atomist.tree.TerminalTreeNode;
 import com.atomist.tree.TreeNode;
 import com.atomist.tree.pathexpression.ExpressionEngine;
 import com.atomist.tree.pathexpression.PathExpression;
 import com.atomist.tree.pathexpression.PathExpressionEngine;
 import com.atomist.tree.pathexpression.PathExpressionParser$;
-import scala.Option$;
-import scala.collection.JavaConverters;
-import scala.collection.immutable.List;
-import scala.util.Either;
+import com.atomist.tree.utils.NodeUtils;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+
+import scala.Option$;
+import scala.collection.JavaConverters;
+import scala.collection.immutable.List;
+import scala.util.Either;
 
 public class TreeCommand extends AbstractAnnotationBasedCommand {
 
@@ -97,8 +98,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                                     .collect(Collectors.toList()), ", ")
                             + "]")
                     + (!(node instanceof TerminalTreeNode) && id > 0 ? " {" + id + "}" : "")
-                    + ((!(node instanceof ContainerTreeNode) && node instanceof TreeNode)
-                            ? " " + ((TreeNode) node).value() : "");// TODO was .value - won't work!
+                    + " " + NodeUtils.value(node);
         }
     }
 
