@@ -96,6 +96,6 @@ if $cygwin; then
 	CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 fi
 
-COLUMNS=`tput cols 2> /dev/tty`
+COLUMNS=`tput cols 2> /dev/null`
 
 COLUMNS=${COLUMNS} "${JAVA_HOME}/bin/java" ${JAVA_OPTS} -Xmx2g -cp "$CLASSPATH" com.atomist.rug.cli.Main "$@"
