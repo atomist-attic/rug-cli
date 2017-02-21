@@ -14,13 +14,16 @@ import org.springframework.util.StringUtils;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.CommandInfo;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
+import com.atomist.rug.cli.command.shell.ShellUtils;
 import com.atomist.rug.cli.output.Style;
 
 public class CommandHelpFormatter {
 
     public static String HELP_FOOTER = "\n\nPlease report issues at https://github.com/atomist/rug-cli";
 
-    public static String SHELL_HELP_FOOTER = "\n\nThis shell supports event expansion with '!' and executing other commands by prefixing the command with '/sh', eg. '/sh cd .atomist && ls -la'.";
+    public static String SHELL_HELP_FOOTER = String.format(
+            "\n\nThis shell supports event expansion with '!' and executing other commands by prefixing the command with '%s', eg. '%scd .atomist && ls -la'.",
+            ShellUtils.SHELL_ESCAPE, ShellUtils.SHELL_ESCAPE);
 
     private static int WRAP = Constants.WRAP_LENGTH;
 
@@ -69,7 +72,7 @@ public class CommandHelpFormatter {
         sb.append("\n");
         sb.append(String.format("Run '%sCOMMAND --help' for more detailed information on COMMAND.",
                 Constants.command()));
-        
+
         if (Constants.isShell()) {
             sb.append(WordUtils.wrap(SHELL_HELP_FOOTER, WRAP));
         }
