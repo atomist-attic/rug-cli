@@ -15,7 +15,7 @@ public class SearchCommandIntegrationTest extends AbstractCommandTest {
                         .contains("atomist-rugs:spring-boot-editors")),
                 "search", "docker", "-T", "spring");
     }
-    
+
     @Test
     public void testFullArtifactFilteredByType() throws Exception {
         assertCommandLine(0,

@@ -20,7 +20,7 @@ public interface CommandInfo {
     String name();
 
     String usage();
-    
+
     default boolean enabled(ArtifactDescriptor artifact) {
         return true;
     }
@@ -33,11 +33,11 @@ public interface CommandInfo {
         // Per default commands to the end of the list
         return Integer.MAX_VALUE;
     }
-    
+
     default boolean loadArtifactSource() {
         return true;
     }
-    
+
     default List<String> subCommands() {
         return Collections.emptyList();
     }
@@ -45,7 +45,7 @@ public interface CommandInfo {
     default List<String> aliases() {
         return Collections.emptyList();
     }
-    
+
     default String group() {
         return "rug";
     }

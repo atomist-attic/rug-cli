@@ -1,10 +1,6 @@
 package com.atomist.rug.cli.command.tree;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-
+import com.atomist.graph.GraphNode;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.annotation.Argument;
@@ -28,11 +24,15 @@ import com.atomist.tree.pathexpression.ExpressionEngine;
 import com.atomist.tree.pathexpression.PathExpression;
 import com.atomist.tree.pathexpression.PathExpressionEngine;
 import com.atomist.tree.pathexpression.PathExpressionParser$;
-
 import scala.Option$;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.List;
 import scala.util.Either;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class TreeCommand extends AbstractAnnotationBasedCommand {
 
@@ -40,7 +40,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
     public void run(@Argument(index = 1, defaultValue = "") String expression,
             @Option("change-dir") String rootName, @Option("values") boolean values) {
 
-        Collection<TreeNode> treeNodes = new ProgressReportingOperationRunner<Collection<TreeNode>>(
+        Collection<GraphNode> treeNodes = new ProgressReportingOperationRunner<Collection<GraphNode>>(
                 "Evaluating path expression against project").run((indicator) -> {
 
                     PathExpression pathExpression = PathExpressionParser$.MODULE$
@@ -52,7 +52,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                     ExpressionEngine pxe = new PathExpressionEngine();
                     TreeNode pmv = new ProjectMutableView(new EmptyArtifactSource(""), source);
 
-                    Either<String, List<TreeNode>> result = pxe.evaluate(pmv, pathExpression,
+                    Either<String, List<GraphNode>> result = pxe.evaluate(pmv, pathExpression,
                             DefaultTypeRegistry$.MODULE$, Option$.MODULE$.apply(null));
 
                     return JavaConverters.asJavaCollectionConverter(result.right().get())
@@ -62,7 +62,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
         printResult(expression, values, treeNodes);
     }
 
-    protected void printResult(String expression, boolean values, Collection<TreeNode> treeNodes) {
+    protected void printResult(String expression, boolean values, Collection<GraphNode> treeNodes) {
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Path Expression"));
         log.info("  %s", expression);
@@ -83,10 +83,10 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private static class ValueNodeToStringFunction
-            implements BiFunction<Integer, TreeNode, String> {
+            implements BiFunction<Integer, GraphNode, String> {
 
         @Override
-        public String apply(Integer id, TreeNode node) {
+        public String apply(Integer id, GraphNode node) {
             return Style
                     .yellow(node
                             .nodeName())
@@ -97,14 +97,15 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                                     .collect(Collectors.toList()), ", ")
                             + "]")
                     + (!(node instanceof TerminalTreeNode) && id > 0 ? " {" + id + "}" : "")
-                    + (!(node instanceof ContainerTreeNode) ? " " + node.value() : "");
+                    + ((!(node instanceof ContainerTreeNode) && node instanceof TreeNode)
+                            ? " " + ((TreeNode) node).value() : "");// TODO was .value - won't work!
         }
     }
 
-    private static class NodeToStringFunction implements BiFunction<Integer, TreeNode, String> {
+    private static class NodeToStringFunction implements BiFunction<Integer, GraphNode, String> {
 
         @Override
-        public String apply(Integer id, TreeNode node) {
+        public String apply(Integer id, GraphNode node) {
             return Style
                     .yellow(node
                             .nodeName())

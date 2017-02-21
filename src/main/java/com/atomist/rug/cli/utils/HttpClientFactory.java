@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 
 public class HttpClientFactory {
-    
+
     private static void configureProxy(HttpClientBuilder builder, String url) {
         List<Proxy> proxies = ProxySelector.getDefault().select(URI.create(url));
         if (!proxies.isEmpty()) {
@@ -91,7 +91,7 @@ public class HttpClientFactory {
             msg.addHeader("Authorization", encodeBaseAuthHeader(username, password));
         }
     }
-    
+
     public static HttpEntity body(HttpEntityEnclosingRequest msg, String body) {
         StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
         msg.setEntity(entity);
@@ -120,15 +120,16 @@ public class HttpClientFactory {
         }
         return Optional.empty();
     }
-    
-    public static <T> Optional<T> executeAndRead(HttpClient client, HttpUriRequest request, TypeReference<T> ref) {
+
+    public static <T> Optional<T> executeAndRead(HttpClient client, HttpUriRequest request,
+            TypeReference<T> ref) {
         HttpResponse response = execute(client, request);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             return Optional.ofNullable(read(response, ref));
         }
         return Optional.empty();
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> T read(HttpResponse response, TypeReference<T> ref) {
         ObjectMapper mapper = new ObjectMapper();

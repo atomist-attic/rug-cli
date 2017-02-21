@@ -1,18 +1,18 @@
 package com.atomist.rug.cli.command;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
+import com.atomist.project.archive.Rugs;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
-import com.atomist.rug.loader.OperationsAndHandlers;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class CommandEventListenerRegistry {
 
@@ -59,9 +59,8 @@ public abstract class CommandEventListenerRegistry {
         }
 
         @Override
-        public void operationsLoaded(ArtifactDescriptor artifact,
-                OperationsAndHandlers operations) {
-            CommandContext.save(OperationsAndHandlers.class, operations);
+        public void operationsLoaded(ArtifactDescriptor artifact, Rugs operations) {
+            CommandContext.save(Rugs.class, operations);
         }
     }
 }

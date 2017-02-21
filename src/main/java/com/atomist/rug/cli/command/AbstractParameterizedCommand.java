@@ -1,7 +1,22 @@
 package com.atomist.rug.cli.command;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-import static scala.collection.JavaConversions.asScalaBuffer;
+import com.atomist.param.Parameter;
+import com.atomist.param.ParameterValue;
+import com.atomist.param.ParameterValues;
+import com.atomist.param.SimpleParameterValue;
+import com.atomist.param.SimpleParameterValues;
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.cli.utils.StringUtils;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.runtime.ParameterizedRug;
+import org.apache.commons.lang3.text.WordUtils;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
+import scala.collection.JavaConversions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,32 +24,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.text.WordUtils;
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.UserInterruptException;
-
-import com.atomist.param.Parameter;
-import com.atomist.param.ParameterValue;
-import com.atomist.param.SimpleParameterValue;
-import com.atomist.param.SimpleParameterValues;
-import com.atomist.project.ProjectOperation;
-import com.atomist.project.ProjectOperationArguments;
-import com.atomist.project.SimpleProjectOperationArguments;
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.shell.ShellUtils;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.CommandLineOptions;
-import com.atomist.rug.cli.utils.StringUtils;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-
-import scala.collection.JavaConversions;
+import static scala.collection.JavaConversions.asJavaCollection;
+import static scala.collection.JavaConversions.asScalaBuffer;
 
 public abstract class AbstractParameterizedCommand extends AbstractAnnotationBasedCommand {
 
-    private ProjectOperationArguments collectParameters(ProjectOperation operation,
-            ProjectOperationArguments arguments) {
-        Collection<Parameter> parameters = asJavaCollection(operation.parameters());
+    private ParameterValues collectParameters(ParameterizedRug rug, ParameterValues arguments) {
+        Collection<Parameter> parameters = asJavaCollection(rug.parameters());
         if (CommandLineOptions.hasOption("I") && !parameters.isEmpty()) {
 
             LineReader reader = ShellUtils.lineReader(ShellUtils.INTERACTIVE_HISTORY);
@@ -61,7 +57,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                 pv = readParameter(reader, parameter, defaultValue);
 
                 boolean firstAttempt = true;
-                while (isInvalid(operation, pv)
+                while (isInvalid(rug, pv)
                         || ((pv.getValue() == null || pv.getValue().toString().length() == 0)
                                 && parameter.isRequired())) {
                     log.info(Style.red("  Provided value '%s' is not valid", pv.getValue()));
@@ -82,17 +78,16 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                 // add the new and validated parameter to project operations arguments
                 newValues.add(pv);
             }
-            arguments = new SimpleProjectOperationArguments(arguments.name(),
-                    JavaConversions.asScalaBuffer(newValues));
+            arguments = new SimpleParameterValues(JavaConversions.asScalaBuffer(newValues));
             log.newline();
-            
+
             ShellUtils.shutdown(reader);
         }
         return arguments;
     }
 
-    private boolean isInvalid(ProjectOperation operation, ParameterValue pv) {
-        return !operation.findInvalidParameterValues(new SimpleParameterValues(
+    private boolean isInvalid(ParameterizedRug rug, ParameterValue pv) {
+        return !rug.findInvalidParameterValues(new SimpleParameterValues(
                 JavaConversions.asScalaBuffer(Collections.singletonList(pv)))).isEmpty();
     }
 
@@ -122,12 +117,11 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         }
     }
 
-    private void validateCollectedParameters(ArtifactDescriptor artifact,
-            ProjectOperation operation, ProjectOperationArguments arguments) {
+    private void validateCollectedParameters(ArtifactDescriptor artifact, ParameterizedRug rug,
+            ParameterValues arguments) {
         Collection<ParameterValue> invalid = asJavaCollection(
-                operation.findInvalidParameterValues(arguments));
-        Collection<Parameter> missing = asJavaCollection(
-                operation.findMissingParameters(arguments));
+                rug.findInvalidParameterValues(arguments));
+        Collection<Parameter> missing = asJavaCollection(rug.findMissingParameters(arguments));
 
         if (!invalid.isEmpty() || !missing.isEmpty()) {
             if (!CommandLineOptions.hasOption("I")) {
@@ -146,20 +140,19 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                         p -> log.info("  " + Style.yellow(p.getName()) + " = " + p.getValue()));
             }
             throw new CommandException(String.format("Missing and/or invalid parameters for %s",
-                    StringUtils.stripName(operation.name(), artifact)));
+                    StringUtils.stripName(rug.name(), artifact)));
         }
     }
 
-    protected ProjectOperationArguments validate(ArtifactDescriptor artifact,
-            ProjectOperation operation, ProjectOperationArguments arguments) {
+    protected ParameterValues validate(ArtifactDescriptor artifact, ParameterizedRug rug,
+            ParameterValues arguments) {
 
-        arguments = collectParameters(operation, arguments);
-        validateCollectedParameters(artifact, operation, arguments);
+        arguments = collectParameters(rug, arguments);
+        validateCollectedParameters(artifact, rug, arguments);
         return arguments;
     }
 
-    protected ProjectOperationArguments mergeParameters(ProjectOperationArguments arguments,
-            ParameterValue... pv) {
+    protected ParameterValues mergeParameters(ParameterValues arguments, ParameterValue... pv) {
         List<ParameterValue> pvs = new ArrayList<>();
         if (arguments != null) {
             pvs.addAll(asJavaCollection(arguments.parameterValues()));
@@ -167,8 +160,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         if (pv != null) {
             Arrays.stream(pv).forEach(pvs::add);
         }
-        return new SimpleProjectOperationArguments(
-                (arguments != null ? arguments.name() : "parameter"), asScalaBuffer(pvs));
+        return new SimpleParameterValues(asScalaBuffer(pvs));
     }
 
 }

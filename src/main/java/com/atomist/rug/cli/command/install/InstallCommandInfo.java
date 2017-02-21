@@ -34,7 +34,7 @@ public class InstallCommandInfo extends AbstractLocalArtifactDescriptorProvider
                 .required(false).desc("Override archive version with AV").build());
         return options;
     }
-    
+
     @Override
     public int order() {
         return 60;
@@ -44,12 +44,12 @@ public class InstallCommandInfo extends AbstractLocalArtifactDescriptorProvider
     public String usage() {
         return "install [OPTION]...";
     }
-    
+
     @Override
     public String group() {
         return "2";
     }
-    
+
     @Override
     public boolean enabled(ArtifactDescriptor artifact) {
         return artifact instanceof LocalArtifactDescriptor

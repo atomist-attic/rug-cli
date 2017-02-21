@@ -11,7 +11,7 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 
 public class Log {
-    
+
     // There is a performance hit to have a logger per clazz
     private static final Logger logger = LoggerFactory.getLogger(Log.class.getName());
 

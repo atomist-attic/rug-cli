@@ -1,5 +1,9 @@
 package com.atomist.rug.cli.classloading;
 
+import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,15 +12,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
-
-import com.atomist.rug.cli.RunnerException;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-
 /**
  * Sets up the context classloader.
  * At runtime, all dependencies come from the Rug Archive.
- * At dev/build time, the Rug version comes this project's pom, not from the Rug Archives used for
+ * At dev/build time, the Rug version comes from this project's pom, not from the Rug Archives used
+ * for
  * test.
  */
 public abstract class ClassLoaderFactory {
@@ -47,6 +47,7 @@ public abstract class ClassLoaderFactory {
         else {
             cls = createDevClassLoader(urls);
         }
+
         Thread.currentThread().setContextClassLoader(cls);
     }
 

@@ -15,14 +15,14 @@ import com.atomist.rug.cli.settings.SettingsWriter;
 import com.atomist.rug.cli.utils.HttpClientFactory;
 
 public class LoginOperations {
-    
+
     private static final String GITHUB_ENDPOINT = "https://api.github.com/authorizations";
 
     private static final String BODY = "{\n" + "  \"scopes\": [\n" + "    \"read:org\"\n" + "  ],\n"
             + "  \"note\": \"Rug CLI on %s\",\n"
             + "  \"note_url\": \"https://github.com/atomist/rug-cli\",\n"
             + "  \"fingerprint\": \"%s\"\n" + "}";
-    
+
     public Status postForToken(String username, String password, String code, Settings settings) {
         HttpClient client = HttpClientFactory.httpClient(GITHUB_ENDPOINT);
         HttpPost post = new HttpPost(GITHUB_ENDPOINT);
@@ -31,7 +31,7 @@ public class LoginOperations {
         HttpClientFactory.body(post,
                 String.format(BODY, Constants.hostName(), UUID.randomUUID().toString()));
 
-        HttpResponse response =  HttpClientFactory.execute(client, post);
+        HttpResponse response = HttpClientFactory.execute(client, post);
 
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             String token = HttpClientFactory.jsonValue(response, "$.token").orElse(null);

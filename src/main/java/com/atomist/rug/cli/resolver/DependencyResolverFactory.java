@@ -1,13 +1,5 @@
 package com.atomist.rug.cli.resolver;
 
-import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.util.repository.ConservativeProxySelector;
-import org.eclipse.aether.util.repository.JreProxySelector;
-
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
@@ -22,6 +14,13 @@ import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.maven.LogDependencyVisitor;
 import com.atomist.rug.resolver.maven.MavenBasedDependencyResolver;
 import com.atomist.rug.resolver.maven.MavenProperties;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.util.repository.ConservativeProxySelector;
+import org.eclipse.aether.util.repository.JreProxySelector;
+
+import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DependencyResolverFactory {
 

@@ -1,6 +1,21 @@
 package com.atomist.rug.cli.command;
 
-import static scala.collection.JavaConversions.asScalaBuffer;
+import com.atomist.param.ParameterValue;
+import com.atomist.param.ParameterValues;
+import com.atomist.param.SimpleParameterValue;
+import com.atomist.param.SimpleParameterValues;
+import com.atomist.project.archive.Rugs;
+import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.cli.command.annotation.Argument;
+import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.utils.StringUtils;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.source.ArtifactSource;
+import org.apache.commons.cli.CommandLine;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -13,25 +28,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import org.apache.commons.cli.CommandLine;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.ReflectionUtils;
-
-import com.atomist.param.ParameterValue;
-import com.atomist.param.SimpleParameterValue;
-import com.atomist.project.ProjectOperationArguments;
-import com.atomist.project.SimpleProjectOperationArguments;
-import com.atomist.project.archive.Operations;
-import com.atomist.rug.cli.RunnerException;
-import com.atomist.rug.cli.command.annotation.Argument;
-import com.atomist.rug.cli.command.annotation.Option;
-import com.atomist.rug.cli.settings.Settings;
-import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.cli.utils.StringUtils;
-import com.atomist.rug.loader.Handlers;
-import com.atomist.rug.loader.OperationsAndHandlers;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.source.ArtifactSource;
+import static scala.collection.JavaConversions.asScalaBuffer;
 
 public abstract class AbstractAnnotationBasedCommand
         extends AbstractCompilingAndOperationLoadingCommand {
@@ -54,14 +51,14 @@ public abstract class AbstractAnnotationBasedCommand
             Argument argument) {
         Object argumentValue = null;
         if (argument.start() != -1) {
-            if (p.getType().equals(ProjectOperationArguments.class)) {
+            if (p.getType().equals(ParameterValues.class)) {
                 List<ParameterValue> pvs = new ArrayList<>();
                 if (argument.start() < commandLine.getArgList().size()) {
 
                     for (int ix = argument.start(); ix < commandLine.getArgList().size(); ix++) {
                         String arg = commandLine.getArgList().get(ix);
                         int i = arg.indexOf('=');
-                        String name = null;
+                        String name;
                         String value = null;
                         if (i < 0) {
                             name = arg;
@@ -73,8 +70,7 @@ public abstract class AbstractAnnotationBasedCommand
                         pvs.add(new SimpleParameterValue(name, value));
                     }
                 }
-                argumentValue = new SimpleProjectOperationArguments("parameter",
-                        asScalaBuffer(pvs));
+                argumentValue = new SimpleParameterValues(asScalaBuffer(pvs));
             }
         }
         else if (argument.start() == -1 && argument.index() < commandLine.getArgList().size()) {
@@ -87,18 +83,18 @@ public abstract class AbstractAnnotationBasedCommand
         return argumentValue;
     }
 
-    private ProjectOperationArguments prepareArguments(Properties props, String name) {
+    private ParameterValues prepareArguments(Properties props) {
         List<ParameterValue> pvs = props.entrySet().stream()
                 .map(e -> new SimpleParameterValue((String) e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
 
-        return new SimpleProjectOperationArguments(name, asScalaBuffer(pvs));
+        return new SimpleParameterValues(asScalaBuffer(pvs));
     }
 
-    private List<Object> prepareMethodArguments(Method method, OperationsAndHandlers operations,
+    private List<Object> prepareMethodArguments(Method method, Rugs rugs,
             ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
 
-        List<Object> arguments = Arrays.stream(method.getParameters()).map(p -> {
+        return Arrays.stream(method.getParameters()).map(p -> {
 
             Argument argument = AnnotationUtils.getAnnotation(p, Argument.class);
             Option option = AnnotationUtils.getAnnotation(p, Option.class);
@@ -109,14 +105,9 @@ public abstract class AbstractAnnotationBasedCommand
             else if (option != null) {
                 return prepareOptionMethodArgument(commandLine, p, option);
             }
-            else if (p.getType().equals(Operations.class)) {
-                return operations.operations();
-            }
-            else if (p.getType().equals(Handlers.class)) {
-                return operations.handlers();
-            }
-            else if (p.getType().equals(OperationsAndHandlers.class)) {
-                return operations;
+
+            else if (p.getType().equals(Rugs.class)) {
+                return rugs;
             }
             else if (p.getType().equals(ArtifactDescriptor.class)) {
                 return artifact;
@@ -132,8 +123,6 @@ public abstract class AbstractAnnotationBasedCommand
             }
             return null;
         }).collect(Collectors.toList());
-
-        return arguments;
     }
 
     private Object prepareOptionMethodArgument(CommandLine commandLine, Parameter p,
@@ -144,9 +133,8 @@ public abstract class AbstractAnnotationBasedCommand
         else if (p.getType().equals(Properties.class)) {
             return commandLine.getOptionProperties(option.value());
         }
-        else if (p.getType().equals(ProjectOperationArguments.class)) {
-            return prepareArguments(commandLine.getOptionProperties(option.value()),
-                    option.value());
+        else if (p.getType().equals(ParameterValues.class)) {
+            return prepareArguments(commandLine.getOptionProperties(option.value()));
         }
         else {
             return StringUtils.expandEnvironmentVars(commandLine.getOptionValue(option.value()));
@@ -154,8 +142,8 @@ public abstract class AbstractAnnotationBasedCommand
     }
 
     @Override
-    protected void run(OperationsAndHandlers operations, ArtifactDescriptor artifact,
-            ArtifactSource source, CommandLine commandLine) {
+    protected void run(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
+            CommandLine commandLine) {
 
         Optional<Method> commandMethod = annotatedMethodWith(
                 com.atomist.rug.cli.command.annotation.Command.class);
@@ -164,11 +152,12 @@ public abstract class AbstractAnnotationBasedCommand
 
         if (commandMethod.isPresent()) {
             if (validatorMethod.isPresent()) {
-                List<Object> validatorArgs = prepareMethodArguments(validatorMethod.get(),
-                        operations, artifact, source, commandLine);
+                List<Object> validatorArgs = prepareMethodArguments(validatorMethod.get(), rugs,
+                        artifact, source, commandLine);
                 invokeMethod(validatorMethod.get(), validatorArgs);
             }
-            List<Object> runArgs = prepareMethodArguments(commandMethod.get(), operations, artifact,
+            List<Object> runArgs = prepareMethodArguments(commandMethod.get(), rugs, artifact,
+
                     source, commandLine);
             invokeMethod(commandMethod.get(), runArgs);
         }

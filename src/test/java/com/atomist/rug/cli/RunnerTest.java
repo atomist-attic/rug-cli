@@ -61,13 +61,14 @@ public class RunnerTest extends AbstractCommandTest {
 
     @Test
     public void testInvalidCommand() throws Exception {
-        assertCommandLine(1, new SystemOutAssertion("Did you mean?\n" + 
-                "  rug generate"), true, "generator", "atomist-project-templates:spring-rest-service:SpringBoot", "testprojectname");
+        assertCommandLine(1, new SystemOutAssertion("Did you mean?\n" + "  rug generate"), true,
+                "generator", "atomist-project-templates:spring-rest-service:SpringBoot",
+                "testprojectname");
     }
 
     @Test
     public void testInvalidCommandWithOption() throws Exception {
-        assertCommandLine(1, new SystemOutAssertion("Did you mean?\n" + 
-                "  rug generate"), true, "generator", "--help");
+        assertCommandLine(1, new SystemOutAssertion("Did you mean?\n" + "  rug generate"), true,
+                "generator", "--help");
     }
 }

@@ -1,8 +1,7 @@
 package com.atomist.rug.cli.command.fs;
 
-import org.springframework.util.ClassUtils;
-
 import com.atomist.rug.resolver.ArtifactDescriptor;
+import org.springframework.util.ClassUtils;
 
 /**
  * Creates an instance of {@link ArtifactSourceFileWatcherThread} with using some internal SUN

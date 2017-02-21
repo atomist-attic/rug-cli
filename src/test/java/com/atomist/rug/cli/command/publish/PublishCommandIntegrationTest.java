@@ -47,15 +47,13 @@ public class PublishCommandIntegrationTest extends AbstractCommandTest {
         assertTrue(systemOutRule.getLogWithNormalizedLineSeparator().contains(
                 "Successfully published archive for " + group + ":" + artifact + ":" + version));
         assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository-publish" + File.separator
-                        + group + File.separator + artifact + File.separator
-                        + version + File.separator + artifact + "-" + version + ".zip")
-                                .exists());
+                ".atomist" + File.separator + "repository-publish" + File.separator + group
+                        + File.separator + artifact + File.separator + version + File.separator
+                        + artifact + "-" + version + ".zip").exists());
         assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository-publish" + File.separator
-                        + group + File.separator + artifact + File.separator
-                        + version + File.separator + artifact + "-" + version + ".pom")
-                                .exists());
+                ".atomist" + File.separator + "repository-publish" + File.separator + group
+                        + File.separator + artifact + File.separator + version + File.separator
+                        + artifact + "-" + version + ".pom").exists());
 
     }
 }

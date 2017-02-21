@@ -30,13 +30,13 @@ public abstract class ShellUtils {
 
     public static final File INTERACTIVE_HISTORY = new File(System.getProperty("user.home")
             + File.separator + ".atomist" + File.separator + ".interactive-history");
-    
+
     public static final File SHELL_ARCHIVES = new File(System.getProperty("user.home")
             + File.separator + ".atomist" + File.separator + ".cli-archives");
 
     public static final String DEFAULT_PROMPT = Style.yellow(Constants.RUG_ARTIFACT) + " "
             + Style.cyan(Constants.DIVIDER) + " ";
-    
+
     public static final String SHELL_ESCAPE = "/";
 
     public static LineReader lineReader(File historyPath, Completer... completers) {
@@ -50,17 +50,17 @@ public abstract class ShellUtils {
                 .completer(new AggregateCompleter(completers)).highlighter(new DefaultHighlighter())
                 .build();
         history.attach(reader);
-        
+
         reader.unsetOpt(Option.AUTO_MENU);
         reader.unsetOpt(Option.GROUP);
         reader.unsetOpt(Option.MENU_COMPLETE);
-        
+
         reader.setOpt(Option.AUTO_LIST);
         reader.setOpt(Option.LIST_AMBIGUOUS);
-        
+
         return reader;
     }
-    
+
     public static void shutdown(LineReader lineReader) {
         try {
             lineReader.getTerminal().close();

@@ -1,18 +1,5 @@
 package com.atomist.rug.cli.command.publish;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import org.apache.commons.cli.CommandLine;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.deployment.DeployRequest;
-import org.eclipse.aether.transfer.TransferEvent;
-import org.eclipse.aether.util.repository.AuthenticationBuilder;
-
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractRepositoryCommand;
 import com.atomist.rug.cli.command.CommandException;
@@ -25,8 +12,20 @@ import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
-import com.atomist.rug.manifest.Manifest;
+import com.atomist.rug.resolver.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
+import org.apache.commons.cli.CommandLine;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.deployment.DeployRequest;
+import org.eclipse.aether.transfer.TransferEvent;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class PublishCommand extends AbstractRepositoryCommand {
 

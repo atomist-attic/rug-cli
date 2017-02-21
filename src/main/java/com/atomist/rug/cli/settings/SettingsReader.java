@@ -89,12 +89,12 @@ public abstract class SettingsReader {
                 List<String> urls = (List<String>) data.get("catalogs");
                 urls.forEach(u -> settings.getCatalogs().addUrl(u));
             }
-            
+
             if (data.containsKey("token")) {
                 String token = (String) data.get("token");
                 settings.setToken(token);
             }
-            
+
             if (data.containsKey("config")) {
                 Map<String, Object> config = (Map<String, Object>) data.get("config");
                 settings.setConfig(config);
@@ -113,8 +113,8 @@ public abstract class SettingsReader {
             if (!settingsFile.getParentFile().exists()) {
                 settingsFile.getParentFile().mkdirs();
             }
-            IOUtils.copy(SettingsReader.class.getClassLoader().getResourceAsStream(Constants.CLI_CONFIG_NAME),
-                    new FileOutputStream(settingsFile));
+            IOUtils.copy(SettingsReader.class.getClassLoader().getResourceAsStream(
+                    Constants.CLI_CONFIG_NAME), new FileOutputStream(settingsFile));
             FileUtils.setPermissionsToOwnerOnly(settingsFile);
             log.info("Created default configuration file at %s", settingsFile.getAbsolutePath());
         }

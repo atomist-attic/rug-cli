@@ -9,30 +9,30 @@ import com.atomist.rug.cli.AbstractCommandTest;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DefaultCommandIntegrationTest extends AbstractCommandTest {
 
-	@Test
-	public void testAGlobalWrite() throws Exception {
-		assertCommandLine(0, () -> {
-		}, "default", "save", "--global", "atomist:cd", "-a", "100.0.0");
-	}
+    @Test
+    public void testAGlobalWrite() throws Exception {
+        assertCommandLine(0, () -> {
+        }, "default", "save", "--global", "atomist:cd", "-a", "100.0.0");
+    }
 
-	@Test
-	public void testBProjectWrite() throws Exception {
+    @Test
+    public void testBProjectWrite() throws Exception {
 
-		assertCommandLine(0, () -> {
-		}, "default", "save", "atomist:cd", "-a", "100.0.0");
-	}
+        assertCommandLine(0, () -> {
+        }, "default", "save", "atomist:cd", "-a", "100.0.0");
+    }
 
-	@Test
-	public void testCGlobalDelete() throws Exception {
+    @Test
+    public void testCGlobalDelete() throws Exception {
 
-		assertCommandLine(0, () -> {
-		}, "default", "delete", "--global");
-	}
+        assertCommandLine(0, () -> {
+        }, "default", "delete", "--global");
+    }
 
-	@Test
-	public void testDProjectDelete() throws Exception {
+    @Test
+    public void testDProjectDelete() throws Exception {
 
-		assertCommandLine(0, () -> {
-		}, "default", "delete");
-	}
+        assertCommandLine(0, () -> {
+        }, "default", "delete");
+    }
 }

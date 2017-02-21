@@ -53,7 +53,7 @@ public class DefaultCommandInfo extends AbstractRugScopedCommandInfo {
     public List<String> subCommands() {
         return commands;
     }
-    
+
     @Override
     public String group() {
         return "4";

@@ -33,7 +33,8 @@ public class EditCommandInfo extends AbstractVersionCommandInfo {
                 .desc("Run editor in directory DIR, default is '.'").required(false).build());
         options.addOption("d", "dry-run", false, "Do not persist changes, print diffs");
         options.addOption("R", "repo", false, "Commit files to local git repository");
-        options.addOption("I", "interactive", false, "Interactive mode for specifying parameter values");
+        options.addOption("I", "interactive", false,
+                "Interactive mode for specifying parameter values");
         return options;
     }
 
@@ -46,7 +47,7 @@ public class EditCommandInfo extends AbstractVersionCommandInfo {
     public String usage() {
         return "edit [OPTION]... EDITOR [PARAMETER]...";
     }
-    
+
     @Override
     public List<String> aliases() {
         return Collections.singletonList("ed");

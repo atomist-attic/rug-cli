@@ -39,17 +39,17 @@ public class ListCommandInfo extends AbstractRugScopedCommandInfo {
     public int order() {
         return 0;
     }
-    
+
     @Override
     public String usage() {
         return "list [OPTION]...";
     }
-    
+
     @Override
     public List<String> aliases() {
         return Collections.singletonList("ls");
     }
-    
+
     @Override
     public String group() {
         return "1";
