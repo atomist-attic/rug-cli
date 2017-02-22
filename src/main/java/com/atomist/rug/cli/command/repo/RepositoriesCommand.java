@@ -95,8 +95,8 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
                 configuredRepo.setPublish(true);
                 configuredRepo.setAuthentication(auth);
             }
-            log.info("  %s\n    %s", Style.yellow(r.teamId().toLowerCase()),
-                    Style.underline(r.url()));
+            log.info("  %s (%s)\n  %s%s", Style.yellow(r.teamId()), r.teamName(),
+                    Constants.LAST_TREE_NODE, Style.underline(r.url()));
         });
 
         settings.setRemoteRepositories(configuredRepos);
