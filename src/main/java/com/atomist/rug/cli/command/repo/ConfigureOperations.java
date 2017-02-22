@@ -1,5 +1,10 @@
 package com.atomist.rug.cli.command.repo;
 
+import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.cli.utils.HttpClientFactory;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -7,29 +12,18 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
-import com.atomist.rug.cli.utils.HttpClientFactory;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-
 public class ConfigureOperations {
 
-    public List<Repo> getForRepos(String token) {
+    public List<Repo> getForRepos(String token, String url) {
 
-        HttpClient client = HttpClientFactory.httpClient(Constants.REPO_URL);
-        HttpGet get = new HttpGet(Constants.REPO_URL);
+        HttpClient client = HttpClientFactory.httpClient(url);
+        HttpGet get = new HttpGet(url);
         HttpClientFactory.authorizationHeader(get, token);
 
-        HttpResponse response = new ProgressReportingOperationRunner<HttpResponse>(
-                "Configuring team-scoped repositories").run((indicator) -> {
-                    return HttpClientFactory.execute(client, get);
-                });
+        HttpResponse response =  HttpClientFactory.execute(client, get);
 
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            return HttpClientFactory.read(response, new TypeReference<List<Repo>>() {
-            });
+            return HttpClientFactory.read(response, new TypeReference<List<Repo>>() { });
         }
         else {
             throw new CommandException("Failed to configure team-scoped repositories.",
@@ -60,7 +54,17 @@ public class ConfigureOperations {
         }
         
         public String teamName() {
-            return teamName;
+            return teamName.toLowerCase().replace(" ", "-");
+        }
+        
+        @Override
+        public int hashCode() {
+            return 21 * url.hashCode();
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Repo && url.equals(((Repo) obj).url());
         }
     }
 

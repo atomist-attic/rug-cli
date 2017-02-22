@@ -7,13 +7,17 @@ import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
-import org.apache.commons.io.IOUtils;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+
+import org.apache.commons.io.IOUtils;
+import org.yaml.snakeyaml.Yaml;
 
 public abstract class SettingsReader {
 
@@ -60,9 +64,10 @@ public abstract class SettingsReader {
                     Map<String, Object> repo = r.getValue();
                     boolean publish = (Boolean) repo.get("publish");
                     String url = (String) repo.get("url");
-
+                    String name = (String) repo.get("name");
                     RemoteRepository rr = new RemoteRepository();
                     rr.setUrl(url);
+                    rr.setName(name);
                     rr.setPublish(publish);
 
                     Map<String, Object> auth = (Map<String, Object>) repo.get("authentication");
@@ -83,16 +88,6 @@ public abstract class SettingsReader {
                 settings.getDefaults().setGroup((String) defaults.get("group"));
                 settings.getDefaults().setArtifact((String) defaults.get("artifact"));
                 settings.getDefaults().setVersion((String) defaults.get("version"));
-            }
-
-            if (data.containsKey("catalogs")) {
-                List<String> urls = (List<String>) data.get("catalogs");
-                urls.forEach(u -> settings.getCatalogs().addUrl(u));
-            }
-
-            if (data.containsKey("token")) {
-                String token = (String) data.get("token");
-                settings.setToken(token);
             }
 
             if (data.containsKey("config")) {
