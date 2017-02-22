@@ -108,7 +108,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             sh(line);
         }
         else {
-            invokeCommand(args, artifact, dependencies, null);
+            CommandLine commandLine = CommandUtils.parseInitialCommandline(args, registry);
+            invokeCommand(commandLine.getArgList().get(0), args, artifact, dependencies, null);
         }
     }
 
@@ -131,7 +132,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     private void reload(String[] args) {
-        CommandLine commandLine = CommandUtils.parseCommandline(args, registry);
+        CommandLine commandLine = CommandUtils.parseCommandline("shell", args, registry);
         // Only trigger reload if not help is what is requested
         if (!commandLine.hasOption("h") && !commandLine.hasOption("?")) {
             throw new ReloadException(args);

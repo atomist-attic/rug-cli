@@ -1,5 +1,9 @@
 package com.atomist.rug.cli.command;
 
+import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
+import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.cli.utils.FileUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -17,10 +21,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
-import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
-import com.atomist.rug.cli.utils.CommandLineOptions;
-import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class CommandUtils {
 
@@ -44,20 +44,38 @@ public abstract class CommandUtils {
             System.out.println("");
         });
     }
-
+    
     public static Options options() {
         Options options = new Options();
         options.addOption("v", "version", false, "Print version information");
         options.addOption("?", "help", false, "Print help information");
         options.addOption("h", "help", false, "Print help information");
-        options.addOption("q", "quiet", false, "Do not display progress messages");
         return options;
     }
+    
+    public static CommandLine parseInitialCommandline(String[] args, CommandInfoRegistry registry) {
+        try {
+            // For the purpose of the initial parse we need collect all options and make sure they
+            // are not configured with required=true and then parse the commandLine
+            Options options = new Options();
+            registry.allOptions().getOptions()
+                    .forEach(o -> options.addOption(o.getOpt(), o.getLongOpt(), o.hasArg(), null));
 
-    public static CommandLine parseCommandline(String[] args, CommandInfoRegistry registry) {
+            CommandLineParser parser = new DefaultParser();
+            CommandLine commandLine = parser.parse(options, args, true);
+            CommandLineOptions.set(commandLine);
+            return commandLine;
+        }
+        catch (ParseException e) {
+            throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
+        }
+    }
+
+    public static CommandLine parseCommandline(String commandName, String[] args,
+            CommandInfoRegistry registry) {
         try {
             CommandLineParser parser = new DefaultParser();
-            CommandLine commandLine = parser.parse(registry.allOptions(), args);
+            CommandLine commandLine = parser.parse(registry.options(commandName), args);
             CommandLineOptions.set(commandLine);
             return commandLine;
         }
