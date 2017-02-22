@@ -1,5 +1,6 @@
 package com.atomist.rug.cli.command.search;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SuppressWarnings("unused")
 public class SearchCommand extends AbstractAnnotationBasedCommand {
 
+    public static final List<String> CATALOG_URL = Arrays
+            .asList("https://api.atomist.com/catalog/operation/search");
+    public static final String CATALOG_URL_KEY = "catalog-service-urls";
+
     private ObjectMapper mapper = new ObjectMapper();
 
     @Command
@@ -30,13 +35,9 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
             @Option("tag") Properties tags, @Option("type") String type,
             @Option("operations") boolean showOps) {
 
-        if (settings.getCatalogs().getUrls().isEmpty()) {
-            throw new CommandException("No catalog endpoints configured in ~/.atomist/cli.yml.");
-        }
-
         Map<String, List<Operation>> operations = new ProgressReportingOperationRunner<Map<String, List<Operation>>>(
                 "Searching catalogs").run(indicator -> {
-                    List<Operation> results = settings.getCatalogs().getUrls().stream().map(u -> {
+                    List<Operation> results = getCatalogServiceUrls(settings).stream().map(u -> {
                         indicator.report("  Searching " + u);
                         return new SearchOperations().collectResults(u, search, type, tags,
                                 settings);
@@ -103,4 +104,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
+    private List<String> getCatalogServiceUrls(Settings settings) {
+        return settings.getConfigValue(CATALOG_URL_KEY, CATALOG_URL);
+    }
 }

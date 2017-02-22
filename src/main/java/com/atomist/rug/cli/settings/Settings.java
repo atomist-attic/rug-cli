@@ -1,25 +1,19 @@
 package com.atomist.rug.cli.settings;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @JsonInclude(Include.NON_EMPTY)
 public class Settings {
-
-    @JsonProperty("catalogs")
-    private Catalogs catalogs = new Catalogs();
+    
+    public static final String GIHUB_TOKEN_KEY = "github-token";
 
     @JsonProperty("default")
     private Defaults defaults = new Defaults();
@@ -32,13 +26,6 @@ public class Settings {
 
     @JsonProperty("config")
     private Map<String, Object> config = new HashMap<>();
-
-    @JsonProperty("token")
-    private String token;
-
-    public String getToken() {
-        return token;
-    }
 
     public Map<String, Object> getConfig() {
         return config;
@@ -61,10 +48,6 @@ public class Settings {
 
     public Defaults getDefaults() {
         return defaults;
-    }
-
-    public Catalogs getCatalogs() {
-        return catalogs;
     }
 
     public LocalRepository getLocalRepository() {
@@ -92,16 +75,9 @@ public class Settings {
                 defaults.setVersion(project.getDefaults().getVersion());
             }
         }
-        if (project.getToken() != null) {
-            token = project.getToken();
-        }
         if (project.getConfig() != null) {
             config.putAll(project.getConfig());
         }
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public void setConfig(Map<String, Object> config) {
@@ -114,10 +90,6 @@ public class Settings {
 
     public void setDefaults(Defaults defaults) {
         this.defaults = defaults;
-    }
-
-    public void setCatalogs(Catalogs catalogs) {
-        this.catalogs = catalogs;
     }
 
     public void setLocalRepository(LocalRepository localRepository) {
@@ -203,26 +175,6 @@ public class Settings {
     }
 
     @JsonInclude(Include.NON_EMPTY)
-    public static class Catalogs {
-
-        private List<String> urls = new ArrayList<>();
-
-        public void addUrl(String url) {
-            urls.add(url);
-        }
-
-        @JsonValue
-        public List<String> getUrls() {
-            if (urls == null || urls.size() == 0) {
-                return Collections.singletonList(Constants.CATALOG_URL);
-            }
-            else {
-                return urls;
-            }
-        }
-    }
-
-    @JsonInclude(Include.NON_EMPTY)
     public static class RemoteRepository {
 
         private Authentication authentication;
@@ -230,6 +182,8 @@ public class Settings {
         private boolean publish = false;
 
         private String url;
+        
+        private String name;
 
         public Authentication getAuthentication() {
             return authentication;
@@ -253,6 +207,14 @@ public class Settings {
 
         public void setUrl(String url) {
             this.url = url;
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        public void setName(String name) {
+            this.name = name;
         }
     }
 }

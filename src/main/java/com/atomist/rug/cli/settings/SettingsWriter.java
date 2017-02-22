@@ -24,9 +24,6 @@ public abstract class SettingsWriter {
                 && settings.getLocalRepository().getPath() == null) {
             settings.setLocalRepository(null);
         }
-        if (settings.getCatalogs() != null && settings.getCatalogs().getUrls().isEmpty()) {
-            settings.setCatalogs(null);
-        }
     }
 
     private static void settingsToFile(Settings settings, File settingsFile) {
