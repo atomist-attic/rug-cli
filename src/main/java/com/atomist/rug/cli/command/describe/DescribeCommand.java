@@ -29,6 +29,8 @@ import com.atomist.rug.runtime.EventHandler;
 import com.atomist.rug.runtime.ParameterizedRug;
 import com.atomist.rug.runtime.ResponseHandler;
 import com.atomist.rug.runtime.Rug;
+import com.atomist.rug.spi.MappedParameterizedRug;
+import com.atomist.rug.spi.SecretAwareRug;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
 import org.apache.commons.lang3.text.WordUtils;
@@ -409,6 +411,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         if (info instanceof CommandHandler) {
             describeIntent((CommandHandler) info);
+            describeSecrets((SecretAwareRug) info);
+            describeMappedParameters((MappedParameterizedRug) info);
         }
         if (info instanceof EventHandler) {
             describeEventHandler((EventHandler) info);
@@ -438,6 +442,23 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             asJavaCollection(info.intent()).forEach(t -> log.info("  " + Style.yellow(t)));
         }
     }
+
+    private void describeSecrets(SecretAwareRug rug) {
+        if (!rug.secrets().isEmpty()) {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Secrets"));
+            asJavaCollection(rug.secrets()).forEach(
+                    t -> log.info("  " + Style.yellow(t.name())));
+        }
+    }
+
+    private void describeMappedParameters(MappedParameterizedRug rug) {
+        if (!rug.mappedParameters().isEmpty()) {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Mapped Parameters"));
+            asJavaCollection(rug.mappedParameters()).forEach(
+                    t -> log.info("  " + Style.yellow(t.localKey()) + " => " + t.foreignKey()));
+        }
+    }
+
 
     private void describeTags(Rug info) {
         if (!info.tags().isEmpty()) {

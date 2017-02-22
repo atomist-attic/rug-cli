@@ -1,9 +1,8 @@
-import {HandleResponse, HandleEvent, Respondable, HandleCommand, Respond, Instruction, Response, CommandContext, Plan, Message} from '@atomist/rug/operations/Handlers'
-import {TreeNode, Match, PathExpression} from '@atomist/rug//tree/PathExpression'
-import {EventHandler, ResponseHandler, CommandHandler, Parameter, Tags, Intent} from '@atomist/rug/operations/Decorators'
+import {HandleResponse, HandleEvent, Respondable, HandleCommand, Respond, Instruction, Response, HandlerContext, Plan, Message} from '@atomist/rug/operations/Handlers'
+import {TreeNode, Match, PathExpression} from '@atomist/rug/tree/PathExpression'
+import {EventHandler, ResponseHandler, CommandHandler, Parameter, Secrets, MappedParameter, Tags, Intent} from '@atomist/rug/operations/Decorators'
 import {Project} from '@atomist/rug/model/Core'
 
-//NOTE: use case 1: Reopen an issue twice and handle success/failure
 
 @EventHandler("ClosedIssueReopener","Reopens closed issues",  "/issue")
 @Tags("github", "issues")
@@ -12,8 +11,6 @@ class SimpleHandler implements HandleEvent<Issue,Issue>{
     let issue = match.root()
     let reopen = issue.reopen
     reopen.onSuccess = {name: ""}
-  //  reopen.onSuccess = {text: `Issue ${issue.number} has been reopened successfully`}
-  //  reopen.onError = {name: "sendFailureMessage", parameters: {issue: issue, who: "jess"}}
     return new Plan().add(reopen)
   }
 }
@@ -37,8 +34,6 @@ class IssueReopenFailedResponder implements HandleResponse<Issue>{
 
 export let responder = new IssueReopenFailedResponder();
 
-//NOTE use case 2: run an editor/reviewer across a bunch of repos (the old Executor)
-
 @CommandHandler("LicenseAdder","Runs the SetLicense editor on a bunch of my repos")
 @Tags("github", "license")
 @Intent("add license")
@@ -47,7 +42,7 @@ class LicenseAdder implements HandleCommand{
   @Parameter({description: "The name of the license", pattern: "^.*$"})
   license: string;
 
-  handle(command: CommandContext) : Plan {
+  handle(command: HandlerContext) : Plan {
     let result = new Plan()
     result.add({instruction: {name: "nice-editor", kind: "edit", project: "kipz-test"}})
     return result;
@@ -55,11 +50,6 @@ class LicenseAdder implements HandleCommand{
 }
 
 export let adder = new LicenseAdder();
-
-//NOTE: use case 3: handle a Command from the bot (via intent or otherwise)
-//1. First class intent
-//2. First class secrets
-//3. As per other Rugs - declared params are passed in to the command
 
 @CommandHandler("ListIssuesHandler","Lists open github issues in slack")
 @Tags("github", "issues")
@@ -69,7 +59,7 @@ class IssueLister implements HandleCommand{
   @Parameter({description: "Days", pattern: "^.*$", maxLength: 100, required: false })
   days = 1
 
-  handle(ctx: CommandContext) : Message {
+  handle(ctx: HandlerContext) : Message {
     var match: Match<Issue,Issue>; // ctx.pathExpressionEngine().evaluate<Issue,Issue>("/Repo()/Issue[@raisedBy='kipz']")
     let issues = match.matches();
     if (issues.length > 0) {
@@ -103,13 +93,11 @@ class IssueLister implements HandleCommand{
 
 export let lister = new IssueLister();
 
-// NOTE: use case 4: search youtube for kitty videos and post results to slack
-// no params - just take Command
 @CommandHandler("ShowMeTheKitties","Search Youtube for kitty videos and post results to slack")
 @Tags("kitty", "youtube", "slack")
 @Intent("show me kitties")
 class KittieFetcher implements HandleCommand{
-  handle(command: CommandContext) : Plan {
+  handle(command: HandlerContext) : Plan {
     let result = new Plan()
     result.add({instruction: {kind: "execution",
                 name: "HTTP",
@@ -131,8 +119,6 @@ class KittiesResponder implements HandleResponse<Object>{
 export let kittRes = new KittiesResponder();
 
 
-//NOTE use case 5: respond to an event
-
 @EventHandler("SayThankYou",
               "Send a thank you message to a slack channel after an issue was closed",
               "/Issue()[@state='closed']/belongsTo::Repo()/channel::ChatChannel()")
@@ -150,6 +136,33 @@ class SayThankYou implements HandleEvent<TreeNode, TreeNode> {
 
 export let sayThanks = new SayThankYou();
 
+@CommandHandler("CreateIssue","Creates a github issue")
+@Tags("github", "issue")
+@Intent("create issue")
+@Secrets("user_token")
+class CreateIssue implements HandleCommand {
+
+  @Parameter({description: "Title of issue", pattern: "^.*$"})
+  title: string;
+
+  @MappedParameter("atomist/repository")
+  repo: string
+
+  @MappedParameter("atomist/owner")
+  owner: string;
+
+  @Parameter({description: "Body of the issue", pattern: "@any"})
+  body: string;
+
+  handle(command: HandlerContext) : Plan {
+    let result = new Plan()
+    result.add({instruction: {name: "create-issue", kind: "execute", parameters:
+       {title: this.title, repo: this.repo, owner: this.owner, body: this.body}}})
+    return result;
+  }
+}
+
+export let issueCreator = new CreateIssue();
 
 // stuff associated with types/executions that should have typings
 
