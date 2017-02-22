@@ -91,7 +91,7 @@ public abstract class SettingsReader {
             }
 
             if (data.containsKey("configuration")) {
-                Map<String, Object> config = (Map<String, Object>) data.get("config");
+                Map<String, Object> config = (Map<String, Object>) data.get("configuration");
                 settings.setConfig(config);
             }
 
