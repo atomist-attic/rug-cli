@@ -24,7 +24,7 @@ public class Settings {
     @JsonProperty("remote-repositories")
     private Map<String, RemoteRepository> remoteRepositories = new HashMap<>();
 
-    @JsonProperty("config")
+    @JsonProperty("configuration")
     private Map<String, Object> config = new HashMap<>();
 
     public Map<String, Object> getConfig() {
