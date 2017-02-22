@@ -148,7 +148,13 @@ public abstract class AbstractAnnotationBasedCommand
 
     private Object convert(Class<?> cls, String value) {
         if (Integer.class.equals(cls) || int.class.equals(cls)) {
-            return Integer.valueOf(value);
+            try {
+                return Integer.valueOf(value);
+            }
+            catch (NumberFormatException e) {
+                throw new CommandException(String.format("Provided option or argument value %s is not a valid number.", value),
+                        registry.findCommand(getClass()).name());
+            }
         }
         else if (Boolean.class.equals(cls) || boolean.class.equals(cls)) {
             return Boolean.valueOf(value);
