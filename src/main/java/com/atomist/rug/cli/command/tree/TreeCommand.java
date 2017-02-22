@@ -17,7 +17,6 @@ import com.atomist.rug.kind.DefaultTypeRegistry$;
 import com.atomist.rug.kind.core.ProjectMutableView;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.EmptyArtifactSource;
-import com.atomist.tree.TerminalTreeNode;
 import com.atomist.tree.TreeNode;
 import com.atomist.tree.pathexpression.ExpressionEngine;
 import com.atomist.tree.pathexpression.PathExpression;
@@ -97,7 +96,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                                     .stream().filter(n -> !n.equals("-dynamic"))
                                     .collect(Collectors.toList()), ", ")
                             + "]")
-                    + (!(node instanceof TerminalTreeNode) && id > 0 ? " {" + id + "}" : "")
+                    + ((node.relatedNodes().size() > 0) && id > 0 ? " {" + id + "}" : "")
                     + " " + NodeUtils.value(node);
         }
     }
@@ -115,7 +114,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                                     .stream().filter(n -> !n.equals("-dynamic"))
                                     .collect(Collectors.toList()), ", ")
                             + "]")
-                    + (!(node instanceof TerminalTreeNode) && id > 0 ? " {" + id + "}" : "");
+                    + ((node.relatedNodes().size() > 0) && id > 0 ? " {" + id + "}" : "");
         }
     }
 }
