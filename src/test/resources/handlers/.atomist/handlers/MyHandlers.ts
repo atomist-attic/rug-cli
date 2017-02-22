@@ -130,6 +130,27 @@ class KittiesResponder implements HandleResponse<Object>{
 
 export let kittRes = new KittiesResponder();
 
+
+//NOTE use case 5: respond to an event
+
+@EventHandler("SayThankYou",
+              "Send a thank you message to a slack channel after an issue was closed",
+              "/Issue()[@state='closed']/belongsTo::Repo()/channel::ChatChannel()")
+@Tags("github")
+class SayThankYou implements HandleEvent<TreeNode, TreeNode> {
+  handle(event: Match<TreeNode, TreeNode>): Plan {
+    let plan: Plan = new Plan()
+    let issue = event.root() as any
+    let msg: Message = new Message("Thanks for closing this issue on " + issue.belongsTo().name())
+    msg.channelId = issue.belongsTo().channel().id()
+    plan.add(msg)
+    return plan
+  }
+}
+
+export let sayThanks = new SayThankYou();
+
+
 // stuff associated with types/executions that should have typings
 
 interface Issue extends TreeNode {
