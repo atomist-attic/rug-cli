@@ -48,7 +48,7 @@ public class ConfigureOperations {
         private Creds creds;
 
         public String teamId() {
-            return teamId;
+            return teamId.toLowerCase();
         }
 
         public String url() {
@@ -57,6 +57,10 @@ public class ConfigureOperations {
 
         public Creds creds() {
             return creds;
+        }
+        
+        public String teamName() {
+            return teamName;
         }
     }
 
