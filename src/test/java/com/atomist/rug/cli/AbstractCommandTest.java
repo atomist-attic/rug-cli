@@ -2,6 +2,13 @@ package com.atomist.rug.cli;
 
 import static org.junit.Assert.assertTrue;
 
+import com.atomist.project.archive.Rugs;
+import com.atomist.rug.cli.command.CommandContext;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
+import com.atomist.source.ArtifactSource;
+import com.github.tomaslanger.chalk.Chalk;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.atomist.project.archive.Rugs;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -19,10 +25,6 @@ import org.junit.contrib.java.lang.system.SystemErrRule;
 import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.junit.rules.TestName;
 import org.springframework.util.StringUtils;
-
-import com.atomist.rug.cli.command.CommandContext;
-import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
-import com.atomist.source.ArtifactSource;
 
 public abstract class AbstractCommandTest {
 
@@ -47,6 +49,7 @@ public abstract class AbstractCommandTest {
 
     @Before
     public void setupRules() {
+        Chalk.setColorEnabled(false);
         systemOutRule.clearLog();
         System.out.println("");
         System.out.println(">>> " + getClass().getSimpleName() + "." + name.getMethodName());
@@ -72,7 +75,13 @@ public abstract class AbstractCommandTest {
 
         exit.expectSystemExitWithStatus(exitCode);
         exit.checkAssertionAfterwards(assertion);
-        Main.main(commandLine);
+        try {
+            Main.main(commandLine);
+        }
+        catch (Throwable t) {
+            Chalk.setColorEnabled(true);
+            throw t;
+        }
     }
 
     protected void assertCommandLine(int exitCode, String requiredContents, String... tokens)
@@ -139,8 +148,13 @@ public abstract class AbstractCommandTest {
             String sysout = systemOutRule.getLogWithNormalizedLineSeparator();
             String stderr = systemErrRule.getLogWithNormalizedLineSeparator();
             if (!sysout.contains(requiredContent) && !stderr.contains(requiredContent)) {
-                System.out.println("Received on sysout: <\n" + sysout + "\n> and on stderr: <\n"
-                        + stderr + "\n> neither of which contain: <\n" + requiredContent + "\n>");
+                // re-enable color to see an error message flying by
+                System.setProperty("jansi.strip", "false");
+                Chalk.setColorEnabled(true);
+                System.out.println(Style.red("Received on sysout: <\n" + sysout + "\n> and on stderr: <\n"
+                        + stderr + "\n> neither of which contain: <\n" + requiredContent + "\n>"));
+                System.setProperty("jansi.strip", "true");
+                Chalk.setColorEnabled(false);
             }
             assertTrue(sysout.contains(requiredContent) || stderr.contains(requiredContent));
         }
