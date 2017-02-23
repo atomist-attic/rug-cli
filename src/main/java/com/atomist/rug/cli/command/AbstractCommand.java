@@ -27,7 +27,8 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
 
         ConsoleUtils.configureStreams();
         CommandLine commandLine = parseCommandLine(args);
-
+        
+        validate(null, commandLine);
         run(null, null, commandLine);
     }
 
@@ -40,6 +41,8 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
 
         ArtifactDescriptor artifact = createArtifactDescriptor(group, artifactId, version,
                 extension, local);
+        
+        validate(artifact, commandLine);
         run(uri, artifact, commandLine);
     }
 
@@ -81,6 +84,10 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
         catch (ParseException e) {
             throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
         }
+    }
+    
+
+    protected void validate(ArtifactDescriptor artifact, CommandLine commandLine) {
     }
 
     protected abstract void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine);

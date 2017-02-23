@@ -11,19 +11,42 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.utils.LocalGitProjectManagement;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import org.apache.commons.lang3.text.WordUtils;
 import scala.collection.JavaConverters;
 
+import java.io.File;
 import java.util.Optional;
 
 import static scala.collection.JavaConversions.asJavaCollection;
 
 public class GenerateCommand extends AbstractParameterizedCommand {
+
+    @Validator
+    public void validate(@Argument(index = 1) String fqArtifactName,
+            @Option("change-dir") String path) {
+        String generatorName = OperationUtils.extractRugTypeName(fqArtifactName);
+        if (generatorName == null) {
+            throw new CommandException("No generator name provided.", "generate");
+        }
+        File root = FileUtils.createProjectRoot(path);
+        if (!root.exists()) {
+            throw new CommandException(String.format(
+                    "Target directory %s does not exist.\nPlease fix the directory path provided to --change-dir.",
+                    root.getAbsolutePath()), "generate");
+        }
+        if (!root.isDirectory()) {
+            throw new CommandException(String.format(
+                    "Target path %s is not a directory.\nPlease fix the directory path provided to --change-dir.",
+                    root.getAbsolutePath()), "generate");
+        }
+    }
 
     @Command
     public void run(Rugs rugs, ArtifactDescriptor artifact,
@@ -37,10 +60,6 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         }
 
         String generatorName = OperationUtils.extractRugTypeName(fqArtifactName);
-        if (generatorName == null) {
-            throw new CommandException("No generator name provided.", "generate");
-        }
-
         Optional<ProjectGenerator> opt = asJavaCollection(rugs.generators()).stream()
                 .filter(g -> g.name().equals(generatorName)).findFirst();
         if (opt.isPresent()) {
