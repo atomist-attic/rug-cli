@@ -57,6 +57,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 }
                 catch (UserInterruptException e) {
                     // Ignore Ctrl-C
+                    continue;
                 }
 
                 // Empty line
