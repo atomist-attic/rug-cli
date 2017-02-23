@@ -38,7 +38,7 @@ public class ReflectiveCommandRunner {
     public int runCommand(String commandName, String[] args) {
 
         Timing timing = new Timing();
-        
+
         CommandInfo info = registry.findCommand(commandName);
         CommandLine commandLine = CommandUtils.parseCommandline(info.name(), args, registry);
 
@@ -52,7 +52,7 @@ public class ReflectiveCommandRunner {
         ArtifactDescriptor artifact = loadArtifactAndinitializeEnvironment(commandLine,
                 dependencies, info);
         try {
-            int rc = invokeCommand(commandName, args, artifact, dependencies, timing);
+            int rc = invokeCommand(commandName, args, artifact, dependencies, timing, false);
 
             commandCompleted(rc, info, artifact, dependencies);
 
@@ -164,8 +164,8 @@ public class ReflectiveCommandRunner {
 
     private List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
             ProgressReporter indicator) {
-        DependencyResolver resolver = new DependencyResolverFactory()
-                .createDependencyResolver(artifact, indicator);
+        DependencyResolver resolver = DependencyResolverFactory.createDependencyResolver(artifact,
+                indicator);
         String version = artifact.version();
         try {
             version = resolver.resolveVersion(artifact);
@@ -195,7 +195,7 @@ public class ReflectiveCommandRunner {
     }
 
     protected int invokeCommand(String commandName, String[] args, ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies, Timing timing) {
+            List<ArtifactDescriptor> dependencies, Timing timing, boolean checkArtifact) {
 
         if (timing == null) {
             timing = new Timing();
@@ -207,8 +207,10 @@ public class ReflectiveCommandRunner {
             commandLine = CommandUtils.parseCommandline(info.name(), args, registry);
             // verify that command is enabled
             commandEnabled(artifact, info);
-            // check the artifact against the previous one
-            artifactChanged(artifact, info, commandLine);
+            if (checkArtifact) {
+                // check the artifact against the previous one
+                artifactChanged(artifact, info, commandLine);
+            }
 
             if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
                 printCommandHelp(commandName);

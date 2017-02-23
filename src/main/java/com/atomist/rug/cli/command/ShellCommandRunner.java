@@ -109,7 +109,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         }
         else {
             CommandLine commandLine = CommandUtils.parseInitialCommandline(args, registry);
-            invokeCommand(commandLine.getArgList().get(0), args, artifact, dependencies, null);
+            invokeCommand(commandLine.getArgList().get(0), args, artifact, dependencies, null, true);
         }
     }
 
