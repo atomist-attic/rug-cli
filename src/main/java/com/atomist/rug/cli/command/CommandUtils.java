@@ -2,7 +2,6 @@ package com.atomist.rug.cli.command;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
-import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.resolver.DependencyResolverFactory;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
