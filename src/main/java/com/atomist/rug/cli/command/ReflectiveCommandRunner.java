@@ -193,22 +193,25 @@ public class ReflectiveCommandRunner {
     protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
     }
+    
+    protected int invokeCommand(String commandName, String[] args, ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies) {
+        return invokeCommand(commandName, args, artifact, dependencies, new Timing(), true);
+    }
 
     protected int invokeCommand(String commandName, String[] args, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, Timing timing, boolean checkArtifact) {
-
-        if (timing == null) {
-            timing = new Timing();
-        }
 
         CommandLine commandLine = null;
         try {
             CommandInfo info = registry.findCommand(commandName);
             commandLine = CommandUtils.parseCommandline(info.name(), args, registry);
+            
             // verify that command is enabled
             commandEnabled(artifact, info);
+            
+            // check the artifact against the previous one
             if (checkArtifact) {
-                // check the artifact against the previous one
                 artifactChanged(artifact, info, commandLine);
             }
 
