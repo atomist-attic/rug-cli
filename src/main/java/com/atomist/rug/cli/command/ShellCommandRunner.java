@@ -90,12 +90,10 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             line = line.substring(3).trim();
         }
 
-        String[] args = CommandUtils.splitCommandline(line);
-
         // Handle some internal commands
         // Shell command might choose to exit. If not it probably means the user wants help
         if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
-            reload(args);
+            reload(line);
         }
 
         if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
@@ -108,8 +106,13 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             sh(line);
         }
         else {
-            CommandLine commandLine = CommandUtils.parseInitialCommandline(args, registry);
-            invokeCommand(commandLine.getArgList().get(0), args, artifact, dependencies, null, true);
+            // Split commands by && and call them one after the other
+            String[] cmds = line.split("&&");
+            Arrays.stream(cmds).forEach(c -> {
+                String[] args = CommandUtils.splitCommandline(c);
+                CommandLine commandLine = CommandUtils.parseInitialCommandline(args, registry);
+                invokeCommand(commandLine.getArgList().get(0), args, artifact, dependencies);
+            });
         }
     }
 
@@ -131,7 +134,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         return ShellUtils.DEFAULT_PROMPT;
     }
 
-    private void reload(String[] args) {
+    private void reload(String line) {
+        String[] args = CommandUtils.splitCommandline(line);
         CommandLine commandLine = CommandUtils.parseCommandline("shell", args, registry);
         // Only trigger reload if not help is what is requested
         if (!commandLine.hasOption("h") && !commandLine.hasOption("?")) {
