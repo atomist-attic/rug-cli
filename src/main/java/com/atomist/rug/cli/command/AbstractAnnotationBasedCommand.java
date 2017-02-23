@@ -161,22 +161,26 @@ public abstract class AbstractAnnotationBasedCommand
         }
         return value;
     }
+    
+    @Override
+    protected void validate(ArtifactDescriptor artifact, CommandLine commandLine) {
+        Optional<Method> validatorMethod = annotatedMethodWith(
+                com.atomist.rug.cli.command.annotation.Validator.class);
+        if (validatorMethod.isPresent()) {
+            List<Object> validatorArgs = prepareMethodArguments(validatorMethod.get(), null,
+                    artifact, null, commandLine);
+            invokeMethod(validatorMethod.get(), validatorArgs);
+        }
+    }
 
     @Override
-    protected void run(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
+    protected final void run(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
             CommandLine commandLine) {
 
         Optional<Method> commandMethod = annotatedMethodWith(
                 com.atomist.rug.cli.command.annotation.Command.class);
-        Optional<Method> validatorMethod = annotatedMethodWith(
-                com.atomist.rug.cli.command.annotation.Validator.class);
 
         if (commandMethod.isPresent()) {
-            if (validatorMethod.isPresent()) {
-                List<Object> validatorArgs = prepareMethodArguments(validatorMethod.get(), rugs,
-                        artifact, source, commandLine);
-                invokeMethod(validatorMethod.get(), validatorArgs);
-            }
             List<Object> runArgs = prepareMethodArguments(commandMethod.get(), rugs, artifact,
 
                     source, commandLine);

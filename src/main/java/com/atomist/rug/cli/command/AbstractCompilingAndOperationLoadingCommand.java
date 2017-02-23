@@ -40,7 +40,6 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     protected final void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
         if (artifact != null && artifact.extension() == Extension.ZIP
                 && registry.findCommand(getClass()).loadArtifactSource()) {
-
             if (CommandContext.contains(ArtifactSource.class)
                     && CommandContext.contains(Rugs.class)) {
                 ArtifactSource source = CommandContext.restore(ArtifactSource.class);

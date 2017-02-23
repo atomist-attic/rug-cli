@@ -66,15 +66,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             @Argument(index = 2) String name, @Option("output") String format) {
         switch (kind) {
         case "editor":
-            break;
         case "generator":
-            break;
         case "reviewer":
-            break;
         case "command-handler":
-            break;
         case "event-handler":
-            break;
         case "response-handler":
             break;
         case "archive":

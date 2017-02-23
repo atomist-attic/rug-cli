@@ -3,9 +3,11 @@ package com.atomist.rug.cli.command.tree;
 import com.atomist.graph.GraphNode;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
+import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
@@ -34,6 +36,21 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class TreeCommand extends AbstractAnnotationBasedCommand {
+    
+    @Validator
+    public void validate(@Option("change-dir") String projectName) {
+        File root = FileUtils.createProjectRoot(projectName);
+        if (!root.exists()) {
+            throw new CommandException(String.format(
+                    "Target directory %s does not exist.\nPlease fix the directory path provided to --change-dir.",
+                    projectName), "edit");
+        }
+        if (!root.isDirectory()) {
+            throw new CommandException(String.format(
+                    "Target path %s is not a directory.\nPlease fix the directory path provided to --change-dir.",
+                    projectName), "edit");
+        }
+    }
 
     @Command
     public void run(@Argument(index = 1, defaultValue = "") String expression,
