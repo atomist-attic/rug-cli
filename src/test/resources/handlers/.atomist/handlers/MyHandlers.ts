@@ -136,10 +136,10 @@ class SayThankYou implements HandleEvent<TreeNode, TreeNode> {
 
 export let sayThanks = new SayThankYou();
 
-@CommandHandler("CreateIssue","Creates a github issue")
+@CommandHandler("CreateIssue","Creates a GitHub issue")
 @Tags("github", "issue")
 @Intent("create issue")
-@Secrets("user_token")
+@Secrets("github/user_token=repo")
 class CreateIssue implements HandleCommand {
 
   @Parameter({description: "Title of issue", pattern: "^.*$"})
@@ -157,12 +157,24 @@ class CreateIssue implements HandleCommand {
   handle(command: HandlerContext) : Plan {
     let result = new Plan()
     result.add({instruction: {name: "create-issue", kind: "execute", parameters:
-       {title: this.title, repo: this.repo, owner: this.owner, body: this.body}}})
+       {title: this.title, repo: this.repo, owner: this.owner, body: this.body}},
+       onSuccess: { kind: "respond", name: "CreateIssue" }})
     return result;
   }
 }
 
 export let issueCreator = new CreateIssue();
+
+@ResponseHandler("CreateIssue", "Prints out the response message")
+class CreateIssueResponder implements HandleResponse<string>{
+  handle(response: Response<string>) : Message {
+    let result = response.body as any
+    console.log(">>>>>>>>>>>>>>>>>>" + JSON.stringify(response))
+    return new Message(result)
+  }
+}
+
+export let createIssueResponder = new CreateIssueResponder();
 
 // stuff associated with types/executions that should have typings
 
