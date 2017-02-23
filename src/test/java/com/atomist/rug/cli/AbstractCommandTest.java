@@ -102,7 +102,7 @@ public abstract class AbstractCommandTest {
             commandLine.add(config.getAbsolutePath());
             commandLine.add("-X");
             commandLine.add("-t");
-            commandLine.add("-V");
+            //commandLine.add("-V");
         }
         commandLine = commandLine.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
