@@ -87,7 +87,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                 String.format("Resolving dependencies for extension %s",
                         ArtifactDescriptorUtils.coordinates(artifact))).run((indicator) -> {
 
-                            DependencyResolver dependencyResolver = new DependencyResolverFactory()
+                            DependencyResolver dependencyResolver = DependencyResolverFactory
                                     .createDependencyResolver(artifact, indicator);
                             // Resolve version
                             String newVersion = dependencyResolver.resolveVersion(artifact);

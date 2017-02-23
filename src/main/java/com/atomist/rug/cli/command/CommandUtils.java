@@ -1,8 +1,17 @@
 package com.atomist.rug.cli.command;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
+import com.atomist.rug.cli.output.ProgressReporter;
+import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.resolver.DependencyResolverFactory;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import com.atomist.rug.resolver.DefaultArtifactDescriptor;
+import com.atomist.rug.resolver.DependencyResolver;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,7 +53,7 @@ public abstract class CommandUtils {
             System.out.println("");
         });
     }
-    
+
     public static Options options() {
         Options options = new Options();
         options.addOption("v", "version", false, "Print version information");
@@ -52,7 +61,7 @@ public abstract class CommandUtils {
         options.addOption("h", "help", false, "Print help information");
         return options;
     }
-    
+
     public static CommandLine parseInitialCommandline(String[] args, CommandInfoRegistry registry) {
         try {
             // For the purpose of the initial parse we need collect all options and make sure they
@@ -169,6 +178,19 @@ public abstract class CommandUtils {
         }
         catch (IOException e) {
             // just use latest as fallback
+        }
+        // The following can really only happen during CLI development when we have a version range
+        // in the pom.xml
+        if (version.startsWith("(")) {
+            ArtifactDescriptor artifact = new DefaultArtifactDescriptor(Constants.GROUP,
+                    Constants.RUG_ARTIFACT, version, Extension.JAR);
+            version = new ProgressReportingOperationRunner<String>(
+                    String.format("Resolving version range for %s",
+                            ArtifactDescriptorUtils.coordinates(artifact))).run((indicator) -> {
+                                DependencyResolver resolver = DependencyResolverFactory
+                                        .createDependencyResolver(artifact, indicator);
+                                return resolver.resolveVersion(artifact);
+                            });
         }
         return version;
     }
