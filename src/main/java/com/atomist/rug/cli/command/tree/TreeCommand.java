@@ -23,16 +23,15 @@ import com.atomist.tree.pathexpression.PathExpression;
 import com.atomist.tree.pathexpression.PathExpressionEngine;
 import com.atomist.tree.pathexpression.PathExpressionParser$;
 import com.atomist.tree.utils.NodeUtils;
+import scala.Option$;
+import scala.collection.JavaConverters;
+import scala.collection.Seq;
+import scala.util.Either;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-
-import scala.Option$;
-import scala.collection.JavaConverters;
-import scala.collection.immutable.List;
-import scala.util.Either;
 
 public class TreeCommand extends AbstractAnnotationBasedCommand {
 
@@ -52,7 +51,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
                     ExpressionEngine pxe = new PathExpressionEngine();
                     TreeNode pmv = new ProjectMutableView(new EmptyArtifactSource(""), source);
 
-                    Either<String, List<GraphNode>> result = pxe.evaluate(pmv, pathExpression,
+                    Either<String, Seq<GraphNode>> result = pxe.evaluate(pmv, pathExpression,
                             DefaultTypeRegistry$.MODULE$, Option$.MODULE$.apply(null));
 
                     return JavaConverters.asJavaCollectionConverter(result.right().get())
