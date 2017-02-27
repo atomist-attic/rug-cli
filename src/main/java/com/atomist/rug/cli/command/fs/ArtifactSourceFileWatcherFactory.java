@@ -13,19 +13,19 @@ public abstract class ArtifactSourceFileWatcherFactory {
             "com.sun.nio.file.SensitivityWatchEventModifier",
             Thread.currentThread().getContextClassLoader());
 
-    public static void create(ArtifactDescriptor artifact) {
+    public static FileWatcher create(ArtifactDescriptor artifact) {
         if (SUN_CLASS_AVAILALBE) {
-            new ArtifactSourceFileWatcherWithSunCreator().create(artifact);
+            return new ArtifactSourceFileWatcherWithSunCreator().create(artifact);
         }
         else {
-            new ArtifactSourceFileWatcherWithoutSunCreator().create(artifact);
+            return new ArtifactSourceFileWatcherWithoutSunCreator().create(artifact);
         }
     }
 
     private static class ArtifactSourceFileWatcherWithSunCreator {
 
-        public void create(ArtifactDescriptor artifact) {
-            new ArtifactSourceFileWatcherThread(artifact,
+        public FileWatcher create(ArtifactDescriptor artifact) {
+            return new ArtifactSourceFileWatcherThread(artifact,
                     com.sun.nio.file.SensitivityWatchEventModifier.HIGH);
         }
 
@@ -33,9 +33,15 @@ public abstract class ArtifactSourceFileWatcherFactory {
 
     private static class ArtifactSourceFileWatcherWithoutSunCreator {
 
-        public void create(ArtifactDescriptor artifact) {
-            new ArtifactSourceFileWatcherThread(artifact);
+        public FileWatcher create(ArtifactDescriptor artifact) {
+            return new ArtifactSourceFileWatcherThread(artifact);
         }
+    }
+    
+    public interface FileWatcher {
+        
+        void shutdown();
+        
     }
 
 }

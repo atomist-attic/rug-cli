@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.command.fs;
 
 import com.atomist.rug.cli.command.CommandContext;
+import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory.FileWatcher;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 
@@ -27,11 +28,12 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * instance for modifications. In case of modifications the internal {@link CommandContext} is
  * cleared.
  */
-class ArtifactSourceFileWatcherThread extends Thread {
+class ArtifactSourceFileWatcherThread extends Thread implements FileWatcher {
 
     private ArtifactDescriptor artifact;
     private WatchService watcher;
     private Modifier[] modifiers;
+    private boolean interrupted = false;
 
     public ArtifactSourceFileWatcherThread(ArtifactDescriptor artifact) {
         this(artifact, new Modifier[0]);
@@ -65,7 +67,7 @@ class ArtifactSourceFileWatcherThread extends Thread {
 
         register.accept(Paths.get(artifact.uri()));
 
-        while (true) {
+        while (!interrupted) {
             final WatchKey key;
             try {
                 key = watcher.take(); // wait for a key to be available
@@ -122,5 +124,11 @@ class ArtifactSourceFileWatcherThread extends Thread {
             }
         };
         return register;
+    }
+
+    @Override
+    public void shutdown() {
+        this.interrupted = true;
+        this.interrupt();
     }
 }
