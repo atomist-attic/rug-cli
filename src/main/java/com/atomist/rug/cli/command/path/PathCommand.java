@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command.tree;
+package com.atomist.rug.cli.command.path;
 
 import com.atomist.graph.GraphNode;
 import com.atomist.rug.cli.Constants;
@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class TreeCommand extends AbstractAnnotationBasedCommand {
+public class PathCommand extends AbstractAnnotationBasedCommand {
     
     @Validator
     public void validate(@Option("change-dir") String projectName) {
@@ -43,12 +43,12 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
         if (!root.exists()) {
             throw new CommandException(String.format(
                     "Target directory %s does not exist.\nPlease fix the directory path provided to --change-dir.",
-                    projectName), "edit");
+                    projectName), "path");
         }
         if (!root.isDirectory()) {
             throw new CommandException(String.format(
                     "Target path %s is not a directory.\nPlease fix the directory path provided to --change-dir.",
-                    projectName), "edit");
+                    projectName), "path");
         }
     }
 
@@ -95,7 +95,7 @@ public class TreeCommand extends AbstractAnnotationBasedCommand {
             log.info(Style.yellow("  No matches"));
         }
         log.newline();
-        log.info(Style.green("Successfully evaluated tree expression"));
+        log.info(Style.green("Successfully evaluated path expression"));
     }
 
     private static class ValueNodeToStringFunction
