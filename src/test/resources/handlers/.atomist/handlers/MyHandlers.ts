@@ -168,8 +168,8 @@ export let issueCreator = new CreateIssue();
 @ResponseHandler("CreateIssue", "Prints out the response message")
 class CreateIssueResponder implements HandleResponse<string>{
   handle(response: Response<string>) : Message {
-    let result = response.body as any
-    console.log(">>>>>>>>>>>>>>>>>>" + JSON.stringify(response))
+    let result = response as any
+    console.log(">>>>>>>>>>>>>>>>>>" + JSON.stringify(result.body()))
     return new Message(result)
   }
 }
