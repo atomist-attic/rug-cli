@@ -1,24 +1,30 @@
-package com.atomist.rug.cli.command.tree;
+package com.atomist.rug.cli.command.path;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
-public class TreeCommandInfo extends AbstractRugScopedCommandInfo {
+import java.util.Arrays;
+import java.util.List;
 
-    public TreeCommandInfo() {
-        super(TreeCommand.class, "tree");
+public class PathCommandInfo extends AbstractRugScopedCommandInfo {
+    
+    private static final List<String> aliases = Arrays
+            .asList(new String[] { "tree" });
+
+    public PathCommandInfo() {
+        super(PathCommand.class, "path");
     }
 
     @Override
     public String description() {
-        return "Evaluate a tree expression against a project";
+        return "Evaluate a path expression against a project";
     }
 
     @Override
     public String detail() {
-        return "EXPRESSION can be any valid Rug tree expression.  Depending on your expression you might need to put it in quotes.  "
+        return "EXPRESSION can be any valid Rug path expression.  Depending on your expression you might need to put it in quotes.  "
                 + "Use '--values' to display values of tree nodes; caution as this option might lead to a lot of data being printed.";
     }
 
@@ -39,11 +45,16 @@ public class TreeCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String usage() {
-        return "tree [OPTION]... [EXPRESSION]";
+        return "path [OPTION]... [EXPRESSION]";
     }
-
+    
     @Override
     public String group() {
         return "3";
+    }
+    
+    @Override
+    public List<String> aliases() {
+        return aliases;
     }
 }
