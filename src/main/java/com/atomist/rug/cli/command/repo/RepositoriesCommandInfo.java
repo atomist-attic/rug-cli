@@ -34,9 +34,10 @@ public class RepositoriesCommandInfo extends AbstractRugScopedCommandInfo {
     @Override
     public Options options() {
         Options options = new Options();
-        options.addOption(Option.builder().argName("USERNAME").desc("").longOpt("username")
-                .optionalArg(false).hasArg(true).build());
-        options.addOption(Option.builder().argName("MFA_CODE").desc("").longOpt("mfa-code")
+        options.addOption(Option.builder().argName("USERNAME").desc("GitHub username")
+                .longOpt("username").optionalArg(false).hasArg(true).build());
+        options.addOption(Option.builder().argName("MFA_CODE")
+                .desc("GitHub MFA code (only required if MFA is enabled)").longOpt("mfa-code")
                 .optionalArg(false).hasArg(true).build());
         return options;
     }
