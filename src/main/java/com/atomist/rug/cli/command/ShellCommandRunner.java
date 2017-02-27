@@ -39,7 +39,9 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         ((LineReaderImpl) reader).clearScreen();
     }
 
-    private void exit() {
+    private void exit(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+        // Exit the current shell
+        invokeCommand("exit", new String[] {"exit"}, artifact, dependencies);
         throw new EndOfFileException();
     }
 
@@ -94,11 +96,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         // Handle some internal commands
         // Shell command might choose to exit. If not it probably means the user wants help
         if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
-            reload(line);
+            reload(line, artifact, dependencies);
         }
 
         if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
-            exit();
+            exit(artifact, dependencies);
         }
         else if ("/clear".equals(line) || "/cls".equals(line)) {
             clear();
@@ -135,7 +137,10 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         return ShellUtils.DEFAULT_PROMPT;
     }
 
-    private void reload(String line) {
+    private void reload(String line, ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+        // Exit the current shell
+        invokeCommand("exit", new String[] {"exit"}, artifact, dependencies);
+        
         String[] args = CommandUtils.splitCommandline(line);
         CommandLine commandLine = CommandUtils.parseCommandline("shell", args, registry);
         // Only trigger reload if not help is what is requested

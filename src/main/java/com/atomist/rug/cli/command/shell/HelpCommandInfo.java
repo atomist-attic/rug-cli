@@ -33,7 +33,7 @@ public class HelpCommandInfo extends AbstractCommandInfo {
 
     @Override
     public String group() {
-        return "5";
+        return "6";
     }
 
     @Override
