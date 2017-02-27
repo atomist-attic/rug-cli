@@ -1,5 +1,10 @@
 package com.atomist.rug.cli.command.shell;
 
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -14,11 +19,6 @@ import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.history.DefaultHistory;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class ShellUtils {
 
@@ -55,6 +55,17 @@ public abstract class ShellUtils {
 
         reader.setOpt(Option.AUTO_LIST);
         reader.setOpt(Option.LIST_AMBIGUOUS);
+
+        
+//        reader.getKeyMaps().get(LineReader.EMACS).unbind("\t");
+//        reader.getKeyMaps().get(LineReader.EMACS).bind(new Reference(LineReader.EXPAND_OR_COMPLETE),
+//                "\t\t");
+//        
+//        reader.getKeyMaps().get(LineReader.EMACS).bind(new Reference(LineReader.COMPLETE_WORD),
+//                "\t");
+//        reader.getKeyMaps().get(LineReader.EMACS).bind(new Reference(LineReader.EXPAND_WORD), "\t");
+//        reader.getKeyMaps().get(LineReader.EMACS).bind(new Reference(LineReader.EXPAND_HISTORY),
+//                "\t");
 
         return reader;
     }
