@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.command.generate;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
 import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValues;
 import com.atomist.param.SimpleParameterValue;
@@ -15,16 +17,14 @@ import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.utils.LocalGitProjectManagement;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import org.apache.commons.lang3.text.WordUtils;
-import scala.collection.JavaConverters;
 
-import java.io.File;
 import java.util.Optional;
 
-import static scala.collection.JavaConversions.asJavaCollection;
+import org.apache.commons.lang3.text.WordUtils;
+
+import scala.collection.JavaConverters;
 
 public class GenerateCommand extends AbstractParameterizedCommand {
 
@@ -34,17 +34,6 @@ public class GenerateCommand extends AbstractParameterizedCommand {
         String generatorName = OperationUtils.extractRugTypeName(fqArtifactName);
         if (generatorName == null) {
             throw new CommandException("No generator name provided.", "generate");
-        }
-        File root = FileUtils.createProjectRoot(path);
-        if (!root.exists()) {
-            throw new CommandException(String.format(
-                    "Target directory %s does not exist.\nPlease fix the directory path provided to --change-dir.",
-                    root.getAbsolutePath()), "generate");
-        }
-        if (!root.isDirectory()) {
-            throw new CommandException(String.format(
-                    "Target path %s is not a directory.\nPlease fix the directory path provided to --change-dir.",
-                    root.getAbsolutePath()), "generate");
         }
     }
 
