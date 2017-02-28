@@ -49,24 +49,8 @@ public abstract class ShellUtils {
                 .build();
         history.attach(reader);
 
-        reader.unsetOpt(Option.AUTO_MENU);
-        reader.unsetOpt(Option.GROUP);
-        reader.unsetOpt(Option.MENU_COMPLETE);
-
-        reader.setOpt(Option.AUTO_LIST);
-        reader.setOpt(Option.LIST_AMBIGUOUS);
-
+        setOptions(reader);
         
-//        reader.getKeyMaps().get(LineReader.EMACS).unbind("\t");
-//        reader.getKeyMaps().get(LineReader.EMACS).bind(new Reference(LineReader.EXPAND_OR_COMPLETE),
-//                "\t\t");
-//        
-//        reader.getKeyMaps().get(LineReader.EMACS).bind(new Reference(LineReader.COMPLETE_WORD),
-//                "\t");
-//        reader.getKeyMaps().get(LineReader.EMACS).bind(new Reference(LineReader.EXPAND_WORD), "\t");
-//        reader.getKeyMaps().get(LineReader.EMACS).bind(new Reference(LineReader.EXPAND_HISTORY),
-//                "\t");
-
         return reader;
     }
 
@@ -75,7 +59,17 @@ public abstract class ShellUtils {
             lineReader.getTerminal().close();
         }
         catch (IOException e) {
+            // We  can safely ignore this here
         }
+    }
+
+    private static void setOptions(LineReader reader) {
+        reader.unsetOpt(Option.AUTO_MENU);
+        reader.unsetOpt(Option.GROUP);
+        reader.unsetOpt(Option.MENU_COMPLETE);
+        
+        reader.setOpt(Option.AUTO_LIST);
+        reader.setOpt(Option.LIST_AMBIGUOUS);
     }
 
     private static Terminal terminal() {

@@ -74,4 +74,13 @@ public class Constants {
             return COMMAND;
         }
     }
+    
+    public static Boolean isReload() {
+        return Boolean.valueOf(System.getProperty("RUG_CLI_RESTART", "false"));
+    }
+    
+    public static void setReload(Boolean isReload) {
+        System.setProperty("RUG_CLI_RESTART", isReload.toString());
+        
+    }
 }

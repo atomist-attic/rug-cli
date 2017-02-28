@@ -41,7 +41,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void exit(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
         // Exit the current shell
-        invokeCommand("exit", new String[] {"exit"}, artifact, dependencies);
+        invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
         throw new EndOfFileException();
     }
 
@@ -93,6 +93,13 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             line = line.substring(3).trim();
         }
 
+        if (Constants.isReload()) {
+            Constants.setReload(false);
+            // Only in local mode we ever get to the point of being required to reload the shell
+            // session
+            reload("shell -l && " + line, artifact, dependencies);
+        }
+
         // Handle some internal commands
         // Shell command might choose to exit. If not it probably means the user wants help
         if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
@@ -110,13 +117,18 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         }
         else {
             // Split commands by && and call them one after the other
-            String[] cmds = line.split("&&");
-            Arrays.stream(cmds).forEach(c -> {
-                String[] args = CommandUtils.splitCommandline(c);
-                CommandLine commandLine = CommandUtils.parseInitialCommandline(args, registry);
-                invokeCommand(commandLine.getArgList().get(0), args, artifact, dependencies);
-            });
+            invokeChainedCommands(artifact, dependencies, line);
         }
+    }
+
+    private void invokeChainedCommands(ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies, String line) {
+        String[] cmds = line.trim().split("&&");
+        Arrays.stream(cmds).forEach(c -> {
+            String[] args = CommandUtils.splitCommandline(c);
+            CommandLine commandLine = CommandUtils.parseInitialCommandline(args, registry);
+            invokeCommand(commandLine.getArgList().get(0), args, artifact, dependencies);
+        });
     }
 
     private String expandHistory(String line) {
@@ -137,10 +149,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         return ShellUtils.DEFAULT_PROMPT;
     }
 
-    private void reload(String line, ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+    private void reload(String line, ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies) {
         // Exit the current shell
-        invokeCommand("exit", new String[] {"exit"}, artifact, dependencies);
-        
+        invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
+
         String[] args = CommandUtils.splitCommandline(line);
         CommandLine commandLine = CommandUtils.parseCommandline("shell", args, registry);
         // Only trigger reload if not help is what is requested
@@ -228,9 +241,19 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     @Override
-    protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {
+    protected void commandCompleted(int rc, String[] args, CommandInfo info,
+            ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+        // On finishing a single command from the command line, we want to start the shell if the
+        // shell command was invoked
         if (rc == 0 && "shell".equals(info.name())) {
+            // We might invoke this with some additional commands, primarily from reload but also
+            // as part of shortcuts/aliasing
+            String line = org.springframework.util.StringUtils.arrayToDelimitedString(args, " ");
+            int ix = line.indexOf("&&");
+            if (ix > 0 && line.length() > ix + 2) {
+                invokeChainedCommands(artifact, dependencies, line.substring(ix + 2));
+            }
+            // Now start the loop
             invokeCommandInLoop(artifact, dependencies);
         }
     }

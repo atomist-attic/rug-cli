@@ -54,7 +54,7 @@ public class ReflectiveCommandRunner {
         try {
             int rc = invokeCommand(commandName, args, artifact, dependencies, timing, false);
 
-            commandCompleted(rc, info, artifact, dependencies);
+            commandCompleted(rc, args, info, artifact, dependencies);
 
             return rc;
         }
@@ -190,7 +190,7 @@ public class ReflectiveCommandRunner {
             CommandLine commandLine) {
     }
 
-    protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
+    protected void commandCompleted(int rc, String[] args, CommandInfo info, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
     }
     
