@@ -1,10 +1,13 @@
 package com.atomist.rug.cli.command.fs;
 
+import com.atomist.project.archive.Rugs;
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.CommandContext;
 import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory.FileWatcher;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -84,12 +87,20 @@ class ArtifactSourceFileWatcherThread extends Thread implements FileWatcher {
             key.pollEvents().stream().filter(e -> (e.kind() != OVERFLOW)).forEach(e -> {
                 Path p = ((WatchEvent<Path>) e).context();
                 Path absPath = dir.resolve(p);
-
-                if (absPath.toFile().isDirectory()) {
+                File f = absPath.toFile();
+                
+                if (f.isDirectory()) {
                     register.accept(absPath);
                 }
                 // There was a modification to the filesystem, trigger reload of ArtifactSource
                 CommandContext.delete(ArtifactSource.class);
+                CommandContext.delete(Rugs.class);
+
+                // Special case for changes to manifest.yml
+                if (f.getName().equals("manifest.yml") && f.getParentFile() != null
+                        && f.getParentFile().getName().equals(".atomist")) {
+                    Constants.setReload(true);
+                }
             });
 
             boolean valid = key.reset(); // IMPORTANT: The key must be reset after processed
