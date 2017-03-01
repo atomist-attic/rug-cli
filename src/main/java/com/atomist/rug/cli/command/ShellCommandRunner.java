@@ -74,7 +74,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
         // Expand history
         line = expandHistory(line);
-        
+
         // Remove superfluous rug command
         if (line.startsWith("rug")) {
             line = line.substring(3).trim();
@@ -105,7 +105,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             if (cmd.startsWith("shell") || cmd.startsWith("load") || cmd.startsWith("repl")) {
                 // For shell reload it is important that we collect all remaining commands
                 if (i + 1 < cmds.length) {
-                    for (int j = i +1; j < cmds.length; j++) {
+                    for (int j = i + 1; j < cmds.length; j++) {
                         cmd = cmd + " && " + cmds[j];
                     }
                 }
@@ -176,11 +176,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
         if (shortcutRegistry != null
                 && shortcutRegistry.findShortcut(commandLine.getArgList().get(0)).isPresent()) {
-            
+
             Shortcut shortcut = shortcutRegistry.findShortcut(commandLine.getArgList().get(0))
                     .get();
             invokeChainedCommands(artifact, dependencies, shortcut.toCommand(commandLine));
-            
+
         }
         else {
             invokeChainedCommands(artifact, dependencies, line);

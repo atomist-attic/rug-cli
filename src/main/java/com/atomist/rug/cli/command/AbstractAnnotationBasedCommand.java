@@ -152,7 +152,9 @@ public abstract class AbstractAnnotationBasedCommand
                 return Integer.valueOf(value);
             }
             catch (NumberFormatException e) {
-                throw new CommandException(String.format("Provided option or argument value %s is not a valid number.", value),
+                throw new CommandException(
+                        String.format("Provided option or argument value %s is not a valid number.",
+                                value),
                         registry.findCommand(getClass()).name());
             }
         }
@@ -161,7 +163,7 @@ public abstract class AbstractAnnotationBasedCommand
         }
         return value;
     }
-    
+
     @Override
     protected void validate(ArtifactDescriptor artifact, CommandLine commandLine) {
         Optional<Method> validatorMethod = annotatedMethodWith(

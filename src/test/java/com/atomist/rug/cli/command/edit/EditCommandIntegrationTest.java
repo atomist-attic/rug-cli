@@ -47,11 +47,11 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
                 "atomist-rugs:common-editors:AddReadme", "description=Some", "-a", "0.5.0");
     }
 
-//    @Test
-//    public void testUnSuccessfulEditWithInvalidName() throws Exception {
-//        assertFailure("Did you mean?\n" + "  AddReadme", "edit",
-//                "atomist-rugs:common-editors:AddRame", "description=Some", "-a", "0.5.0");
-//    }
+    // @Test
+    // public void testUnSuccessfulEditWithInvalidName() throws Exception {
+    // assertFailure("Did you mean?\n" + " AddReadme", "edit",
+    // "atomist-rugs:common-editors:AddRame", "description=Some", "-a", "0.5.0");
+    // }
 
     @Test
     public void testUnSuccessfulEditWithMultipleMissingParameters() throws Exception {

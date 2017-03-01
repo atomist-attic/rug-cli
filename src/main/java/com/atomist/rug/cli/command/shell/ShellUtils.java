@@ -50,7 +50,7 @@ public abstract class ShellUtils {
         history.attach(reader);
 
         setOptions(reader);
-        
+
         return reader;
     }
 
@@ -59,7 +59,7 @@ public abstract class ShellUtils {
             lineReader.getTerminal().close();
         }
         catch (IOException e) {
-            // We  can safely ignore this here
+            // We can safely ignore this here
         }
     }
 
@@ -67,7 +67,7 @@ public abstract class ShellUtils {
         reader.unsetOpt(Option.AUTO_MENU);
         reader.unsetOpt(Option.GROUP);
         reader.unsetOpt(Option.MENU_COMPLETE);
-        
+
         reader.setOpt(Option.AUTO_LIST);
         reader.setOpt(Option.LIST_AMBIGUOUS);
         reader.unsetOpt(Option.INSERT_TAB);

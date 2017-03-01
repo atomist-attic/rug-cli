@@ -37,11 +37,11 @@ public abstract class ArtifactSourceFileWatcherFactory {
             return new ArtifactSourceFileWatcherThread(artifact);
         }
     }
-    
+
     public interface FileWatcher {
-        
+
         void shutdown();
-        
+
     }
 
 }

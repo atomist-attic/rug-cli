@@ -94,9 +94,9 @@ public abstract class CommandUtils {
             throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
         }
     }
-    
+
     public static String[] firstCommand(String[] args) {
-     // make sure to only look at the current command; that is the first of potentially many
+        // make sure to only look at the current command; that is the first of potentially many
         // concatinated with &&
         List<String> parts = Arrays.asList(args);
         if (parts.indexOf("&&") >= 0) {

@@ -441,8 +441,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeSecrets(SecretAwareRug rug) {
         if (!rug.secrets().isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Secrets"));
-            asJavaCollection(rug.secrets()).forEach(
-                    t -> log.info("  " + Style.yellow(t.name())));
+            asJavaCollection(rug.secrets()).forEach(t -> log.info("  " + Style.yellow(t.name())));
         }
     }
 
@@ -453,7 +452,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                     t -> log.info("  " + Style.yellow(t.localKey()) + " => " + t.foreignKey()));
         }
     }
-
 
     private void describeTags(Rug info) {
         if (!info.tags().isEmpty()) {

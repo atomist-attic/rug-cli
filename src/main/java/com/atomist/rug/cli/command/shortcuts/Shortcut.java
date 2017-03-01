@@ -17,7 +17,7 @@ public class Shortcut {
             "${", "}", ":", true);
 
     private static final String PLACEHOLDER_PATTERN = "\\$\\{([.a-zA-Z_-]+)[.:a-zA-Z-_]*\\}";
-    
+
     private final String name;
 
     private final List<String> commands;
@@ -34,7 +34,7 @@ public class Shortcut {
     public List<String> commands() {
         return commands;
     }
-    
+
     public Set<String> placeholders() {
         Pattern pattern = Pattern.compile(PLACEHOLDER_PATTERN);
         Set<String> placeholders = new HashSet<>();

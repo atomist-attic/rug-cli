@@ -25,11 +25,11 @@ public class ShortcutRegistry {
     public Optional<Shortcut> findShortcut(String name) {
         return Optional.ofNullable(shortcuts.get(name));
     }
-    
+
     public Collection<String> shortcutNames() {
         return shortcuts.keySet();
     }
-    
+
     public Collection<Shortcut> shortcuts() {
         return shortcuts.values();
     }

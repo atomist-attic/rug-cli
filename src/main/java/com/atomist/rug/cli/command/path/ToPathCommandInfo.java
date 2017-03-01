@@ -9,9 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ToPathCommandInfo extends AbstractRugScopedCommandInfo {
-    
-    private static final List<String> aliases = Arrays
-            .asList(new String[] { "to-tree" });
+
+    private static final List<String> aliases = Arrays.asList(new String[] { "to-tree" });
 
     public ToPathCommandInfo() {
         super(ToPathCommand.class, "to-path");
@@ -33,12 +32,13 @@ public class ToPathCommandInfo extends AbstractRugScopedCommandInfo {
         options.addOption(Option.builder("C").longOpt("change-dir").argName("DIR").hasArg(true)
                 .desc("Evaluate expression against project in directory DIR, default is '.'")
                 .build());
-        options.addOption(Option.builder().argName("KIND").desc("Rug Extension kind, eg. 'ScalaFile' or 'Pom'").longOpt("kind")
+        options.addOption(Option.builder().argName("KIND")
+                .desc("Rug Extension kind, eg. 'ScalaFile' or 'Pom'").longOpt("kind")
                 .optionalArg(false).hasArg(true).build());
-        options.addOption(Option.builder().argName("LINE").desc("Line within the file").longOpt("line")
-                .optionalArg(false).hasArg(true).build());
-        options.addOption(Option.builder().argName("COLUMN").desc("Column within file at LINE").longOpt("column")
-                .optionalArg(false).hasArg(true).build());
+        options.addOption(Option.builder().argName("LINE").desc("Line within the file")
+                .longOpt("line").optionalArg(false).hasArg(true).build());
+        options.addOption(Option.builder().argName("COLUMN").desc("Column within file at LINE")
+                .longOpt("column").optionalArg(false).hasArg(true).build());
         return options;
     }
 
@@ -51,12 +51,12 @@ public class ToPathCommandInfo extends AbstractRugScopedCommandInfo {
     public String usage() {
         return "to-path [OPTION]... PATH";
     }
-    
+
     @Override
     public String group() {
         return "3";
     }
-    
+
     @Override
     public List<String> aliases() {
         return aliases;
