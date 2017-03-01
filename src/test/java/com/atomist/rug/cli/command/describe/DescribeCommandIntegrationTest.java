@@ -114,7 +114,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulLocalEditorDescribe() throws Exception {
         assertSuccess("rug edit \"rug-cli-tests:common-editors:AddGitIgnore\"", "describe",
-                "editor", "rug-cli-tests.common-editors.AddGitIgnore", "-l");
+                "editor", "AddGitIgnore", "-l");
     }
 
     @Test

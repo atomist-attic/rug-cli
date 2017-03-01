@@ -1,7 +1,5 @@
 package com.atomist.rug.cli.command;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-
 import com.atomist.project.archive.Rugs;
 import com.atomist.rug.BadRugException;
 import com.atomist.rug.RugRuntimeException;
@@ -17,11 +15,14 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.UriBasedDependencyResolver;
-import com.atomist.rug.resolver.loader.DecoratingRugLoader;
+import com.atomist.rug.resolver.loader.ProvenanceAddingRugLoader;
+import com.atomist.rug.resolver.loader.RugLoader;
 import com.atomist.rug.resolver.loader.RugLoaderException;
 import com.atomist.rug.resolver.loader.RugLoaderRuntimeException;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.Deltas;
+import org.apache.commons.cli.CommandLine;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.net.URI;
@@ -29,8 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.cli.CommandLine;
-import org.springframework.util.StringUtils;
+import static scala.collection.JavaConversions.asJavaCollection;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 
@@ -132,8 +132,8 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         }
     }
 
-    private DecoratingRugLoader createRugLoader(URI[] uri) {
-        DecoratingRugLoader loader = new DecoratingRugLoader(new UriBasedDependencyResolver(uri,
+    private RugLoader createRugLoader(URI[] uri) {
+        ProvenanceAddingRugLoader loader = new ProvenanceAddingRugLoader(new UriBasedDependencyResolver(uri,
                 SettingsReader.read().getLocalRepository().path())) {
             @Override
             protected List<ArtifactDescriptor> postProcessArfifactDescriptors(
@@ -148,7 +148,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     }
 
     private Rugs doLoadRugs(ArtifactDescriptor artifact, ArtifactSource source,
-            DecoratingRugLoader loader) throws Exception {
+                            RugLoader loader) throws Exception {
         try {
             return loader.load(artifact, source);
         }
@@ -172,7 +172,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     }
 
     private Rugs loadRugs(ArtifactDescriptor artifact, ArtifactSource source,
-            DecoratingRugLoader loader) {
+                          RugLoader loader) {
         if (artifact == null || source == null) {
             return null;
         }
