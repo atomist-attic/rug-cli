@@ -15,7 +15,7 @@ public class ShortcutReaderTest {
         assertEquals(2, shortcuts.size());
         assertTrue(shortcuts.containsKey("init-rug-archive"));
         assertTrue(shortcuts.containsKey("clone-rug-archive"));
-        assertEquals(3, shortcuts.get("init-rug-archive").commands().size());
+        assertEquals(10, shortcuts.get("init-rug-archive").commands().size());
         shortcuts.get("init-rug-archive").placeholders();
     }
 
