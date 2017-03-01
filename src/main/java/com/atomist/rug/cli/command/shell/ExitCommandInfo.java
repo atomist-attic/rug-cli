@@ -1,5 +1,10 @@
 package com.atomist.rug.cli.command.shell;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.cli.CommandLine;
+
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 import com.atomist.rug.cli.command.CommandException;
@@ -7,11 +12,6 @@ import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
 
 public class ExitCommandInfo extends AbstractRugScopedCommandInfo {
 

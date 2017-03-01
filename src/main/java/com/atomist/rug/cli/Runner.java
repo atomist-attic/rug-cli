@@ -1,5 +1,7 @@
 package com.atomist.rug.cli;
 
+import org.apache.commons.cli.CommandLine;
+
 import com.atomist.rug.cli.command.CommandInfoRegistry;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.ShellCommandRunner;
@@ -7,8 +9,6 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.version.VersionThread;
 import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.cli.version.VersionUtils.VersionInformation;
-
-import org.apache.commons.cli.CommandLine;
 
 /**
  * Simple command runner that parses the command line and reacts to help and version requests

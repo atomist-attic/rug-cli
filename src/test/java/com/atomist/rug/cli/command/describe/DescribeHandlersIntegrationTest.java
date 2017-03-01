@@ -1,8 +1,9 @@
 package com.atomist.rug.cli.command.describe;
 
-import com.atomist.rug.cli.AbstractCommandTest;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.atomist.rug.cli.AbstractCommandTest;
 
 public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
 

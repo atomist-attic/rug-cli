@@ -2,6 +2,10 @@ package com.atomist.rug.cli.command.generate;
 
 import static scala.collection.JavaConversions.asJavaCollection;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.text.WordUtils;
+
 import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValues;
 import com.atomist.param.SimpleParameterValue;
@@ -19,10 +23,6 @@ import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-
-import java.util.Optional;
-
-import org.apache.commons.lang3.text.WordUtils;
 
 import scala.collection.JavaConverters;
 

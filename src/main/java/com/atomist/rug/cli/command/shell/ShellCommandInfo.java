@@ -10,8 +10,8 @@ import com.atomist.rug.cli.command.AbstractVersionCommandInfo;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 
 public class ShellCommandInfo extends AbstractVersionCommandInfo {
 

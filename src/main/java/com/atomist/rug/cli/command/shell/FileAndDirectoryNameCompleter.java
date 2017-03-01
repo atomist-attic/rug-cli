@@ -1,13 +1,13 @@
 package com.atomist.rug.cli.command.shell;
 
-import com.atomist.rug.cli.Constants;
-
 import java.util.List;
 
 import org.jline.reader.Candidate;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.impl.completer.FileNameCompleter;
+
+import com.atomist.rug.cli.Constants;
 
 /**
  * Extension to JLine's {@link FileNameCompleter} that only completes on <code>-C</code> or

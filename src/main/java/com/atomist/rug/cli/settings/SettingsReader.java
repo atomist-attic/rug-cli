@@ -1,13 +1,5 @@
 package com.atomist.rug.cli.settings;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.settings.Settings.Authentication;
-import com.atomist.rug.cli.settings.Settings.RemoteRepository;
-import com.atomist.rug.cli.utils.CommandLineOptions;
-import com.atomist.rug.cli.utils.FileUtils;
-import com.atomist.rug.cli.utils.StringUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +10,14 @@ import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.Yaml;
+
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.settings.Settings.Authentication;
+import com.atomist.rug.cli.settings.Settings.RemoteRepository;
+import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.cli.utils.StringUtils;
 
 public abstract class SettingsReader {
 

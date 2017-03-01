@@ -1,5 +1,18 @@
 package com.atomist.rug.cli.command;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.lang3.SystemUtils;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
+import org.jline.reader.impl.LineReaderImpl;
+import org.springframework.boot.loader.tools.RunProcess;
+
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.ReloadException;
 import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
@@ -15,19 +28,6 @@ import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.lang3.SystemUtils;
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.UserInterruptException;
-import org.jline.reader.impl.LineReaderImpl;
-import org.springframework.boot.loader.tools.RunProcess;
 
 public class ShellCommandRunner extends ReflectiveCommandRunner {
 

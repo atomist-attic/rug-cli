@@ -1,11 +1,5 @@
 package com.atomist.rug.cli.command.repo;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.settings.Settings;
-import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.cli.settings.SettingsWriter;
-import com.atomist.rug.cli.utils.HttpClientFactory;
-
 import java.io.File;
 import java.util.UUID;
 
@@ -13,6 +7,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.settings.SettingsWriter;
+import com.atomist.rug.cli.utils.HttpClientFactory;
 
 public class LoginOperations {
 

@@ -1,9 +1,5 @@
 package com.atomist.rug.cli.command.test;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.atomist.rug.cli.AbstractCommandTest;
 
 public class TestCommandIntegrationTest extends AbstractCommandTest {

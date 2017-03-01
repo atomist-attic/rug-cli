@@ -1,17 +1,5 @@
 package com.atomist.rug.cli.command;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
-import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
-import com.atomist.rug.cli.resolver.DependencyResolverFactory;
-import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
-import com.atomist.rug.cli.utils.CommandLineOptions;
-import com.atomist.rug.cli.utils.FileUtils;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
-import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-import com.atomist.rug.resolver.DependencyResolver;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +18,18 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
+import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
+import com.atomist.rug.cli.resolver.DependencyResolverFactory;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.cli.utils.FileUtils;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import com.atomist.rug.resolver.DefaultArtifactDescriptor;
+import com.atomist.rug.resolver.DependencyResolver;
 
 public abstract class CommandUtils {
 

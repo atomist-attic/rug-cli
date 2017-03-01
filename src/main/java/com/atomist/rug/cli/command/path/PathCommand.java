@@ -1,5 +1,10 @@
 package com.atomist.rug.cli.command.path;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
 import com.atomist.graph.GraphNode;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -25,15 +30,11 @@ import com.atomist.tree.pathexpression.PathExpression;
 import com.atomist.tree.pathexpression.PathExpressionEngine;
 import com.atomist.tree.pathexpression.PathExpressionParser$;
 import com.atomist.tree.utils.NodeUtils;
+
 import scala.Option$;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 import scala.util.Either;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 public class PathCommand extends AbstractAnnotationBasedCommand {
 

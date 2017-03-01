@@ -1,14 +1,15 @@
 package com.atomist.rug.cli.tree;
 
-import com.atomist.graph.GraphNode;
-import com.atomist.rug.cli.tree.Node.Type;
-import scala.collection.JavaConverters;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+
+import com.atomist.graph.GraphNode;
+import com.atomist.rug.cli.tree.Node.Type;
+
+import scala.collection.JavaConverters;
 
 public abstract class TreeNodeTreeCreator {
 

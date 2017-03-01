@@ -1,5 +1,11 @@
 package com.atomist.rug.cli.command.shell;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.atomist.project.archive.Rugs;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -20,11 +26,6 @@ import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.metadata.MetadataWriter;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class ShellCommand extends AbstractAnnotationBasedCommand {
 

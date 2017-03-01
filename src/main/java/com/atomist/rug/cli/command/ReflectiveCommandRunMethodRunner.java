@@ -1,11 +1,11 @@
 package com.atomist.rug.cli.command;
 
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.LocalArtifactDescriptor;
-
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
+
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public class ReflectiveCommandRunMethodRunner {
 

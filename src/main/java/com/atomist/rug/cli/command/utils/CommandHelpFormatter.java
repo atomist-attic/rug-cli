@@ -1,10 +1,5 @@
 package com.atomist.rug.cli.command.utils;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.CommandInfo;
-import com.atomist.rug.cli.command.CommandInfoRegistry;
-import com.atomist.rug.cli.output.Style;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -15,6 +10,11 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.util.StringUtils;
+
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.CommandInfo;
+import com.atomist.rug.cli.command.CommandInfoRegistry;
+import com.atomist.rug.cli.output.Style;
 
 public class CommandHelpFormatter {
 

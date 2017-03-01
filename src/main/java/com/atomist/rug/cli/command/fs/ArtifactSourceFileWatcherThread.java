@@ -1,11 +1,9 @@
 package com.atomist.rug.cli.command.fs;
 
-import com.atomist.project.archive.Rugs;
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.CommandContext;
-import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory.FileWatcher;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.source.ArtifactSource;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import com.atomist.project.archive.Rugs;
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.CommandContext;
+import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory.FileWatcher;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.source.ArtifactSource;
 
 /**
  * {@link Thread} implementation that watches the file system backing an {@link ArtifactSource}

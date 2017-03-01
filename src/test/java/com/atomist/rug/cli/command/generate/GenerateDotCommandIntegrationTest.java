@@ -1,16 +1,17 @@
 package com.atomist.rug.cli.command.generate;
 
-import com.atomist.rug.cli.AbstractCommandTest;
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.atomist.rug.cli.AbstractCommandTest;
 
 /**
  * Separate to manage the output

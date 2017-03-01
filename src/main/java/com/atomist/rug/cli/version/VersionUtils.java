@@ -1,11 +1,15 @@
 package com.atomist.rug.cli.version;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
-import com.atomist.rug.cli.utils.HttpClientFactory;
-import com.atomist.rug.resolver.ArtifactDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.JavaVersion;
 import org.apache.commons.lang3.SystemUtils;
@@ -20,15 +24,12 @@ import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionRange;
 import org.eclipse.aether.version.VersionScheme;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.HttpClientFactory;
+import com.atomist.rug.resolver.ArtifactDescriptor;
 
 public abstract class VersionUtils {
 

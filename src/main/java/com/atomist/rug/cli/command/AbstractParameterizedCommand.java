@@ -1,5 +1,19 @@
 package com.atomist.rug.cli.command;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+import static scala.collection.JavaConversions.asScalaBuffer;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.text.WordUtils;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
+
 import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValue;
 import com.atomist.param.ParameterValues;
@@ -12,20 +26,8 @@ import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.runtime.ParameterizedRug;
-import org.apache.commons.lang3.text.WordUtils;
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.UserInterruptException;
+
 import scala.collection.JavaConversions;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static scala.collection.JavaConversions.asJavaCollection;
-import static scala.collection.JavaConversions.asScalaBuffer;
 
 public abstract class AbstractParameterizedCommand extends AbstractAnnotationBasedCommand {
 

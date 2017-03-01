@@ -1,5 +1,20 @@
 package com.atomist.rug.cli.command.extension;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
+import org.eclipse.aether.version.Version;
+import org.eclipse.aether.version.VersionConstraint;
+import org.eclipse.aether.version.VersionScheme;
+
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
@@ -15,20 +30,6 @@ import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.rug.resolver.DependencyResolver;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.io.FileUtils;
-import org.eclipse.aether.util.version.GenericVersionScheme;
-import org.eclipse.aether.version.InvalidVersionSpecificationException;
-import org.eclipse.aether.version.Version;
-import org.eclipse.aether.version.VersionConstraint;
-import org.eclipse.aether.version.VersionScheme;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ExtensionCommand extends AbstractAnnotationBasedCommand {
 

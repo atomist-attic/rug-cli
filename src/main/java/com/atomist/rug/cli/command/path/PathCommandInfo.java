@@ -1,12 +1,12 @@
 package com.atomist.rug.cli.command.path;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class PathCommandInfo extends AbstractRugScopedCommandInfo {
 

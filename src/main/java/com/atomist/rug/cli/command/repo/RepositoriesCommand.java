@@ -1,5 +1,16 @@
 package com.atomist.rug.cli.command.repo;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
+
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
@@ -17,17 +28,6 @@ import com.atomist.rug.cli.settings.Settings.Authentication;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.settings.SettingsWriter;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.UserInterruptException;
 
 public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
 

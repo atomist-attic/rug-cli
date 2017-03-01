@@ -1,5 +1,15 @@
 package com.atomist.rug.cli.command.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
+import org.apache.commons.io.IOUtils;
+
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.resolver.ArtifactDescriptor;
@@ -14,15 +24,6 @@ import com.atomist.source.file.ZipFileInput;
 import com.atomist.source.filter.ArtifactFilter;
 import com.atomist.source.filter.AtomistIgnoreFileFilter;
 import com.atomist.source.filter.GitDirFilter;
-import org.apache.commons.io.IOUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public abstract class ArtifactSourceUtils {
 

@@ -1,18 +1,19 @@
 package com.atomist.rug.cli.command.shell;
 
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.ReadContext;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.io.FileUtils;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.ReadContext;
 
 /**
  * {@link Completer} for completion of operation names, like Editor and Generator names.

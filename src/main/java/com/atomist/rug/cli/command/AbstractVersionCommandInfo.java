@@ -1,19 +1,19 @@
 package com.atomist.rug.cli.command;
 
-import com.atomist.rug.cli.settings.Settings;
-import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-import com.atomist.rug.resolver.LocalArtifactDescriptor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.atomist.rug.resolver.ArtifactDescriptor.Extension;
-import static com.atomist.rug.resolver.ArtifactDescriptor.Scope;
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
+import com.atomist.rug.resolver.DefaultArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public abstract class AbstractVersionCommandInfo extends AbstractLocalArtifactDescriptorProvider {
 
