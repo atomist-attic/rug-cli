@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
@@ -63,7 +64,8 @@ public abstract class CommandUtils {
 
     public static CommandLine parseInitialCommandline(String[] args, CommandInfoRegistry registry) {
         try {
-            // For the purpose of the initial parse we need to collect all options and make sure they
+            // For the purpose of the initial parse we need to collect all options and make sure
+            // they
             // are not configured with required=true and then parse the commandLine
             Options options = new Options();
             registry.allOptions().getOptions()
@@ -81,6 +83,7 @@ public abstract class CommandUtils {
 
     public static CommandLine parseCommandline(String commandName, String[] args,
             CommandInfoRegistry registry) {
+        args = firstCommand(args);
         try {
             CommandLineParser parser = new DefaultParser();
             CommandLine commandLine = parser.parse(registry.options(commandName), args);
@@ -90,6 +93,16 @@ public abstract class CommandUtils {
         catch (ParseException e) {
             throw new CommandException(ParseExceptionProcessor.process(e), (String) null);
         }
+    }
+    
+    public static String[] firstCommand(String[] args) {
+     // make sure to only look at the current command; that is the first of potentially many
+        // concatinated with &&
+        List<String> parts = Arrays.asList(args);
+        if (parts.indexOf("&&") >= 0) {
+            args = parts.subList(0, parts.indexOf("&&")).toArray(new String[0]);
+        }
+        return args;
     }
 
     public static String[] splitCommandline(String toProcess) {

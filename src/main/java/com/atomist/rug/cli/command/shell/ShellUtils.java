@@ -70,6 +70,7 @@ public abstract class ShellUtils {
         
         reader.setOpt(Option.AUTO_LIST);
         reader.setOpt(Option.LIST_AMBIGUOUS);
+        reader.unsetOpt(Option.INSERT_TAB);
     }
 
     private static Terminal terminal() {

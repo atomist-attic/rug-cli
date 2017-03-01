@@ -66,6 +66,7 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
     }
 
     private CommandLine parseCommandLine(String... args) {
+        args = CommandUtils.firstCommand(args);
         CommandLineParser parser = new DefaultParser();
         CommandLine commandLine = null;
         try {
