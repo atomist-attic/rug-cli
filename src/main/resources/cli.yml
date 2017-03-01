@@ -12,6 +12,3 @@ remote-repositories:
     publish: false
     url: "https://atomist.jfrog.io/atomist/rugs"
 
-# Set up Rug catalog endpoints for searching
-catalogs:
-- "https://api.atomist.com/catalog"

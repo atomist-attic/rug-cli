@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
@@ -20,7 +21,12 @@ public abstract class FileUtils {
             path = path.replace("~", "${user.home}");
         }
         path = StringUtils.expandEnvironmentVars(path);
-        return new File(path);
+        try {
+            return new File(path).getCanonicalFile();
+        }
+        catch (IOException e) {
+            return new File(path);
+        }
     }
 
     public static void setPermissionsToOwnerOnly(File file) {

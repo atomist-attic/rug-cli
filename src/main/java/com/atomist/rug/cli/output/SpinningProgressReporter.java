@@ -46,7 +46,7 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
     public void report(String message) {
         String[] messages = message.split("\n");
         for (String msg : messages) {
-            if (msg != "") {
+            if (!msg.trim().equals("")) {
                 additionalMessages.offer(msg);
             }
         }

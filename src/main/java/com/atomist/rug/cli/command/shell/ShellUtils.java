@@ -1,5 +1,10 @@
 package com.atomist.rug.cli.command.shell;
 
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -14,11 +19,6 @@ import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.history.DefaultHistory;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.FileUtils;
 
 public abstract class ShellUtils {
 
@@ -49,13 +49,8 @@ public abstract class ShellUtils {
                 .build();
         history.attach(reader);
 
-        reader.unsetOpt(Option.AUTO_MENU);
-        reader.unsetOpt(Option.GROUP);
-        reader.unsetOpt(Option.MENU_COMPLETE);
-
-        reader.setOpt(Option.AUTO_LIST);
-        reader.setOpt(Option.LIST_AMBIGUOUS);
-
+        setOptions(reader);
+        
         return reader;
     }
 
@@ -64,7 +59,18 @@ public abstract class ShellUtils {
             lineReader.getTerminal().close();
         }
         catch (IOException e) {
+            // We  can safely ignore this here
         }
+    }
+
+    private static void setOptions(LineReader reader) {
+        reader.unsetOpt(Option.AUTO_MENU);
+        reader.unsetOpt(Option.GROUP);
+        reader.unsetOpt(Option.MENU_COMPLETE);
+        
+        reader.setOpt(Option.AUTO_LIST);
+        reader.setOpt(Option.LIST_AMBIGUOUS);
+        reader.unsetOpt(Option.INSERT_TAB);
     }
 
     private static Terminal terminal() {

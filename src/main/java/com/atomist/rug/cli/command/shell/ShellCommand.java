@@ -3,11 +3,13 @@ package com.atomist.rug.cli.command.shell;
 import com.atomist.project.archive.Rugs;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
+import com.atomist.rug.cli.command.CommandContext;
 import com.atomist.rug.cli.command.CommandEventListener;
 import com.atomist.rug.cli.command.CommandEventListenerAdapter;
 import com.atomist.rug.cli.command.CommandEventListenerRegistry;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory;
+import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory.FileWatcher;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
@@ -28,11 +30,13 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
 
     private static final String BANNER_CONFIG_KEY = "shell-banner-enable";
 
-    private static final String banner = "" + "  ____                 ____ _     ___ \n"
+    private static final String banner = "" 
+            + "  ____                 ____ _     ___ \n"
             + " |  _ \\ _   _  __ _   / ___| |   |_ _|\n"
             + " | |_) | | | |/ _` | | |   | |    | | \n"
             + " |  _ <| |_| | (_| | | |___| |___ | | \n"
-            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" + " %s      |___/ %s";
+            + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" 
+            + " %s      |___/ %s";
 
     @Command
     public void run(ArtifactSource source, ArtifactDescriptor artifact, Rugs operations,
@@ -54,7 +58,8 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact,
             Rugs operations) {
         if (artifact instanceof LocalArtifactDescriptor && operations != null) {
-            ArtifactSourceFileWatcherFactory.create(artifact);
+            CommandContext.save(FileWatcher.class,
+                    ArtifactSourceFileWatcherFactory.create(artifact));
         }
     }
 

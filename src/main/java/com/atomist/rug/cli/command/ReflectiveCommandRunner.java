@@ -35,24 +35,26 @@ public class ReflectiveCommandRunner {
         this.registry = registry;
     }
 
-    public int runCommand(String[] args, CommandLine commandLine) {
+    public int runCommand(String commandName, String[] args) {
 
         Timing timing = new Timing();
 
+        CommandInfo info = registry.findCommand(commandName);
+        CommandLine commandLine = CommandUtils.parseCommandline(info.name(), args, registry);
+
         if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
-            printCommandHelp(commandLine);
+            printCommandHelp(commandName);
             return 0;
         }
 
         List<ArtifactDescriptor> dependencies = new ArrayList<>();
-        CommandInfo info = registry.findCommand(commandLine);
 
         ArtifactDescriptor artifact = loadArtifactAndinitializeEnvironment(commandLine,
                 dependencies, info);
         try {
-            int rc = invokeCommand(args, artifact, dependencies, timing);
+            int rc = invokeCommand(commandName, args, artifact, dependencies, timing, false);
 
-            commandCompleted(rc, info, artifact, dependencies);
+            commandCompleted(rc, args, info, artifact, dependencies);
 
             return rc;
         }
@@ -141,9 +143,9 @@ public class ReflectiveCommandRunner {
         return artifact;
     }
 
-    private void printCommandHelp(CommandLine commandLine) {
+    private void printCommandHelp(String commandName) {
         new Log(getClass()).info(
-                new CommandHelpFormatter().printCommandHelp(registry.findCommand(commandLine)));
+                new CommandHelpFormatter().printCommandHelp(registry.findCommand(commandName)));
     }
 
     private void printError(CommandLine commandLine, Throwable e) {
@@ -162,8 +164,8 @@ public class ReflectiveCommandRunner {
 
     private List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
             ProgressReporter indicator) {
-        DependencyResolver resolver = new DependencyResolverFactory()
-                .createDependencyResolver(artifact, indicator);
+        DependencyResolver resolver = DependencyResolverFactory.createDependencyResolver(artifact,
+                indicator);
         String version = artifact.version();
         try {
             version = resolver.resolveVersion(artifact);
@@ -188,28 +190,33 @@ public class ReflectiveCommandRunner {
             CommandLine commandLine) {
     }
 
-    protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
+    protected void commandCompleted(int rc, String[] args, CommandInfo info, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
     }
+    
+    protected int invokeCommand(String commandName, String[] args, ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies) {
+        return invokeCommand(commandName, args, artifact, dependencies, new Timing(), true);
+    }
 
-    protected int invokeCommand(String[] args, ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies, Timing timing) {
-
-        if (timing == null) {
-            timing = new Timing();
-        }
+    protected int invokeCommand(String commandName, String[] args, ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies, Timing timing, boolean checkArtifact) {
 
         CommandLine commandLine = null;
         try {
-            commandLine = CommandUtils.parseCommandline(args, registry);
-            CommandInfo info = registry.findCommand(commandLine);
+            CommandInfo info = registry.findCommand(commandName);
+            commandLine = CommandUtils.parseCommandline(info.name(), args, registry);
+            
             // verify that command is enabled
             commandEnabled(artifact, info);
+            
             // check the artifact against the previous one
-            artifactChanged(artifact, info, commandLine);
+            if (checkArtifact) {
+                artifactChanged(artifact, info, commandLine);
+            }
 
             if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
-                printCommandHelp(commandLine);
+                printCommandHelp(commandName);
                 return 0;
             }
             else {

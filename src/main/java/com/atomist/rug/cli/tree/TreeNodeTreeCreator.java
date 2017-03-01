@@ -2,7 +2,6 @@ package com.atomist.rug.cli.tree;
 
 import com.atomist.graph.GraphNode;
 import com.atomist.rug.cli.tree.Node.Type;
-import com.atomist.tree.TerminalTreeNode;
 import scala.collection.JavaConverters;
 
 import java.util.Collection;
@@ -37,7 +36,7 @@ public abstract class TreeNodeTreeCreator {
 
     private static void collectNodes(GraphNode node, Map<GraphNode, Integer> processed,
             Map<GraphNode, Integer> counts, AtomicInteger counter) {
-        if (!(node instanceof TerminalTreeNode)) {
+        if (node.relatedNodes().size() > 0) {
             if (!processed.containsKey(node)) {
                 int id = counter.incrementAndGet();
                 processed.put(node, id);
@@ -65,7 +64,7 @@ public abstract class TreeNodeTreeCreator {
             Map<GraphNode, Integer> processedNodes, AtomicInteger counter,
             Map<GraphNode, Integer> counts) {
 
-        if (!(node instanceof TerminalTreeNode)) {
+        if (node.relatedNodes().size() > 0) {
             if (!processedNodes.containsKey(node)) {
                 int id = counter.incrementAndGet();
                 processedNodes.put(node, id);

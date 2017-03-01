@@ -1,5 +1,12 @@
 package com.atomist.rug.cli.command.search;
 
+import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.utils.HttpClientFactory;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,29 +25,15 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.springframework.util.StringUtils;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.shell.ShellUtils;
-import com.atomist.rug.cli.settings.Settings;
-import com.atomist.rug.cli.utils.HttpClientFactory;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-
 public class SearchOperations {
 
     public List<Operation> collectResults(String endpoint, String search, String type,
             Properties tags, Settings settings) {
 
-        if (!endpoint.endsWith(Constants.CATALOG_PATH)) {
-            if (!endpoint.endsWith("/")) {
-                endpoint = endpoint + "/";
-            }
-            endpoint = endpoint + Constants.CATALOG_PATH;
-        }
-
         HttpClient client = HttpClientFactory.httpClient(endpoint);
         HttpPost post = new HttpPost(endpoint);
-        HttpClientFactory.authorizationHeader(post, settings.getToken());
+        HttpClientFactory.authorizationHeader(post,
+                settings.getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class).orElse(null));
         HttpClientFactory.body(post, getSearchQuery(search, type, tags));
 
         Optional<Operations> operations = HttpClientFactory.executeAndRead(client, post,
