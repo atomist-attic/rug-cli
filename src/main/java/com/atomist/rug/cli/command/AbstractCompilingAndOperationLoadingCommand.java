@@ -132,8 +132,9 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     }
 
     private RugLoader createRugLoader(URI[] uri) {
-        ProvenanceAddingRugLoader loader = new ProvenanceAddingRugLoader(new UriBasedDependencyResolver(uri,
-                SettingsReader.read().getLocalRepository().path())) {
+        ProvenanceAddingRugLoader loader = new ProvenanceAddingRugLoader(
+                new UriBasedDependencyResolver(uri,
+                        SettingsReader.read().getLocalRepository().path())) {
             @Override
             protected List<ArtifactDescriptor> postProcessArfifactDescriptors(
                     ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
@@ -146,8 +147,8 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         return loader;
     }
 
-    private Rugs doLoadRugs(ArtifactDescriptor artifact, ArtifactSource source,
-                            RugLoader loader) throws Exception {
+    private Rugs doLoadRugs(ArtifactDescriptor artifact, ArtifactSource source, RugLoader loader)
+            throws Exception {
         try {
             return loader.load(artifact, source);
         }
@@ -170,8 +171,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         }
     }
 
-    private Rugs loadRugs(ArtifactDescriptor artifact, ArtifactSource source,
-                          RugLoader loader) {
+    private Rugs loadRugs(ArtifactDescriptor artifact, ArtifactSource source, RugLoader loader) {
         if (artifact == null || source == null) {
             return null;
         }

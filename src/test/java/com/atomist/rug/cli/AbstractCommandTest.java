@@ -111,7 +111,7 @@ public abstract class AbstractCommandTest {
             commandLine.add(config.getAbsolutePath());
             commandLine.add("-X");
             commandLine.add("-t");
-            //commandLine.add("-V");
+            // commandLine.add("-V");
         }
         commandLine = commandLine.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
@@ -151,8 +151,9 @@ public abstract class AbstractCommandTest {
                 // re-enable color to see an error message flying by
                 System.setProperty("jansi.strip", "false");
                 Chalk.setColorEnabled(true);
-                System.out.println(Style.red("Received on sysout: <\n" + sysout + "\n> and on stderr: <\n"
-                        + stderr + "\n> neither of which contain: <\n" + requiredContent + "\n>"));
+                System.out.println(Style
+                        .red("Received on sysout: <\n" + sysout + "\n> and on stderr: <\n" + stderr
+                                + "\n> neither of which contain: <\n" + requiredContent + "\n>"));
                 System.setProperty("jansi.strip", "true");
                 Chalk.setColorEnabled(false);
             }

@@ -9,9 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PathCommandInfo extends AbstractRugScopedCommandInfo {
-    
-    private static final List<String> aliases = Arrays
-            .asList(new String[] { "tree" });
+
+    private static final List<String> aliases = Arrays.asList(new String[] { "tree" });
 
     public PathCommandInfo() {
         super(PathCommand.class, "path");
@@ -47,12 +46,12 @@ public class PathCommandInfo extends AbstractRugScopedCommandInfo {
     public String usage() {
         return "path [OPTION]... [EXPRESSION]";
     }
-    
+
     @Override
     public String group() {
         return "3";
     }
-    
+
     @Override
     public List<String> aliases() {
         return aliases;

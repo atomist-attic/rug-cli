@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @JsonInclude(Include.NON_EMPTY)
 public class Settings {
-    
+
     public static final String GIHUB_TOKEN_KEY = "github-token";
 
     @JsonProperty("default")
@@ -182,7 +182,7 @@ public class Settings {
         private boolean publish = false;
 
         private String url;
-        
+
         private String name;
 
         public Authentication getAuthentication() {
@@ -208,11 +208,11 @@ public class Settings {
         public void setUrl(String url) {
             this.url = url;
         }
-        
+
         public String getName() {
             return name;
         }
-        
+
         public void setName(String name) {
             this.name = name;
         }

@@ -88,7 +88,7 @@ class ArtifactSourceFileWatcherThread extends Thread implements FileWatcher {
                 Path p = ((WatchEvent<Path>) e).context();
                 Path absPath = dir.resolve(p);
                 File f = absPath.toFile();
-                
+
                 if (f.isDirectory()) {
                     register.accept(absPath);
                 }

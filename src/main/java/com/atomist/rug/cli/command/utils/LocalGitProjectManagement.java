@@ -51,9 +51,9 @@ import static scala.collection.JavaConversions.asJavaCollection;
  * Save artifact sources in local git
  */
 public class LocalGitProjectManagement implements ProjectManagement {
-    
+
     private static final Log log = new Log(LocalGitProjectManagement.class);
-    
+
     private final String rootPath;
     private final boolean createRepo;
     private final boolean overwrite;

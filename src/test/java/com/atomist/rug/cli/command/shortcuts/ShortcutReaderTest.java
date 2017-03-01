@@ -11,7 +11,8 @@ public class ShortcutReaderTest {
 
     @Test
     public void testShortcutReading() {
-        Map<String, Shortcut> shortcuts = ShortcutReader.read(new File("src/test/resources/shortcuts"));
+        Map<String, Shortcut> shortcuts = ShortcutReader
+                .read(new File("src/test/resources/shortcuts"));
         assertEquals(2, shortcuts.size());
         assertTrue(shortcuts.containsKey("init-rug-archive"));
         assertTrue(shortcuts.containsKey("clone-rug-archive"));

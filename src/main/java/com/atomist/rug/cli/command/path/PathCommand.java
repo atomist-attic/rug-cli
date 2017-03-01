@@ -36,7 +36,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class PathCommand extends AbstractAnnotationBasedCommand {
-    
+
     @Validator
     public void validate(@Option("change-dir") String projectName) {
         File root = FileUtils.createProjectRoot(projectName);
@@ -112,8 +112,8 @@ public class PathCommand extends AbstractAnnotationBasedCommand {
                                     .stream().filter(n -> !n.equals("-dynamic"))
                                     .collect(Collectors.toList()), ", ")
                             + "]")
-                    + ((node.relatedNodes().size() > 0) && id > 0 ? " {" + id + "}" : "")
-                    + " " + NodeUtils.value(node);
+                    + ((node.relatedNodes().size() > 0) && id > 0 ? " {" + id + "}" : "") + " "
+                    + NodeUtils.value(node);
         }
     }
 

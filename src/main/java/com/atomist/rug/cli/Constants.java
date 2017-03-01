@@ -35,7 +35,7 @@ public class Constants {
     public static final String TREE_CONNECTOR = (SystemUtils.IS_OS_WINDOWS ? "|  " : "| ");
 
     public static final String CLOSEST_MATCH_HINT = "Did you mean?";
-    
+
     public static final String SHELL_ESCAPE = "/";
 
     public static String cliClient() {
@@ -74,13 +74,13 @@ public class Constants {
             return COMMAND;
         }
     }
-    
+
     public static Boolean isReload() {
         return Boolean.valueOf(System.getProperty("RUG_CLI_RESTART", "false"));
     }
-    
+
     public static void setReload(Boolean isReload) {
         System.setProperty("RUG_CLI_RESTART", isReload.toString());
-        
+
     }
 }

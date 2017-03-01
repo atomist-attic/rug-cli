@@ -20,10 +20,11 @@ public class ConfigureOperations {
         HttpGet get = new HttpGet(url);
         HttpClientFactory.authorizationHeader(get, token);
 
-        HttpResponse response =  HttpClientFactory.execute(client, get);
+        HttpResponse response = HttpClientFactory.execute(client, get);
 
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            return HttpClientFactory.read(response, new TypeReference<List<Repo>>() { });
+            return HttpClientFactory.read(response, new TypeReference<List<Repo>>() {
+            });
         }
         else {
             throw new CommandException("Failed to configure team-scoped repositories.",
@@ -52,16 +53,16 @@ public class ConfigureOperations {
         public Creds creds() {
             return creds;
         }
-        
+
         public String teamName() {
             return teamName.toLowerCase().replace(" ", "-");
         }
-        
+
         @Override
         public int hashCode() {
             return 21 * url.hashCode();
         }
-        
+
         @Override
         public boolean equals(Object obj) {
             return obj instanceof Repo && url.equals(((Repo) obj).url());
