@@ -1,23 +1,24 @@
 package com.atomist.rug.cli.command;
 
-import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
-import com.atomist.rug.cli.output.ConsoleUtils;
-import com.atomist.rug.cli.settings.SettingsReader;
-import com.atomist.rug.cli.utils.CommandLineOptions;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-import com.atomist.rug.resolver.LocalArtifactDescriptor;
+import java.io.File;
+import java.net.URI;
+import java.util.Optional;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import java.io.File;
-import java.net.URI;
-import java.util.Optional;
-
-import static com.atomist.rug.resolver.ArtifactDescriptor.*;
+import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
+import com.atomist.rug.cli.output.ConsoleUtils;
+import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
+import com.atomist.rug.resolver.DefaultArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public abstract class AbstractCommand implements com.atomist.rug.cli.command.Command {
 

@@ -2,9 +2,6 @@ package com.atomist.rug.cli.command;
 
 import static java.util.stream.Collectors.toList;
 
-import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.utils.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -12,6 +9,9 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 
 import org.apache.commons.cli.Options;
+
+import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.utils.StringUtils;
 
 public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
 

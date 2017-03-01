@@ -1,13 +1,14 @@
 package com.atomist.rug.cli.command;
 
+import java.util.Optional;
+
+import org.apache.commons.cli.CommandLine;
+
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-import org.apache.commons.cli.CommandLine;
-
-import java.util.Optional;
 
 public abstract class AbstractRugScopedCommandInfo extends AbstractLocalArtifactDescriptorProvider
         implements ArtifactDescriptorProvider {

@@ -1,5 +1,15 @@
 package com.atomist.rug.cli.command.describe;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.text.WordUtils;
+
 import com.atomist.param.Parameter;
 import com.atomist.param.Parameterized;
 import com.atomist.project.archive.Rugs;
@@ -33,16 +43,8 @@ import com.atomist.rug.spi.MappedParameterizedRug;
 import com.atomist.rug.spi.SecretAwareRug;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
-import org.apache.commons.lang3.text.WordUtils;
+
 import scala.collection.Seq;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static scala.collection.JavaConversions.asJavaCollection;
 
 public class DescribeCommand extends AbstractAnnotationBasedCommand {
 

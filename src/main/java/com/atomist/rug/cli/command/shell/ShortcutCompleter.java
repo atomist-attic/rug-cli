@@ -1,8 +1,5 @@
 package com.atomist.rug.cli.command.shell;
 
-import com.atomist.rug.cli.command.shortcuts.Shortcut;
-import com.atomist.rug.cli.command.shortcuts.ShortcutRegistry;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +7,9 @@ import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
+
+import com.atomist.rug.cli.command.shortcuts.Shortcut;
+import com.atomist.rug.cli.command.shortcuts.ShortcutRegistry;
 
 /**
  * {@link Completer} for shortcuts.

@@ -1,12 +1,5 @@
 package com.atomist.rug.cli.command.search;
 
-import com.atomist.rug.cli.command.shell.ShellUtils;
-import com.atomist.rug.cli.settings.Settings;
-import com.atomist.rug.cli.utils.HttpClientFactory;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,6 +17,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.springframework.util.StringUtils;
+
+import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.utils.HttpClientFactory;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class SearchOperations {
 

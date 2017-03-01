@@ -1,5 +1,16 @@
 package com.atomist.rug.cli.command;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
+import java.io.File;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.cli.CommandLine;
+import org.springframework.util.StringUtils;
+
 import com.atomist.project.archive.Rugs;
 import com.atomist.rug.BadRugException;
 import com.atomist.rug.RugRuntimeException;
@@ -21,16 +32,6 @@ import com.atomist.rug.resolver.loader.RugLoaderException;
 import com.atomist.rug.resolver.loader.RugLoaderRuntimeException;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.Deltas;
-import org.apache.commons.cli.CommandLine;
-import org.springframework.util.StringUtils;
-
-import java.io.File;
-import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static scala.collection.JavaConversions.asJavaCollection;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 

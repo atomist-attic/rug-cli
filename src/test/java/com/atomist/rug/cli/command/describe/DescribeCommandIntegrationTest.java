@@ -1,13 +1,14 @@
 package com.atomist.rug.cli.command.describe;
 
-import com.atomist.rug.cli.AbstractCommandTest;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.Assertion;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.contrib.java.lang.system.Assertion;
+
+import com.atomist.rug.cli.AbstractCommandTest;
 
 public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 

@@ -1,14 +1,14 @@
 package com.atomist.rug.cli.settings;
 
-import com.atomist.rug.cli.utils.StringUtils;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import com.atomist.rug.cli.utils.StringUtils;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_EMPTY)
 public class Settings {

@@ -1,9 +1,5 @@
 package com.atomist.rug.cli.classloading;
 
-import com.atomist.rug.cli.RunnerException;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,6 +7,11 @@ import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.FileUtils;
+
+import com.atomist.rug.cli.RunnerException;
+import com.atomist.rug.resolver.ArtifactDescriptor;
 
 /**
  * Sets up the context classloader.

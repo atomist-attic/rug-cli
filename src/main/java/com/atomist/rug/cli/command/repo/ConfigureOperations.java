@@ -1,16 +1,16 @@
 package com.atomist.rug.cli.command.repo;
 
-import com.atomist.rug.cli.command.CommandException;
-import com.atomist.rug.cli.utils.HttpClientFactory;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+
+import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.cli.utils.HttpClientFactory;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class ConfigureOperations {
 

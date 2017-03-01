@@ -1,5 +1,10 @@
 package com.atomist.rug.cli.command.path;
 
+import java.io.File;
+
+import org.apache.commons.lang3.text.WordUtils;
+import org.springframework.util.StringUtils;
+
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
@@ -16,11 +21,6 @@ import com.atomist.rug.kind.core.ProjectMutableView;
 import com.atomist.rug.spi.Typed;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.EmptyArtifactSource;
-
-import java.io.File;
-
-import org.apache.commons.lang3.text.WordUtils;
-import org.springframework.util.StringUtils;
 
 import scala.collection.JavaConverters;
 

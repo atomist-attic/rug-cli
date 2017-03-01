@@ -2,8 +2,8 @@ package com.atomist.rug.cli.command.test;
 
 import com.atomist.rug.cli.command.AbstractLocalArtifactDescriptorProvider;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public class TestCommandInfo extends AbstractLocalArtifactDescriptorProvider {
 

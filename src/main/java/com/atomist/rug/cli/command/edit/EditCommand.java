@@ -1,5 +1,12 @@
 package com.atomist.rug.cli.command.edit;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
+import java.io.File;
+import java.util.Optional;
+
+import org.apache.commons.lang3.text.WordUtils;
+
 import com.atomist.param.ParameterValues;
 import com.atomist.project.archive.Rugs;
 import com.atomist.project.edit.ProjectEditor;
@@ -17,12 +24,6 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import org.apache.commons.lang3.text.WordUtils;
-
-import java.io.File;
-import java.util.Optional;
-
-import static scala.collection.JavaConversions.asJavaCollection;
 
 public class EditCommand extends AbstractParameterizedCommand {
 

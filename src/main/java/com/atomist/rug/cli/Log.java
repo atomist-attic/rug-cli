@@ -1,14 +1,15 @@
 package com.atomist.rug.cli;
 
-import com.atomist.rug.cli.output.ProgressReporter;
-import com.atomist.rug.cli.output.ProgressReporterUtils;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.CommandLineOptions;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
-import java.util.Optional;
+import com.atomist.rug.cli.output.ProgressReporter;
+import com.atomist.rug.cli.output.ProgressReporterUtils;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 
 public class Log implements Logger {
 

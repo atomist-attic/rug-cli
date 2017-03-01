@@ -1,8 +1,8 @@
 package com.atomist.rug.cli.command.path;
 
-import com.atomist.rug.cli.AbstractCommandTest;
-
 import org.junit.Test;
+
+import com.atomist.rug.cli.AbstractCommandTest;
 
 public class ToPathCommandIntegrationTest extends AbstractCommandTest {
 

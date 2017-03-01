@@ -1,5 +1,22 @@
 package com.atomist.rug.cli.command;
 
+import static scala.collection.JavaConversions.asScalaBuffer;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
+import org.apache.commons.cli.CommandLine;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.ReflectionUtils;
+
 import com.atomist.param.ParameterValue;
 import com.atomist.param.ParameterValues;
 import com.atomist.param.SimpleParameterValue;
@@ -13,22 +30,6 @@ import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
-import org.apache.commons.cli.CommandLine;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
-import static scala.collection.JavaConversions.asScalaBuffer;
 
 public abstract class AbstractAnnotationBasedCommand
         extends AbstractCompilingAndOperationLoadingCommand {

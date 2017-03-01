@@ -1,5 +1,10 @@
 package com.atomist.rug.cli.command;
 
+import java.io.File;
+import java.util.Optional;
+
+import org.apache.commons.cli.CommandLine;
+
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
@@ -8,10 +13,6 @@ import com.atomist.rug.resolver.manifest.ManifestArtifactDescriptorCreator;
 import com.atomist.rug.resolver.manifest.ManifestFactory;
 import com.atomist.rug.resolver.manifest.MissingManifestException;
 import com.atomist.source.ArtifactSource;
-import org.apache.commons.cli.CommandLine;
-
-import java.io.File;
-import java.util.Optional;
 
 public abstract class AbstractLocalArtifactDescriptorProvider extends AbstractCommandInfo
         implements ArtifactDescriptorProvider {

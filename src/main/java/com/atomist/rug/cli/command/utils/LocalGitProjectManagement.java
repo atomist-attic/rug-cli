@@ -1,5 +1,13 @@
 package com.atomist.rug.cli.command.utils;
 
+import static scala.collection.JavaConversions.asJavaCollection;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.atomist.param.ParameterValues;
 import com.atomist.project.edit.FailedModificationAttempt;
 import com.atomist.project.edit.ModificationAttempt;
@@ -36,16 +44,9 @@ import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.FileSystemArtifactSourceIdentifier;
 import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
+
 import difflib.DiffUtils;
 import scala.collection.JavaConverters;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static scala.collection.JavaConversions.asJavaCollection;
 
 /**
  * Save artifact sources in local git

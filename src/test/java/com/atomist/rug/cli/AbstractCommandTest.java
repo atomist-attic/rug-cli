@@ -2,13 +2,6 @@ package com.atomist.rug.cli;
 
 import static org.junit.Assert.assertTrue;
 
-import com.atomist.project.archive.Rugs;
-import com.atomist.rug.cli.command.CommandContext;
-import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
-import com.atomist.source.ArtifactSource;
-import com.github.tomaslanger.chalk.Chalk;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +18,13 @@ import org.junit.contrib.java.lang.system.SystemErrRule;
 import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.junit.rules.TestName;
 import org.springframework.util.StringUtils;
+
+import com.atomist.project.archive.Rugs;
+import com.atomist.rug.cli.command.CommandContext;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
+import com.atomist.source.ArtifactSource;
+import com.github.tomaslanger.chalk.Chalk;
 
 public abstract class AbstractCommandTest {
 

@@ -1,13 +1,13 @@
 package com.atomist.rug.cli.command.utils;
 
+import java.util.List;
+
+import org.eclipse.aether.repository.RemoteRepository;
+
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.DependencyResolverException;
 import com.atomist.rug.resolver.maven.DependencyCollectionException;
-import org.eclipse.aether.repository.RemoteRepository;
-
-import java.util.List;
-
-import static com.atomist.rug.resolver.maven.DependencyCollectionException.*;
+import com.atomist.rug.resolver.maven.DependencyCollectionException.ErrorType;
 
 public class DependencyResolverExceptionProcessor {
 
