@@ -7,3 +7,4 @@ requires: "[0.12.0,1.0.0)"
 dependencies:
 
 extensions:
+#  - "com.atomist:rug-functions-github:0.1.0"

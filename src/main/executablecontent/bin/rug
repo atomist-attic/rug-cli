@@ -96,6 +96,17 @@ if $cygwin; then
 	CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 fi
 
-COLUMNS=`tput cols 2> /dev/tty`
+COLUMS=80
+if [ -t 1 ]; then
+	COLUMNS=`tput cols 2> /dev/tty`
+fi
 
-COLUMNS=${COLUMNS} "${JAVA_HOME}/bin/java" ${JAVA_OPTS} -Xmx2g -cp "$CLASSPATH" com.atomist.rug.cli.Main "$@"
+if [ -z "$JAVA_OPTS" ]; then
+	JAVA_OPTS="-Xmx2g"
+fi
+
+if [ -z "$RUG_OPTS" ]; then
+	RUG_OPTS="-Djava.net.useSystemProxies=true"
+fi
+
+COLUMNS=${COLUMNS} "${JAVA_HOME}/bin/java" ${JAVA_OPTS} ${RUG_OPTS} -cp "$CLASSPATH" com.atomist.rug.cli.Main "$@"

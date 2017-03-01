@@ -58,8 +58,11 @@ set CMD_LINE_ARGS=%$
 :execute
 @rem Setup the command line
 
+if "%JAVA_OPTS%" == "" set JAVA_OPTS="-Xmx2g"
+if "%RUG_OPTS%" == "" set RUG_OPTS="-Djava.net.useSystemProxies=true"
+
 set CLASSPATH=%RUG_HOME%\lib\*;%HOMEPATH%\.atomist\ext\*
-"%JAVA_EXE%" %JAVA_OPTS% -cp "%CLASSPATH%" com.atomist.rug.cli.Main %CMD_LINE_ARGS%
+"%JAVA_EXE%" %JAVA_OPTS% %RUG_OPTS% -cp "%CLASSPATH%" com.atomist.rug.cli.Main %CMD_LINE_ARGS%
 
 :end
 @rem End local scope for the variables with windows NT shell

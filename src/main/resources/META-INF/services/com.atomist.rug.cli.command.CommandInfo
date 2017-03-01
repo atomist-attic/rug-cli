@@ -1,4 +1,5 @@
-com.atomist.rug.cli.command.tree.TreeCommandInfo
+com.atomist.rug.cli.command.path.PathCommandInfo
+com.atomist.rug.cli.command.path.ToPathCommandInfo
 com.atomist.rug.cli.command.search.SearchCommandInfo
 com.atomist.rug.cli.command.list.ListCommandInfo
 com.atomist.rug.cli.command.describe.DescribeCommandInfo
@@ -11,6 +12,7 @@ com.atomist.rug.cli.command.config.DefaultCommandInfo
 
 com.atomist.rug.cli.command.extension.ExtensionCommandInfo
 
+com.atomist.rug.cli.command.shell.ExitCommandInfo
 com.atomist.rug.cli.command.shell.ShellCommandInfo
 com.atomist.rug.cli.command.shell.HelpCommandInfo
 

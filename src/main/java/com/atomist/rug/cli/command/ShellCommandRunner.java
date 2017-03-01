@@ -7,11 +7,20 @@ import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.FileAndDirectoryNameCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
 import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.command.shell.ShortcutCompleter;
+import com.atomist.rug.cli.command.shortcuts.Shortcut;
+import com.atomist.rug.cli.command.shortcuts.ShortcutRegistry;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.SystemUtils;
 import org.jline.reader.EndOfFileException;
@@ -20,32 +29,114 @@ import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.LineReaderImpl;
 import org.springframework.boot.loader.tools.RunProcess;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 public class ShellCommandRunner extends ReflectiveCommandRunner {
 
-    private CommandInfoRegistry registry;
+    private CommandInfoRegistry commandRegistry;
+    private ShortcutRegistry shortcutRegistry;
     private LineReader reader;
 
     public ShellCommandRunner(CommandInfoRegistry registry) {
         super(registry);
-        this.registry = registry;
+        this.commandRegistry = registry;
     }
 
     private void clear() {
         ((LineReaderImpl) reader).clearScreen();
     }
 
-    private void exit() {
+    private void echo(String cmd) {
+        log.newline();
+        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold(cmd.substring(5).trim()));
+    }
+
+    private void exit(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+        // Exit the current shell
+        invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
         throw new EndOfFileException();
+    }
+
+    private String expandHistory(String line) {
+        if (reader != null) {
+            try {
+                return reader.getExpander().expandHistory(reader.getHistory(), line);
+            }
+            catch (IllegalArgumentException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return line;
+    }
+
+    private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
+            String line) {
+        // Remove confusing whitespace from beginning and end
+        line = line.trim();
+
+        // Expand history
+        line = expandHistory(line);
+        
+        // Remove superfluous rug command
+        if (line.startsWith("rug")) {
+            line = line.substring(3).trim();
+        }
+
+        if (Constants.isReload()) {
+            Constants.setReload(false);
+            // Only in local mode we ever get to the point of being required to reload the shell
+            // session
+            if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
+                reload(line, artifact, dependencies);
+            }
+            else {
+                reload("shell -l && " + line, artifact, dependencies);
+            }
+        }
+
+        invokePotentialShortcutCommand(artifact, dependencies, line);
+    }
+
+    private void invokeChainedCommands(ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies, String line) {
+        // Split commands by && and call them one after the other
+        String[] cmds = line.trim().split("&&");
+        for (int i = 0; i < cmds.length; i++) {
+            String cmd = cmds[i].trim();
+
+            if (cmd.startsWith("shell") || cmd.startsWith("load") || cmd.startsWith("repl")) {
+                // For shell reload it is important that we collect all remaining commands
+                if (i + 1 < cmds.length) {
+                    for (int j = i +1; j < cmds.length; j++) {
+                        cmd = cmd + " && " + cmds[j];
+                    }
+                }
+                reload(cmd, artifact, dependencies);
+            }
+
+            if ("exit".equals(cmd) || "quit".equals(cmd) || "q".equals(cmd)) {
+                exit(artifact, dependencies);
+            }
+            else if ("/clear".equals(cmd) || "/cls".equals(cmd)) {
+                clear();
+            }
+            else if (cmd.startsWith("/echo")) {
+                echo(cmd);
+            }
+            else if (cmd.startsWith(Constants.SHELL_ESCAPE)) {
+                sh(cmd);
+            }
+            else {
+                String[] args = CommandUtils.splitCommandline(cmd);
+                if (invokeCommand(args[0], args, artifact, dependencies) < 0) {
+                    break;
+                }
+            }
+        }
     }
 
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
 
+        this.shortcutRegistry = new ShortcutRegistry();
         this.reader = lineReader();
 
         String line = null;
@@ -57,6 +148,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 }
                 catch (UserInterruptException e) {
                     // Ignore Ctrl-C
+                    continue;
                 }
 
                 // Empty line
@@ -78,48 +170,27 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         }
     }
 
-    private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
-            String line) {
-        // Remove confusing whitespace from beginning and end
-        line = line.trim();
-
-        // Expand history
-        line = expandHistory(line);
-
-        if (line.startsWith("rug")) {
-            line = line.substring(3).trim();
-        }
-
+    private void invokePotentialShortcutCommand(ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies, String line) {
         String[] args = CommandUtils.splitCommandline(line);
-
-        // Handle some internal commands
-        // Shell command might choose to exit. If not it probably means the user wants help
-        if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
-            reload(args);
-        }
-
-        if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
-            exit();
-        }
-        else if ("/clear".equals(line) || "/cls".equals(line)) {
-            clear();
-        }
-        else if (line.startsWith(Constants.SHELL_ESCAPE)) {
-            sh(line);
+        CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
+        if (shortcutRegistry != null
+                && shortcutRegistry.findShortcut(commandLine.getArgList().get(0)).isPresent()) {
+            
+            Shortcut shortcut = shortcutRegistry.findShortcut(commandLine.getArgList().get(0))
+                    .get();
+            invokeChainedCommands(artifact, dependencies, shortcut.toCommand(commandLine));
+            
         }
         else {
-            invokeCommand(args, artifact, dependencies, null);
+            invokeChainedCommands(artifact, dependencies, line);
         }
     }
 
-    private String expandHistory(String line) {
-        try {
-            return reader.getExpander().expandHistory(reader.getHistory(), line);
-        }
-        catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
-            return line;
-        }
+    private LineReader lineReader() {
+        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY, new FileAndDirectoryNameCompleter(),
+                new OperationCompleter(), new CommandInfoCompleter(commandRegistry),
+                new ArchiveNameCompleter(), new ShortcutCompleter(shortcutRegistry));
     }
 
     private String prompt(ArtifactDescriptor artifact) {
@@ -130,18 +201,17 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         return ShellUtils.DEFAULT_PROMPT;
     }
 
-    private void reload(String[] args) {
-        CommandLine commandLine = CommandUtils.parseCommandline(args, registry);
+    private void reload(String line, ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies) {
+        // Exit the current shell
+        invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
+
+        String[] args = CommandUtils.splitCommandline(line);
+        CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
         // Only trigger reload if not help is what is requested
         if (!commandLine.hasOption("h") && !commandLine.hasOption("?")) {
             throw new ReloadException(args);
         }
-    }
-
-    private LineReader lineReader() {
-        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY, new FileAndDirectoryNameCompleter(),
-                new OperationCompleter(), new CommandInfoCompleter(registry),
-                new ArchiveNameCompleter());
     }
 
     private void sh(String line) {
@@ -217,9 +287,19 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     @Override
-    protected void commandCompleted(int rc, CommandInfo info, ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {
+    protected void commandCompleted(int rc, String[] args, CommandInfo info,
+            ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+        // On finishing a single command from the command line, we want to start the shell if the
+        // shell command was invoked
         if (rc == 0 && "shell".equals(info.name())) {
+            // We might invoke this with some additional commands, primarily from reload but also
+            // as part of shortcuts/aliasing
+            String line = org.springframework.util.StringUtils.arrayToDelimitedString(args, " ");
+            int ix = line.indexOf("&&");
+            if (ix > 0 && line.length() > ix + 2) {
+                invokePotentialShortcutCommand(artifact, dependencies, line.substring(ix + 2));
+            }
+            // Now start the loop
             invokeCommandInLoop(artifact, dependencies);
         }
     }

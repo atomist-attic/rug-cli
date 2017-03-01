@@ -14,18 +14,38 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulArchiveDescribe() throws Exception {
         assertSuccess(
-                "Command Handlers\n" + "  LicenseAdder\n"
-                        + "    Runs the SetLicense editor on a bunch of my repos\n"
-                        + "  ListIssuesHandler\n" + "    Lists open github issues in slack",
+                "→ Command Handlers\n" + 
+                "  CreateIssue\n" + 
+                "    Creates a GitHub issue\n" + 
+                "  LicenseAdder\n" + 
+                "    Runs the SetLicense editor on a bunch of my repos\n" + 
+                "  ListIssuesHandler\n" + 
+                "    Lists open github issues in slack\n" + 
+                "→ Event Handlers\n" + 
+                "  ClosedIssueReopener\n" + 
+                "    Reopens closed issues\n" + 
+                "  SayThankYou\n" + 
+                "    Send a thank you message to a slack channel after an issue was closed\n" + 
+                "→ Response Handlers\n" + 
+                "  CreateIssue\n" + 
+                "    Prints out the response message\n" + 
+                "  IssueClosedResponder\n" + 
+                "    Logs failed issue reopen attempts\n" + 
+                "  Kitties\n" + 
+                "    Prints out kitty urls",
                 "describe", "-l", "archive");
     }
 
     @Test
     public void testSuccessfulCommandHandlerDescribe() throws Exception {
         assertSuccess(
-                "Command Handlers\n" + "  LicenseAdder\n"
-                        + "    Runs the SetLicense editor on a bunch of my repos\n"
-                        + "  ListIssuesHandler\n" + "    Lists open github issues in slack",
+                "→ Command Handlers\n" + 
+                "  CreateIssue\n" + 
+                "    Creates a GitHub issue\n" + 
+                "  LicenseAdder\n" + 
+                "    Runs the SetLicense editor on a bunch of my repos\n" + 
+                "  ListIssuesHandler\n" + 
+                "    Lists open github issues in slack",
                 "describe", "-l", "command-handler");
     }
 
@@ -41,12 +61,44 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
                         + "  rug command \"rug-cli-tests:handlers:ListIssuesHandler\" -a 0.12.0 -l days=VALUE",
                 "describe", "-l", "command-handler", "ListIssuesHandler");
     }
+    
+    @Test
+    public void testSuccessfulSpecificCommandHandlerDescribeWithSecretsAndMappedParams() throws Exception {
+        assertSuccess(
+                "CreateIssue\n" + 
+                "rug-cli-tests:handlers:0.12.0\n" + 
+                "Creates a GitHub issue\n" + 
+                "\n" + 
+                "→ Intent\n" + 
+                "  create issue\n" + 
+                "→ Secrets\n" + 
+                "  github/user_token=repo\n" + 
+                "→ Mapped Parameters\n" + 
+                "  repo => atomist/repository\n" + 
+                "  owner => atomist/owner\n" + 
+                "→ Tags\n" + 
+                "  github (github)\n" + 
+                "  issue (issue)\n" + 
+                "→ Parameters (required)\n" + 
+                "  title \n" + 
+                "    Title of issue\n" + 
+                "    pattern: ^.*$\n" + 
+                "  body \n" + 
+                "    Body of the issue\n" + 
+                "    pattern: ^[\\s\\S]*$",
+                "describe", "-l", "command-handler", "CreateIssue");
+    }
+
 
     @Test
     public void testSuccessfulResponseHandlerDescribe() throws Exception {
-        assertSuccess("Response Handlers\n" + "  IssueClosedResponder\n"
-                + "    Logs failed issue reopen attempts\n" + "  Kitties\n"
-                + "    Prints out kitty urls", "describe", "-l", "response-handler");
+        assertSuccess("→ Response Handlers\n" + 
+                "  CreateIssue\n" + 
+                "    Prints out the response message\n" + 
+                "  IssueClosedResponder\n" + 
+                "    Logs failed issue reopen attempts\n" + 
+                "  Kitties\n" + 
+                "    Prints out kitty urls", "describe", "-l", "response-handler");
     }
 
     @Test

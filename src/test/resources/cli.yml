@@ -1,6 +1,4 @@
 ---
-catalogs:
-- "https://api.atomist.com/catalog"
 local-repository:
   path: "${user.home}/.atomist/repository-tests"
 remote-repositories:

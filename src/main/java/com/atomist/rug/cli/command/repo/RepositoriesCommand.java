@@ -1,14 +1,5 @@
 package com.atomist.rug.cli.command.repo;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.UserInterruptException;
-
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
@@ -19,6 +10,7 @@ import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.repo.ConfigureOperations.Repo;
 import com.atomist.rug.cli.command.repo.LoginOperations.Status;
 import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.Settings.Authentication;
@@ -26,7 +18,22 @@ import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.settings.SettingsWriter;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
+
 public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
+
+    public static final String REPO_SERVICE_KEY = "repositories-service-urls";
+    public static final List<String> REPO_SERVICE_URL = Arrays
+            .asList("https://api.atomist.com/user/team");
 
     private static final String BANNER = "The command will create a GitHub Personal Access Token with scope 'read:org'\n"
             + "which you can revoke any time on https://github.com/settings/tokens.  Your\n"
@@ -44,7 +51,8 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
                     "Invalid SUBCOMMAND provided. Please specify login or configure.",
                     "repositories");
         }
-        if ("configure".equals(subcommand) && settings.getToken() == null) {
+        if ("configure".equals(subcommand)
+                && !settings.getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class).isPresent()) {
             throw new CommandException(
                     "No token configured. Please run repositories login before running this command.",
                     "repositories configure");
@@ -65,7 +73,14 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void configure(Settings settings) {
-        List<Repo> remoteRepos = new ConfigureOperations().getForRepos(settings.getToken());
+        List<Repo> remoteRepos = new ProgressReportingOperationRunner<List<Repo>>(
+                "Configuring team-scoped repositories").run((indicator) -> {
+                    return getRepoServiceUrls(settings).stream().map(s -> {
+                        indicator.report("  Querying " + s);
+                        return new ConfigureOperations().getForRepos(settings
+                                .getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class).get(), s);
+                    }).flatMap(List::stream).distinct().collect(Collectors.toList());
+                });
         Map<String, RemoteRepository> configuredRepos = settings.getRemoteRepositories();
 
         log.newline();
@@ -82,10 +97,12 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
 
             if (repoOption.isPresent()) {
                 configuredRepo = repoOption.get();
+                configuredRepo.setName(r.teamName());
             }
             else {
                 configuredRepo = new RemoteRepository();
                 configuredRepo.setUrl(r.url());
+                configuredRepo.setName(r.teamName().toLowerCase().replace(" ", "-"));
                 configuredRepos.put(r.teamId().toLowerCase(), configuredRepo);
             }
             if (r.creds() != null && r.creds().apikey() != null && r.creds().user() != null) {
@@ -95,8 +112,8 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
                 configuredRepo.setPublish(true);
                 configuredRepo.setAuthentication(auth);
             }
-            log.info("  %s\n    %s", Style.yellow(r.teamId().toLowerCase()),
-                    Style.underline(r.url()));
+            log.info("  %s (%s)\n  %s%s", Style.yellow(r.teamId()), r.teamName(),
+                    Constants.LAST_TREE_NODE, Style.underline(r.url()));
         });
 
         settings.setRemoteRepositories(configuredRepos);
@@ -163,5 +180,9 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
 
     private String getPrompt(String name) {
         return String.format("  %s %s : ", Style.cyan(Constants.DIVIDER), Style.yellow(name));
+    }
+
+    private List<String> getRepoServiceUrls(Settings settings) {
+        return settings.getConfigValue(REPO_SERVICE_KEY, REPO_SERVICE_URL);
     }
 }
