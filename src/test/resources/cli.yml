@@ -11,6 +11,9 @@ remote-repositories:
   rug-types:
     publish: false
     url: "https://atomist.jfrog.io/atomist/libs-release"
+  rug-types-dev:
+    publish: false
+    url: "https://atomist.jfrog.io/atomist/libs-dev"
   rugs:
     publish: false
     url: "file://${user.dir}/../../../../src/test/resources/repository"
