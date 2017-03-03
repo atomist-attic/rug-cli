@@ -37,7 +37,7 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
 
     private static final String BANNER = "The command will create a GitHub Personal Access Token with scope 'read:org'\n"
             + "which you can revoke any time on https://github.com/settings/tokens.  Your\n"
-            + "password will not be displayed or stored. Your sensitive information will not\n"
+            + "password will not be displayed or stored.  Your sensitive information will not\n"
             + "be sent to Atomist; only to api.github.com.";
 
     @Validator
@@ -149,8 +149,8 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
 
         String banner = BANNER.replace("https://github.com/settings/tokens",
                 Style.underline("https://github.com/settings/tokens"));
-        banner = banner.replace("sensitve information will not\nbe sent to Atomist",
-                Style.bold("sensitve information will not\nbe sent to Atomist"));
+        banner = banner.replace("sensitive information will not\nbe sent to Atomist",
+                Style.bold("sensitive information will not\nbe sent to Atomist"));
         log.info(banner);
 
         log.newline();
