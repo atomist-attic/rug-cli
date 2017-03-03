@@ -45,8 +45,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     private void echo(String cmd) {
-        log.newline();
-        log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold(cmd.substring(5).trim()));
+        log.info(cmd.substring(5));
     }
 
     private void exit(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
