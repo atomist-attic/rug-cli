@@ -71,6 +71,9 @@ public class PathCommand extends AbstractAnnotationBasedCommand {
                     Either<String, Seq<GraphNode>> result = pxe.evaluate(pmv, pathExpression,
                             DefaultTypeRegistry$.MODULE$, Option$.MODULE$.apply(null));
 
+                    if (result.isLeft()) {
+                        throw new RuntimeException("Failure evaluating exception:" + result.left().get());
+                    }
                     return JavaConverters.asJavaCollectionConverter(result.right().get())
                             .asJavaCollection();
                 });
