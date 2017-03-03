@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2016 the original author or authors.
+ * Copyright © 2016 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 scenario PomParameterizer should establish a new project's valid pom.xml
 
 let group_id = "mygroup"
@@ -57,7 +58,7 @@ when
 
 then
   fileExists "pom.xml"
-  and fileContains "pom.xml" "<artifactId>mynewproject</artifactId>"
-  and fileContains "pom.xml" "<groupId>mygroup</groupId>"
-  and fileContains "pom.xml" "<version>0.0.1-SNAPSHOT</version>"
-  and fileContains "pom.xml" "<description>My project description</description>"
+    and fileContains "pom.xml" "<artifactId>mynewproject</artifactId>"
+    and fileContains "pom.xml" "<groupId>mygroup</groupId>"
+    and fileContains "pom.xml" "<version>0.0.1-SNAPSHOT</version>"
+    and fileContains "pom.xml" "<description>My project description</description>"

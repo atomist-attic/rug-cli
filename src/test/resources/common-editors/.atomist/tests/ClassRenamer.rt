@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2016 the original author or authors.
+ * Copyright © 2016 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 scenario ClassRenamer should rename simple class
 
 given
   src/main/java/Dog.java = "class Dog {}"
 
+when
   ClassRenamer old_class = "Dog", new_class = "Cat"
 
 then
   fileCount = 1
-  and fileContains "src/main/java/Cat.java" "class Cat"
+    and fileContains "src/main/java/Cat.java" "class Cat"
 
 
 scenario ClassRenamer should rename class and leave no references to old name
@@ -33,11 +35,12 @@ let newclass = "WeirdAndWonderful"
 given
   ArchiveRoot
 
+when
   ClassRenamer old_class= oldclass, new_class = newclass
 
 then
   fileExists "src/main/java/com/atomist/springrest/WeirdAndWonderful.java"
-  and { !result.anyFileContains(".java", oldclass) }
+    and { !result.anyFileContains(".java", oldclass) }
 
 scenario ClassRenamer should rename class but leave any additional characters on the class name
 
@@ -47,12 +50,13 @@ let new_class = "WeirdAndWonderful"
 given
   ArchiveRoot
 
+when
   ClassRenamer
 
 then
   fileExists "src/main/java/com/atomist/springrest/WeirdAndWonderfulConfiguration.java"
-  and fileExists "src/main/java/com/atomist/springrest/WeirdAndWonderfulApplication.java"
-  and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulApplicationTests.java"
-  and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulOutOfContainerIntegrationTests.java"
-  and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulWebIntegrationTests.java"
-  and { !result.anyFileContains(".java", "SpringRest") }
+    and fileExists "src/main/java/com/atomist/springrest/WeirdAndWonderfulApplication.java"
+    and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulApplicationTests.java"
+    and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulOutOfContainerIntegrationTests.java"
+    and fileExists "src/test/java/com/atomist/springrest/WeirdAndWonderfulWebIntegrationTests.java"
+    and { !result.anyFileContains(".java", "SpringRest") }

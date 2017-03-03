@@ -32,5 +32,4 @@ public abstract class CommandLineOptions {
     public static void set(CommandLine commandLine) {
         options.set(Arrays.asList(commandLine.getOptions()));
     }
-
 }

@@ -22,7 +22,7 @@ public class InstallCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulInstall() throws Exception {
         assertCommandLine(0, () -> {
-            assertVersion("3.2.2");
+            assertVersion("0.8.0");
         }, "install", "-Vur");
     }
 
