@@ -59,6 +59,7 @@ public class Runner {
             log.error(e);
         }
         else {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
     }

@@ -146,8 +146,8 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
 
     protected ParameterValues validate(ArtifactDescriptor artifact, ParameterizedRug rug,
             ParameterValues arguments) {
-
         arguments = collectParameters(rug, arguments);
+        arguments = rug.addDefaultParameterValues(arguments);
         validateCollectedParameters(artifact, rug, arguments);
         return arguments;
     }
