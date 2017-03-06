@@ -13,13 +13,14 @@ import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.ReadContext;
 
 /**
  * {@link Completer} for completion of operation names, like Editor and Generator names.
  */
 public class OperationCompleter implements Completer {
-    
+
     // TODO add commands for new handlers
     private static final List<String> COMMANDS = Arrays.asList("edit", "ed", "generate", "gen",
             "describe", "desc");
@@ -60,12 +61,18 @@ public class OperationCompleter implements Completer {
                             break;
                         case "reviewer":
                             completeBasedOnJsonpathMatches("reviewers", line.words(), candidates);
+                            break;
                         case "command-handler":
-                            completeBasedOnJsonpathMatches("command-handlers", line.words(), candidates);
+                            completeBasedOnJsonpathMatches("command-handlers", line.words(),
+                                    candidates);
+                            break;
                         case "event-handler":
-                            completeBasedOnJsonpathMatches("event-handlers", line.words(), candidates);
+                            completeBasedOnJsonpathMatches("event-handlers", line.words(),
+                                    candidates);
+                            break;
                         case "response-handler":
-                            completeBasedOnJsonpathMatches("response-handler", line.words(), candidates);
+                            completeBasedOnJsonpathMatches("response-handler", line.words(),
+                                    candidates);
                             break;
                         }
                     }
@@ -78,21 +85,26 @@ public class OperationCompleter implements Completer {
     private void completeBasedOnJsonpathMatches(String kind, List<String> words,
             List<Candidate> candidates) {
         if (ctx != null) {
-            List<String> names = ctx.read(String.format("$.%s[*].name", kind));
-            Optional<String> name = names.stream().filter(words::contains).map(String::toString)
-                    .findFirst();
-            if (name.isPresent()) {
-                List<String> parameterNames = ctx.read(String
-                        .format("$.%s[?(@.name=='%s')].parameters[*].name", kind, name.get()));
-                parameterNames.stream()
-                        .filter(p -> !kind.equals("generators")
-                                || (kind.equals("generators") && !p.equals("project_name")))
-                        .filter(p -> words.stream().noneMatch(w -> w.startsWith(p + "=")))
-                        .forEach(n -> candidates
-                                .add(new Candidate(n + "=", n, null, null, null, null, false)));
+            try {
+                List<String> names = ctx.read(String.format("$.%s[*].name", kind));
+                Optional<String> name = names.stream().filter(words::contains).map(String::toString)
+                        .findFirst();
+                if (name.isPresent()) {
+                    List<String> parameterNames = ctx.read(String
+                            .format("$.%s[?(@.name=='%s')].parameters[*].name", kind, name.get()));
+                    parameterNames.stream()
+                            .filter(p -> !kind.equals("generators")
+                                    || (kind.equals("generators") && !p.equals("project_name")))
+                            .filter(p -> words.stream().noneMatch(w -> w.startsWith(p + "=")))
+                            .forEach(n -> candidates
+                                    .add(new Candidate(n + "=", n, null, null, null, null, false)));
+                }
+                else {
+                    names.forEach(n -> candidates.add(new Candidate(n)));
+                }
             }
-            else {
-                names.forEach(n -> candidates.add(new Candidate(n)));
+            catch (PathNotFoundException e) {
+                // This is ok as it means we don't have the matching operation in the cache
             }
         }
     }
