@@ -195,7 +195,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private String prompt(ArtifactDescriptor artifact) {
         if (artifact != null && !(artifact.group().equals(Constants.GROUP)
                 && artifact.artifact().equals(Constants.RUG_ARTIFACT))) {
-            log.info(Style.bold(Style.gray(ArtifactDescriptorUtils.coordinates(artifact))));
+            log.info(Style.yellow(ArtifactDescriptorUtils.coordinates(artifact)));
         }
         return ShellUtils.DEFAULT_PROMPT;
     }
