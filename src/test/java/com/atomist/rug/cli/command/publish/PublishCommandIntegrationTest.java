@@ -29,7 +29,7 @@ public class PublishCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulPublish() throws Exception {
         assertCommandLine(0, () -> {
-            assertVersion("rug-cli-tests", "common-editors", "3.2.2");
+            assertVersion("rug-cli-tests", "common-editors", "0.8.0");
         }, "publish");
     }
 

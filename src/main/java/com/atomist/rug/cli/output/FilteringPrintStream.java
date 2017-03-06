@@ -10,7 +10,7 @@ public class FilteringPrintStream extends PrintStream {
     }
 
     public void println(String l) {
-        if (!l.startsWith("SLF4J") && !l.contains("INFO: Created user preferences directory.")) {
+        if (l != null && !l.startsWith("SLF4J") && !l.contains("INFO: Created user preferences directory.")) {
             super.println(l);
         }
     }

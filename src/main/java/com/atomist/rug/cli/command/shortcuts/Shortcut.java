@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command.shortcuts;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,12 +12,31 @@ import org.apache.commons.cli.CommandLine;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
 
+import com.atomist.rug.cli.Constants;
+import com.github.tomaslanger.chalk.Ansi;
+
 public class Shortcut {
 
     private static final PropertyPlaceholderHelper nonStrictHelper = new PropertyPlaceholderHelper(
             "${", "}", ":", true);
+    private static final String PLACEHOLDER_PATTERN = "\\$\\{([.a-zA-Z_-]+)[.:a-zA-Z-_ ]*\\}";
 
-    private static final String PLACEHOLDER_PATTERN = "\\$\\{([.a-zA-Z_-]+)[.:a-zA-Z-_]*\\}";
+    private static final Properties STYLE_PLACEHOLDERS;
+    static {
+        STYLE_PLACEHOLDERS = new Properties();
+        STYLE_PLACEHOLDERS.put("underline", Ansi.Modifier.UNDERLINE.getStart());
+        STYLE_PLACEHOLDERS.put("/underline", Ansi.Modifier.UNDERLINE.getEnd());
+        STYLE_PLACEHOLDERS.put("bold", Ansi.Modifier.BOLD.getStart());
+        STYLE_PLACEHOLDERS.put("/bold", Ansi.Modifier.BOLD.getEnd());
+        STYLE_PLACEHOLDERS.put("cyan", Ansi.Color.CYAN.getStart());
+        STYLE_PLACEHOLDERS.put("/cyan", Ansi.Color.CYAN.getEnd());
+        STYLE_PLACEHOLDERS.put("magenta", Ansi.Color.MAGENTA.getStart());
+        STYLE_PLACEHOLDERS.put("/magenta", Ansi.Color.MAGENTA.getEnd());
+        STYLE_PLACEHOLDERS.put("yellow", Ansi.Color.YELLOW.getStart());
+        STYLE_PLACEHOLDERS.put("/yellow", Ansi.Color.YELLOW.getEnd());
+        STYLE_PLACEHOLDERS.put("divider", Constants.DIVIDER);
+    }
+
 
     private final String name;
 
@@ -36,12 +56,14 @@ public class Shortcut {
     }
 
     public Set<String> placeholders() {
-        Pattern pattern = Pattern.compile(PLACEHOLDER_PATTERN);
+        Pattern placeHolderPattern = Pattern.compile(PLACEHOLDER_PATTERN);
         Set<String> placeholders = new HashSet<>();
         commands.forEach(c -> {
-            Matcher matcher = pattern.matcher(c);
+            Matcher matcher = placeHolderPattern.matcher(c);
             while (matcher.find()) {
-                placeholders.add(matcher.group(1));
+                if (!STYLE_PLACEHOLDERS.containsKey(matcher.group(1))) {
+                    placeholders.add(matcher.group(1));
+                }
             }
         });
         return placeholders;
@@ -64,16 +86,19 @@ public class Shortcut {
 
         @Override
         public String resolvePlaceholder(String placeholderName) {
-            Optional<String> valueOptional = arguments.stream()
-                    .filter(a -> a.startsWith(placeholderName + "=")).findAny();
-            if (valueOptional.isPresent()) {
-                String value = valueOptional.get();
-                int ix = value.indexOf('=') + 1;
-                return value.substring(ix);
+            if (STYLE_PLACEHOLDERS.containsKey(placeholderName)) {
+                return STYLE_PLACEHOLDERS.getProperty(placeholderName);
             }
             else {
-                return null;
+                Optional<String> valueOptional = arguments.stream()
+                        .filter(a -> a.startsWith(placeholderName + "=")).findAny();
+                if (valueOptional.isPresent()) {
+                    String value = valueOptional.get();
+                    int ix = value.indexOf('=') + 1;
+                    return value.substring(ix);
+                }
             }
+            return null;
         }
     }
 }

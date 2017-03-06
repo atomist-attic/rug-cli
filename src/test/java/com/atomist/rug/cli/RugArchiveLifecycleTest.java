@@ -1,7 +1,10 @@
 package com.atomist.rug.cli;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.FixMethodOrder;
@@ -17,20 +20,28 @@ public class RugArchiveLifecycleTest extends AbstractCommandTest {
     @Test
     public void testAGenerate() throws Exception {
         assertSuccess("Successfully generated new project my-rug-archive", "generate",
-                "atomist-rugs:rug-archive:NewRugArchiveProject", "my-rug-archive",
-                "group_id=atomist.rugs", "version=0.1.0",
-                "description=My first Rug Archive project", "-C", location);
+                "atomist-rugs:rug-project:NewRugProject", "my-rug-archive", "owner=atomist-rugs",
+                "version=0.1.0", "description=My first Rug Archive project", "-X", "-C", location);
     }
 
     @Test
     public void testBEdit() throws Exception {
         assertSuccess("Successfully edited project my-rug-archive", "edit",
-                "atomist-rugs:rug-archive:RemoveHelperFiles", "-C",
-                location + File.separator + "my-rug-archive");
+                "atomist-rugs:rug-editors:AddTypeScript", "-C", location + File.separator + "my-rug-archive");
     }
+    
+//    @Test
+//    public void testCEdit() throws Exception {
+//        assertSuccess("Successfully edited project my-rug-archive", "edit",
+//                "atomist-rugs:rug-editors:AddTypeScriptEditor", "editor_name=MyEditor",
+//                "description=My test", "-C", location + File.separator + "my-rug-archive");
+//    }
 
     @Test
-    public void testCDescribe() throws Exception {
+    public void testDDescribe() throws Exception {
+        IOUtils.copy(new FileInputStream(new File("src/test/resources/cli.yml")),
+                new FileOutputStream(new File(location, "cli.yml")));
+        setCWD(location + File.separator + "my-rug-archive");
         assertSuccess("To get more information on any of the Rugs listed above, run", "describe",
                 "archive", "-l");
     }
@@ -41,14 +52,16 @@ public class RugArchiveLifecycleTest extends AbstractCommandTest {
     // }
 
     @Test
-    public void testEInstall() throws Exception {
-        assertSuccess("Successfully installed archive for rug-cli-tests:common-editors:3.2.2",
+    public void testFInstall() throws Exception {
+        setCWD(location + File.separator + "my-rug-archive");
+        assertSuccess("Successfully installed archive for atomist-rugs:my-rug-archive:0.1.0",
                 "install");
     }
 
     @Test
-    public void testFPublish() throws Exception {
-        assertSuccess("Successfully published archive for rug-cli-tests:common-editors:3.2.2",
+    public void testGPublish() throws Exception {
+        setCWD(location + File.separator + "my-rug-archive");
+        assertSuccess("Successfully published archive for atomist-rugs:my-rug-archive:0.1.0",
                 "publish");
     }
 

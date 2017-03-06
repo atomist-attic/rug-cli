@@ -19,7 +19,7 @@ import org.jline.reader.ParsedLine;
  */
 public class ArchiveNameCompleter implements Completer {
 
-    private static final List<String> COMMANDS = Arrays.asList("load", "shell", "repl", "sh");
+    private static final List<String> COMMANDS = Arrays.asList("load", "shell", "repl");
 
     @Override
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
