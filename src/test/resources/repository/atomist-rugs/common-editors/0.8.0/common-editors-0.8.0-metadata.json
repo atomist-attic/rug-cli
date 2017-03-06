@@ -1,0 +1,259 @@
+{
+  "group" : "atomist-rugs",
+  "artifact" : "common-editors",
+  "version" : "0.8.0",
+  "origin" : {
+    "repo" : "git@github.com:atomist-rugs/common-editors.git",
+    "branch" : "jessitron/converting-rug-dsl-to-ts",
+    "sha" : "2051bf3"
+  },
+  "editors" : [ {
+    "name" : "AddApacheSoftwareLicense20",
+    "description" : "add the Apache Software License version 2.0 file",
+    "tags" : [ {
+      "name" : "apache",
+      "decription" : "apache"
+    }, {
+      "name" : "license",
+      "decription" : "license"
+    }, {
+      "name" : "documentation",
+      "decription" : "documentation"
+    } ]
+  }, {
+    "name" : "AddChangeLog",
+    "description" : "adds a new CHANGELOG",
+    "parameters" : [ {
+      "name" : "repo_slug",
+      "description" : "GitHub repository slug of the form 'owner/name'",
+      "pattern" : "^[-\\w.]+/[-\\w.]+$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "An existing Github repository slug of the form 'owner/repo', must be 3-100 characters long",
+      "max_length" : 100,
+      "min_length" : 3,
+      "display_name" : "Repo Slug"
+    } ],
+    "tags" : [ {
+      "name" : "changelog",
+      "decription" : "changelog"
+    }, {
+      "name" : "documentation",
+      "decription" : "documentation"
+    } ]
+  }, {
+    "name" : "AddProjectDependencyToMavenPom",
+    "description" : "adds a project dependency to an existing Maven pom.xml",
+    "parameters" : [ {
+      "name" : "group_id",
+      "description" : "Group identifier used by Maven",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters.",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "Group ID"
+    }, {
+      "name" : "artifact_id",
+      "description" : "Artifact identifier used by Maven",
+      "pattern" : "^[a-z][-a-z0-9_.]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid Maven artifact ID, which starts with a lower-case letter and contains only alphanumeric, -, and _ characters",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "Artifact ID"
+    }, {
+      "name" : "version",
+      "description" : "Current version of the project",
+      "pattern" : "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*)(?:\\.(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*))*)?(?:\\+[-A-Za-z\\d]+(?:\\.[-A-Za-z\\d]+)*)?$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid semantic version, http://semver.org",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "Version"
+    } ],
+    "tags" : [ {
+      "name" : "maven",
+      "decription" : "maven"
+    } ]
+  }, {
+    "name" : "AddReadme",
+    "description" : "adds a project specific README",
+    "parameters" : [ {
+      "name" : "project_name",
+      "description" : "Name of the project",
+      "pattern" : "^[-\\w.]+$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid GitHub project name using only letters, digits, hyphens",
+      "max_length" : -1,
+      "min_length" : 1,
+      "display_name" : "Project Name"
+    }, {
+      "name" : "description",
+      "description" : "One-sentence description of the project",
+      "pattern" : "^.*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A string 1-90 characters long",
+      "max_length" : 90,
+      "min_length" : 1,
+      "display_name" : "Project Description"
+    } ],
+    "tags" : [ {
+      "name" : "readme",
+      "decription" : "readme"
+    }, {
+      "name" : "documentation",
+      "decription" : "documentation"
+    } ]
+  }, {
+    "name" : "ClassRenamer",
+    "description" : "renames a Java class, replacing one literal pattern with another",
+    "parameters" : [ {
+      "name" : "old_class",
+      "description" : "Name of Java class to rename",
+      "pattern" : "^[A-Za-z_$][\\w$]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid Java class name, which contains only alphanumeric characters, $ and _ and does not start with a number",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "Current Class Name"
+    }, {
+      "name" : "new_class",
+      "description" : "New name for the Java class",
+      "pattern" : "^[A-Za-z_$][\\w$]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid Java class name, which contains only alphanumeric characters, $ and _ and does not start with a number",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "New Class Name"
+    } ],
+    "tags" : [ {
+      "name" : "java",
+      "decription" : "java"
+    } ]
+  }, {
+    "name" : "PackageMove",
+    "description" : "renames a Java package",
+    "parameters" : [ {
+      "name" : "old_package",
+      "description" : "Name of Java package to rename",
+      "pattern" : "^(?:(?:[A-Za-z_$][\\w$]*\\.)*[A-Za-z_$][\\w$]*)*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid Java package name, which consists of period-separated identifiers which have only alphanumeric characters, $ and _ and do not start with a number",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "Current Package Name"
+    }, {
+      "name" : "new_package",
+      "description" : "New name for the Java package",
+      "pattern" : "^(?:(?:[A-Za-z_$][\\w$]*\\.)*[A-Za-z_$][\\w$]*)*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid Java package name, which consists of period-separated identifiers which have only alphanumeric characters, $ and _ and do not start with a number",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "New Package Name"
+    } ],
+    "tags" : [ {
+      "name" : "java",
+      "decription" : "java"
+    } ]
+  }, {
+    "name" : "PomParameterizer",
+    "description" : "updates a Maven pom to a new group, artifact, version and description",
+    "parameters" : [ {
+      "name" : "artifact_id",
+      "description" : "Artifact identifier used by Maven",
+      "pattern" : "^[a-z][-a-z0-9_]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid Maven artifact ID, which starts with a lower-case letter and contains only alphanumeric, -, and _ characters",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "Artifact ID"
+    }, {
+      "name" : "group_id",
+      "description" : "Group identifier used by Maven",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters.",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "Group ID"
+    }, {
+      "name" : "name",
+      "description" : "Name of the project",
+      "pattern" : "^[-\\w.]+$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "Any valid Maven project name as per: https://maven.apache.org/guides/introduction/introduction-to-the-pom.html",
+      "max_length" : -1,
+      "min_length" : 1
+    }, {
+      "name" : "version",
+      "description" : "Current version of the project",
+      "pattern" : "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*)(?:\\.(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*))*)?(?:\\+[-A-Za-z\\d]+(?:\\.[-A-Za-z\\d]+)*)?$",
+      "required" : true,
+      "displayable" : true,
+      "default_value" : "0.1.0",
+      "valid_input_description" : "A valid semantic version, http://semver.org",
+      "max_length" : -1,
+      "min_length" : -1,
+      "display_name" : "Version"
+    }, {
+      "name" : "description",
+      "description" : "Description of your new project",
+      "pattern" : "^.*$",
+      "required" : true,
+      "displayable" : true,
+      "max_length" : -1,
+      "min_length" : -1
+    } ],
+    "tags" : [ {
+      "name" : "java",
+      "decription" : "java"
+    }, {
+      "name" : "apache",
+      "decription" : "apache"
+    }, {
+      "name" : "maven",
+      "decription" : "maven"
+    } ]
+  }, {
+    "name" : "RemoveApacheSoftwareLicense20",
+    "description" : "removes an Apache Software License version 2.0 file if present",
+    "tags" : [ {
+      "name" : "apache",
+      "decription" : "apache"
+    }, {
+      "name" : "license",
+      "decription" : "license"
+    }, {
+      "name" : "documentation",
+      "decription" : "documentation"
+    } ]
+  }, {
+    "name" : "RemoveChangeLog",
+    "description" : "removes CHANGELOG.md file if present",
+    "tags" : [ {
+      "name" : "documentation",
+      "decription" : "documentation"
+    } ]
+  }, {
+    "name" : "RemoveCodeOfConduct",
+    "description" : "removes CODE_OF_CONDUCT file if present",
+    "tags" : [ {
+      "name" : "documentation",
+      "decription" : "documentation"
+    } ]
+  } ]
+}

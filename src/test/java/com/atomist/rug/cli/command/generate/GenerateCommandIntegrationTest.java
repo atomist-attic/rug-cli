@@ -22,7 +22,7 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
         assertFailure(
                 "Invalid parameter value\n  project_name = 1234567891234567891212345678912345678912",
                 "generate", "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService",
-                "1234567891234567891212345678912345678912");
+                "1234567891234567891212345678912345678912", "-ur");
     }
 
     @Test

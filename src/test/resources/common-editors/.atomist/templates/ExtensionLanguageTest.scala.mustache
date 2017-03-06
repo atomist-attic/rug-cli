@@ -1,0 +1,36 @@
+package {{package_name}}
+
+import com.atomist.rug.kind.core.ProjectMutableView
+import com.atomist.source.{ArtifactSource, EmptyArtifactSource, SimpleFileBasedArtifactSource, StringFileArtifact}
+import com.atomist.tree.pathexpression.{ExpressionEngine, PathExpressionEngine}
+import org.scalatest.{FlatSpec, Matchers}
+
+object {{class_name}}Test {
+
+  val HelloProject =
+    """
+    | WRITE SOME CODE FIR THE TARGET LANGUAGE
+    """.stripMargin
+
+  val HelloProjectSource: ArtifactSource = new SimpleFileBasedArtifactSource("name",
+    Seq(
+      StringFileArtifact("HelloProject{{file_extension}}", HelloProject)
+    ))
+
+  def helloProject = new ProjectMutableView(EmptyArtifactSource(),
+    HelloProjectSource)
+}
+
+class {{class_name}}Test extends FlatSpec with Matchers {
+
+  import {{class_name}}Test._
+
+  val ee: ExpressionEngine = new PathExpressionEngine
+
+  val extLang = new {{class_name}}
+
+  it should "load source code" in {
+    val found = extLang.findAllIn(helloProject)
+    found.size should be(1)
+  }
+}

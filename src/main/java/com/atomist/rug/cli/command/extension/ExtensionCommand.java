@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
@@ -102,9 +103,10 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                                 return dependencyResolver.resolveTransitiveDependencies(
                                         ArtifactDescriptorFactory.copyFrom(artifact, newVersion));
                             }
+
                             else {
                                 throw new CommandException(String.format(
-                                        "Extension %s:%s:%s is not compatible.",
+                                        "Extension %s:%s:%s is not compatible with this version of the CLI.",
                                         resolvedArtifact.group(), resolvedArtifact.artifact(),
                                         resolvedArtifact.version()));
                             }
@@ -218,10 +220,21 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                     return true;
                 }
                 else {
-                    log.info("Extension %s:%s:%s requires %s of %s:%s", extension.group(),
+                    if(cliVersion.toString().endsWith("-SNAPSHOT")){
+                        Version cliSnapshotVersion = scheme.parseVersion(StringUtils.removeEnd(cliVersion.toString(), "-SNAPSHOT"));
+                        if(constraint.containsVersion(cliSnapshotVersion)){
+                            log.warn("Assuming this CLI SNAPSHOT is compatible with the extension...", extension.group(),
+                                    extension.artifact(), extension.version(), constraint.toString(),
+                                    Constants.GROUP, Constants.ARTIFACT, cliVersion);
+                            return true;
+                        }
+                    }
+                    log.warn("Extension %s:%s:%s requires %s of %s:%s, but current version is %s", extension.group(),
                             extension.artifact(), extension.version(), constraint.toString(),
-                            Constants.GROUP, Constants.RUG_ARTIFACT);
+                            Constants.GROUP, Constants.ARTIFACT, cliVersion);
                     return false;
+
+
                 }
             }
             catch (InvalidVersionSpecificationException e) {

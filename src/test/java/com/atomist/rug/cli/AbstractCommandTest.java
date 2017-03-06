@@ -3,6 +3,7 @@ package com.atomist.rug.cli;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -97,7 +98,7 @@ public abstract class AbstractCommandTest {
         assertCommandLine(0, requiredContents, tokens);
     }
 
-    protected String[] commandLine(boolean includeConf, String... tokens) {
+    protected String[] commandLine(boolean includeConf, String... tokens) throws IOException {
         File config = new File(getCWD(), "../cli.yml");
         if (!config.exists()) {
             throw new RuntimeException(
@@ -108,7 +109,7 @@ public abstract class AbstractCommandTest {
         if (includeConf) {
             commandLine.add("-q");
             commandLine.add("-s");
-            commandLine.add(config.getAbsolutePath());
+            commandLine.add(config.getCanonicalPath());
             commandLine.add("-X");
             commandLine.add("-t");
             // commandLine.add("-V");

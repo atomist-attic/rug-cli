@@ -1,13 +1,13 @@
 init-rug-archive:
   commands:
-    - "/echo Loading generator into shell"
+    - "/echo ${cyan)${divider}${/cyan} ${bold}Loading generator into shell${/bold}"
     - "shell atomist-rugs:rug-archive:latest"
-    - "/echo Generate new rug project"
+    - "/echo ${cyan)${divider}${/cyan} ${bold}Generate new rug project${/bold}"
     - "generate NewRugArchiveProject ${project_name:rug-archive} ${group_id:rugs} -R"
-    - "/echo Installing node modules"
+    - "/echo ${cyan)${divider}${/cyan} ${bold}Installing node modules${/bold}"
     - "/cd ${project_name:rug-archive}/.atomist"
     - "/npm install"
-    - "/echo Loading new rug project into shell"
+    - "/echo ${cyan)${divider}${/cyan} ${bold}Loading new rug project into shell${/bold}"
     - "shell -l"
     - "desc archive"
 
