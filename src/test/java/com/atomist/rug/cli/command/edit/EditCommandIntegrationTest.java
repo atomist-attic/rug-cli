@@ -24,7 +24,7 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("README.md created"));
         }, "edit", "atomist-rugs:common-editors:AddReadme", "project_name=TheName",
-                "description=SomeDescription", "-a", "0.5.0");
+                "description=SomeDescription", "-a", "0.8.0");
 
     }
 
@@ -38,13 +38,13 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
     public void testUnSuccessfulEditWithInvalidParameter() throws Exception {
         assertFailure("Invalid parameter value\n  project_name = $#%$#%$#^$%$W...@432", "edit",
                 "atomist-rugs:common-editors:AddReadme", "project_name=$#%$#%$#^$%$W...@432",
-                "description=Some", "-a", "0.5.0");
+                "description=Some", "-a", "0.8.0");
     }
 
     @Test
     public void testUnSuccessfulEditWithMissingParameters() throws Exception {
         assertFailure("Missing parameter value\n  project_name", "edit",
-                "atomist-rugs:common-editors:AddReadme", "description=Some", "-a", "0.5.0");
+                "atomist-rugs:common-editors:AddReadme", "description=Some", "-a", "0.8.0");
     }
 
     // @Test
@@ -56,6 +56,6 @@ public class EditCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulEditWithMultipleMissingParameters() throws Exception {
         assertFailure("Missing parameter values\n  project_name\n  description", "edit",
-                "atomist-rugs:common-editors:AddReadme", "-a", "0.5.0");
+                "atomist-rugs:common-editors:AddReadme", "-a", "0.8.0");
     }
 }

@@ -16,7 +16,7 @@ public class ProgressReportingPrintStream extends FilteringPrintStream {
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
             report(l, progressReporterOption);
         }
-        else if (l.startsWith("$")) {
+        else if (l != null && l.startsWith("$")) {
             super.print(l.substring(1));
         }
         else {
@@ -30,7 +30,7 @@ public class ProgressReportingPrintStream extends FilteringPrintStream {
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
             report(l, progressReporterOption);
         }
-        else if (l.startsWith("$")) {
+        else if (l != null && l.startsWith("$")) {
             super.println(l.substring(1));
         }
         else {
@@ -46,7 +46,7 @@ public class ProgressReportingPrintStream extends FilteringPrintStream {
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
             report(l, progressReporterOption);
         }
-        else if (l.startsWith("$")) {
+        else if (l != null && l.startsWith("$")) {
             super.write(l.substring(1).getBytes());
         }
         else {
@@ -62,7 +62,7 @@ public class ProgressReportingPrintStream extends FilteringPrintStream {
         if (progressReporterOption.isPresent() && !l.startsWith("$")) {
             report(l, progressReporterOption);
         }
-        else if (l.startsWith("$")) {
+        else if (l != null && l.startsWith("$")) {
             buf = l.substring(1).getBytes();
             super.write(buf, off, buf.length);
         }

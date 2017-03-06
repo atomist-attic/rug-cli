@@ -1,0 +1,90 @@
+{
+  "group" : "atomist-rugs",
+  "artifact" : "rug-project",
+  "version" : "0.3.0",
+  "origin" : {
+    "repo" : "https://github.com/atomist-rugs/rug-project.git",
+    "branch" : "master",
+    "sha" : "ca003e2*"
+  },
+  "generators" : [ {
+    "name" : "NewRugProject",
+    "description" : "Generate new Rug archive project",
+    "parameters" : [ {
+      "name" : "project_name",
+      "description" : "name of project to be created",
+      "pattern" : "^[-\\w.]+$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid GitHub project name consisting of alphanumeric, ., -, and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Project Name"
+    }, {
+      "name" : "owner",
+      "description" : "Maven group identifier, often used to provide a namespace for your rugs, e.g., company-rugs, typically the GitHub owner",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Group ID"
+    }, {
+      "name" : "description",
+      "description" : "short descriptive text describing the new project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "free text",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Project Description"
+    }, {
+      "name" : "version",
+      "description" : "initial version of the project, e.g., 1.2.3",
+      "pattern" : "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*)(?:\\.(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*))*)?(?:\\+[-A-Za-z\\d]+(?:\\.[-A-Za-z\\d]+)*)?$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "0.1.0",
+      "valid_input_description" : "a valid semantic version, http://semver.org",
+      "max_length" : 100,
+      "min_length" : 5,
+      "display_name" : "Version"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "decription" : "rug"
+    }, {
+      "name" : "atomist",
+      "decription" : "atomist"
+    } ]
+  }, {
+    "name" : "NewStarterRugProject",
+    "description" : "create new Rug archive project using standard setup and sensible defaults",
+    "parameters" : [ {
+      "name" : "project_name",
+      "description" : "name of project to be created",
+      "pattern" : "^[-\\w.]+$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid GitHub project name consisting of alphanumeric, ., -, and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Project Name"
+    } ],
+    "tags" : [ {
+      "name" : "atomist",
+      "decription" : "atomist"
+    }, {
+      "name" : "rug",
+      "decription" : "rug"
+    }, {
+      "name" : "documentation",
+      "decription" : "documentation"
+    }, {
+      "name" : "starter",
+      "decription" : "starter"
+    } ]
+  } ]
+}

@@ -20,13 +20,11 @@ public class GenerateDotCommandIntegrationTest extends AbstractCommandTest {
 
     @Before
     public void before() throws Exception {
-
         String tmp = System.getProperty("java.io.tmpdir") + File.separator + "generateTest";
         File output = new File(tmp);
         output.mkdirs();
         IOUtils.copy(new FileInputStream(new File("src/test/resources/cli.yml")),
                 new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "cli.yml")));
-
         setCWD(tmp);
     }
 
