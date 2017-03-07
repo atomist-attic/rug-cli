@@ -452,8 +452,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeMappedParameters(MappedParameterizedRug rug) {
         if (!rug.mappedParameters().isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Mapped Parameters"));
-            asJavaCollection(rug.mappedParameters()).forEach(
-                    t -> log.info("  " + Style.yellow(t.localKey()) + " => " + t.foreignKey()));
+            asJavaCollection(rug.mappedParameters()).forEach(t -> log.info("  "
+                    + Style.yellow(t.localKey()) + " " + Constants.DIVIDER + " " + t.foreignKey()));
         }
     }
 
