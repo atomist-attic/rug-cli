@@ -5,18 +5,16 @@
 
 Atomist Rug command-line interface for creating and running rugs.
 
-See the [Rug CLI Quick Start][quick] and [Rug CLI documentation][doc]
-for more detailed information.
+See the [Rug CLI documentation][doc] for more detailed information.
 
-[quick]: http://docs.atomist.com/quick-starts/rug-cli/
-[doc]: http://docs.atomist.com/rug/rug-cli/
+[doc]: http://docs.atomist.com/user-guide/interfaces/cli/
 
 ## Installation
 
 See [Rug CLI Installation][install] for installation instructions
 or on how to run the CLI in a Docker container.
 
-[install]: http://docs.atomist.com/rug/rug-cli/rug-cli-install/
+[install]: http://docs.atomist.com/user-guide/interfaces/cli/install/
 
 ## Support
 
