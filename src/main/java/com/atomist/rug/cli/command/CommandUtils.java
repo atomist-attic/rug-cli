@@ -65,8 +65,7 @@ public abstract class CommandUtils {
     public static CommandLine parseInitialCommandline(String[] args, CommandInfoRegistry registry) {
         try {
             // For the purpose of the initial parse we need to collect all options and make sure
-            // they
-            // are not configured with required=true and then parse the commandLine
+            // they are not configured with required=true and then parse the commandLine
             Options options = new Options();
             registry.allOptions().getOptions()
                     .forEach(o -> options.addOption(o.getOpt(), o.getLongOpt(), o.hasArg(), null));
