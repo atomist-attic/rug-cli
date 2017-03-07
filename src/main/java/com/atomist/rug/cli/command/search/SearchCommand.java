@@ -18,6 +18,9 @@ import com.atomist.rug.cli.command.search.SearchOperations.Operation;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.tree.LogVisitor;
+import com.atomist.rug.cli.tree.Node;
+import com.atomist.rug.cli.tree.Node.Type;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SuppressWarnings("unused")
@@ -80,26 +83,28 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
                 (archive.scope() != null ? Style.gray("[" + archive.scope() + "]") + " " : ""),
                 archive.version().value());
         if (showOps) {
-            printOperations(operations, "generator", "Generators");
-            printOperations(operations, "editor", "Editors");
-            printOperations(operations, "executor", "Executors");
+            printOperations(operations);
         }
     }
 
-    private void printOperations(List<Operation> operations, String kind, String label) {
+    private void printOperations(List<Operation> operations) {
+        Node node = new Node(null);
+        addOperation(node, operations, "generator", "Generators");
+        addOperation(node, operations, "editor", "Editors");
+        addOperation(node, operations, "reviewer", "Reviewers");
+        addOperation(node, operations, "command-handler", "Command Handlers");
+        addOperation(node, operations, "event-handler", "Event Handlers");
+        addOperation(node, operations, "respond-handler", "Respond Handlers");
+        LogVisitor visitor = new LogVisitor(log);
+        node.accept(visitor);
+    }
+    
+    private void addOperation(Node node, List<Operation> operations, String kind, String label) {
         Collection<Operation> ops = operations.stream().filter(o -> o.type().equals(kind))
                 .sorted(Comparator.comparing(Operation::name)).collect(Collectors.toList());
-        Operation last = ops.stream().reduce((a, b) -> b).orElse(null);
         if (!ops.isEmpty()) {
-            log.info("    %s", Style.bold(label));
-            ops.forEach(o -> {
-                if (o.equals(last)) {
-                    log.info("    %s%s", Constants.LAST_TREE_NODE, o.name());
-                }
-                else {
-                    log.info("    %s%s", Constants.TREE_NODE, o.name());
-                }
-            });
+            Node parent = node.addChild(Style.bold(label), Type.UNKNOWN);
+            ops.forEach(o -> parent.addChild(o.name(), Type.UNKNOWN));
         }
     }
 
