@@ -38,7 +38,7 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulSpecificCommandHandlerDescribe() throws Exception {
         assertSuccess(
-                "ListIssuesHandler\n" + "rug-cli-tests:handlers:0.12.0\n"
+                "ListIssuesHandler\n" + "rug-cli-tests:handlers [0.12.0|local]\n"
                         + "Lists open github issues in slack\n" + "\n" + "→ Intent\n"
                         + "  list issues\n" + "→ Tags\n" + "  github (github)\n"
                         + "  issues (issues)\n" + "→ Parameters (optional)\n" + "  days \n"
@@ -52,7 +52,7 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulSpecificCommandHandlerDescribeWithSecretsAndMappedParams()
             throws Exception {
         assertSuccess(
-                "CreateIssue\n" + "rug-cli-tests:handlers:0.12.0\n" + "Creates a GitHub issue\n"
+                "CreateIssue\n" + "rug-cli-tests:handlers [0.12.0|local]\n" + "Creates a GitHub issue\n"
                         + "\n" + "→ Intent\n" + "  create issue\n" + "→ Secrets\n"
                         + "  github/user_token=repo\n" + "→ Mapped Parameters\n" + "  repo "
                         + Constants.DIVIDER + " atomist/repository\n" + "  owner "
@@ -74,7 +74,7 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulSpecificResponseHandlerDescribe() throws Exception {
         assertSuccess(
-                "Kitties\n" + "rug-cli-tests:handlers:0.12.0\n" + "Prints out kitty urls\n" + "\n"
+                "Kitties\n" + "rug-cli-tests:handlers [0.12.0|local]\n" + "Prints out kitty urls\n" + "\n"
                         + "→ Parameters\n" + "  no parameters needed\n" + "\n"
                         + "To invoke the Kitties response-handler, run:\n"
                         + "  rug respond \"rug-cli-tests:handlers:Kitties\" -a 0.12.0 -l",
@@ -90,7 +90,7 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulSpecificEventHandlerDescribe() throws Exception {
         assertSuccess(
-                "ClosedIssueReopener\n" + "rug-cli-tests:handlers:0.12.0\n"
+                "ClosedIssueReopener\n" + "rug-cli-tests:handlers [0.12.0|local]\n"
                         + "Reopens closed issues\n" + "\n" + "→ Root node\n" + "  issue\n"
                         + "→ Tags\n" + "  github (github)\n" + "  issues (issues)\n" + "\n"
                         + "To invoke the ClosedIssueReopener event-handler, run:\n"
