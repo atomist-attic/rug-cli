@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command.shortcuts;
+package com.atomist.rug.cli.command.gesture;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
 import com.atomist.rug.cli.Constants;
 import com.github.tomaslanger.chalk.Ansi;
 
-public class Shortcut {
+public class Gesture {
 
     private static final PropertyPlaceholderHelper nonStrictHelper = new PropertyPlaceholderHelper(
             "${", "}", ":", true);
@@ -42,7 +42,7 @@ public class Shortcut {
 
     private final List<String> commands;
 
-    public Shortcut(String name, List<String> commands) {
+    public Gesture(String name, List<String> commands) {
         this.name = name;
         this.commands = commands;
     }

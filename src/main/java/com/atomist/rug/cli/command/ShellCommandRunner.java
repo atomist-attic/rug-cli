@@ -15,14 +15,14 @@ import org.springframework.boot.loader.tools.RunProcess;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.ReloadException;
+import com.atomist.rug.cli.command.gesture.Gesture;
+import com.atomist.rug.cli.command.gesture.GestureRegistry;
 import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
 import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.FileAndDirectoryNameCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
 import com.atomist.rug.cli.command.shell.ShellUtils;
-import com.atomist.rug.cli.command.shell.ShortcutCompleter;
-import com.atomist.rug.cli.command.shortcuts.Shortcut;
-import com.atomist.rug.cli.command.shortcuts.ShortcutRegistry;
+import com.atomist.rug.cli.command.shell.GestureCompleter;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -32,7 +32,7 @@ import com.atomist.rug.resolver.LocalArtifactDescriptor;
 public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private CommandInfoRegistry commandRegistry;
-    private ShortcutRegistry shortcutRegistry;
+    private GestureRegistry gestureRegistry;
     private LineReader reader;
 
     public ShellCommandRunner(CommandInfoRegistry registry) {
@@ -91,7 +91,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             }
         }
 
-        invokePotentialShortcutCommand(artifact, dependencies, line);
+        invokePotentialGestureCommand(artifact, dependencies, line);
     }
 
     private void invokeChainedCommands(ArtifactDescriptor artifact,
@@ -135,7 +135,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private void invokeCommandInLoop(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
 
-        this.shortcutRegistry = new ShortcutRegistry();
+        this.gestureRegistry = new GestureRegistry();
         this.reader = lineReader();
 
         String line = null;
@@ -169,14 +169,14 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         }
     }
 
-    private void invokePotentialShortcutCommand(ArtifactDescriptor artifact,
+    private void invokePotentialGestureCommand(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, String line) {
         String[] args = CommandUtils.splitCommandline(line);
         CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
-        if (shortcutRegistry != null
-                && shortcutRegistry.findShortcut(commandLine.getArgList().get(0)).isPresent()) {
+        if (gestureRegistry != null
+                && gestureRegistry.findGesture(commandLine.getArgList().get(0)).isPresent()) {
 
-            Shortcut shortcut = shortcutRegistry.findShortcut(commandLine.getArgList().get(0))
+            Gesture shortcut = gestureRegistry.findGesture(commandLine.getArgList().get(0))
                     .get();
             invokeChainedCommands(artifact, dependencies, shortcut.toCommand(commandLine));
 
@@ -189,7 +189,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private LineReader lineReader() {
         return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY, new FileAndDirectoryNameCompleter(),
                 new OperationCompleter(), new CommandInfoCompleter(commandRegistry),
-                new ArchiveNameCompleter(), new ShortcutCompleter(shortcutRegistry));
+                new ArchiveNameCompleter(), new GestureCompleter(gestureRegistry));
     }
 
     private String prompt(ArtifactDescriptor artifact) {
@@ -296,7 +296,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             String line = org.springframework.util.StringUtils.arrayToDelimitedString(args, " ");
             int ix = line.indexOf("&&");
             if (ix > 0 && line.length() > ix + 2) {
-                invokePotentialShortcutCommand(artifact, dependencies, line.substring(ix + 2));
+                invokePotentialGestureCommand(artifact, dependencies, line.substring(ix + 2));
             }
             // Now start the loop
             invokeCommandInLoop(artifact, dependencies);
