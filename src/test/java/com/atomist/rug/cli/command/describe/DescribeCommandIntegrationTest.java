@@ -80,7 +80,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersion() throws Exception {
-        assertSuccess("atomist-rugs:spring-boot-rest-service:0.8.0", "describe", "generator",
+        assertSuccess("atomist-rugs:spring-boot-rest-service [0.8.0|zip]", "describe", "generator",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.8.0");
     }
 
