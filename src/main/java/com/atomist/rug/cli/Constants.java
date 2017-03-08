@@ -22,6 +22,7 @@ public class Constants {
 
     public static final String DIVIDER = (SystemUtils.IS_OS_WINDOWS ? ">" : "→");
     public static final String REDIVID = (SystemUtils.IS_OS_WINDOWS ? "<" : "←");
+    public static final String DOT = (SystemUtils.IS_OS_WINDOWS ? "." : "·");
     public static final String LEFT_PADDING = "  ";
 
     public static final int WRAP_LENGTH = 80;

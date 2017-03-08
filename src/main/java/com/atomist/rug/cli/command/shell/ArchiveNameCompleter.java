@@ -57,10 +57,4 @@ public class ArchiveNameCompleter implements Completer {
         }
         return archives;
     }
-
-    // private List<String> archivesFromRepository() {
-    // List<String> archives = new ArrayList<>();
-    //
-    // }
-
 }

@@ -279,7 +279,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void describeName(Manifest manifest) {
         log.info(Style.bold(Style.yellow("%s:%s", manifest.group(), manifest.artifact()) + " "
-                + Style.gray("[%s]", manifest.version())));
+                + Style.gray("(%s)", manifest.version())));
         log.newline();
     }
 

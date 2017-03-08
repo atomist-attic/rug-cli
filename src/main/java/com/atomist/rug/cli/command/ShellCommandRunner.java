@@ -26,7 +26,6 @@ import com.atomist.rug.cli.command.shell.OperationCompleter;
 import com.atomist.rug.cli.command.shell.ShellUtils;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.Style;
-import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
@@ -198,10 +197,10 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         if (artifact != null && !(artifact.group().equals(Constants.GROUP)
                 && artifact.artifact().equals(Constants.RUG_ARTIFACT))) {
             log.info(Style.yellow("%s:%s", artifact.group(), artifact.artifact())
-                    + Style.gray(" [%s|%s|rug:%s]",
-                            artifact.version(), (artifact instanceof LocalArtifactDescriptor
-                                    ? "local" : artifact.extension().toString().toLowerCase()),
-                            rugVersion));
+                    + Style.gray(" (%s%s%s%s%s)", artifact.version(), Constants.DOT,
+                            (artifact instanceof LocalArtifactDescriptor ? "local"
+                                    : artifact.extension().toString().toLowerCase()),
+                            Constants.DOT, rugVersion));
         }
         return ShellUtils.DEFAULT_PROMPT;
     }

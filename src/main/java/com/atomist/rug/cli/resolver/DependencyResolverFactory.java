@@ -84,7 +84,7 @@ public abstract class DependencyResolverFactory {
 
                 private void firstMessage() {
                     if (firstMessage) {
-                        indicator.report(String.format("Dependency report for %s:%s:%s",
+                        indicator.report(String.format("Dependency report for %s:%s (%s)",
                                 artifact.group(), artifact.artifact(), artifact.version()));
                         firstMessage = false;
                     }
