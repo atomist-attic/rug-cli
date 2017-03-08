@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atomist.rug.cli.AbstractCommandTest;
+import com.atomist.rug.cli.Constants;
 
 public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
 
@@ -50,14 +51,16 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulSpecificCommandHandlerDescribeWithSecretsAndMappedParams()
             throws Exception {
-        assertSuccess("CreateIssue\n" + "rug-cli-tests:handlers:0.12.0\n"
-                + "Creates a GitHub issue\n" + "\n" + "→ Intent\n" + "  create issue\n"
-                + "→ Secrets\n" + "  github/user_token=repo\n" + "→ Mapped Parameters\n"
-                + "  repo => atomist/repository\n" + "  owner => atomist/owner\n" + "→ Tags\n"
-                + "  github (github)\n" + "  issue (issue)\n" + "→ Parameters (required)\n"
-                + "  title \n" + "    Title of issue\n" + "    pattern: ^.*$\n" + "  body \n"
-                + "    Body of the issue\n" + "    pattern: ^[\\s\\S]*$", "describe", "-l",
-                "command-handler", "CreateIssue");
+        assertSuccess(
+                "CreateIssue\n" + "rug-cli-tests:handlers:0.12.0\n" + "Creates a GitHub issue\n"
+                        + "\n" + "→ Intent\n" + "  create issue\n" + "→ Secrets\n"
+                        + "  github/user_token=repo\n" + "→ Mapped Parameters\n" + "  repo "
+                        + Constants.DIVIDER + " atomist/repository\n" + "  owner "
+                        + Constants.DIVIDER + " atomist/owner\n" + "→ Tags\n"
+                        + "  github (github)\n" + "  issue (issue)\n" + "→ Parameters (required)\n"
+                        + "  title \n" + "    Title of issue\n" + "    pattern: ^.*$\n"
+                        + "  body \n" + "    Body of the issue\n" + "    pattern: ^[\\s\\S]*$",
+                "describe", "-l", "command-handler", "CreateIssue");
     }
 
     @Test
