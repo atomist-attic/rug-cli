@@ -63,15 +63,15 @@ public class OperationCompleter implements Completer {
                             completeBasedOnJsonpathMatches("reviewers", line.words(), candidates);
                             break;
                         case "command-handler":
-                            completeBasedOnJsonpathMatches("command-handlers", line.words(),
+                            completeBasedOnJsonpathMatches("command_handlers", line.words(),
                                     candidates);
                             break;
                         case "event-handler":
-                            completeBasedOnJsonpathMatches("event-handlers", line.words(),
+                            completeBasedOnJsonpathMatches("event_handlers", line.words(),
                                     candidates);
                             break;
                         case "response-handler":
-                            completeBasedOnJsonpathMatches("response-handler", line.words(),
+                            completeBasedOnJsonpathMatches("response_handlers", line.words(),
                                     candidates);
                             break;
                         }

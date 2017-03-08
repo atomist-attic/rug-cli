@@ -106,7 +106,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
 
                             else {
                                 throw new CommandException(String.format(
-                                        "Extension %s:%s [%s] is not compatible with this version of the CLI.",
+                                        "Extension %s:%s (%s) is not compatible with this version of the CLI.",
                                         resolvedArtifact.group(), resolvedArtifact.artifact(),
                                         resolvedArtifact.version()));
                             }
@@ -229,7 +229,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                             return true;
                         }
                     }
-                    log.warn("Extension %s:%s [%s] requires %s of %s:%s, but current version is %s", extension.group(),
+                    log.warn("Extension %s:%s (%s) requires %s of %s:%s, but current version is %s", extension.group(),
                             extension.artifact(), extension.version(), constraint.toString(),
                             Constants.GROUP, Constants.ARTIFACT, cliVersion);
                     return false;
