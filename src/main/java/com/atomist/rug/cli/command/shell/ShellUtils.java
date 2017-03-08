@@ -34,7 +34,7 @@ public abstract class ShellUtils {
     public static final File SHELL_ARCHIVES = new File(System.getProperty("user.home")
             + File.separator + ".atomist" + File.separator + ".cli-archives");
 
-    public static final String DEFAULT_PROMPT = Style.bold(Constants.RUG_ARTIFACT) + " "
+    public static final String DEFAULT_PROMPT = Style.bold((Constants.RUG_ARTIFACT)) + " "
             + Style.cyan(Constants.DIVIDER) + " ";
 
     public static LineReader lineReader(File historyPath, Completer... completers) {

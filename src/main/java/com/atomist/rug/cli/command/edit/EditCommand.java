@@ -83,9 +83,9 @@ public class EditCommand extends AbstractParameterizedCommand {
                 StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
             }
             throw new CommandException(
-                    String.format("Specified editor %s could not be found in %s:%s:%s",
+                    String.format("Specified editor %s could not be found in %s:%s",
                             StringUtils.stripName(name, artifact), artifact.group(),
-                            artifact.artifact(), artifact.version()));
+                            artifact.artifact()));
         }
     }
 
