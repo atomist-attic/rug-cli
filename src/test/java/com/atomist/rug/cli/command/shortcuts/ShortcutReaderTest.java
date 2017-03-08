@@ -8,11 +8,14 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.atomist.rug.cli.command.gesture.Gesture;
+import com.atomist.rug.cli.command.gesture.GestureReader;
+
 public class ShortcutReaderTest {
 
     @Test
     public void testShortcutReading() {
-        Map<String, Shortcut> shortcuts = ShortcutReader
+        Map<String, Gesture> shortcuts = GestureReader
                 .read(new File("src/test/resources/shortcuts"));
         assertEquals(2, shortcuts.size());
         assertTrue(shortcuts.containsKey("init-rug-archive"));

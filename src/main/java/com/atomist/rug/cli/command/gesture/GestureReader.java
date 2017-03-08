@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command.shortcuts;
+package com.atomist.rug.cli.command.gesture;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,14 +10,14 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.yaml.snakeyaml.Yaml;
 
-public abstract class ShortcutReader {
+public abstract class GestureReader {
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Shortcut> read(File shortcutDirectory) {
-        Map<String, Shortcut> shortcuts = new HashMap<>();
-        if (shortcutDirectory.exists()) {
+    public static Map<String, Gesture> read(File gestureDirectory) {
+        Map<String, Gesture> gesture = new HashMap<>();
+        if (gestureDirectory.exists()) {
             Yaml yaml = new Yaml();
-            FileUtils.listFiles(shortcutDirectory, new String[] { "yml" }, true).forEach(f -> {
+            FileUtils.listFiles(gestureDirectory, new String[] { "yml" }, true).forEach(f -> {
                 try {
                     Map<String, Object> s = (Map<String, Object>) yaml.load(new FileInputStream(f));
                     s.entrySet().stream().forEach(e -> {
@@ -26,7 +26,7 @@ public abstract class ShortcutReader {
                         List<String> cmds = null;
                         if (data.containsKey("commands")) {
                             cmds = (List<String>) data.get("commands");
-                            shortcuts.put(name, new Shortcut(name, cmds));
+                            gesture.put(name, new Gesture(name, cmds));
                         }
                     });
                 }
@@ -36,7 +36,7 @@ public abstract class ShortcutReader {
             });
         }
 
-        return shortcuts;
+        return gesture;
     }
 
 }
