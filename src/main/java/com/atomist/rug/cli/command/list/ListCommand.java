@@ -77,7 +77,7 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                 .map(ArtifactDescriptor::version).collect(Collectors.toList());
         // underline the highest version
         versionStrings.set(0, Style.underline(versionStrings.get(0)));
-        log.info(Style.yellow("  %s", groupArtifact) + " (%s)",
+        log.info(Style.yellow("  %s", groupArtifact) + " [%s]",
                 StringUtils.collectionToDelimitedString(versionStrings, ", "));
     }
 

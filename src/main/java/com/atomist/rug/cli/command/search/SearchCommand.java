@@ -79,8 +79,8 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
     private void printArchive(List<Operation> operations, boolean showOps) {
         Operation op = operations.get(0);
         Archive archive = op.archive();
-        log.info("  %s %s(%s)", Style.yellow("%s:%s", archive.group(), archive.artifact()),
-                (archive.scope() != null ? Style.gray("[" + archive.scope() + "]") + " " : ""),
+        log.info("  %s %s[%s]", Style.yellow("%s:%s", archive.group(), archive.artifact()),
+                (archive.scope() != null ? Style.gray("(" + archive.scope() + ")") + " " : ""),
                 archive.version().value());
         if (showOps) {
             printOperations(operations);

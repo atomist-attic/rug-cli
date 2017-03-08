@@ -25,6 +25,7 @@ import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -272,13 +273,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private void describeName(ArtifactDescriptor artifact, Rug info) {
         String name = info.name();
         log.info(Style.bold(Style.yellow(StringUtils.stripName(name, artifact))));
-        log.info("%s:%s:%s", artifact.group(), artifact.artifact(), artifact.version());
+        log.info("%s", ArtifactDescriptorUtils.coordinates(artifact));
         log.info(org.apache.commons.lang3.StringUtils.capitalize(info.description()));
     }
 
     private void describeName(Manifest manifest) {
-        log.info(Style.bold(Style.yellow("%s:%s:%s", manifest.group(), manifest.artifact(),
-                manifest.version())));
+        log.info(Style.bold(Style.yellow("%s:%s", manifest.group(), manifest.artifact()) + " "
+                + Style.gray("[%s]", manifest.version())));
         log.newline();
     }
 
@@ -360,9 +361,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             if (name != null) {
                 StringUtils.printClosestMatch(StringUtils.stripName(fqName, artifact), artifact,
                         ops.stream().map(Rug::name).collect(Collectors.toList()));
-                throw new CommandException(String.format(
-                        "Specified %s %s could not be found in %s:%s:%s", labels.operation(), name,
-                        artifact.group(), artifact.artifact(), artifact.version()));
+                throw new CommandException(
+                        String.format("Specified %s %s could not be found in %s:%s",
+                                labels.operation(), name, artifact.group(), artifact.artifact()));
             }
             else {
                 describeInvokeArchive();
