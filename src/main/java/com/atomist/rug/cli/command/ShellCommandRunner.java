@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.SystemUtils;
@@ -20,9 +21,10 @@ import com.atomist.rug.cli.command.gesture.GestureRegistry;
 import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
 import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.FileAndDirectoryNameCompleter;
+import com.atomist.rug.cli.command.shell.GestureCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
 import com.atomist.rug.cli.command.shell.ShellUtils;
-import com.atomist.rug.cli.command.shell.GestureCompleter;
+import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -34,6 +36,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private CommandInfoRegistry commandRegistry;
     private GestureRegistry gestureRegistry;
     private LineReader reader;
+    private String rugVersion;
 
     public ShellCommandRunner(CommandInfoRegistry registry) {
         super(registry);
@@ -176,8 +179,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         if (gestureRegistry != null
                 && gestureRegistry.findGesture(commandLine.getArgList().get(0)).isPresent()) {
 
-            Gesture shortcut = gestureRegistry.findGesture(commandLine.getArgList().get(0))
-                    .get();
+            Gesture shortcut = gestureRegistry.findGesture(commandLine.getArgList().get(0)).get();
             invokeChainedCommands(artifact, dependencies, shortcut.toCommand(commandLine));
 
         }
@@ -195,7 +197,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private String prompt(ArtifactDescriptor artifact) {
         if (artifact != null && !(artifact.group().equals(Constants.GROUP)
                 && artifact.artifact().equals(Constants.RUG_ARTIFACT))) {
-            log.info(Style.gray(ArtifactDescriptorUtils.coordinates(artifact)));
+            log.info(Style.yellow("%s:%s", artifact.group(), artifact.artifact())
+                    + Style.gray(" [%s|%s|rug:%s]",
+                            artifact.version(), (artifact instanceof LocalArtifactDescriptor
+                                    ? "local" : artifact.extension().toString().toLowerCase()),
+                            rugVersion));
         }
         return ShellUtils.DEFAULT_PROMPT;
     }
@@ -283,6 +289,21 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 }
             }
         }
+    }
+
+    protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
+            ProgressReporter indicator) {
+        List<ArtifactDescriptor> dependencies = super.resolveDependencies(artifact, indicator);
+
+        Optional<ArtifactDescriptor> rug = dependencies.stream()
+                .filter(d -> d.group().equals(Constants.GROUP)
+                        && d.artifact().equals(Constants.RUG_ARTIFACT))
+                .findFirst();
+        if (rug.isPresent()) {
+            this.rugVersion = rug.get().version();
+        }
+
+        return dependencies;
     }
 
     @Override

@@ -32,6 +32,9 @@ public abstract class AbstractCommandInfo implements CommandInfo {
         options.addOption("t", "timer", false, "Print timing information");
         options.addOption("r", "resolver-report", false, "Print dependency tree");
         options.addOption("u", "update", false, "Update dependency resolution");
+        options.addOption(Option.builder().longOpt("requires").argName("RUG_VERSION")
+                .hasArg(true).required(false)
+                .desc("Overwrite the Rug version to RUG_VERSION (Use with Caution)").build());
         return options;
     }
 

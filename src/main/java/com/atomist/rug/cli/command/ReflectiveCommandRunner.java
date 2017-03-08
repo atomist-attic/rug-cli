@@ -5,10 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.classloading.ClassLoaderFactory;
@@ -19,12 +21,15 @@ import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.resolver.DependencyResolverFactory;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.Timing;
 import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
+import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.rug.resolver.DependencyResolver;
 import com.atomist.rug.resolver.DependencyResolverException;
+import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 
 public class ReflectiveCommandRunner {
 
@@ -163,15 +168,30 @@ public class ReflectiveCommandRunner {
         log.info("Command completed in " + timing.duration() + "s");
     }
 
-    private List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
+    protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
             ProgressReporter indicator) {
-        DependencyResolver resolver = DependencyResolverFactory.createDependencyResolver(artifact,
-                indicator);
         String version = artifact.version();
         try {
+            List<ArtifactDescriptor> dependencies = new ArrayList<>();
+            DependencyResolver resolver = DependencyResolverFactory
+                    .createDependencyResolver(artifact, indicator);
+
+            // Add the rug dependency manually and make sure it is not resolved from the archive
+            Optional<String> versionOverride = CommandLineOptions.getOptionValue("requires");
+            if (versionOverride.isPresent()) {
+                dependencies.addAll(resolver.resolveTransitiveDependencies(
+                        new DefaultArtifactDescriptor(Constants.GROUP, Constants.RUG_ARTIFACT,
+                                versionOverride.get(), Extension.JAR)));
+                
+                // Creating a new resolver that excludes the rug dependency
+                resolver = DependencyResolverFactory.createDependencyResolver(artifact, indicator,
+                        "com.atomist:rug");
+            }
+
             version = resolver.resolveVersion(artifact);
-            return resolver.resolveTransitiveDependencies(
-                    ArtifactDescriptorFactory.copyFrom(artifact, version));
+            dependencies.addAll(resolver.resolveTransitiveDependencies(
+                    ArtifactDescriptorFactory.copyFrom(artifact, version)));
+            return dependencies;
         }
         catch (DependencyResolverException e) {
             throw new CommandException(DependencyResolverExceptionProcessor
