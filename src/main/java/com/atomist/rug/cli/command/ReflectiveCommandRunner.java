@@ -165,7 +165,7 @@ public class ReflectiveCommandRunner {
     }
 
     private void printTimer(Timing timing) {
-        log.info("Command completed in " + timing.duration() + "s");
+        log.info("Command completed in " + String.format("%.2f", timing.duration()) + "s");
     }
 
     protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,

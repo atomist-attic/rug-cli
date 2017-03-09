@@ -16,7 +16,7 @@ public class PassThroughProgressReporter implements ProgressReporter {
     @Override
     public void finish(boolean success, float duration) {
         log.info(message + Style.green(" completed")
-                + (duration > -1 ? " in " + duration + "s" : ""));
+                + (duration > -1 ? " in " + String.format("%.2f", duration) + "s" : ""));
     }
 
     @Override
