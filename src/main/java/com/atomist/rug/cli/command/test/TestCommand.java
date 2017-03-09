@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.script.SimpleBindings;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.util.ClassUtils;
 
 import com.atomist.project.archive.DefaultAtomistConfig$;
