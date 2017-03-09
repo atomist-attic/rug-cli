@@ -5,19 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
@@ -42,6 +34,20 @@ public abstract class CommandUtils {
     }
 
     public static void main(String[] args) {
+        if (args.length > 0) {
+            if (args[0].equals("markdown")) {
+                markdownPrint();
+            } else if (args[0].equals("flat")) {
+                flatPrint();
+            } else {
+                System.err.println("unknown print format: " + args[0]);
+            }
+        } else {
+            flatPrint();
+        }
+    }
+
+    private static void flatPrint() {
         new ServiceLoadingCommandInfoRegistry().commands().forEach(c -> {
             System.out.println(c.name());
             System.out.println("");
@@ -52,6 +58,118 @@ public abstract class CommandUtils {
                     .println(String.format("  -%s,--%s", o.getOpt(), o.getLongOpt())));
             System.out.println("");
         });
+    }
+
+    private static void markdownPrint() {
+        System.out.print("Below is the complete list of options and commands for the Rug CLI.\n\n");
+
+        ServiceLoadingCommandInfoRegistry commandRegistry = new ServiceLoadingCommandInfoRegistry();
+        CommandInfo helpCmdInfo = commandRegistry.findCommand("help");
+        Collection<Option> globalOptions = helpCmdInfo.globalOptions().getOptions();
+        if (globalOptions != null && globalOptions.size() > 0) {
+            System.out.print("## Global command-line options\n\n");
+            globalOptions.forEach(o -> System.out.print(formatOption(o)));
+        }
+
+        List<CommandInfo> commandInfos = commandRegistry.commands();
+        if (commandInfos != null && commandInfos.size() > 0) {
+            System.out.print("## Commands\n\n");
+            Collections.sort(commandInfos, Comparator.comparing(CommandInfo::name));
+            commandInfos.forEach(c -> formatCommand(c, "###"));
+        }
+    }
+
+    /**
+     * This is truly horrible.
+     */
+    private static void formatCommand(CommandInfo c, String header) {
+        System.out.print(header + " `" + c.name() + "`\n\n");
+        System.out.print(c.description() + "\n\n");
+
+        String cmdUsage = c.usage();
+        if (cmdUsage != null && cmdUsage.length() > 0) {
+            System.out.print("**Usage:**\n\n");
+            System.out.print("```console\n$ rug " + cmdUsage + "\n```\n\n");
+        }
+
+        String cmdDetail = c.detail();
+        if (cmdDetail != null && cmdDetail.length() > 0) {
+            System.out.print(cmdDetail + "\n\n");
+        }
+
+        List<String> cmdAliases = c.aliases();
+        if (cmdAliases != null && cmdAliases.size() > 0) {
+            System.out.print("**Command aliases:** `" + String.join("`, `", cmdAliases) + "`\n\n");
+        }
+
+        List<String> subCmds = c.subCommands();
+        if (subCmds != null && subCmds.size() > 0) {
+            System.out.print("**Subcommands:** `" + String.join("`, `", subCmds) + "`\n\n");
+        }
+
+        Collection<Option> cmdOptions = c.options().getOptions();
+        if (cmdOptions != null && cmdOptions.size() > 0) {
+            System.out.print("**Command options:**\n\n");
+            List<Option> cmdOptionsArray = new ArrayList<>(cmdOptions);
+            Collections.sort(cmdOptionsArray, (Option a, Option b) -> {
+                String aShort = a.getOpt();
+                String bShort = b.getOpt();
+                String aLong = a.getLongOpt();
+                String bLong = b.getLongOpt();
+                if (aShort != null && aShort.length() > 0 && bShort != null && bShort.length() > 0) {
+                    return aShort.compareToIgnoreCase(bShort);
+                } else if (aLong != null && aLong.length() > 0 && bLong != null && bLong.length() > 0) {
+                    return aLong.compareToIgnoreCase(bLong);
+                } else if (aShort != null && aShort.length() > 0 && bLong != null && bLong.length() > 0) {
+                    return aShort.compareToIgnoreCase(bLong);
+                } else if (aLong != null && aLong.length() > 0 && bShort != null && bShort.length() > 0) {
+                    return aLong.compareToIgnoreCase(bShort);
+                } else {
+                    return 0;
+                }
+            });
+            cmdOptionsArray.forEach(o -> System.out.print(formatOption(o)));
+        }
+    }
+
+    /**
+     * Oh yeah, it's not as bad as this!
+     *
+     * @param o Option to be formatted
+     * @return Markdown formatted string
+     */
+    private static String formatOption(Option o) {
+        String shortString = "";
+        String shortOpt = o.getOpt();
+        if (shortOpt != null && shortOpt.length() > 0) {
+            shortString = "-" + shortOpt;
+        }
+        String longString = "";
+        String longOpt = o.getLongOpt();
+        if (longOpt != null && longOpt.length() > 0) {
+            longString = "--" + longOpt;
+        }
+        String joinString = "";
+        if (shortString.length() > 0 && longString.length() > 0) {
+            joinString = ",";
+        }
+        String argName = o.getArgName();
+        if (argName != null && argName.length() > 0) {
+            if (shortString.length() > 0) {
+                shortString += " " + argName;
+            }
+            if (longString.length() > 0) {
+                longString += "=" + argName;
+            }
+        }
+        if (shortString.length() > 0) {
+            shortString = "`" + shortString + "`";
+        }
+        if (longString.length() > 0) {
+            longString = "`" + longString + "`";
+        }
+        // This formatting uses the MkDocs def_list markdown extension
+        return String.format("%s%s%s\n:   %s\n\n", shortString, joinString, longString, o.getDescription());
     }
 
     public static Options options() {

@@ -11,12 +11,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
--  Support for describing handlers
+-   Support for describing handlers
+-   Generate Markdown documentation for CLI
 
 ### Changed
 
--  Removed executors
--  Upgraded to rug 0.13.+ and rug-resolver
+-   Removed executors
+-   Upgraded to rug 0.13.+ and rug-resolver
 
 ## [0.24.0] - 2017-02-20
 
@@ -38,14 +39,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -	Added short aliases for commands. Inspect the command help for a list
 	of aliases.
-	
-- 	Ability to run the CLI from a docker image as per 
+
+- 	Ability to run the CLI from a docker image as per
 	https://github.com/atomist/rug-cli/issues/115
 
 ### Changed
 
 - 	Merged PR contributed by @janekdb cleaning up some code as per
-	https://github.com/atomist/rug-cli/pull/107	 	
+	https://github.com/atomist/rug-cli/pull/107
 
 ## [0.23.0] - 2017-02-14
 
@@ -57,7 +58,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  	https://github.com/atomist/rug-cli/issues/96
 
 -   New `shell` command to step into a repl session within the scope of the
-    selected Rug archive. 	
+    selected Rug archive.
 
 ## [0.22.0] - 2017-02-02
 
