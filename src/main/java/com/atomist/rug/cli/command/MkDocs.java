@@ -72,7 +72,7 @@ public class MkDocs {
 
         String cmdUsage = c.usage();
         if (cmdUsage != null && cmdUsage.length() > 0) {
-            cmdMarkdown.append("**Usage:**\n\n");
+            cmdMarkdown.append("*Usage:*\n\n");
             cmdMarkdown.append("```console\n$ rug " + cmdUsage + "\n```\n\n");
         }
 
@@ -83,17 +83,17 @@ public class MkDocs {
 
         List<String> cmdAliases = c.aliases();
         if (cmdAliases != null && cmdAliases.size() > 0) {
-            cmdMarkdown.append("**Command aliases:** `" + String.join("`, `", cmdAliases) + "`\n\n");
+            cmdMarkdown.append("*Command aliases:* `" + String.join("`, `", cmdAliases) + "`\n\n");
         }
 
         List<String> subCmds = c.subCommands();
         if (subCmds != null && subCmds.size() > 0) {
-            cmdMarkdown.append("**Subcommands:** `" + String.join("`, `", subCmds) + "`\n\n");
+            cmdMarkdown.append("*Subcommands:* `" + String.join("`, `", subCmds) + "`\n\n");
         }
 
         Collection<Option> cmdOptions = c.options().getOptions();
         if (cmdOptions != null && cmdOptions.size() > 0) {
-            cmdMarkdown.append("**Command options:**\n\n");
+            cmdMarkdown.append("*Command options:*\n\n");
             List<Option> cmdOptionsArray = new ArrayList<>(cmdOptions);
             Collections.sort(cmdOptionsArray, MkDocs::compareOptions);
             cmdOptionsArray.forEach(o -> cmdMarkdown.append(formatOption(o)));
