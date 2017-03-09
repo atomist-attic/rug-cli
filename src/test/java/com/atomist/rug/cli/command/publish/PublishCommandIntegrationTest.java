@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atomist.rug.cli.AbstractCommandTest;
+import com.atomist.rug.cli.Constants;
 
 public class PublishCommandIntegrationTest extends AbstractCommandTest {
 
@@ -43,9 +44,10 @@ public class PublishCommandIntegrationTest extends AbstractCommandTest {
 
     private void assertVersion(String group, String artifact, String version) {
         assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                .contains(group + ":" + artifact + ":" + version));
-        assertTrue(systemOutRule.getLogWithNormalizedLineSeparator().contains(
-                "Successfully published archive for " + group + ":" + artifact + ":" + version));
+                .contains(group + ":" + artifact + " (" + version +")"));
+        assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
+                .contains("Successfully published archive for " + group + ":" + artifact + " ("
+                        + version + ")"));
         assertTrue(new File(FileUtils.getUserDirectory(),
                 ".atomist" + File.separator + "repository-publish" + File.separator + group
                         + File.separator + artifact + File.separator + version + File.separator

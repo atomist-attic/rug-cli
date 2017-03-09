@@ -84,7 +84,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                         "Processing script sources").run(indicator -> {
                             ArtifactSource compiledSource = source;
                             for (Compiler compiler : compilers) {
-                                indicator.report(String.format("Invoking %s on %s script sources",
+                                indicator.report(String.format("Invoking %s on .%s files",
                                         compiler.name(),
                                         StringUtils.collectionToCommaDelimitedString(
                                                 compiler.extensions())));

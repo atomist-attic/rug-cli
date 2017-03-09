@@ -74,8 +74,8 @@ public class PublishCommand extends AbstractRepositoryCommand {
         log.info("  %s", Style.underline(artifactUrl));
 
         log.newline();
-        log.info(Style.green("Successfully published archive for %s:%s", manifest.group(),
-                manifest.artifact()));
+        log.info(Style.green("Successfully published archive for %s:%s (%s)", manifest.group(),
+                manifest.artifact(), manifest.version()));
     }
 
     private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {

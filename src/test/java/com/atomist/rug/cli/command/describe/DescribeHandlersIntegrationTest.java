@@ -38,8 +38,8 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulSpecificCommandHandlerDescribe() throws Exception {
         assertSuccess(
-                "ListIssuesHandler\n" + "rug-cli-tests:handlers [0.12.0|local]\n"
-                        + "Lists open github issues in slack\n" + "\n" + "→ Intent\n"
+                "ListIssuesHandler\n" + "rug-cli-tests:handlers (0.12.0" + Constants.DOT
+                        + "local)\n" + "Lists open github issues in slack\n" + "\n" + "→ Intent\n"
                         + "  list issues\n" + "→ Tags\n" + "  github (github)\n"
                         + "  issues (issues)\n" + "→ Parameters (optional)\n" + "  days \n"
                         + "    Days\n" + "    max: 100  default: 1  pattern: ^.*$\n" + "\n"
@@ -52,10 +52,10 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulSpecificCommandHandlerDescribeWithSecretsAndMappedParams()
             throws Exception {
         assertSuccess(
-                "CreateIssue\n" + "rug-cli-tests:handlers [0.12.0|local]\n" + "Creates a GitHub issue\n"
-                        + "\n" + "→ Intent\n" + "  create issue\n" + "→ Secrets\n"
-                        + "  github/user_token=repo\n" + "→ Mapped Parameters\n" + "  repo "
-                        + Constants.DIVIDER + " atomist/repository\n" + "  owner "
+                "CreateIssue\n" + "rug-cli-tests:handlers (0.12.0"+ Constants.DOT +"local)\n"
+                        + "Creates a GitHub issue\n" + "\n" + "→ Intent\n" + "  create issue\n"
+                        + "→ Secrets\n" + "  github/user_token=repo\n" + "→ Mapped Parameters\n"
+                        + "  repo " + Constants.DIVIDER + " atomist/repository\n" + "  owner "
                         + Constants.DIVIDER + " atomist/owner\n" + "→ Tags\n"
                         + "  github (github)\n" + "  issue (issue)\n" + "→ Parameters (required)\n"
                         + "  title \n" + "    Title of issue\n" + "    pattern: ^.*$\n"
@@ -73,12 +73,11 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulSpecificResponseHandlerDescribe() throws Exception {
-        assertSuccess(
-                "Kitties\n" + "rug-cli-tests:handlers [0.12.0|local]\n" + "Prints out kitty urls\n" + "\n"
-                        + "→ Parameters\n" + "  no parameters needed\n" + "\n"
-                        + "To invoke the Kitties response-handler, run:\n"
-                        + "  rug respond \"rug-cli-tests:handlers:Kitties\" -a 0.12.0 -l",
-                "describe", "-l", "response-handler", "Kitties");
+        assertSuccess("Kitties\n" + "rug-cli-tests:handlers (0.12.0" + Constants.DOT + "local)\n"
+                + "Prints out kitty urls\n" + "\n" + "→ Parameters\n" + "  no parameters needed\n"
+                + "\n" + "To invoke the Kitties response-handler, run:\n"
+                + "  rug respond \"rug-cli-tests:handlers:Kitties\" -a 0.12.0 -l", "describe", "-l",
+                "response-handler", "Kitties");
     }
 
     @Test
@@ -90,10 +89,10 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulSpecificEventHandlerDescribe() throws Exception {
         assertSuccess(
-                "ClosedIssueReopener\n" + "rug-cli-tests:handlers [0.12.0|local]\n"
-                        + "Reopens closed issues\n" + "\n" + "→ Root node\n" + "  issue\n"
-                        + "→ Tags\n" + "  github (github)\n" + "  issues (issues)\n" + "\n"
-                        + "To invoke the ClosedIssueReopener event-handler, run:\n"
+                "ClosedIssueReopener\n" + "rug-cli-tests:handlers (0.12.0" + Constants.DOT
+                        + "local)\n" + "Reopens closed issues\n" + "\n" + "→ Root node\n"
+                        + "  issue\n" + "→ Tags\n" + "  github (github)\n" + "  issues (issues)\n"
+                        + "\n" + "To invoke the ClosedIssueReopener event-handler, run:\n"
                         + "  rug trigger \"rug-cli-tests:handlers:ClosedIssueReopener\" -a 0.12.0 -l",
                 "describe", "-l", "event-handler", "ClosedIssueReopener");
     }

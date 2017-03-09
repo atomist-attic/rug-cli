@@ -35,9 +35,10 @@ public class InstallCommandIntegrationTest extends AbstractCommandTest {
 
     private void assertVersion(String version) {
         assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                .contains("rug-cli-tests:common-editors:" + version));
-        assertTrue(systemOutRule.getLogWithNormalizedLineSeparator().contains(
-                "Successfully installed archive for rug-cli-tests:common-editors:" + version));
+                .contains("rug-cli-tests:common-editors (" + version + ")"));
+        assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
+                .contains("Successfully installed archive for rug-cli-tests:common-editors ("
+                        + version + ")"));
         assertTrue(new File(FileUtils.getUserDirectory(),
                 ".atomist" + File.separator + "repository-tests" + File.separator + "rug-cli-tests"
                         + File.separator + "common-editors" + File.separator + version
