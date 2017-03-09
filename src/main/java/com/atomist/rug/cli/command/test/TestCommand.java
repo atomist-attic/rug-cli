@@ -1,11 +1,14 @@
 package com.atomist.rug.cli.command.test;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import javax.script.SimpleBindings;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.util.ClassUtils;
 
 import com.atomist.project.archive.DefaultAtomistConfig$;
@@ -15,23 +18,30 @@ import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Command;
+import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.tree.Node;
 import com.atomist.rug.cli.tree.Node.Type;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.cli.utils.CommandLineOptions;
+import com.atomist.rug.cli.utils.Timing;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.runtime.js.JavaScriptContext;
 import com.atomist.rug.test.gherkin.ArchiveTestResult;
 import com.atomist.rug.test.gherkin.AssertionResult;
 import com.atomist.rug.test.gherkin.Failed;
+import com.atomist.rug.test.gherkin.FeatureDefinition;
 import com.atomist.rug.test.gherkin.FeatureResult;
+import com.atomist.rug.test.gherkin.GherkinExecutionListener;
 import com.atomist.rug.test.gherkin.GherkinRunner;
 import com.atomist.rug.test.gherkin.ScenarioResult;
 import com.atomist.rug.test.gherkin.TestReport;
 import com.atomist.source.ArtifactSource;
 
+import gherkin.ast.ScenarioDefinition;
+import gherkin.ast.Step;
 import scala.Option;
 import scala.collection.JavaConverters;
 
@@ -41,16 +51,21 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(Rugs operations, ArtifactDescriptor artifact, ArtifactSource source) {
-        List<String> bla = Collections.emptyList();
 
         ArchiveTestResult result = new ProgressReportingOperationRunner<ArchiveTestResult>(
                 String.format("Running tests in %s", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run((indicator) -> {
+                            List<String> empty = Collections.emptyList();
+                            List<GherkinExecutionListener> listeners = Collections
+                                    .singletonList(new LoggingGherkinExecutionListener(indicator));
+
                             GherkinRunner runner = new GherkinRunner(
                                     new JavaScriptContext(source, DefaultAtomistConfig$.MODULE$,
                                             new SimpleBindings(),
-                                            JavaConverters.asScalaBufferConverter(bla).asScala()),
-                                    Option.apply(operations));
+                                            JavaConverters.asScalaBufferConverter(empty).asScala()),
+                                    Option.apply(operations),
+                                    JavaConverters.asScalaBufferConverter(listeners).asScala());
+
                             return runner.execute();
                         });
         TestReport report = new TestReport(result);
@@ -119,10 +134,79 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
     private void addAssertion(Node node, Collection<AssertionResult> assertionResults) {
         assertionResults.forEach(ar -> {
-            Node assertion = node.addChild(ar.assertion() + ": " + resultName(ar), Node.Type.UNKNOWN);
+            Node assertion = node.addChild(ar.assertion() + ": " + resultName(ar),
+                    Node.Type.UNKNOWN);
             if (ar.result() instanceof Failed) {
                 assertion.addChild(Style.gray(ar.result().message()), Type.UNKNOWN);
             }
         });
+    }
+
+    private static class LoggingGherkinExecutionListener implements GherkinExecutionListener {
+
+        private final ProgressReporter reporter;
+
+        private Timing featureTimer;
+        private Timing scenarioTimer;
+
+        public LoggingGherkinExecutionListener(ProgressReporter reporter) {
+            this.reporter = reporter;
+        }
+
+        @Override
+        public void featureStarting(FeatureDefinition fd) {
+            featureTimer = new Timing();
+            reporter.report("Running test feature " + fd.feature().getName());
+        }
+
+        @Override
+        public void scenarioStarting(ScenarioDefinition sd) {
+            scenarioTimer = new Timing();
+            reporter.report("  Running test scenario " + sd.getName());
+        }
+
+        @Override
+        public void scenarioCompleted(ScenarioDefinition sd, ScenarioResult sr) {
+            String duration = String.format("%.2f", scenarioTimer.duration());
+            String msg = "  Completed test scenario " + sd.getName() + " "
+                    + (sr.passed() ? Style.green("passed") : Style.red("failed"));
+            if (CommandLineOptions.hasOption("t")) {
+                msg = msg + " in " + duration + "s";
+            }
+            reporter.report(msg);
+        }
+
+        @Override
+        public void featureCompleted(FeatureDefinition fd, FeatureResult fr) {
+            String duration = String.format("%.2f", featureTimer.duration());
+            String msg = "Completed test feature " + fd.feature().getName() + " "
+                    + (fr.passed() ? Style.green("passed") : Style.red("failed"));
+            if (CommandLineOptions.hasOption("t")) {
+                msg = msg + " in " + duration + "s";
+            }
+            reporter.report(msg);
+        }
+
+        @Override
+        public void stepCompleted(Step s) {
+        }
+
+        @Override
+        public void stepFailed(Step s, Throwable t) {
+            if (CommandLineOptions.hasOption("X")) {
+                StringWriter errors = new StringWriter();
+                t.printStackTrace(new PrintWriter(errors));
+                reporter.report("    Step " + s.getText() + " " + Style.red("failed") + ":\n"
+                        + errors.toString());
+            }
+            else {
+                reporter.report("    Step " + s.getText() + " " + Style.red("failed") + ":    \n"
+                        + t.getMessage());
+            }
+        }
+
+        @Override
+        public void stepStarting(Step s) {
+        }
     }
 }
