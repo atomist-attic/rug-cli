@@ -54,14 +54,14 @@ public class RugArchiveLifecycleTest extends AbstractCommandTest {
     @Test
     public void testFInstall() throws Exception {
         setCWD(location + File.separator + "my-rug-archive");
-        assertSuccess("Successfully installed archive for atomist-rugs:my-rug-archive:0.1.0",
+        assertSuccess("Successfully installed archive for atomist-rugs:my-rug-archive (0.1.0)",
                 "install");
     }
 
     @Test
     public void testGPublish() throws Exception {
         setCWD(location + File.separator + "my-rug-archive");
-        assertSuccess("Successfully published archive for atomist-rugs:my-rug-archive:0.1.0",
+        assertSuccess("Successfully published archive for atomist-rugs:my-rug-archive (0.1.0)",
                 "publish");
     }
 
