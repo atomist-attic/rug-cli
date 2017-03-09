@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atomist.rug.cli.AbstractCommandTest;
-import com.atomist.rug.cli.Constants;
 
 public class PublishCommandIntegrationTest extends AbstractCommandTest {
 
