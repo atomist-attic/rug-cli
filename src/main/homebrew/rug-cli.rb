@@ -8,7 +8,8 @@ class RugCli < Formula
   bottle :unneeded
 
   depends_on :java => "1.8+"
-  depends_on "maven"
+  depends_on "maven" => :build
+  depends_on "node" => :recommended
 
   def install
     if build.head?
