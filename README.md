@@ -9,7 +9,7 @@ See the [Rug CLI Quick Start post][quick] and [Rug CLI documentation][doc]
 for more detailed information.
 
 [quick]: https://the-composition.com/rugs-on-the-command-line-eca46492db09#.9ke4rijhd
-[doc]: http://docs.atomist.com/reference/rug-cli/
+[doc]: http://docs.atomist.com/user-guide/interfaces/cli/
 
 ## Installation
 
@@ -38,6 +38,13 @@ You can build, test, and install the project locally with [maven][].
 $ mvn install
 ```
 
+To create the Markdown source for the Rug CLI reference documentation,
+run the `main` method in `MkDocs`.
+
+```
+$ java -cp target/rug-cli-*-SNAPSHOT.jar com.atomist.rug.cli.command.MkDocs
+```
+
 To create a new release of the project, simply push a tag of the form
 `M.N.P` where `M`, `N`, and `P` are integers that form the next
 appropriate [semantic version][semver] for release.  For example:
@@ -52,4 +59,4 @@ release and the comment provided on the annotated tag as the contents
 of the release notes.  It will also automatically upload the needed
 artifacts.
 
-[semver]: http://semver.org 
+[semver]: http://semver.org
