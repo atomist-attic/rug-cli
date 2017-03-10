@@ -42,33 +42,77 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         super(registry);
         this.commandRegistry = registry;
     }
+    
+    protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
+            ProgressReporter indicator) {
+        List<ArtifactDescriptor> dependencies = super.resolveDependencies(artifact, indicator);
 
-    private void clear() {
-        ((LineReaderImpl) reader).clearScreen();
+        Optional<ArtifactDescriptor> rug = dependencies.stream()
+                .filter(d -> d.group().equals(Constants.GROUP)
+                        && d.artifact().equals(Constants.RUG_ARTIFACT))
+                .findFirst();
+        if (rug.isPresent()) {
+            this.rugVersion = rug.get().version();
+        }
+
+        return dependencies;
     }
 
-    private void echo(String cmd) {
-        log.info(cmd.substring(5));
-    }
-
-    private void exit(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
-        // Exit the current shell
-        invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
-        throw new EndOfFileException();
-    }
-
-    private String expandHistory(String line) {
-        if (reader != null) {
-            try {
-                return reader.getExpander().expandHistory(reader.getHistory(), line);
+    @Override
+    protected void commandCompleted(int rc, String[] args, CommandInfo info,
+            ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+        // On finishing a single command from the command line, we want to start the shell if the
+        // shell command was invoked
+        if (rc == 0 && "shell".equals(info.name())) {
+            // We might invoke this with some additional commands, primarily from reload but also
+            // as part of shortcuts/aliasing
+            String line = org.springframework.util.StringUtils.arrayToDelimitedString(args, " ");
+            int ix = line.indexOf("&&");
+            if (ix > 0 && line.length() > ix + 2) {
+                invokePotentialGestureCommand(artifact, dependencies, line.substring(ix + 2));
             }
-            catch (IllegalArgumentException e) {
-                log.error(e.getMessage());
+            // Now start the loop
+            commandLoop(artifact, dependencies);
+        }
+    }
+    
+    private void commandLoop(ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies) {
+
+        this.gestureRegistry = new GestureRegistry();
+        this.reader = lineReader();
+
+        String line = null;
+        try {
+            while (true) {
+
+                try {
+                    line = reader.readLine(prompt(artifact));
+                }
+                catch (UserInterruptException e) {
+                    // Ignore Ctrl-C
+                    continue;
+                }
+
+                // Empty line
+                if (line == null || line.length() == 0) {
+                    continue;
+                }
+
+                // Now ready to handle the input line
+                handleInput(artifact, dependencies, line);
             }
         }
-        return line;
+        catch (EndOfFileException e) {
+            // Handle Ctrl-D
+            log.info("Goodbye!");
+        }
+        finally {
+            // Jline creates some resources that need proper shutdown
+            ShellUtils.shutdown(reader);
+        }
     }
-
+    
     private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
             String line) {
         // Remove confusing whitespace from beginning and end
@@ -103,6 +147,27 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         catch (Throwable e) {
             // Make sure we don't exit the loop
             printError((line.contains("-X") || line.contains("--error")), e);
+        }
+    }
+    
+    private void invokePotentialGestureCommand(ArtifactDescriptor artifact,
+            List<ArtifactDescriptor> dependencies, String line) {
+        String[] args = CommandUtils.splitCommandline(line);
+        CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
+        if (gestureRegistry != null
+                && gestureRegistry.findGesture(commandLine.getArgList().get(0)).isPresent()) {
+
+            Gesture gesture = gestureRegistry.findGesture(commandLine.getArgList().get(0)).get();
+
+            if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
+                printGestureHelp(gesture);
+            }
+            else {
+                invokeChainedCommands(artifact, dependencies, gesture.toCommand(commandLine));
+            }
+        }
+        else {
+            invokeChainedCommands(artifact, dependencies, line);
         }
     }
 
@@ -141,64 +206,6 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                     break;
                 }
             }
-        }
-    }
-
-    private void invokeCommandInLoop(ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {
-
-        this.gestureRegistry = new GestureRegistry();
-        this.reader = lineReader();
-
-        String line = null;
-        try {
-            while (true) {
-
-                try {
-                    line = reader.readLine(prompt(artifact));
-                }
-                catch (UserInterruptException e) {
-                    // Ignore Ctrl-C
-                    continue;
-                }
-
-                // Empty line
-                if (line == null || line.length() == 0) {
-                    continue;
-                }
-
-                // Now ready to handle the input line
-                handleInput(artifact, dependencies, line);
-            }
-        }
-        catch (EndOfFileException e) {
-            // Handle Ctrl-D
-            log.info("Goodbye!");
-        }
-        finally {
-            // Jline creates some resources that need proper shutdown
-            ShellUtils.shutdown(reader);
-        }
-    }
-
-    private void invokePotentialGestureCommand(ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies, String line) {
-        String[] args = CommandUtils.splitCommandline(line);
-        CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
-        if (gestureRegistry != null
-                && gestureRegistry.findGesture(commandLine.getArgList().get(0)).isPresent()) {
-
-            Gesture gesture = gestureRegistry.findGesture(commandLine.getArgList().get(0)).get();
-
-            if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
-                printGestureHelp(gesture);
-            }
-            else {
-                invokeChainedCommands(artifact, dependencies, gesture.toCommand(commandLine));
-            }
-        }
-        else {
-            invokeChainedCommands(artifact, dependencies, line);
         }
     }
 
@@ -308,37 +315,30 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             }
         }
     }
-
-    protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
-            ProgressReporter indicator) {
-        List<ArtifactDescriptor> dependencies = super.resolveDependencies(artifact, indicator);
-
-        Optional<ArtifactDescriptor> rug = dependencies.stream()
-                .filter(d -> d.group().equals(Constants.GROUP)
-                        && d.artifact().equals(Constants.RUG_ARTIFACT))
-                .findFirst();
-        if (rug.isPresent()) {
-            this.rugVersion = rug.get().version();
-        }
-
-        return dependencies;
+    
+    private void clear() {
+        ((LineReaderImpl) reader).clearScreen();
     }
 
-    @Override
-    protected void commandCompleted(int rc, String[] args, CommandInfo info,
-            ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
-        // On finishing a single command from the command line, we want to start the shell if the
-        // shell command was invoked
-        if (rc == 0 && "shell".equals(info.name())) {
-            // We might invoke this with some additional commands, primarily from reload but also
-            // as part of shortcuts/aliasing
-            String line = org.springframework.util.StringUtils.arrayToDelimitedString(args, " ");
-            int ix = line.indexOf("&&");
-            if (ix > 0 && line.length() > ix + 2) {
-                invokePotentialGestureCommand(artifact, dependencies, line.substring(ix + 2));
+    private void echo(String cmd) {
+        log.info(cmd.substring(5));
+    }
+
+    private void exit(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
+        // Exit the current shell
+        invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
+        throw new EndOfFileException();
+    }
+
+    private String expandHistory(String line) {
+        if (reader != null) {
+            try {
+                return reader.getExpander().expandHistory(reader.getHistory(), line);
             }
-            // Now start the loop
-            invokeCommandInLoop(artifact, dependencies);
+            catch (IllegalArgumentException e) {
+                log.error(e.getMessage());
+            }
         }
+        return line;
     }
 }
