@@ -81,7 +81,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
             if (!compilers.isEmpty()) {
 
                 return new ProgressReportingOperationRunner<ArtifactSource>(
-                        "Processing script sources").run(indicator -> {
+                        "Invoking compilers on project sources").run(indicator -> {
                             ArtifactSource compiledSource = source;
                             for (Compiler compiler : compilers) {
                                 indicator.report(String.format("Invoking %s on .%s files",
