@@ -93,8 +93,17 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 reload("shell -l && " + line, artifact, dependencies);
             }
         }
-
-        invokePotentialGestureCommand(artifact, dependencies, line);
+        
+        try {
+            invokePotentialGestureCommand(artifact, dependencies, line);
+        }
+        catch (EndOfFileException | UserInterruptException e) {
+            throw e;
+        }
+        catch (Throwable e) {
+            // Make sure we don't exit the loop
+            printError((line.contains("-X") || line.contains("--error")), e);
+        }
     }
 
     private void invokeChainedCommands(ArtifactDescriptor artifact,

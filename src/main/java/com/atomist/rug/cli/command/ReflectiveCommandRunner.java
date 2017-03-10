@@ -155,8 +155,14 @@ public class ReflectiveCommandRunner {
     }
 
     private void printError(CommandLine commandLine, Throwable e) {
+        printError((commandLine != null && commandLine.hasOption('X')), e);
+    }
+    
+    protected void printError(boolean printStacktrace, Throwable e) {
+        // Extract root case for potentially wrapped exception because of reflective calls
+        e = extractRootCause(e);
         // Print stacktraces only if requested from the command line
-        if (commandLine != null && commandLine.hasOption('X')) {
+        if (printStacktrace) {
             log.error(e);
         }
         else {
@@ -246,7 +252,7 @@ public class ReflectiveCommandRunner {
         }
         catch (Throwable e) {
             // Extract root exception; cycle through nested exceptions to extract root cause
-            printError(commandLine, extractRootCause(e));
+            printError(commandLine, e);
             return 1;
         }
         finally {
