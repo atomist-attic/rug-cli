@@ -7,12 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.24.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.25.0...HEAD
+
+## [0.25.0] - 2017-03-10
+
+[0.25.0]: https://github.com/atomist/rug-cli/compare/0.24.0...0.25.0
 
 ### Added
 
 -   Support for describing handlers
 -   Generate Markdown documentation for CLI
+- 	Support for CLI gestures as per https://github.com/atomist/rug-cli/issues/155
+-	 	Add `--requires` option to overwrite the Rug version of the archive as per
+		https://github.com/atomist/rug-cli/issues/152
+- 	Automatically reload the shell on changes to underlying files as per
+		https://github.com/atomist/rug-cli/issues/142
+- 	Search lists matching operations with `--operations` as per
+		https://github.com/atomist/rug-cli/issues/100
 
 ### Changed
 
