@@ -55,7 +55,7 @@ public class Runner {
 
     private void logException(CommandLine commandLine, Throwable e) {
         // Print stacktraces only if requested from the command line
-        if (commandLine.hasOption("X")) {
+        if (commandLine != null && commandLine.hasOption("X")) {
             log.error(e);
         }
         else {
