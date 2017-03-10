@@ -23,7 +23,7 @@ public class OperationCompleter implements Completer {
 
     // TODO add commands for new handlers
     private static final List<String> COMMANDS = Arrays.asList("edit", "ed", "generate", "gen",
-            "describe", "desc");
+            "describe", "desc", "command", "trigger");
 
     private long timestamp = -1;
 
@@ -47,6 +47,12 @@ public class OperationCompleter implements Completer {
                 case "generate":
                 case "gen":
                     completeBasedOnJsonpathMatches("generators", line.words(), candidates);
+                    break;
+                case "command":
+                    completeBasedOnJsonpathMatches("command_handlers", line.words(), candidates);
+                    break;
+                case "trigger":
+                    completeBasedOnJsonpathMatches("event_handlers", line.words(), candidates);
                     break;
                 case "describe":
                 case "desc":
