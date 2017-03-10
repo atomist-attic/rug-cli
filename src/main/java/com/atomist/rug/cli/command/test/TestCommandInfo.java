@@ -18,7 +18,7 @@ public class TestCommandInfo extends AbstractLocalArtifactDescriptorProvider {
 
     @Override
     public String detail() {
-        return "TEST is the name of a test scenario.  If no TEST is specified, all scenarios will run.";
+        return "TEST is the name of a test feature or feature file.  If no TEST is specified, all scenarios will run.";
     }
 
     @Override
