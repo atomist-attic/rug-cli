@@ -16,6 +16,7 @@ import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
@@ -43,13 +44,15 @@ import gherkin.ast.ScenarioDefinition;
 import gherkin.ast.Step;
 import scala.Option;
 import scala.collection.JavaConverters;
+import scala.runtime.AbstractFunction1;
 
 public class TestCommand extends AbstractAnnotationBasedCommand {
 
     private Log log = new Log(getClass());
 
     @Command
-    public void run(Rugs operations, ArtifactDescriptor artifact, ArtifactSource source) {
+    public void run(Rugs operations, ArtifactDescriptor artifact, ArtifactSource source,
+            @Argument(index = 1) String test) {
 
         ArchiveTestResult result = new ProgressReportingOperationRunner<ArchiveTestResult>(
                 String.format("Running tests in %s", ArtifactDescriptorUtils.coordinates(artifact)))
@@ -65,7 +68,19 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                                     Option.apply(operations),
                                     JavaConverters.asScalaBufferConverter(listeners).asScala());
 
-                            return runner.execute();
+                            return runner
+                                    .execute(new AbstractFunction1<FeatureDefinition, Object>() {
+                                        @Override
+                                        public Object apply(FeatureDefinition fd) {
+                                            if (test == null) {
+                                                return true;
+                                            }
+                                            else {
+                                                return test.equals(fd.feature().getName())
+                                                        || test.equals(fd.definition().name());
+                                            }
+                                        }
+                                    });
                         });
         TestReport report = new TestReport(result);
         log.newline();
