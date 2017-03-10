@@ -1,14 +1,17 @@
 package com.atomist.rug.cli.command;
 
-import com.atomist.rug.cli.command.publish.PublishCommand;
-import com.atomist.rug.cli.command.publish.PublishCommandInfo;
-import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.LocalArtifactDescriptor;
+import static com.atomist.rug.cli.command.MkDocs.compareOptions;
+import static com.atomist.rug.cli.command.MkDocs.formatCommand;
+import static com.atomist.rug.cli.command.MkDocs.formatOption;
+import static com.atomist.rug.cli.command.MkDocs.markdownDocs;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.junit.Test;
 
-import static com.atomist.rug.cli.command.MkDocs.*;
+import com.atomist.rug.cli.command.publish.PublishCommand;
+import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public class MkDocsTest {
 
