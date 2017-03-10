@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command.gesture;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,8 +18,10 @@ public class GestureRegistry {
 
     private void init() {
         if (gestures == null) {
-            gestures = GestureReader.read(
-                    new File(SystemUtils.getUserHome(), ".atomist" + File.separator + "gestures"));
+            gestures = new HashMap<>();
+            gestures.putAll(GestureReader.readFromClasspath());
+            gestures.putAll(GestureReader.readFromDirectory(
+                    new File(SystemUtils.getUserHome(), ".atomist" + File.separator + "gestures")));
         }
     }
 

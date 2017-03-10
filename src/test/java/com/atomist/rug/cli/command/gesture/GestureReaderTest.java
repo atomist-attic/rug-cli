@@ -14,14 +14,24 @@ import com.atomist.rug.cli.command.gesture.GestureReader;
 public class GestureReaderTest {
 
     @Test
-    public void testShortcutReading() {
+    public void testGestureReadingFromDirectory() {
         Map<String, Gesture> shortcuts = GestureReader
-                .read(new File("src/test/resources/gestures"));
+                .readFromDirectory(new File("src/main/resources/gestures"));
         assertEquals(2, shortcuts.size());
-        assertTrue(shortcuts.containsKey("init-rug-archive"));
-        assertTrue(shortcuts.containsKey("clone-rug-archive"));
-        assertEquals(10, shortcuts.get("init-rug-archive").commands().size());
-        shortcuts.get("init-rug-archive").placeholders();
+        assertTrue(shortcuts.containsKey("generate-rug-project"));
+        assertTrue(shortcuts.containsKey("clone-rug-project"));
+        assertEquals(13, shortcuts.get("generate-rug-project").commands().size());
+        assertEquals(3, shortcuts.get("generate-rug-project").placeholders().size());
+    }
+
+    @Test
+    public void testGestureReadingFromClasspath() {
+        Map<String, Gesture> shortcuts = GestureReader.readFromClasspath();
+        assertEquals(2, shortcuts.size());
+        assertTrue(shortcuts.containsKey("generate-rug-project"));
+        assertTrue(shortcuts.containsKey("clone-rug-project"));
+        assertEquals(13, shortcuts.get("generate-rug-project").commands().size());
+        assertEquals(3, shortcuts.get("generate-rug-project").placeholders().size());
     }
 
 }

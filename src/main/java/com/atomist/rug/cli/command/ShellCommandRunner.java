@@ -24,6 +24,7 @@ import com.atomist.rug.cli.command.shell.FileAndDirectoryNameCompleter;
 import com.atomist.rug.cli.command.shell.GestureCompleter;
 import com.atomist.rug.cli.command.shell.OperationCompleter;
 import com.atomist.rug.cli.command.shell.ShellUtils;
+import com.atomist.rug.cli.command.utils.CommandHelpFormatter;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.StringUtils;
@@ -178,13 +179,22 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         if (gestureRegistry != null
                 && gestureRegistry.findGesture(commandLine.getArgList().get(0)).isPresent()) {
 
-            Gesture shortcut = gestureRegistry.findGesture(commandLine.getArgList().get(0)).get();
-            invokeChainedCommands(artifact, dependencies, shortcut.toCommand(commandLine));
+            Gesture gesture = gestureRegistry.findGesture(commandLine.getArgList().get(0)).get();
 
+            if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
+                printGestureHelp(gesture);
+            }
+            else {
+                invokeChainedCommands(artifact, dependencies, gesture.toCommand(commandLine));
+            }
         }
         else {
             invokeChainedCommands(artifact, dependencies, line);
         }
+    }
+
+    private void printGestureHelp(Gesture gesture) {
+        log.info(new CommandHelpFormatter().printGestureHelp(gesture));
     }
 
     private LineReader lineReader() {

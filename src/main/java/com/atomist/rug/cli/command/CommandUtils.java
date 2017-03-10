@@ -63,7 +63,7 @@ public abstract class CommandUtils {
                     .forEach(o -> options.addOption(o.getOpt(), o.getLongOpt(), o.hasArg(), null));
 
             CommandLineParser parser = new DefaultParser();
-            CommandLine commandLine = parser.parse(options, args, true);
+            CommandLine commandLine = parser.parse(options, args, false);
             CommandLineOptions.set(commandLine);
             return commandLine;
         }
@@ -119,6 +119,7 @@ public abstract class CommandUtils {
                 if ("\'".equals(nextTok)) {
                     lastTokenHasBeenQuoted = true;
                     state = normal;
+                    current.append("\'");
                 }
                 else {
                     current.append(nextTok);
@@ -128,6 +129,7 @@ public abstract class CommandUtils {
                 if ("\"".equals(nextTok)) {
                     lastTokenHasBeenQuoted = true;
                     state = normal;
+                    current.append("\"");
                 }
                 else {
                     current.append(nextTok);
@@ -136,9 +138,11 @@ public abstract class CommandUtils {
             default:
                 if ("\'".equals(nextTok)) {
                     state = inQuote;
+                    current.append("\'");
                 }
                 else if ("\"".equals(nextTok)) {
                     state = inDoubleQuote;
+                    current.append("\"");
                 }
                 else if (" ".equals(nextTok)) {
                     if (lastTokenHasBeenQuoted || current.length() != 0) {
