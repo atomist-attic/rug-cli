@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command.utils;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -29,7 +30,8 @@ public abstract class GitUtils {
             log.info("Initialized a new git repository at " + git.getRepository().getDirectory());
             git.add().addFilepattern(".").call();
             RevCommit commit = git.commit().setAll(true)
-                    .setMessage(String.format("%s\n\n```%s```", generator.description(),
+                    .setMessage(String.format("%s\n\n```%s```",
+                            StringUtils.capitalize(generator.description()),
                             new ProvenanceInfoWriter().write(generator, arguments,
                                     Constants.cliClient())))
                     .setAuthor("Atomist", "cli@atomist.com").call();
@@ -50,7 +52,8 @@ public abstract class GitUtils {
                 log.info("Committing to git repository at " + git.getRepository().getDirectory());
                 git.add().addFilepattern(".").call();
                 RevCommit commit = git.commit().setAll(true)
-                        .setMessage(String.format("%s\n\n```\n%s```", operation.description(),
+                        .setMessage(String.format("%s\n\n```\n%s```",
+                                StringUtils.capitalize(operation.description()),
                                 new ProvenanceInfoWriter().write(operation, arguments,
                                         Constants.cliClient())))
                         .setAuthor("Atomist", "cli@atomist.com").call();
