@@ -80,11 +80,11 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
         System.out.print("\r");
         if (success) {
             System.out.println(message + " " + Style.green("completed")
-                    + (duration > -1 ? " in " + duration + "s" : ""));
+                    + (duration > -1 ? " in " + String.format("%.2f", duration) + "s" : ""));
         }
         else {
             System.out.println(message + " " + Style.red("failed")
-                    + (duration > -1 ? " in " + duration + "s" : ""));
+                    + (duration > -1 ? " in " + String.format("%.2f", duration) + "s" : ""));
         }
     }
 

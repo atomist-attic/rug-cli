@@ -14,6 +14,8 @@ import org.springframework.util.StringUtils;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.CommandInfo;
 import com.atomist.rug.cli.command.CommandInfoRegistry;
+import com.atomist.rug.cli.command.gesture.Gesture;
+import com.atomist.rug.cli.command.gesture.GestureRegistry;
 import com.atomist.rug.cli.output.Style;
 
 public class CommandHelpFormatter {
@@ -56,8 +58,23 @@ public class CommandHelpFormatter {
         return sb.toString();
 
     }
+    
+    public String printGestureHelp(Gesture gesture) {
+        StringBuilder sb = new StringBuilder();
 
-    public String printHelp(CommandInfoRegistry registry, Options options) {
+        sb.append(String.format("Usage: %s%s\n", Style.bold(Constants.command()),
+                Style.bold(gesture.usage())));
+        sb.append(String.format("%s.\n", gesture.description()));
+
+        sb.append("\n");
+        sb.append(WordUtils.wrap(gesture.detail(), WRAP));
+        sb.append(WordUtils.wrap(HELP_FOOTER, WRAP));
+
+        return sb.toString();
+    }
+
+    public String printHelp(CommandInfoRegistry commandRegistry, GestureRegistry gestureRegistry,
+            Options options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("Usage: %s\n",
@@ -66,7 +83,8 @@ public class CommandHelpFormatter {
 
         printOptions(options, sb, Style.bold("Options"));
 
-        printCommands(sb, registry);
+        printCommands(sb, commandRegistry);
+        printGestures(sb, gestureRegistry);
 
         sb.append("\n");
         sb.append(String.format("Run '%sCOMMAND --help' for more detailed information on COMMAND.",
@@ -102,6 +120,20 @@ public class CommandHelpFormatter {
             sb.append("\n");
             e.getValue().forEach(c -> sb.append(String.format(formatString, c.name(), WordUtils
                     .wrap(c.description(), WRAP - length, createString(length + 3), false))));
+        });
+    }
+
+    private void printGestures(StringBuilder sb, GestureRegistry registry) {
+        sb.append("\n");
+        sb.append(Style.bold("Available gestures:"));
+        sb.append("\n");
+        int length = registry.gestures().stream()
+                .max(Comparator.comparingInt(o -> o.name().length())).get().name().length() + 1;
+        String formatString = "  %-" + length + "s %s\n";
+
+        registry.gestures().forEach(g -> {
+            sb.append(String.format(formatString, g.name(), WordUtils.wrap(g.description(),
+                    WRAP - length, createString(length + 3), false)));
         });
     }
 

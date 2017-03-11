@@ -67,7 +67,7 @@ public abstract class AbstractAnnotationBasedCommand
                             name = arg.substring(0, i);
                             value = arg.substring(i + 1);
                         }
-                        pvs.add(new SimpleParameterValue(name, value));
+                        pvs.add(new SimpleParameterValue(name, clearQuotes(value)));
                     }
                 }
                 return new SimpleParameterValues(asScalaBuffer(pvs));
@@ -87,12 +87,26 @@ public abstract class AbstractAnnotationBasedCommand
 
     private ParameterValues prepareArguments(Properties props) {
         List<ParameterValue> pvs = props.entrySet().stream()
-                .map(e -> new SimpleParameterValue((String) e.getKey(), e.getValue()))
+            .map(e -> new SimpleParameterValue((String) e.getKey(), clearQuotes(e.getValue())))
                 .collect(Collectors.toList());
 
         return new SimpleParameterValues(asScalaBuffer(pvs));
     }
-
+    
+    private Object clearQuotes(Object value) {
+        if (value != null && value instanceof String) {
+            String v = (String) value;
+            if (v.startsWith("\"") || v.startsWith("'")) {
+                v = v.substring(1);
+            }
+            if (v.endsWith("\"") || v.endsWith("'")) {
+                v = v.substring(0, v.length() - 1);
+            }
+            value = v;
+        }
+        return value;
+    }
+    
     private List<Object> prepareMethodArguments(Method method, Rugs rugs,
             ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
 

@@ -8,17 +8,17 @@ import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
-import com.atomist.rug.cli.command.shortcuts.Shortcut;
-import com.atomist.rug.cli.command.shortcuts.ShortcutRegistry;
+import com.atomist.rug.cli.command.gesture.Gesture;
+import com.atomist.rug.cli.command.gesture.GestureRegistry;
 
 /**
  * {@link Completer} for shortcuts.
  */
-public class ShortcutCompleter implements Completer {
+public class GestureCompleter implements Completer {
 
-    private ShortcutRegistry registry;
+    private GestureRegistry registry;
 
-    public ShortcutCompleter(ShortcutRegistry registry) {
+    public GestureCompleter(GestureRegistry registry) {
         this.registry = registry;
     }
 
@@ -26,16 +26,16 @@ public class ShortcutCompleter implements Completer {
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
         List<String> words = line.words();
         if (words.size() == 1) {
-            registry.shortcutNames()
+            registry.gestureNames()
                     .forEach(s -> candidates.add(new Candidate(s, s, null, null, null, s, true)));
         }
         else if (words.size() > 1) {
             String word = words.get(0);
 
-            Optional<String> shortcut = registry.shortcutNames().stream()
+            Optional<String> shortcut = registry.gestureNames().stream()
                     .filter(s -> s.startsWith(word)).findFirst();
             if (shortcut.isPresent()) {
-                Shortcut s = registry.findShortcut(shortcut.get()).get();
+                Gesture s = registry.findGesture(shortcut.get()).get();
 
                 s.placeholders().stream()
                         .filter(p -> !words.stream().filter(w -> w.startsWith(p + "=")).findAny()

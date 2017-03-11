@@ -92,9 +92,9 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         addOperation(node, operations, "generator", "Generators");
         addOperation(node, operations, "editor", "Editors");
         addOperation(node, operations, "reviewer", "Reviewers");
-        addOperation(node, operations, "command-handler", "Command Handlers");
-        addOperation(node, operations, "event-handler", "Event Handlers");
-        addOperation(node, operations, "respond-handler", "Respond Handlers");
+        addOperation(node, operations, "command_handler", "Command Handlers");
+        addOperation(node, operations, "event_handler", "Event Handlers");
+        addOperation(node, operations, "respond_handler", "Respond Handlers");
         LogVisitor visitor = new LogVisitor(log);
         node.accept(visitor);
     }

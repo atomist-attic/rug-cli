@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.resolver;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,7 +27,7 @@ import com.atomist.rug.resolver.maven.MavenProperties;
 public abstract class DependencyResolverFactory {
 
     public static DependencyResolver createDependencyResolver(ArtifactDescriptor artifact,
-            ProgressReporter indicator) {
+            ProgressReporter indicator, String... exclusions) {
         ExecutorService executorService = Executors.newFixedThreadPool(5, r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
@@ -68,7 +69,7 @@ public abstract class DependencyResolverFactory {
 
         resolver.setTransferListener(new ProgressReportingTransferListener(indicator));
         resolver.setProxySelector(new ConservativeProxySelector(new JreProxySelector()));
-        addExclusions(resolver);
+        addExclusions(resolver, exclusions);
 
         if (CommandLineOptions.hasOption("r")) {
             resolver.addDependencyVisitor(new LogDependencyVisitor(new LogDependencyVisitor.Log() {
@@ -83,7 +84,7 @@ public abstract class DependencyResolverFactory {
 
                 private void firstMessage() {
                     if (firstMessage) {
-                        indicator.report(String.format("Dependency report for %s:%s:%s",
+                        indicator.report(String.format("Dependency report for %s:%s (%s)",
                                 artifact.group(), artifact.artifact(), artifact.version()));
                         firstMessage = false;
                     }
@@ -94,31 +95,34 @@ public abstract class DependencyResolverFactory {
         return wrapDependencyResolver(resolver, properties.getRepoLocation());
     }
 
-    private static void addExclusions(MavenBasedDependencyResolver resolver) {
-        // This is exclusion is needed to prevent multiple versions of slf4j bindings on the
-        // classpath
-        // resolver.setExclusions(Arrays.asList(new String[] { "ch.qos.logback:logback-classic",
-        // "ch.qos.logback:logback-access", "org.slf4j:jcl-over-slf4j" }));
+    private static void addExclusions(MavenBasedDependencyResolver resolver, String... exclusions) {
+        resolver.setExclusions(Arrays.asList(exclusions));
     }
 
     private static DependencyResolver wrapDependencyResolver(DependencyResolver resolver,
             String repoHome) {
-        return new CachingDependencyResolver(resolver, repoHome) {
+        if (CommandLineOptions.hasOption("requires")) {
+            return resolver;
+        }
+        else {
+            return new CachingDependencyResolver(resolver, repoHome) {
 
-            @Override
-            public String toString() {
-                return super.toString() + "[Caching dependency resolver around " + resolver + "]";
-            }
-
-            @Override
-            protected boolean isOutdated(ArtifactDescriptor artifact, File file) {
-                if (CommandLineOptions.hasOption("u")) {
-                    return true;
+                @Override
+                public String toString() {
+                    return super.toString() + "[Caching dependency resolver around " + resolver
+                            + "]";
                 }
-                return super.isOutdated(artifact, file);
-            }
 
-        };
+                @Override
+                protected boolean isOutdated(ArtifactDescriptor artifact, File file) {
+                    if (CommandLineOptions.hasOption("u")) {
+                        return true;
+                    }
+                    return super.isOutdated(artifact, file);
+                }
+
+            };
+        }
     }
 
 }

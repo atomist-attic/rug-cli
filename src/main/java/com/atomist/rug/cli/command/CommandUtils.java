@@ -5,19 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
@@ -65,14 +57,13 @@ public abstract class CommandUtils {
     public static CommandLine parseInitialCommandline(String[] args, CommandInfoRegistry registry) {
         try {
             // For the purpose of the initial parse we need to collect all options and make sure
-            // they
-            // are not configured with required=true and then parse the commandLine
+            // they are not configured with required=true and then parse the commandLine
             Options options = new Options();
             registry.allOptions().getOptions()
                     .forEach(o -> options.addOption(o.getOpt(), o.getLongOpt(), o.hasArg(), null));
 
             CommandLineParser parser = new DefaultParser();
-            CommandLine commandLine = parser.parse(options, args, true);
+            CommandLine commandLine = parser.parse(options, args, false);
             CommandLineOptions.set(commandLine);
             return commandLine;
         }
@@ -128,6 +119,7 @@ public abstract class CommandUtils {
                 if ("\'".equals(nextTok)) {
                     lastTokenHasBeenQuoted = true;
                     state = normal;
+                    current.append("\'");
                 }
                 else {
                     current.append(nextTok);
@@ -137,6 +129,7 @@ public abstract class CommandUtils {
                 if ("\"".equals(nextTok)) {
                     lastTokenHasBeenQuoted = true;
                     state = normal;
+                    current.append("\"");
                 }
                 else {
                     current.append(nextTok);
@@ -145,9 +138,11 @@ public abstract class CommandUtils {
             default:
                 if ("\'".equals(nextTok)) {
                     state = inQuote;
+                    current.append("\'");
                 }
                 else if ("\"".equals(nextTok)) {
                     state = inDoubleQuote;
+                    current.append("\"");
                 }
                 else if (" ".equals(nextTok)) {
                     if (lastTokenHasBeenQuoted || current.length() != 0) {

@@ -35,10 +35,12 @@ _rug() {
         -V --verbose
         -o --offline
         -r --resolver-report
+        -u --update
         -t --timer
         -s --settings
         -q --quiet
         -u --update
+        --requires
     )
     local commands=(
         describe
@@ -51,9 +53,10 @@ _rug() {
         default
         extension
         search
-        tree
+        to-path
+        path
         shell
-        login
+        repositories
     )
 
     local i command_re special special_index
@@ -82,15 +85,17 @@ _rug() {
         -V --verbose
         -o --offline
         -r --resolver-report
+        -u --update
         -t --timer
        	-s --settings
        	-q --quiet
+        --requires
     )
     if [[ $special == @(describe|edit|generate) ]]; then
         command_options+=( -a --archive-version )
         command_options+=( -l --local )
     fi
-    if [[ $special == @(edit|generate|test|tree) ]]; then
+    if [[ $special == @(edit|generate|test|path|to-path) ]]; then
        command_options+=( -C --change-dir )
     fi
     if [[ $special == edit ]]; then
@@ -124,16 +129,29 @@ _rug() {
     if [[ $special == shell ]]; then
         command_options+=( -l --local )
     fi
-    if [[ $special == login ]]; then
+    if [[ $special == repositories ]]; then
         command_options+=( --username )
         command_options+=( --mfa-code )
+    fi
+    if [[ $special == path ]]; then
+        command_options+=( -v --values )
+    fi
+    if [[ $special == to-path ]]; then
+        command_options+=( --kind )
+        command_options+=( --line )
+        command_options+=( --column )
+    fi
+    if [[ $special == describe ]]; then
+        command_options+=( -O --output )
     fi
 
     local command_args=()
     local describe_args=(
         editor
         generator
-        executor
+        command-handler
+        event-handler
+        response-handler
         reviewer
         archive
     )
@@ -184,6 +202,23 @@ _rug() {
             command_args+=( "${extension_args[@]}" )
         fi
     fi
+
+    local repositories_args=(
+          login
+          configure
+      )
+      local repositories_re repositories_arg_found=
+      repositories_re=$(IFS='|'; echo "${repositories_args[*]}")
+      if [[ $special == repositories ]]; then
+          for (( i=$special_index+1; i < ${#words[@]}-1; i++ )); do
+              if [[ ${words[i]} == @($repositories_re) ]]; then
+                  repositories_arg_found=true
+              fi
+          done
+          if [[ ! $repositories_arg_found ]]; then
+              command_args+=( "${repositories_args[@]}" )
+          fi
+      fi
 
     if [[ $cur == -* ]]; then
         COMPREPLY=( $( compgen -W "${command_options[*]}" -- "$cur" ) )

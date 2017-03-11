@@ -74,7 +74,7 @@ public class PublishCommand extends AbstractRepositoryCommand {
         log.info("  %s", Style.underline(artifactUrl));
 
         log.newline();
-        log.info(Style.green("Successfully published archive for %s:%s:%s", manifest.group(),
+        log.info(Style.green("Successfully published archive for %s:%s (%s)", manifest.group(),
                 manifest.artifact(), manifest.version()));
     }
 

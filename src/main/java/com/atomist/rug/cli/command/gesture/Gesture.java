@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command.shortcuts;
+package com.atomist.rug.cli.command.gesture;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,11 +15,11 @@ import org.springframework.util.StringUtils;
 import com.atomist.rug.cli.Constants;
 import com.github.tomaslanger.chalk.Ansi;
 
-public class Shortcut {
+public class Gesture {
 
     private static final PropertyPlaceholderHelper nonStrictHelper = new PropertyPlaceholderHelper(
             "${", "}", ":", true);
-    private static final String PLACEHOLDER_PATTERN = "\\$\\{([.a-zA-Z_-]+)[.:a-zA-Z-_ ]*\\}";
+    private static final String PLACEHOLDER_PATTERN = "\\$\\{([.a-zA-Z_-]+)[.:a-zA-Z-_ \"]*\\}";
 
     private static final Properties STYLE_PLACEHOLDERS;
     static {
@@ -35,16 +35,27 @@ public class Shortcut {
         STYLE_PLACEHOLDERS.put("yellow", Ansi.Color.YELLOW.getStart());
         STYLE_PLACEHOLDERS.put("/yellow", Ansi.Color.YELLOW.getEnd());
         STYLE_PLACEHOLDERS.put("divider", Constants.DIVIDER);
+        STYLE_PLACEHOLDERS.put("dot", Constants.DOT);
+        STYLE_PLACEHOLDERS.put("seperator", Constants.SEPERATOR);
+        STYLE_PLACEHOLDERS.put("line",
+                Constants.SEPERATOR + Constants.SEPERATOR + Constants.SEPERATOR);
     }
-
 
     private final String name;
 
     private final List<String> commands;
 
-    public Shortcut(String name, List<String> commands) {
+    private final String usage;
+    private final String description;
+    private final String detail;
+
+    public Gesture(String name, List<String> commands, String usage, String description,
+            String detail) {
         this.name = name;
         this.commands = commands;
+        this.usage = usage;
+        this.description = description;
+        this.detail = detail;
     }
 
     public String name() {
@@ -53,6 +64,18 @@ public class Shortcut {
 
     public List<String> commands() {
         return commands;
+    }
+
+    public String usage() {
+        return usage;
+    }
+
+    public String description() {
+        return description;
+    }
+
+    public String detail() {
+        return detail;
     }
 
     public Set<String> placeholders() {

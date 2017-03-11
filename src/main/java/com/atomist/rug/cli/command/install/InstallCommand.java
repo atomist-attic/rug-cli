@@ -62,7 +62,7 @@ public class InstallCommand extends AbstractRepositoryCommand {
         printTree(source);
 
         log.newline();
-        log.info(Style.green("Successfully installed archive for %s:%s:%s", manifest.group(),
+        log.info(Style.green("Successfully installed archive for %s:%s (%s)", manifest.group(),
                 manifest.artifact(), manifest.version()));
 
     }

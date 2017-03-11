@@ -1,0 +1,35 @@
+generate-rug-project:
+  usage: "generate-rug-archive [project_name=PROJECT_NAME] [owner=OWNER] [description=DESCRIPTION]"
+  description: "Generate a new Rug project with TypeScript support"
+  detail: "PROJECT_NAME should be a valid project name. OWNER should be the name of the owner \
+    of the rug archive; most often it makes sense to use the name of your GitHub organization \
+    as OWNER.  DESCRIPTION should be a short introduction to what your new rug project is about." 
+  commands:
+    - "/echo ${cyan}${divider}${/cyan} ${bold}Loading generator${/bold}"
+    - "shell atomist-rugs:rug-editors:latest"
+    - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Generating new rug project${/bold}"
+    - "generate NewRugProject ${project_name:my-rug-archive} owner=${owner:my-rugs} description=${description:\"My first Rug archive\"} -R"
+    - "/cd ${project_name:my-rug-archive}"
+    - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Adding TypeScript support to project${/bold}"
+    - "edit AddTypeScript -R"
+    - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Installing node modules${/bold}"
+    - "/cd .atomist"
+    - "/npm install"
+    - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Loading new rug project into shell${/bold}"
+    - "shell -l"
+    - "desc archive"
+
+clone-rug-project:
+  usage: clone-rug-project owner=OWNER repository=REPOSITORY 
+  description: "Clone an existing Rug project from GitHub and set up TypeScript support"
+  detail: "OWNER should be the owner of the GitHub repository; can either be your login or the name \
+    of an organization.  REPOSITORY should be the name of the GitHub repository to clone."
+  commands:
+    - "/echo ${cyan}${divider}${/cyan} ${bold}Cloning repository ${owner}/${repository}${/bold}"
+    - "/git clone https://github.com/${owner}/${repository}.git"
+    - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Installing node modules${/bold}"
+    - "/cd ${repository}/.atomist"
+    - "/npm install"
+    - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Loading rug project into shell${/bold}"
+    - "shell -l"
+    - "desc archive"

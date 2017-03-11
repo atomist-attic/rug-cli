@@ -15,13 +15,15 @@ public class Constants {
     public static final String ARTIFACT = "rug-cli";
 
     public static final String RUG_ARTIFACT = "rug";
-    public static final String RUG_VERSION_RANGE = "[0.12.0,1.0.0)";
+    public static final String RUG_VERSION_RANGE = "[0.13.0,1.0.0)";
 
     public static final String ATOMIST_ROOT = ".atomist";
     public static final String CLI_CONFIG_NAME = "cli.yml";
 
     public static final String DIVIDER = (SystemUtils.IS_OS_WINDOWS ? ">" : "→");
     public static final String REDIVID = (SystemUtils.IS_OS_WINDOWS ? "<" : "←");
+    public static final String DOT = (SystemUtils.IS_OS_WINDOWS ? "." : "·");
+    public static final String SEPERATOR = (SystemUtils.IS_OS_WINDOWS ? "-" : "―");
     public static final String LEFT_PADDING = "  ";
 
     public static final int WRAP_LENGTH = 80;

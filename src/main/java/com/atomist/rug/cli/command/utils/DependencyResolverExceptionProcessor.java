@@ -26,12 +26,12 @@ public class DependencyResolverExceptionProcessor {
 
             if (dce.getType() == ErrorType.DEPENDENCY_ERROR) {
                 sb.append(String.format(
-                        "\nUnable to resolve requested archive %s:%s:%s because of missing dependencies.",
+                        "\nUnable to resolve requested archive %s:%s (%s) because of missing dependencies.",
                         artifact.group(), artifact.artifact(), artifact.version()));
             }
             else {
                 sb.append(String.format(
-                        "\nUnable to resolve requested archive %s:%s:%s.\nPlease verify that specified archive exists in at least one of your configured repositories.",
+                        "\nUnable to resolve requested archive %s:%s (%s).\nPlease verify that specified archive exists in at least one of your configured repositories.",
                         artifact.group(), artifact.artifact(), artifact.version()));
             }
             return sb.toString();

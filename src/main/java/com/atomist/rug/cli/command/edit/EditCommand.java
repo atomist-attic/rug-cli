@@ -56,15 +56,9 @@ public class EditCommand extends AbstractParameterizedCommand {
             @Argument(start = 2) ParameterValues arguments, @Option("change-dir") String root,
             @Option("dry-run") boolean dryRun, @Option("repo") boolean repo) {
 
-        String name = OperationUtils.extractRugTypeName(fqArtifactName);
-        String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
+        String editorName = OperationUtils.extractRugTypeName(fqArtifactName);
         Optional<ProjectEditor> opt = asJavaCollection(operations.editors()).stream()
-                .filter(g -> g.name().equals(name)).findFirst();
-        if (!opt.isPresent()) {
-            // try again with a properly namespaced name
-            opt = asJavaCollection(operations.editors()).stream()
-                    .filter(g -> g.name().equals(fqName)).findFirst();
-        }
+                .filter(g -> g.name().equals(editorName)).findFirst();
 
         if (opt.isPresent()) {
             arguments = validate(artifact, opt.get(), arguments);
@@ -80,12 +74,12 @@ public class EditCommand extends AbstractParameterizedCommand {
                                         org.apache.commons.lang3.StringUtils
                                                 .capitalize(e.description()),
                                         Constants.WRAP_LENGTH, "\n    ", false)));
-                StringUtils.printClosestMatch(fqName, artifact, operations.editorNames());
+                StringUtils.printClosestMatch(editorName, artifact, operations.editorNames());
             }
             throw new CommandException(
-                    String.format("Specified editor %s could not be found in %s:%s:%s",
-                            StringUtils.stripName(name, artifact), artifact.group(),
-                            artifact.artifact(), artifact.version()));
+                    String.format("Specified editor %s could not be found in %s:%s",
+                            StringUtils.stripName(editorName, artifact), artifact.group(),
+                            artifact.artifact()));
         }
     }
 
