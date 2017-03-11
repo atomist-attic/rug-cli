@@ -151,7 +151,9 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
             Node assertion = node.addChild(ar.assertion() + ": " + resultName(ar),
                     Node.Type.UNKNOWN);
             if (ar.result() instanceof Failed) {
-                assertion.addChild(Style.gray(ar.result().message()), Type.UNKNOWN);
+                String message = ar.result().message();
+                message = message.replace("\n", "\n             ");
+                assertion.addChild(Style.gray(message), Type.UNKNOWN);
             }
         });
     }
