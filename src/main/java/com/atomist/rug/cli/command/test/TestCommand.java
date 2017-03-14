@@ -152,8 +152,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                     Node.Type.UNKNOWN);
             if (ar.result() instanceof Failed) {
                 String message = ar.result().message();
-                message = message.replace("\n", "\n             ");
-                assertion.addChild(Style.gray(message), Type.UNKNOWN);
+                assertion.addChild(message, Type.DETAIL);
             }
         });
     }

@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.tree.Node.Type;
 
 public class LogVisitor implements NodeVisitor {
 
@@ -26,7 +28,8 @@ public class LogVisitor implements NodeVisitor {
 
     public boolean visitEnter(Node node) {
         if (node.id() != null) {
-            out.info(indent + formatIndentation(node) + formatNode(node));
+            String indentation = indent + formatIndentation(node);
+            out.info(indentation + formatNode(node, indentation));
         }
         childInfos.add(new ChildInfo(node.children().size()));
         return true;
@@ -49,10 +52,43 @@ public class LogVisitor implements NodeVisitor {
         return buffer.toString();
     }
 
-    private String formatNode(Node node) {
-        StringBuilder buffer = new StringBuilder(128);
-        buffer.append(node.id());
-        return buffer.toString();
+    private String formatNode(Node node, String indentation) {
+        String msg = node.id();
+        // The following is really ugly but gets the job done.
+        if (msg.contains("\n")) {
+            String subIndentation = indentation.substring(0,
+                    indentation.length() - Constants.TREE_NODE.length());
+            if (indentation.endsWith(Constants.LAST_TREE_NODE_WITH_CHILDREN)) {
+                subIndentation = subIndentation
+                        + (Constants.TREE_CONNECTOR.length() == 2 ? "  " : "   ")
+                        + Constants.TREE_CONNECTOR;
+            }
+            else if (indentation.endsWith(Constants.TREE_NODE_WITH_CHILDREN)) {
+                subIndentation = subIndentation + Constants.TREE_CONNECTOR
+                        + Constants.TREE_CONNECTOR;
+            }
+            else {
+                subIndentation = subIndentation
+                        + (Constants.TREE_NODE.length() == 2 ? "   " : "    ");
+            }
+
+            String[] parts = msg.split("\n");
+            msg = (node.type() == Type.DETAIL ? Style.gray(parts[0]) : parts[0]);
+            for (int i = 1; i < parts.length; i++) {
+                String part = parts[i];
+                msg = msg + "\n" + subIndentation
+                        + (node.type() == Type.DETAIL ? Style.gray(part) : part);
+            }
+            return msg;
+        }
+        else {
+            if (node.type() == Type.DETAIL) {
+                return Style.gray(msg);
+            }
+            else {
+                return msg;
+            }
+        }
     }
 
     private static class ChildInfo {
