@@ -113,7 +113,7 @@ public class PathCommand extends AbstractAnnotationBasedCommand {
                                     .stream().filter(n -> !n.equals("-dynamic"))
                                     .collect(Collectors.toList()), ", ")
                             + "]")
-                    + ((node.relatedNodes().size() > 0) && id > 0 ? " {" + id + "}" : "") + " "
+                    + ((node.relatedNodes().size() > 0) && id > 0 ? " {" + id + "}" : "") + "\n"
                     + NodeUtils.value(node);
         }
     }
