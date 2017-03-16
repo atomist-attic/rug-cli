@@ -48,6 +48,7 @@ _rug() {
         edit
         list
         test
+        clean
         install
         publish
         default
