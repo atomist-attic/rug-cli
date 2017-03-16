@@ -1,3 +1,4 @@
+com.atomist.rug.cli.command.clean.CleanCommandInfo
 com.atomist.rug.cli.command.path.PathCommandInfo
 com.atomist.rug.cli.command.path.ToPathCommandInfo
 com.atomist.rug.cli.command.search.SearchCommandInfo
