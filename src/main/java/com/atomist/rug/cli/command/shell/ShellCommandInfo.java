@@ -21,7 +21,7 @@ public class ShellCommandInfo extends AbstractVersionCommandInfo {
 
     @Override
     public String description() {
-        return "Start a shell for the specified Rug archive";
+        return "Start a shell for a specified Rug archive";
     }
 
     @Override
