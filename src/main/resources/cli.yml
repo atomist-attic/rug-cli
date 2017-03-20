@@ -1,10 +1,10 @@
 # Set up the path to the local repository
-local-repository:
+local_repository:
   path: "${user.home}/.atomist/repository"
 
 # Set up remote repositories to query for Rug archives. Additionally one of the
 # repositories can also be enabled for publication (publish: true).
-remote-repositories:
+remote_repositories:
   central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"

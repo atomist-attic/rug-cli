@@ -13,15 +13,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_EMPTY)
 public class Settings {
 
-    public static final String GIHUB_TOKEN_KEY = "github-token";
+    public static final String GIHUB_TOKEN_KEY = "github_token";
 
     @JsonProperty("default")
     private Defaults defaults = new Defaults();
 
-    @JsonProperty("local-repository")
+    @JsonProperty("local_repository")
     private LocalRepository localRepository = new LocalRepository();
 
-    @JsonProperty("remote-repositories")
+    @JsonProperty("remote_repositories")
     private Map<String, RemoteRepository> remoteRepositories = new HashMap<>();
 
     @JsonProperty("configuration")

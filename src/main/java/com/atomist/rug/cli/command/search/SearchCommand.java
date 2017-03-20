@@ -28,7 +28,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
 
     public static final List<String> CATALOG_URL = Arrays
             .asList("https://api.atomist.com/catalog/operation/search");
-    public static final String CATALOG_URL_KEY = "catalog-service-urls";
+    public static final String CATALOG_URL_KEY = "catalog_service_urls";
 
     private ObjectMapper mapper = new ObjectMapper();
 

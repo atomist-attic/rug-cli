@@ -50,16 +50,27 @@ public abstract class SettingsReader {
                     .load(new FileInputStream(settingsFile));
 
             Settings settings = new Settings();
-
+            
+            
+            // For the next releases we keep the old '-' keys around for reading
             if (data.containsKey("local-repository")
                     && ((Map<String, Object>) data.get("local-repository")).containsKey("path")) {
                 settings.getLocalRepository().setPath(
                         (String) ((Map<String, Object>) data.get("local-repository")).get("path"));
             }
+            else if (data.containsKey("local_repository")
+                    && ((Map<String, Object>) data.get("local_repository")).containsKey("path")) {
+                settings.getLocalRepository().setPath(
+                        (String) ((Map<String, Object>) data.get("local_repository")).get("path"));
+            }
 
-            if (data.containsKey("remote-repositories")) {
+            if (data.containsKey("remote-repositories")
+                    || data.containsKey("remote_repositories")) {
                 Map<String, Map<String, Object>> repos = (Map<String, Map<String, Object>>) data
                         .get("remote-repositories");
+                if (repos == null) {
+                    repos = (Map<String, Map<String, Object>>) data.get("remote_repositories");
+                }
                 repos.entrySet().forEach(r -> {
                     Map<String, Object> repo = r.getValue();
                     boolean publish = (Boolean) repo.get("publish");
