@@ -163,6 +163,7 @@ public class SearchOperations {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Version {
         @JsonProperty
         private String value;
