@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.25.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.26.0...HEAD
+
+## [0.26.0] - 2017-03-20
+
+[0.26.0]: https://github.com/atomist/rug-cli/compare/0.25.0...0.26.0
+
+### Changed
+
+-   Upgraded to Rug 0.16.0 and rug-resolver
+-   Upgraded to Jline 3.2.0
+- 	`cli.yml` now uses keys with `_` instead of `-
 
 ## [0.25.0] - 2017-03-10
 
