@@ -67,6 +67,7 @@ public abstract class ShellUtils {
         reader.unsetOpt(Option.AUTO_MENU);
         reader.unsetOpt(Option.GROUP);
         reader.unsetOpt(Option.MENU_COMPLETE);
+        reader.unsetOpt(Option.AUTO_GROUP);
 
         reader.setOpt(Option.AUTO_LIST);
         reader.setOpt(Option.LIST_AMBIGUOUS);
