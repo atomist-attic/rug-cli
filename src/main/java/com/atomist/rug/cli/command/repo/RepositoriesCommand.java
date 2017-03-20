@@ -31,7 +31,7 @@ import com.atomist.rug.cli.settings.SettingsWriter;
 
 public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
 
-    public static final String REPO_SERVICE_KEY = "repositories-service-urls";
+    public static final String REPO_SERVICE_KEY = "repositories_service_urls";
     public static final List<String> REPO_SERVICE_URL = Arrays
             .asList("https://api.atomist.com/user/team");
 

@@ -1,17 +1,17 @@
 ---
-local-repository:
+local_repository:
   path: "${user.home}/.atomist/repository-tests"
-remote-repositories:
+remote_repositories:
   central:
     publish: false
     url: "http://repo.maven.apache.org/maven2/"
   local:
     publish: true
     url: "file://${user.home}/.atomist/repository-publish/"
-  rug-types:
+  rug_types:
     publish: false
     url: "https://atomist.jfrog.io/atomist/libs-release"
-  rug-types-dev:
+  rug_types_dev:
     publish: false
     url: "https://atomist.jfrog.io/atomist/libs-dev"
   rugs:
