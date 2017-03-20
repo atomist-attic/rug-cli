@@ -12,23 +12,31 @@ public class SearchCommandIntegrationTest extends AbstractCommandTest {
     public void testFullArtifactFilteredByTag() throws Exception {
         assertCommandLine(0,
                 () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                        .contains("atomist-rugs:spring-boot-editors")),
-                "search", "docker", "-T", "spring");
+                        .contains("atomist-rugs:spring-boot-rest-service")),
+                "search", "spring", "-T", "spring");
     }
 
     @Test
     public void testFullArtifactFilteredByType() throws Exception {
         assertCommandLine(0,
                 () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                        .contains("atomist-rugs:spring-boot-editors")),
-                "search", "docker", "--type", "editor");
+                        .contains("atomist-rugs:spring-boot-rest-service")),
+                "search", "spring", "--type", "generator");
+    }
+
+    @Test
+    public void testFullArtifactFilteredByTypeAndShowOperations() throws Exception {
+        assertCommandLine(0,
+                () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
+                        .contains("NewSpringBootRestService")),
+                "search", "spring", "--type", "generator", "--operations");
     }
 
     @Test
     public void testFullArtifactFilteredByTypeAndTag() throws Exception {
         assertCommandLine(0,
                 () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                        .contains("atomist-rugs:spring-boot-editors")),
-                "search", "docker", "--type", "editor", "--tag", "spring");
+                        .contains("atomist-rugs:spring-boot-rest-service")),
+                "search", "spring", "--type", "generator", "--tag", "spring");
     }
 }
