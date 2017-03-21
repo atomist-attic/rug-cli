@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.26.1...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.27.0...HEAD
+
+## [0.27.0] - 2017-03-21
+
+[0.27.0]: https://github.com/atomist/rug-cli/compare/0.26.1...0.27.0
+
+### Changed
+
+-   Don't compile TS before running `clean` command
+- 	Renamed `--type` to `--kind` to be more in-line with the rest of the naming
+- 	Allow `publish --id` to also allow the repo name as identifier  
 
 ## [0.26.1] - 2017-03-20
 
