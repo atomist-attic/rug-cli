@@ -41,4 +41,9 @@ public class CleanCommandInfo extends AbstractLocalArtifactDescriptorProvider {
         return artifact instanceof LocalArtifactDescriptor
                 || artifact.extension().equals(Extension.ZIP);
     }
+    
+    @Override
+    public boolean loadArtifactSource() {
+        return false;
+    }
 }
