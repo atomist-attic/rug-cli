@@ -36,7 +36,7 @@ public class CleanCommand extends AbstractAnnotationBasedCommand {
         File project = CommandUtils.getRequiredWorkingDirectory();
         File target = new File(project, Constants.ATOMIST_ROOT + File.separator + "target");
         
-        if (!FileUtils.deleteQuietly(target)) {
+        if (target.exists() && !FileUtils.deleteQuietly(target)) {
             throw new CommandException("Unable to delete .atomist/target directory.", "clean");
         }
         else {
