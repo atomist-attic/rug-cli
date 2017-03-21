@@ -125,7 +125,7 @@ _rug() {
     if [[ $special == search ]]; then
         command_options+=( -T --tag )
         command_options+=( --operations )
-        command_options+=( --type )
+        command_options+=( --kind )
     fi
     if [[ $special == shell ]]; then
         command_options+=( -l --local )
