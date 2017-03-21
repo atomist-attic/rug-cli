@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.command.publish;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -85,8 +86,12 @@ public class PublishCommand extends AbstractRepositoryCommand {
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
         if (repoId != null) {
-            if (deployRepositories.containsKey(repoId)) {
-                return toRepository(repoId, deployRepositories.get(repoId));
+            Optional<Entry<String, RemoteRepository>> repo = deployRepositories.entrySet().stream()
+                    .filter(e -> repoId.equalsIgnoreCase(e.getValue().getName())
+                            || repoId.equalsIgnoreCase(e.getKey()))
+                    .findAny();
+            if (repo.isPresent()) {
+                return toRepository(repoId, repo.get().getValue());
             }
             else {
                 throw new CommandException(String.format(
