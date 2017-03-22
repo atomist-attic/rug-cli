@@ -27,6 +27,7 @@ import com.atomist.rug.cli.command.shell.ShellUtils;
 import com.atomist.rug.cli.command.utils.CommandHelpFormatter;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
@@ -42,7 +43,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         super(registry);
         this.commandRegistry = registry;
     }
-    
+
     protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
             ProgressReporter indicator) {
         List<ArtifactDescriptor> dependencies = super.resolveDependencies(artifact, indicator);
@@ -75,9 +76,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             commandLoop(artifact, dependencies);
         }
     }
-    
-    private void commandLoop(ArtifactDescriptor artifact,
-            List<ArtifactDescriptor> dependencies) {
+
+    private void commandLoop(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
 
         this.gestureRegistry = new GestureRegistry();
         this.reader = lineReader();
@@ -112,7 +112,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             ShellUtils.shutdown(reader);
         }
     }
-    
+
     private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
             String line) {
         // Remove confusing whitespace from beginning and end
@@ -137,7 +137,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 reload("shell -l && " + line, artifact, dependencies);
             }
         }
-        
+
         try {
             invokePotentialGestureCommand(artifact, dependencies, line);
         }
@@ -149,7 +149,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             printError((line.contains("-X") || line.contains("--error")), e);
         }
     }
-    
+
     private void invokePotentialGestureCommand(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, String line) {
         String[] args = CommandUtils.splitCommandline(line);
@@ -227,6 +227,10 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                             (artifact instanceof LocalArtifactDescriptor ? "local"
                                     : artifact.extension().toString().toLowerCase()),
                             Constants.DOT, rugVersion));
+        }
+        else {
+            log.info(Style.yellow("%s", FileUtils.relativize(SystemUtils.getUserDir()))
+                    + Style.gray(" (%s)", rugVersion));
         }
         return ShellUtils.DEFAULT_PROMPT;
     }
@@ -315,7 +319,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             }
         }
     }
-    
+
     private void clear() {
         ((LineReaderImpl) reader).clearScreen();
     }
