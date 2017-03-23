@@ -141,7 +141,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         try {
             invokePotentialGestureCommand(artifact, dependencies, line);
         }
-        catch (EndOfFileException | UserInterruptException e) {
+        catch (EndOfFileException | UserInterruptException | ReloadException e) {
             throw e;
         }
         catch (Throwable e) {
