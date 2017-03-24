@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractVersionCommandInfo;
@@ -47,6 +49,14 @@ public class ShellCommandInfo extends AbstractVersionCommandInfo {
     @Override
     public String group() {
         return "5";
+    }
+    
+    @Override
+    public Options options() {
+        Options options = super.options();
+        options.addOption(Option.builder().longOpt("connect").hasArg(false)
+                .required(false).desc("Connect CLI shell session to Atomist bot").build());
+        return options;
     }
 
     @Override

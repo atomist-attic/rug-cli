@@ -1,10 +1,13 @@
 package com.atomist.rug.cli.command;
 
 import java.io.File;
+import java.io.IOError;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.SystemUtils;
@@ -18,6 +21,8 @@ import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.ReloadException;
 import com.atomist.rug.cli.command.gesture.Gesture;
 import com.atomist.rug.cli.command.gesture.GestureRegistry;
+import com.atomist.rug.cli.command.shell.AgentConnector;
+import com.atomist.rug.cli.command.shell.AgentConnector.CommandMessage;
 import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
 import com.atomist.rug.cli.command.shell.CommandInfoCompleter;
 import com.atomist.rug.cli.command.shell.FileAndDirectoryNameCompleter;
@@ -36,12 +41,25 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private CommandInfoRegistry commandRegistry;
     private GestureRegistry gestureRegistry;
+
     private LineReader reader;
+    private Thread readerThread;
+
+    private Queue<String> scheduledCommands = new ConcurrentLinkedQueue<>();
+    private AgentConnector agent;
+
     private String rugVersion;
 
     public ShellCommandRunner(CommandInfoRegistry registry) {
         super(registry);
         this.commandRegistry = registry;
+    }
+
+    public void scheduleCommand(CommandMessage command) {
+        command.commands().forEach(c -> scheduledCommands.offer(c.line()));
+        if (readerThread != null) {
+            readerThread.interrupt();
+        }
     }
 
     protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
@@ -66,12 +84,20 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         // shell command was invoked
         if (rc == 0 && "shell".equals(info.name())) {
             // We might invoke this with some additional commands, primarily from reload but also
-            // as part of shortcuts/aliasing
+            // as part of gestures/aliasing
             String line = org.springframework.util.StringUtils.arrayToDelimitedString(args, " ");
             int ix = line.indexOf("&&");
             if (ix > 0 && line.length() > ix + 2) {
                 invokePotentialGestureCommand(artifact, dependencies, line.substring(ix + 2));
             }
+
+            if (line.contains(" --connect") || Constants.isConnected()) {
+                // Connect the bot if requested
+                this.agent = new AgentConnector();
+                this.agent.connect(this::scheduleCommand);
+                Constants.setConnected(true);
+            }
+
             // Now start the loop
             commandLoop(artifact, dependencies);
         }
@@ -81,17 +107,31 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
         this.gestureRegistry = new GestureRegistry();
         this.reader = lineReader();
+        this.readerThread = Thread.currentThread();
 
         String line = null;
         try {
             while (true) {
 
-                try {
-                    line = reader.readLine(prompt(artifact));
+                // Check scheduled command first
+                if (!scheduledCommands.isEmpty()) {
+                    line = scheduledCommands.poll();
+//                    log.info("Received command " + Style.yellow(line));
+//                    
+//                    String ok = reader.readLine("Do you want to execute that command? [yes]: ");
+//                    if (!"yes".equalsIgnoreCase(ok) &&  !"y".equalsIgnoreCase(ok)) {
+//                        continue;
+//                    }
+                    agent.send("Executing `" + line + "`" );
                 }
-                catch (UserInterruptException e) {
-                    // Ignore Ctrl-C
-                    continue;
+                else {
+                    try {
+                        line = reader.readLine(prompt(artifact));
+                    }
+                    catch (UserInterruptException | IOError e) {
+                        // Ignore Ctrl-C
+                        continue;
+                    }
                 }
 
                 // Empty line
@@ -152,18 +192,24 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void invokePotentialGestureCommand(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, String line) {
-        String[] args = CommandUtils.splitCommandline(line);
-        CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
-        if (gestureRegistry != null
-                && gestureRegistry.findGesture(commandLine.getArgList().get(0)).isPresent()) {
+        if (!line.startsWith(Constants.SHELL_ESCAPE)) {
+            String[] args = CommandUtils.splitCommandline(line);
+            CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
+            if (gestureRegistry != null
+                    && gestureRegistry.findGesture(commandLine.getArgList().get(0)).isPresent()) {
 
-            Gesture gesture = gestureRegistry.findGesture(commandLine.getArgList().get(0)).get();
+                Gesture gesture = gestureRegistry.findGesture(commandLine.getArgList().get(0))
+                        .get();
 
-            if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
-                printGestureHelp(gesture);
+                if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
+                    printGestureHelp(gesture);
+                }
+                else {
+                    invokeChainedCommands(artifact, dependencies, gesture.toCommand(commandLine));
+                }
             }
             else {
-                invokeChainedCommands(artifact, dependencies, gesture.toCommand(commandLine));
+                invokeChainedCommands(artifact, dependencies, line);
             }
         }
         else {
@@ -197,6 +243,9 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             else if (cmd.startsWith("/echo")) {
                 echo(cmd);
             }
+            else if (cmd.startsWith("/bot")) {
+                agent.send(cmd.substring(5));
+            }
             else if (cmd.startsWith(Constants.SHELL_ESCAPE)) {
                 sh(cmd);
             }
@@ -223,14 +272,16 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         if (artifact != null && !(artifact.group().equals(Constants.GROUP)
                 && artifact.artifact().equals(Constants.RUG_ARTIFACT))) {
             log.info(Style.yellow("%s:%s", artifact.group(), artifact.artifact())
-                    + Style.gray(" (%s%s%s%s%s)", artifact.version(), Constants.DOT,
+                    + Style.gray(" (%s%s%s%s%s%s)", artifact.version(), Constants.DOT,
                             (artifact instanceof LocalArtifactDescriptor ? "local"
                                     : artifact.extension().toString().toLowerCase()),
-                            Constants.DOT, rugVersion));
+                            Constants.DOT, rugVersion,
+                            (agent != null && agent.connected() ? Constants.DOT + "online" : "")));
         }
         else {
             log.info(Style.yellow("%s", FileUtils.relativize(SystemUtils.getUserDir()))
-                    + Style.gray(" (%s)", rugVersion));
+                    + Style.gray(" (%s%s)", rugVersion,
+                            (agent != null && agent.connected() ? Constants.DOT + "online" : "")));
         }
         return ShellUtils.DEFAULT_PROMPT;
     }
@@ -325,12 +376,16 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     private void echo(String cmd) {
-        log.info(cmd.substring(5));
+        log.info(cmd.substring(6));
     }
 
     private void exit(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
         // Exit the current shell
         invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
+        // Exciting the current shell also means leaving the cli-agent session
+        if (this.agent != null) {
+            this.agent.disconnect();
+        }
         throw new EndOfFileException();
     }
 

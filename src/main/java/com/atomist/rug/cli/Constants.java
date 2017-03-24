@@ -85,4 +85,13 @@ public class Constants {
         System.setProperty("RUG_CLI_RESTART", isReload.toString());
 
     }
+
+    public static Boolean isConnected() {
+        return Boolean.valueOf(System.getProperty("RUG_CLI_CONNECTED", "false"));
+    }
+    
+    public static void setConnected(Boolean isConnected) {
+        System.setProperty("RUG_CLI_CONNECTED", isConnected.toString());
+        
+    }
 }
