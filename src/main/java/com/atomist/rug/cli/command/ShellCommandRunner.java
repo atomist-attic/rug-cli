@@ -130,7 +130,10 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             Constants.setReload(false);
             // Only in local mode we ever get to the point of being required to reload the shell
             // session
-            if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
+            if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
+                exit(artifact, dependencies);
+            }
+            else if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
                 reload(line, artifact, dependencies);
             }
             else {
