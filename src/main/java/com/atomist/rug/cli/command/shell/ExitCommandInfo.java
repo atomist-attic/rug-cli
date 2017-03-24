@@ -64,4 +64,9 @@ public class ExitCommandInfo extends AbstractRugScopedCommandInfo {
     public boolean enabled(ArtifactDescriptor artifact) {
         return Constants.isShell();
     }
+    
+    @Override
+    public boolean loadArtifactSource() {
+        return false;
+    }
 }
