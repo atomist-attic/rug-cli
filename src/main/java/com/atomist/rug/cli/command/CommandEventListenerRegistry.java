@@ -45,7 +45,9 @@ public abstract class CommandEventListenerRegistry {
                 log.info("Loaded archive sources for %s",
                         ArtifactDescriptorUtils.coordinates(artifact));
                 log.info("  " + FileUtils.relativize(artifact.uri()));
-                ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
+                LogVisitor visitor = new LogVisitor();
+                ArtifactSourceTreeCreator.visitTree(source, visitor);
+                visitor.log(log);
             }
         }
     }

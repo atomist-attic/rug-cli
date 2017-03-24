@@ -65,7 +65,9 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         if (CommandLineOptions.hasOption("V")) {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
-            ArtifactSourceTreeCreator.visitTree(source, new LogVisitor(log));
+            LogVisitor visitor = new LogVisitor();
+            ArtifactSourceTreeCreator.visitTree(source, visitor);
+            visitor.log(log);
         }
     }
 
