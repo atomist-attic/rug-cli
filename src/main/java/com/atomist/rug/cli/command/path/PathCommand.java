@@ -88,9 +88,11 @@ public class PathCommand extends AbstractAnnotationBasedCommand {
                 + Style.bold(StringUtils.puralize("Match", "Matches", treeNodes)) + " ("
                 + treeNodes.size() + " found)");
         if (!treeNodes.isEmpty()) {
+            LogVisitor visitor = new LogVisitor();
             TreeNodeTreeCreator.visitTree(treeNodes,
                     (values ? new ValueNodeToStringFunction() : new NodeToStringFunction()),
-                    new LogVisitor(log));
+                    visitor);
+            visitor.log(log);
         }
         else {
             log.info(Style.yellow("  No matches"));

@@ -136,8 +136,9 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                 root.addChild(r.feature().getName(), Node.Type.UNKNOWN),
                 JavaConverters.asJavaCollectionConverter(r.scenarioResults()).asJavaCollection()));
 
-        LogVisitor visitor = new LogVisitor(log);
+        LogVisitor visitor = new LogVisitor();
         root.accept(visitor);
+        visitor.log(log);
     }
 
     private void addScenrioResults(Node node, Collection<ScenarioResult> scenarioResults) {

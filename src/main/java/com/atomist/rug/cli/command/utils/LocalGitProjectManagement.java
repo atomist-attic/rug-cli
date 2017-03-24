@@ -114,7 +114,9 @@ public class LocalGitProjectManagement implements ProjectManagement {
                 FileUtils.sizeOf(resultFile), result.allFiles().size());
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Changes"));
-        ArtifactSourceTreeCreator.visitTree(result, new LogVisitor(log));
+        LogVisitor visitor = new LogVisitor();
+        ArtifactSourceTreeCreator.visitTree(result, visitor);
+        visitor.log(log);
         if (createRepo) {
             log.newline();
             GitUtils.initializeRepoAndCommitFiles(generator, arguments, root);
