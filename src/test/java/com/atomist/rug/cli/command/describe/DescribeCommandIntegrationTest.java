@@ -116,7 +116,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulLocalEditorDescribe() throws Exception {
-        assertSuccess("rug edit \"rug-cli-tests:common-editors:AddChangeLog\"", "describe",
+        assertSuccess("AddChangeLog (excluded)", "describe",
                 "editor", "AddChangeLog", "-l");
     }
 

@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.27.1...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.28.0...HEAD
+
+## [0.28.0] - 2017-03-26
+
+[0.28.0]: https://github.com/atomist/rug-cli/compare/0.27.1...0.28.0
+
+### Added
+
+- 	Rugs can now be excluded from generated metadata and thereform made
+	invisible to the bot by puttting `excludes` section into `manifest.yml`
+	as per https://github.com/atomist/rug-cli/issues/160
 
 ## [0.27.1] - 2017-03-24
 

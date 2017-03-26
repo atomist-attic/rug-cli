@@ -92,8 +92,8 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         @Override
         public void operationsLoaded(ArtifactDescriptor artifact, Rugs operations) {
             if (artifact != null && operations != null) {
-
-                FileArtifact file = MetadataWriter.create(operations, artifact, source, null);
+                FileArtifact file = MetadataWriter.createWithoutExcludes(operations, artifact,
+                        source, null);
 
                 try {
                     FileUtils.write(ShellUtils.SHELL_OPERATIONS, file.content(),

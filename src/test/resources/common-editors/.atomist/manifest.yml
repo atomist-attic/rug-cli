@@ -4,3 +4,7 @@ version: "0.8.0"
 requires: "(0.12.9,0.13.1)"
 dependencies:
 extensions:
+
+excludes:
+  editors:
+    - "AddChangeLog"
