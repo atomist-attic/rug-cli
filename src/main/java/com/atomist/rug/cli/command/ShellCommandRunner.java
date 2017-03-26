@@ -115,16 +115,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
             String line) {
-        // Remove confusing whitespace from beginning and end
-        line = line.trim();
-
-        // Expand history
-        line = expandHistory(line);
-
-        // Remove superfluous rug command
-        if (line.startsWith("rug")) {
-            line = line.substring(3).trim();
-        }
+        
+        line = prepareInput(line);
 
         if (Constants.isReload()) {
             Constants.setReload(false);
@@ -151,6 +143,20 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             // Make sure we don't exit the loop
             printError((line.contains("-X") || line.contains("--error")), e);
         }
+    }
+
+    private String prepareInput(String line) {
+        // Remove confusing whitespace from beginning and end
+        line = line.trim();
+
+        // Expand history
+        line = expandHistory(line);
+
+        // Remove superfluous rug command
+        if (line.startsWith("rug")) {
+            line = line.substring(3).trim();
+        }
+        return line;
     }
 
     private void invokePotentialGestureCommand(ArtifactDescriptor artifact,

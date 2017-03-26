@@ -32,6 +32,7 @@ import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.manifest.Manifest;
 import com.atomist.rug.resolver.manifest.ManifestFactory;
+import com.atomist.rug.resolver.manifest.ManifestUtils;
 import com.atomist.rug.resolver.metadata.MetadataWriter;
 import com.atomist.rug.resolver.project.GitInfo;
 import com.atomist.rug.resolver.project.ProvenanceInfoArtifactSourceReader;
@@ -106,23 +107,25 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
         switch (kind) {
         case "editor":
-            describeRugs(artifact, operationName, operations.editors(), EDITOR_LABELS);
+            describeRugs(artifact, operationName, operations.editors(), source, EDITOR_LABELS);
             break;
         case "generator":
-            describeRugs(artifact, operationName, operations.generators(), GENERATOR_LABELS);
+            describeRugs(artifact, operationName, operations.generators(), source,
+                    GENERATOR_LABELS);
             break;
         case "reviewer":
-            describeRugs(artifact, operationName, operations.reviewers(), REVIEWER_LABELS);
+            describeRugs(artifact, operationName, operations.reviewers(), source, REVIEWER_LABELS);
             break;
         case "command-handler":
-            describeRugs(artifact, operationName, operations.commandHandlers(),
+            describeRugs(artifact, operationName, operations.commandHandlers(), source,
                     COMMAND_HANDLER_LABELS);
             break;
         case "event-handler":
-            describeRugs(artifact, operationName, operations.eventHandlers(), EVENT_HANDLER_LABELS);
+            describeRugs(artifact, operationName, operations.eventHandlers(), source,
+                    EVENT_HANDLER_LABELS);
             break;
         case "response-handler":
-            describeRugs(artifact, operationName, operations.responseHandlers(),
+            describeRugs(artifact, operationName, operations.responseHandlers(), source,
                     RESPONSE_HANDLER_LABELS);
             break;
         case "archive":
@@ -138,7 +141,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         describeName(manifest);
         describeProvenanceInfo(manifest);
         describeContents(artifact, source);
-        describeRugs(artifact, operationsAndHandlers);
+        describeRugs(artifact, operationsAndHandlers, manifest);
         describeDependencies(manifest);
         describeInvokeArchive();
     }
@@ -270,9 +273,12 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 Constants.command(), "describe", (CommandLineOptions.hasOption("l") ? "-l" : ""));
     }
 
-    private void describeName(ArtifactDescriptor artifact, Rug info) {
+    private void describeName(ArtifactDescriptor artifact, Rug info, ArtifactSource source) {
         String name = info.name();
-        log.info(Style.bold(Style.yellow(StringUtils.stripName(name, artifact))));
+        Manifest manifest = ManifestFactory.read(source);
+        boolean excluded = ManifestUtils.excluded(info, manifest);
+        log.info(Style.bold(Style.yellow(StringUtils.stripName(name, artifact)))
+                + (excluded ? Style.gray(" (excluded)") : ""));
         log.info("%s", ArtifactDescriptorUtils.coordinates(artifact));
         log.info(org.apache.commons.lang3.StringUtils.capitalize(info.description()));
     }
@@ -283,7 +289,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
     }
 
-    private void describeRugs(ArtifactDescriptor artifact, Rugs operations) {
+    private void describeRugs(ArtifactDescriptor artifact, Rugs operations, Manifest manifest) {
         Collection<ProjectEditor> editors = asJavaCollection(operations.editors()).stream()
                 .sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
         Collection<ProjectGenerator> generators = asJavaCollection(operations.generators()).stream()
@@ -301,37 +307,37 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
         if (!generators.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Generators"));
-            listOperations(artifact, generators);
+            listOperations(artifact, generators, manifest);
         }
         if (!editors.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
-            listOperations(artifact, editors);
+            listOperations(artifact, editors, manifest);
         }
 
         if (!reviewers.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
-            listOperations(artifact, reviewers);
+            listOperations(artifact, reviewers, manifest);
         }
 
         if (!commandHandlers.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Command Handlers"));
-            listOperations(artifact, commandHandlers);
+            listOperations(artifact, commandHandlers, manifest);
         }
 
         if (!eventHandlers.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Event Handlers"));
-            listOperations(artifact, eventHandlers);
+            listOperations(artifact, eventHandlers, manifest);
         }
 
         if (!responseHandlers.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Response Handlers"));
-            listOperations(artifact, responseHandlers);
+            listOperations(artifact, responseHandlers, manifest);
         }
     }
 
     @SuppressWarnings("unchecked")
     private void describeRugs(ArtifactDescriptor artifact, String name, Seq<?> operations,
-            DescribeLabels labels) {
+            ArtifactSource source, DescribeLabels labels) {
         Collection<Rug> ops = (Collection<Rug>) asJavaCollection(operations);
         String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
         Optional<Rug> opt = ops.stream().filter(g -> g.name().equals(name)).findFirst();
@@ -343,7 +349,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
         log.newline();
         if (opt.isPresent()) {
-            describeRug(artifact, opt.get(), labels.operation(), labels.command());
+            describeRug(artifact, opt.get(), source, labels.operation(), labels.command());
         }
         else {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold(labels.label()));
@@ -406,8 +412,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private void describeRug(ArtifactDescriptor artifact, Rug info, String type, String command) {
-        describeName(artifact, info);
+    private void describeRug(ArtifactDescriptor artifact, Rug info, ArtifactSource source,
+            String type, String command) {
+        describeName(artifact, info, source);
         log.newline();
         if (info instanceof CommandHandler) {
             describeIntent((CommandHandler) info);
@@ -466,10 +473,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private void listOperations(ArtifactDescriptor artifact, Collection<?> operations) {
+    private void listOperations(ArtifactDescriptor artifact, Collection<?> operations,
+            Manifest manifest) {
         operations.forEach(e -> {
             Rug info = (Rug) e;
-            log.info("  " + Style.yellow(StringUtils.stripName(info.name(), artifact)) + "\n    "
+            boolean excluded = ManifestUtils.excluded(info, manifest);
+            log.info("  " + Style.yellow(StringUtils.stripName(info.name(), artifact))
+                    + (excluded ? Style.gray(" (excluded)") : "") + "\n    "
                     + WordUtils.wrap(
                             org.apache.commons.lang3.StringUtils.capitalize(info.description()),
                             Constants.WRAP_LENGTH, "\n    ", false));
