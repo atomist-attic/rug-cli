@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-cli/compare/0.28.0...HEAD
 
-## [0.28.0] - 2017-03-26
-
 ### Changed
 
-- 	Upgraded to Rug 0.18.0
+- 	Upgraded to Rug 0.18.2
+- 	Fixed tab completion for mapped parameters as per
+	https://github.com/atomist/rug-cli/issues/161
+	
+## [0.28.0] - 2017-03-26	
 
 [0.28.0]: https://github.com/atomist/rug-cli/compare/0.27.1...0.28.0
 
