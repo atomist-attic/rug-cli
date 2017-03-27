@@ -101,10 +101,14 @@ public class PublishCommand extends AbstractRepositoryCommand {
         }
 
         if (deployRepositories.size() > 1) {
-            throw new CommandException(String.format(
-                    "More than one repository enabled for publishing.\nPlease review your ~/.atomist/cli.yml or specify a repository with --id.\nValid repository ids are: %s",
-                    org.springframework.util.StringUtils
-                            .collectionToDelimitedString(deployRepositories.keySet(), ", ")),
+            throw new CommandException(
+                    String.format(
+                            "More than one repository enabled for publishing.\nPlease review your ~/.atomist/cli.yml or specify a repository with --id.\nValid repository IDs are: %s",
+                            org.springframework.util.StringUtils.collectionToDelimitedString(
+                                    deployRepositories.entrySet().stream().map(
+                                            e -> e.getValue().getName() + " (" + e.getKey() + ")")
+                                            .collect(Collectors.toList()),
+                                    ", ")),
                     "publish");
         }
         else if (deployRepositories.size() == 0) {
