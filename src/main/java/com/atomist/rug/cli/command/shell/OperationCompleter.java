@@ -98,12 +98,10 @@ public class OperationCompleter implements Completer {
                 if (name.isPresent()) {
                     List<String> parameterNames = ctx.read(String
                             .format("$.%s[?(@.name=='%s')].parameters[*].name", kind, name.get()));
-                    parameterNames.stream()
-                            .filter(p -> !kind.equals("generators")
-                                    || (kind.equals("generators") && !p.equals("project_name")))
-                            .filter(p -> words.stream().noneMatch(w -> w.startsWith(p + "=")))
-                            .forEach(n -> candidates
-                                    .add(new Candidate(n + "=", n, null, null, null, null, false)));
+                    completeParameters(kind, words, candidates, parameterNames);
+                    parameterNames = ctx.read(String
+                            .format("$.%s[?(@.name=='%s')].mapped_parameters[*].local_key", kind, name.get()));
+                    completeParameters(kind, words, candidates, parameterNames);
                 }
                 else {
                     names.forEach(n -> candidates.add(new Candidate(n)));
@@ -113,6 +111,16 @@ public class OperationCompleter implements Completer {
                 // This is ok as it means we don't have the matching operation in the cache
             }
         }
+    }
+
+    private void completeParameters(String kind, List<String> words, List<Candidate> candidates,
+            List<String> parameterNames) {
+        parameterNames.stream()
+                .filter(p -> !kind.equals("generators")
+                        || (kind.equals("generators") && !p.equals("project_name")))
+                .filter(p -> words.stream().noneMatch(w -> w.startsWith(p + "=")))
+                .forEach(n -> candidates
+                        .add(new Candidate(n + "=", n, null, null, null, null, false)));
     }
 
     private void init() {
