@@ -2,10 +2,14 @@ package com.atomist.rug.cli.command.search;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.atomist.rug.cli.Constants;
@@ -88,6 +92,8 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void printOperations(List<Operation> operations) {
+        operations = operations.stream().filter(distinctByKey(p -> p.name()))
+                .collect(Collectors.toList());
         Node node = new Node(null);
         addOperation(node, operations, "generator", "Generators");
         addOperation(node, operations, "editor", "Editors");
@@ -99,7 +105,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         node.accept(visitor);
         visitor.log(log);
     }
-    
+
     private void addOperation(Node node, List<Operation> operations, String kind, String label) {
         Collection<Operation> ops = operations.stream().filter(o -> o.type().equals(kind))
                 .sorted(Comparator.comparing(Operation::name)).collect(Collectors.toList());
@@ -111,5 +117,10 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
 
     private List<String> getCatalogServiceUrls(Settings settings) {
         return settings.getConfigValue(CATALOG_URL_KEY, CATALOG_URL);
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 }
