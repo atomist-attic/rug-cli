@@ -60,3 +60,4 @@ of the release notes.  It will also automatically upload the needed
 artifacts.
 
 [semver]: http://semver.org
+
