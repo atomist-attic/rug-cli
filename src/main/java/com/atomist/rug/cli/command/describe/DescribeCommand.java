@@ -4,7 +4,9 @@ import static scala.collection.JavaConversions.asJavaCollection;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,6 +48,7 @@ import com.atomist.rug.spi.SecretAwareRug;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
 
+import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
 public class DescribeCommand extends AbstractAnnotationBasedCommand {
@@ -63,6 +66,18 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     private static final DescribeLabels RESPONSE_HANDLER_LABELS = new DescribeLabels("respond",
             "response-handler", "Response Handlers");
 
+    private static final Map<Class<?>, DescribeLabels> labelMapping;
+
+    static {
+        labelMapping = new HashMap<>();
+        labelMapping.put(ProjectEditor.class, EDITOR_LABELS);
+        labelMapping.put(ProjectGenerator.class, GENERATOR_LABELS);
+        labelMapping.put(ProjectReviewer.class, REVIEWER_LABELS);
+        labelMapping.put(CommandHandler.class, COMMAND_HANDLER_LABELS);
+        labelMapping.put(EventHandler.class, EVENT_HANDLER_LABELS);
+        labelMapping.put(ResponseHandler.class, RESPONSE_HANDLER_LABELS);
+    }
+
     private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, reviewer, command-handler, event-handler, or response-handler ";
 
     @Validator
@@ -79,22 +94,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         case "archive":
             validateFormat(format);
             break;
-        case "":
-            throw new CommandException(INVALID_TYPE_MESSAGE, "describe");
-        default:
-            if (kind.split(":").length == 2) {
-                throw new CommandException(
-                        "It looks like you're trying to describe an archive. Please try:\n  rug describe archive "
-                                + kind,
-                        "describe");
-            }
-            if (kind.split(":").length == 3) {
-                throw new CommandException(
-                        "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|reviewer|event-handler|command-handler|response-handler "
-                                + kind,
-                        "describe");
-            }
-            throw new CommandException(INVALID_TYPE_MESSAGE, "describe");
         }
     }
 
@@ -131,6 +130,37 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         case "archive":
             describeArchive(operations, artifact, source, format);
             break;
+        case "":
+            throw new CommandException(INVALID_TYPE_MESSAGE, "describe");
+        default:
+            // If there is a unique match we don't need the kind
+            String rugName = OperationUtils.extractRugTypeName(kind);
+            List<Rug> rugs = JavaConverters.asJavaCollectionConverter(operations.allRugs())
+                    .asJavaCollection().stream().filter(o -> o.name().equals(rugName))
+                    .collect(Collectors.toList());
+            if (rugs.size() == 1) {
+                Rug rug = rugs.get(0);
+                DescribeLabels label = labelMapping.entrySet().stream()
+                        .filter(lm -> lm.getKey().isAssignableFrom(rug.getClass())).findFirst()
+                        .get().getValue();
+                log.newline();
+                describeRug(artifact, rug, source, label.label(), label.command());
+            }
+            else if (kind.split(":").length == 2) {
+                throw new CommandException(
+                        "It looks like you're trying to describe an archive. Please try:\n  rug describe archive "
+                                + kind,
+                        "describe");
+            }
+            else if (kind.split(":").length == 3) {
+                throw new CommandException(
+                        "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|reviewer|event-handler|command-handler|response-handler "
+                                + kind,
+                        "describe");
+            }
+            else {
+                throw new CommandException(INVALID_TYPE_MESSAGE, "describe");
+            }
         }
     }
 
