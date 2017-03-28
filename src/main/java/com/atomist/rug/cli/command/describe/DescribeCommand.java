@@ -173,7 +173,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         describeContents(artifact, source);
         describeRugs(artifact, operationsAndHandlers, manifest);
         describeDependencies(manifest);
-        describeInvokeArchive();
+        describeInvokeArchive(artifact);
     }
 
     private void describeArchive(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
@@ -295,12 +295,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private void describeInvokeArchive() {
+    private void describeInvokeArchive(ArtifactDescriptor artifact) {
         log.newline();
         log.info("To get more information on any of the Rugs listed above, run:");
         log.info(
-                "  %s%s editor|generator|reviewer|command-handler|event-handler|response-handler ARTIFACT %s",
-                Constants.command(), "describe", (CommandLineOptions.hasOption("l") ? "-l" : ""));
+                "  %s%s editor|generator|reviewer|command-handler|event-handler|response-handler %s",
+                Constants.command(), "describe", (CommandLineOptions.hasOption("l") ? "NAME -l"
+                        : artifact.group() + ":" + artifact.artifact() + ":NAME"));
     }
 
     private void describeName(ArtifactDescriptor artifact, Rug info, ArtifactSource source) {
@@ -402,7 +403,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                                 labels.operation(), name, artifact.group(), artifact.artifact()));
             }
             else {
-                describeInvokeArchive();
+                describeInvokeArchive(artifact);
             }
         }
     }
