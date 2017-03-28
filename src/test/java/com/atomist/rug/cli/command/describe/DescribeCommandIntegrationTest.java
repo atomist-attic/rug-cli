@@ -115,9 +115,13 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     }
 
     @Test
+    public void testSuccessfulLocalEditorDescribeWithNoKind() throws Exception {
+        assertSuccess("AddChangeLog (excluded)", "describe", "AddChangeLog", "-l");
+    }
+
+    @Test
     public void testSuccessfulLocalEditorDescribe() throws Exception {
-        assertSuccess("AddChangeLog (excluded)", "describe",
-                "editor", "AddChangeLog", "-l");
+        assertSuccess("AddChangeLog (excluded)", "describe", "editor", "AddChangeLog", "-l");
     }
 
     @Test
