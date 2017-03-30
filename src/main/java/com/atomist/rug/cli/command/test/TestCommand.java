@@ -36,6 +36,7 @@ import com.atomist.rug.test.gherkin.FeatureDefinition;
 import com.atomist.rug.test.gherkin.FeatureResult;
 import com.atomist.rug.test.gherkin.GherkinExecutionListener;
 import com.atomist.rug.test.gherkin.GherkinRunner;
+import com.atomist.rug.test.gherkin.PathExpressionEvaluation;
 import com.atomist.rug.test.gherkin.ScenarioResult;
 import com.atomist.rug.test.gherkin.TestReport;
 import com.atomist.source.ArtifactSource;
@@ -223,6 +224,10 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
         @Override
         public void stepStarting(Step s) {
+        }
+
+        @Override
+        public void pathExpressionResult(PathExpressionEvaluation pxe) {
         }
     }
 }
