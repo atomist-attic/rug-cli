@@ -1,7 +1,5 @@
 package com.atomist.rug.cli.command;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
@@ -16,13 +14,13 @@ import com.atomist.rug.BadRugException;
 import com.atomist.rug.RugRuntimeException;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
-import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.compiler.Compiler;
+import com.atomist.rug.compiler.CompilerListener;
 import com.atomist.rug.compiler.typescript.TypeScriptCompiler;
 import com.atomist.rug.compiler.typescript.compilation.CompilerFactory;
 import com.atomist.rug.resolver.ArtifactDescriptor;
@@ -34,8 +32,6 @@ import com.atomist.rug.resolver.loader.RugLoader;
 import com.atomist.rug.resolver.loader.RugLoaderException;
 import com.atomist.rug.resolver.loader.RugLoaderRuntimeException;
 import com.atomist.source.ArtifactSource;
-import com.atomist.source.Delta;
-import com.atomist.source.Deltas;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 
@@ -92,35 +88,13 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                                         String.format("Invoking %s on .%s files", compiler.name(),
                                                 StringUtils.collectionToCommaDelimitedString(
                                                         compiler.extensions())));
-                                ArtifactSource cs = compiler.compile(compiledSource);
-                                Deltas deltas = cs.deltaFrom(compiledSource);
-                                if (deltas.empty()) {
-                                    indicator.report("  No files compiled");
-                                }
-                                else {
-                                    asJavaCollection(deltas.deltas()).forEach(d -> {
-                                        printCompiledFiles(indicator, cs, d);
-                                    });
-                                }
-                                compiledSource = cs;
+                                return compiler.compile(compiledSource);
                             }
                             return compiledSource;
                         });
             }
         }
         return source;
-    }
-
-    private void printCompiledFiles(ProgressReporter indicator, ArtifactSource cs, Delta d) {
-        if (CommandLineOptions.hasOption("V")) {
-            indicator.report("  Compiled " + Style.yellow(d.path()));
-            if (!d.path().endsWith(".js.map")) {
-                indicator.report("  " + cs.findFile(d.path()).get().content().replace("\n", "\n  "));
-            }
-        }
-        else {
-            indicator.report("  Compiled " + d.path());
-        }
     }
 
     private Collection<Compiler> loadCompilers(ArtifactDescriptor artifact, ArtifactSource source) {
@@ -134,6 +108,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         else {
             compiler = new TypeScriptCompiler(CompilerFactory
                     .cachingCompiler(CompilerFactory.create(), root.getAbsolutePath()));
+            compiler.registerListener(new ReportingCompilerListener());
             CommandContext.save(TypeScriptCompiler.class, compiler);
         }
 
@@ -203,5 +178,32 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
     protected abstract void run(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
             CommandLine commandLine);
+
+    private static class ReportingCompilerListener implements CompilerListener {
+
+        private Log log = new Log(ReportingCompilerListener.class);
+
+        @Override
+        public void compileFailed(String path) {
+            log.info("  Compiled " + path + " " + Style.red("failed"));
+        }
+
+        @Override
+        public void compileStarted(String path) {
+        }
+
+        @Override
+        public void compileSucceeded(String path, String content) {
+            if (CommandLineOptions.hasOption("V")) {
+                log.info("  Compiled " + Style.yellow(path) + " " + Style.green("succeeded"));
+                if (!path.endsWith(".js.map")) {
+                    log.info("  " + content.replace("\n", "\n  "));
+                }
+            }
+            else {
+                log.info("  Compiled " + path + " " + Style.green("succeeded"));
+            }
+        }
+    }
 
 }
