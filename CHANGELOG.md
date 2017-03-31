@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.28.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.29.0...HEAD
+
+## [0.29.0] - 2017-03-31
+
+[0.28.0]: https://github.com/atomist/rug-cli/compare/0.28.0...0.29.0
 
 ### Changed
 
-- 	Upgraded to Rug 0.18.2
+-	Add `enable_compiler_cache` to `cli.yml` configuration section. Defaults
+	to `true`. Use `false` to disable compiler caching
+- 	Upgraded to Rug 0.22.0
 - 	Fixed tab completion for mapped parameters as per
 	https://github.com/atomist/rug-cli/issues/161
 	

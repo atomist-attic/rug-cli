@@ -35,6 +35,9 @@ import com.atomist.source.ArtifactSource;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 
+    private static final String ENABLE_COMPILER_CACHE_KEY = "enable_compiler_cache";
+    private static final boolean ENABLE_COMPILER_CACHE = true;
+
     protected Log log = new Log(getClass());
 
     @Override
@@ -106,8 +109,14 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
             compiler = CommandContext.restore(TypeScriptCompiler.class);
         }
         else {
-            compiler = new TypeScriptCompiler(CompilerFactory
-                    .cachingCompiler(CompilerFactory.create(), root.getAbsolutePath()));
+            if (SettingsReader.read().getConfigValue(ENABLE_COMPILER_CACHE_KEY,
+                    ENABLE_COMPILER_CACHE)) {
+                compiler = new TypeScriptCompiler(CompilerFactory
+                        .cachingCompiler(CompilerFactory.create(), root.getAbsolutePath()));
+            }
+            else {
+                compiler = new TypeScriptCompiler(CompilerFactory.create());
+            }
             compiler.registerListener(new ReportingCompilerListener());
             CommandContext.save(TypeScriptCompiler.class, compiler);
         }
