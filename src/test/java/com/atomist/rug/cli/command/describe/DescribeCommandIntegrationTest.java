@@ -47,7 +47,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulArchiveDescribe() throws Exception {
         assertSuccess(
-                "rug describe editor|generator|reviewer|command-handler|event-handler|response-handler ARTIFACT",
+                "rug describe editor|generator|reviewer|command-handler|event-handler|response-handler atomist-rugs:spring-boot-rest-service:NAME",
                 "describe", "archive", "atomist-rugs:spring-boot-rest-service");
     }
 
