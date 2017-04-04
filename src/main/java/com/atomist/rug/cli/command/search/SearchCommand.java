@@ -12,11 +12,15 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
+import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.search.SearchOperations.Archive;
 import com.atomist.rug.cli.command.search.SearchOperations.Operation;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
@@ -34,7 +38,20 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
             .asList("https://api.atomist.com/catalog/operation/search");
     public static final String CATALOG_URL_KEY = "catalog_service_urls";
 
+    private static final List<String> TYPES = Arrays.asList("editor", "generator", "reviewer",
+            "event_handler", "command_handler", "response_handler");
+
     private ObjectMapper mapper = new ObjectMapper();
+
+    @Validator
+    public void validate(@Option("type") String type) {
+        if (type != null && !TYPES.contains(type)) {
+            throw new CommandException(String.format(
+                    "Invalid TYPE provided.\nValid values for --type are: %s",
+                    org.springframework.util.StringUtils.collectionToDelimitedString(TYPES, ", ")),
+                    "search");
+        }
+    }
 
     @Command
     public void run(Settings settings, @Argument(index = 1) String search,
