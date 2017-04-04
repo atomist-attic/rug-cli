@@ -21,7 +21,7 @@ public class SearchCommandIntegrationTest extends AbstractCommandTest {
         assertCommandLine(0,
                 () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                         .contains("atomist-rugs:spring-boot-rest-service")),
-                "search", "spring", "--kind", "generator");
+                "search", "spring", "--type", "generator");
     }
 
     @Test
@@ -29,7 +29,7 @@ public class SearchCommandIntegrationTest extends AbstractCommandTest {
         assertCommandLine(0,
                 () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                         .contains("NewSpringBootRestService")),
-                "search", "spring", "--kind", "generator", "--operations");
+                "search", "spring", "--type", "generator", "--operations");
     }
 
     @Test
@@ -37,6 +37,6 @@ public class SearchCommandIntegrationTest extends AbstractCommandTest {
         assertCommandLine(0,
                 () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                         .contains("atomist-rugs:spring-boot-rest-service")),
-                "search", "spring", "--kind", "generator", "--tag", "spring");
+                "search", "spring", "--type", "generator", "--tag", "spring");
     }
 }
