@@ -69,6 +69,7 @@ public abstract class ShellUtils {
         reader.unsetOpt(Option.MENU_COMPLETE);
         reader.unsetOpt(Option.AUTO_GROUP);
 
+        reader.setOpt(Option.CASE_INSENSITIVE);
         reader.setOpt(Option.AUTO_LIST);
         reader.setOpt(Option.LIST_AMBIGUOUS);
         reader.unsetOpt(Option.INSERT_TAB);
