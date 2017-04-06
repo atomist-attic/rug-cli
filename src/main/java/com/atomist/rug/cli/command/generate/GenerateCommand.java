@@ -6,9 +6,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.text.WordUtils;
 
-import com.atomist.param.Parameter;
 import com.atomist.param.ParameterValues;
-import com.atomist.param.SimpleParameterValue;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.project.archive.Rugs;
 import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.rug.cli.Constants;
@@ -24,16 +23,17 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 
-import scala.collection.JavaConverters;
-
 public class GenerateCommand extends AbstractParameterizedCommand {
 
     @Validator
     public void validate(@Argument(index = 1) String fqArtifactName,
-            @Option("change-dir") String path) {
+            @Argument(index = 2) String projectName, @Option("change-dir") String path) {
         String generatorName = OperationUtils.extractRugTypeName(fqArtifactName);
         if (generatorName == null) {
-            throw new CommandException("No generator name provided.", "generate");
+            throw new CommandException("No GENERATOR provided.", "generate");
+        }
+        if (projectName == null) {
+            throw new CommandException("No PROJECT_NAME provided.", "generate");
         }
     }
 
@@ -41,19 +41,16 @@ public class GenerateCommand extends AbstractParameterizedCommand {
     public void run(Rugs rugs, ArtifactDescriptor artifact,
             @Argument(index = 1) String fqArtifactName, @Argument(index = 2) String projectName,
             @Argument(start = 3) ParameterValues arguments, @Option("change-dir") String root,
-            @Option("repo") boolean createRepo, @Option("overwrite") boolean overwrite) {
-
-        if (projectName != null) {
-            arguments = mergeParameters(arguments,
-                    new SimpleParameterValue("project_name", projectName));
-        }
+            @Option("repo") boolean createRepo, @Option("overwrite") boolean overwrite,
+            RugResolver resolver) {
 
         String generatorName = OperationUtils.extractRugTypeName(fqArtifactName);
         Optional<ProjectGenerator> opt = asJavaCollection(rugs.generators()).stream()
                 .filter(g -> g.name().equals(generatorName)).findFirst();
         if (opt.isPresent()) {
             arguments = validate(artifact, opt.get(), arguments);
-            invoke(artifact, opt.get(), arguments, root, createRepo, overwrite);
+            invoke(artifact, opt.get(), arguments, projectName, root, createRepo, overwrite,
+                    resolver);
         }
         else {
             if (rugs.generators().nonEmpty()) {
@@ -67,36 +64,18 @@ public class GenerateCommand extends AbstractParameterizedCommand {
                                         Constants.WRAP_LENGTH, "\n    ", false)));
                 StringUtils.printClosestMatch(generatorName, artifact, rugs.generatorNames());
             }
-            throw new CommandException(String.format(
-                    "Specified generator %s could not be found in %s:%s", generatorName,
-                    artifact.group(), artifact.artifact()));
+            throw new CommandException(
+                    String.format("Specified generator %s could not be found in %s:%s",
+                            generatorName, artifact.group(), artifact.artifact()));
         }
     }
 
     private void invoke(ArtifactDescriptor artifact, ProjectGenerator generator,
-            ParameterValues arguments, String rootName, boolean createRepo, boolean overwrite) {
-
-        String projectName = projectName(generator, arguments);
+            ParameterValues arguments, String projectName, String rootName, boolean createRepo,
+            boolean overwrite, RugResolver resolver) {
 
         LocalGitProjectManagement manager = new LocalGitProjectManagement(artifact, rootName,
-                createRepo, overwrite, false, false);
+                createRepo, overwrite, false, false, resolver);
         manager.generate(generator, arguments, projectName);
-    }
-
-    private String projectName(ProjectGenerator generator, ParameterValues arguments) {
-        if (JavaConverters.mapAsJavaMapConverter(arguments.parameterValueMap()).asJava()
-                .containsKey("project_name")) {
-            return arguments.stringParamValue("project_name");
-        }
-        // extract potential default project_name
-        else {
-            Optional<Parameter> projectNameParameter = JavaConverters
-                    .asJavaCollectionConverter(generator.parameters()).asJavaCollection().stream()
-                    .filter(p -> p.getName().equals("project_name")).findAny();
-            if (projectNameParameter.isPresent() && projectNameParameter.get().hasDefaultValue()) {
-                return projectNameParameter.get().getDefaultValue();
-            }
-        }
-        throw new CommandException("No PROJECT_NAME provided", "generate");
     }
 }

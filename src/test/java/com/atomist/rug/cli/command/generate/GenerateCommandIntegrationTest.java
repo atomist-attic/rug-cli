@@ -18,23 +18,23 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
     }
 
     @Test
-    public void testUnSuccessfulGenerateWithInvalidParameter() throws Exception {
-        assertFailure(
-                "Invalid parameter value\n  project_name = 1234567891234567891212345678912345678912",
+    public void testSuccessfulGenerateWithVeryLongProjectName() throws Exception {
+        assertSuccess(
+                "Successfully generated new project 1234567891234567891212345678912345678912",
                 "generate", "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService",
-                "1234567891234567891212345678912345678912", "-ur");
+                "1234567891234567891212345678912345678912", "-urF");
     }
 
     @Test
     public void testUnSuccessfulGenerateWithMissingParameter() throws Exception {
-        assertFailure("Missing parameter value\n  project_name", "generate",
+        assertFailure("No PROJECT_NAME provided", "generate",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService");
     }
 
     @Test
     public void testUnSuccessfulGenerateWithInvalidName() throws Exception {
         assertFailure("Did you mean?\n" + "  NewSpringBootRestService", "generate",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestServi");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestServi", "test");
     }
 
     void testGenerationAt(String name, String location) throws Exception {
@@ -42,7 +42,7 @@ public class GenerateCommandIntegrationTest extends AbstractCommandTest {
             File root = new File(location, name);
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("Successfully generated new project " + name));
-            assertTrue(new File(root, "src/main/java/my/test/HomeController.java").exists());
+            assertTrue(new File(root, "src/main/java/com/myorg/HomeController.java").exists());
             assertTrue(new File(root, ".atomist.yml").exists());
             FileUtils.deleteQuietly(root);
         }, "generate", "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", name,

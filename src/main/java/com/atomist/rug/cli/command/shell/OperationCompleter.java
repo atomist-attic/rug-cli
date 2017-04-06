@@ -116,8 +116,6 @@ public class OperationCompleter implements Completer {
     private void completeParameters(String kind, List<String> words, List<Candidate> candidates,
             List<String> parameterNames) {
         parameterNames.stream()
-                .filter(p -> !kind.equals("generators")
-                        || (kind.equals("generators") && !p.equals("project_name")))
                 .filter(p -> words.stream().noneMatch(w -> w.startsWith(p + "=")))
                 .forEach(n -> candidates
                         .add(new Candidate(n + "=", n, null, null, null, null, false)));

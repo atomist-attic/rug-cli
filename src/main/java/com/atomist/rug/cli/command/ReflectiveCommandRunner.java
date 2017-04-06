@@ -1,12 +1,9 @@
 package com.atomist.rug.cli.command;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -25,11 +22,12 @@ import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.Timing;
 import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.ArtifactDescriptorFactory;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.rug.resolver.DependencyResolver;
 import com.atomist.rug.resolver.DependencyResolverException;
-import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
+import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public class ReflectiveCommandRunner {
 
@@ -87,18 +85,11 @@ public class ReflectiveCommandRunner {
         return t;
     }
 
-    private List<URI> getZipDependencies(List<ArtifactDescriptor> dependencies) {
-        return dependencies.stream().map(ad -> new File(ad.uri()))
-                .filter(f -> f.getName().endsWith(".zip")).map(File::toURI)
-                .collect(Collectors.toList());
-    }
-
     private void invokeReflectiveCommand(String[] args, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, CommandInfo info) {
         try {
             // Invoke the run method on the command class
-            new ReflectiveCommandRunMethodRunner().invokeCommand(artifact, info, args,
-                    getZipDependencies(dependencies));
+            new ReflectiveCommandRunMethodRunner().invokeCommand(artifact, info, args);
         }
         catch (NoClassDefFoundError | ClassNotFoundException e) {
             throw new RunnerException(e);
@@ -118,19 +109,18 @@ public class ReflectiveCommandRunner {
             ArtifactDescriptor rootArtifact = ((ArtifactDescriptorProvider) info)
                     .artifactDescriptor(commandLine);
 
-            dependencies.addAll(new ProgressReportingOperationRunner<List<ArtifactDescriptor>>(
+            artifact = new ProgressReportingOperationRunner<ArtifactDescriptor>(
                     String.format("Resolving dependencies for %s",
-                            ArtifactDescriptorUtils.coordinates(rootArtifact))).run(
-                                    indicator -> resolveDependencies(rootArtifact, indicator)));
+                            ArtifactDescriptorUtils.coordinates(rootArtifact))).run(indicator -> {
+                                DependencyResolver resolver = DependencyResolverFactory
+                                        .createDependencyResolver(rootArtifact, indicator);
+                                dependencies.addAll(
+                                        resolveDependencies(resolver, rootArtifact, indicator));
+                                return resolveRugs(resolver, rootArtifact);
+                            });
 
             // Validate that this CLI version is compatible with declared version of Rug
             VersionUtils.validateRugCompatibility(rootArtifact, dependencies);
-
-            artifact = dependencies.stream()
-                    .filter(a -> a.group().equals(rootArtifact.group())
-                            && a.artifact().equals(rootArtifact.artifact())
-                            && a.extension() == rootArtifact.extension())
-                    .findFirst().orElse(rootArtifact);
 
             ClassLoaderFactory.setupJ2V8ClassLoader(dependencies);
 
@@ -145,6 +135,19 @@ public class ReflectiveCommandRunner {
             else {
                 ClassLoaderFactory.setupClassLoader(rootArtifact, dependencies);
             }
+
+            List<ArtifactDescriptor> artifactDependencies = artifact.dependencies();
+            if (rootArtifact instanceof LocalArtifactDescriptor) {
+                artifact = new LocalArtifactDescriptor(rootArtifact.group(),
+                        rootArtifact.artifact(), rootArtifact.version(), rootArtifact.extension(),
+                        rootArtifact.scope(), rootArtifact.uri());
+            }
+            else {
+                artifact = new DefaultArtifactDescriptor(rootArtifact.group(),
+                        rootArtifact.artifact(), artifact.version(), rootArtifact.extension(),
+                        rootArtifact.scope(), rootArtifact.classifier(), artifact.uri());
+            }
+            artifact.dependencies().addAll(artifactDependencies);
         }
         return artifact;
     }
@@ -157,7 +160,7 @@ public class ReflectiveCommandRunner {
     private void printError(CommandLine commandLine, Throwable e) {
         printError((commandLine != null && commandLine.hasOption('X')), e);
     }
-    
+
     protected void printError(boolean printStacktrace, Throwable e) {
         // Extract root case for potentially wrapped exception because of reflective calls
         e = extractRootCause(e);
@@ -174,29 +177,33 @@ public class ReflectiveCommandRunner {
         log.info("Command completed in " + String.format("%.2f", timing.duration()) + "s");
     }
 
-    protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
-            ProgressReporter indicator) {
+    protected ArtifactDescriptor resolveRugs(DependencyResolver resolver,
+            ArtifactDescriptor artifact) {
+        String version = resolver.resolveVersion(artifact);
+        return resolver.resolveRugs(ArtifactDescriptorFactory.copyFrom(artifact, version));
+    }
+
+    protected List<ArtifactDescriptor> resolveDependencies(DependencyResolver resolver,
+            ArtifactDescriptor artifact, ProgressReporter indicator) {
         String version = artifact.version();
         try {
             List<ArtifactDescriptor> dependencies = new ArrayList<>();
-            DependencyResolver resolver = DependencyResolverFactory
-                    .createDependencyResolver(artifact, indicator);
 
             // Add the rug dependency manually and make sure it is not resolved from the archive
             Optional<String> versionOverride = CommandLineOptions.getOptionValue("requires");
             if (versionOverride.isPresent()) {
-                dependencies.addAll(resolver.resolveTransitiveDependencies(
-                        new DefaultArtifactDescriptor(Constants.GROUP, Constants.RUG_ARTIFACT,
-                                versionOverride.get(), Extension.JAR)));
-                
+                dependencies.addAll(
+                        resolver.resolveDependencies(new DefaultArtifactDescriptor(Constants.GROUP,
+                                Constants.RUG_ARTIFACT, versionOverride.get(), Extension.JAR)));
+
                 // Creating a new resolver that excludes the rug dependency
                 resolver = DependencyResolverFactory.createDependencyResolver(artifact, indicator,
                         "com.atomist:rug");
             }
 
             version = resolver.resolveVersion(artifact);
-            dependencies.addAll(resolver.resolveTransitiveDependencies(
-                    ArtifactDescriptorFactory.copyFrom(artifact, version)));
+            dependencies.addAll(resolver
+                    .resolveDependencies(ArtifactDescriptorFactory.copyFrom(artifact, version)));
             return dependencies;
         }
         catch (DependencyResolverException e) {

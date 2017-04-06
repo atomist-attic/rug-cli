@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.atomist.param.ParameterValues;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.project.archive.Rugs;
 import com.atomist.project.edit.ProjectEditor;
 import com.atomist.rug.cli.Constants;
@@ -54,7 +55,7 @@ public class EditCommand extends AbstractParameterizedCommand {
     public void run(Rugs operations, ArtifactDescriptor artifact,
             @Argument(index = 1) String fqArtifactName,
             @Argument(start = 2) ParameterValues arguments, @Option("change-dir") String root,
-            @Option("dry-run") boolean dryRun, @Option("repo") boolean repo) {
+            @Option("dry-run") boolean dryRun, @Option("repo") boolean repo, RugResolver resolver) {
 
         String editorName = OperationUtils.extractRugTypeName(fqArtifactName);
         Optional<ProjectEditor> opt = asJavaCollection(operations.editors()).stream()
@@ -62,7 +63,7 @@ public class EditCommand extends AbstractParameterizedCommand {
 
         if (opt.isPresent()) {
             arguments = validate(artifact, opt.get(), arguments);
-            invoke(artifact, opt.get(), arguments, root, dryRun, repo);
+            invoke(artifact, opt.get(), arguments, root, dryRun, repo, resolver);
         }
         else {
             if (!operations.editors().isEmpty()) {
@@ -84,10 +85,11 @@ public class EditCommand extends AbstractParameterizedCommand {
     }
 
     private void invoke(ArtifactDescriptor artifact, ProjectEditor editor,
-            ParameterValues arguments, String rootName, boolean dryRun, boolean commit) {
+            ParameterValues arguments, String rootName, boolean dryRun, boolean commit,
+            RugResolver resolver) {
 
         LocalGitProjectManagement management = new LocalGitProjectManagement(artifact, rootName,
-                false, false, commit, dryRun);
+                false, false, commit, dryRun, resolver);
         management.edit(editor, arguments, rootName);
     }
 }

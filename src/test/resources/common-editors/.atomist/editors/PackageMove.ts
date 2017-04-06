@@ -31,7 +31,7 @@ class PackageMove implements EditProject {
     new_package: string
 
     edit(project: Project) {
-        let eng: PathExpressionEngine = project.context().pathExpressionEngine()
+        let eng: PathExpressionEngine = project.context.pathExpressionEngine
         eng.with<JavaSource>(project, '//JavaSource()', j => {
             if (j.pkg() == this.old_package) {
                 j.movePackage(this.new_package)

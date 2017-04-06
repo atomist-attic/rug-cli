@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command.describe;
 
 import static scala.collection.JavaConversions.asJavaCollection;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -194,8 +195,9 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
     private void describeContents(ArtifactDescriptor artifact, ArtifactSource source) {
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
-        log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(artifact.uri())),
-                FileUtils.sizeOf(artifact.uri()), source.allFiles().size());
+        log.info("  %s (%s in %s files)",
+                Style.underline(FileUtils.relativize(new File(artifact.uri()).toURI())),
+                FileUtils.sizeOf(new File(artifact.uri()).toURI()), source.allFiles().size());
     }
 
     private void describeDependencies(Manifest manifest) {
@@ -205,12 +207,12 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         if (manifest.dependencies().size() > 0) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Dependencies"));
             manifest.dependencies().forEach(d -> log
-                    .info(Style.yellow("  %s:%s:%s", d.group(), d.artifact(), d.version())));
+                    .info(Style.yellow("  %s:%s (%s)", d.group(), d.artifact(), d.version())));
         }
         if (manifest.extensions().size() > 0) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extensions"));
             manifest.extensions().forEach(d -> log
-                    .info(Style.yellow("  %s:%s:%s", d.group(), d.artifact(), d.version())));
+                    .info(Style.yellow("  %s:%s (%s)", d.group(), d.artifact(), d.version())));
         }
     }
 

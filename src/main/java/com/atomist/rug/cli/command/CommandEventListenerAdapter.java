@@ -1,6 +1,7 @@
 package com.atomist.rug.cli.command;
 
-import com.atomist.project.archive.Rugs;
+import com.atomist.project.archive.ResolvedDependency;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
 
@@ -19,7 +20,8 @@ public class CommandEventListenerAdapter implements CommandEventListener {
     }
 
     @Override
-    public void operationsLoaded(ArtifactDescriptor artifact, Rugs operations) {
+    public void operationsLoaded(ArtifactDescriptor artifact, ResolvedDependency operations,
+            RugResolver resolver) {
     }
 
     @Override

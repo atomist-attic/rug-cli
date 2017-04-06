@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.atomist.param.ParameterValues;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.project.edit.FailedModificationAttempt;
 import com.atomist.project.edit.ModificationAttempt;
 import com.atomist.project.edit.NoModificationNeeded;
@@ -61,15 +62,18 @@ public class LocalGitProjectManagement implements ProjectManagement {
     private final ArtifactDescriptor artifact;
     private final boolean commit;
     private final boolean dryRun;
+    private final RugResolver resolver;
 
     public LocalGitProjectManagement(ArtifactDescriptor artifact, String rootPath,
-            boolean createRepo, boolean overwrite, boolean commit, boolean dryRun) {
+            boolean createRepo, boolean overwrite, boolean commit, boolean dryRun,
+            RugResolver resolver) {
         this.artifact = artifact;
         this.rootPath = rootPath;
         this.createRepo = createRepo;
         this.overwrite = overwrite;
         this.commit = commit;
         this.dryRun = dryRun;
+        this.resolver = resolver;
     }
 
     private File createProjectRoot(String path, String projectName, boolean overwrite) {
@@ -100,7 +104,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
 
         // Add provenance info to output
         result = new ProvenanceInfoWriter().write(result, generator, arguments,
-                Constants.cliClient());
+                Constants.cliClient(), resolver);
 
         FileSystemArtifactSourceIdentifier fsid = new SimpleFileSystemArtifactSourceIdentifier(
                 root);
@@ -119,7 +123,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
         visitor.log(log);
         if (createRepo) {
             log.newline();
-            GitUtils.initializeRepoAndCommitFiles(generator, arguments, root);
+            GitUtils.initializeRepoAndCommitFiles(generator, arguments, root, resolver);
         }
         log.newline();
         log.info(Style.green("Successfully generated new project %s", projectName));
@@ -153,7 +157,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
 
             ArtifactSource resultSource = new ProvenanceInfoWriter().write(
                     ((SuccessfulModification) result).result(), editor, arguments,
-                    Constants.cliClient());
+                    Constants.cliClient(), resolver);
 
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
@@ -168,7 +172,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
             iterateDeltas(deltas, source, resultSource, root, dryRun);
             if (commit) {
                 log.newline();
-                GitUtils.commitFiles(editor, arguments, root);
+                GitUtils.commitFiles(editor, arguments, root, resolver);
             }
 
             log.newline();

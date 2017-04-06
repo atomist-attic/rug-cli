@@ -3,15 +3,15 @@ import {TreeNode, Match, PathExpression} from '@atomist/rug/tree/PathExpression'
 import {EventHandler, ResponseHandler, CommandHandler, Parameter, Secrets, MappedParameter, Tags, Intent} from '@atomist/rug/operations/Decorators'
 import {Project} from '@atomist/rug/model/Core'
 
+import {Issue} from '@atomist/cortex/Issue'
+
 
 @EventHandler("ClosedIssueReopener","Reopens closed issues",  "/issue")
 @Tags("github", "issues")
 class SimpleHandler implements HandleEvent<Issue,Issue>{
   handle(match: Match<Issue,Issue>): Plan {
     let issue = match.root()
-    let reopen = issue.reopen
-    reopen.onSuccess = {name: ""}
-    return new Plan().add(reopen)
+    return new Plan()
   }
 }
 
@@ -24,8 +24,8 @@ class IssueReopenFailedResponder implements HandleResponse<Issue>{
   who: string
 
   handle(response: Response<Issue>): Plan {
-    let issue = response.body
-    let msg = new Message(`Issue ${issue.number} was not reopened, trying again`)
+    let issue = response.body()
+    let msg = new Message(`Issue ${issue.number()} was not reopened, trying again`)
     msg.channelId = this.who
     return new Plan()
       .add(msg)
@@ -59,18 +59,18 @@ class IssueLister implements HandleCommand{
   @Parameter({description: "Days", pattern: "^.*$", maxLength: 100, required: false })
   days = 1
 
-  handle(ctx: HandlerContext) : Message {
+  handle(ctx: HandlerContext) : Plan {
     var match: Match<Issue,Issue>; // ctx.pathExpressionEngine().evaluate<Issue,Issue>("/Repo()/Issue[@raisedBy='kipz']")
     let issues = match.matches();
     if (issues.length > 0) {
               let attachments = `{"attachments": [` + issues.map(i => {
                  let text = JSON.stringify(`#${i.number}: ${i.title}`)
-                 if (i.state == "closed") {
+                 if (i.state() == "closed") {
                      return `{
                    "fallback": ${text},
                    "author_icon": "http://images.atomist.com/rug/issue-closed.png",
                    "color": "#bd2c00",
-                   "author_link": "${i.issueUrl}",
+                   "author_link": "${i}",
                    "author_name": ${text}
                 }`
                  }
@@ -79,14 +79,14 @@ class IssueLister implements HandleCommand{
                  "fallback": ${text},
                  "author_icon": "http://images.atomist.com/rug/issue-open.png",
                  "color": "#6cc644",
-                 "author_link": "${i.issueUrl}",
+                 "author_link": "${i}",
                  "author_name": ${text}
               }`
                  }
              }).join(",") + "]}"
-             return {text: attachments}
+             return Plan.ofMessage(new Message(attachments))
          }else{
-            return {text: "You are not crushin' it right now!"}
+            return Plan.ofMessage(new Message(""))
          }
   }
 }
@@ -110,9 +110,9 @@ class KittieFetcher implements HandleCommand{
 
 @ResponseHandler("Kitties", "Prints out kitty urls")
 class KittiesResponder implements HandleResponse<Object>{
-  handle(response: Response<Object>) : Message {
+  handle(response: Response<Object>) : Plan {
     let results = response.body as any;
-    return new Message(results.urls.join(","))
+    return Plan.ofMessage(new Message(results.urls.join(",")))
   }
 }
 
@@ -167,21 +167,12 @@ export let issueCreator = new CreateIssue();
 
 @ResponseHandler("CreateIssue", "Prints out the response message")
 class CreateIssueResponder implements HandleResponse<string>{
-  handle(response: Response<string>) : Message {
+  handle(response: Response<string>) : Plan {
     let result = response as any
     console.log(">>>>>>>>>>>>>>>>>>" + JSON.stringify(result.body()))
-    return new Message(result)
+    return Plan.ofMessage(new Message(result));
   }
 }
 
 export let createIssueResponder = new CreateIssueResponder();
 
-// stuff associated with types/executions that should have typings
-
-interface Issue extends TreeNode {
-  reopen: Respondable<"execute">
-  title: string
-  number: string
-  state: string
-  issueUrl: string
-}

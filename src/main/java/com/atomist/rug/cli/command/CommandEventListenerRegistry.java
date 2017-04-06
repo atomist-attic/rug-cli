@@ -1,10 +1,12 @@
 package com.atomist.rug.cli.command;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.atomist.project.archive.Rugs;
+import com.atomist.project.archive.ResolvedDependency;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
@@ -44,7 +46,7 @@ public abstract class CommandEventListenerRegistry {
             if (CommandLineOptions.hasOption("V") && source != null) {
                 log.info("Loaded archive sources for %s",
                         ArtifactDescriptorUtils.coordinates(artifact));
-                log.info("  " + FileUtils.relativize(artifact.uri()));
+                log.info("  " + FileUtils.relativize(new File(artifact.uri()).toURI()));
                 LogVisitor visitor = new LogVisitor();
                 ArtifactSourceTreeCreator.visitTree(source, visitor);
                 visitor.log(log);
@@ -61,8 +63,10 @@ public abstract class CommandEventListenerRegistry {
         }
 
         @Override
-        public void operationsLoaded(ArtifactDescriptor artifact, Rugs operations) {
-            CommandContext.save(Rugs.class, operations);
+        public void operationsLoaded(ArtifactDescriptor artifact, ResolvedDependency operations,
+                RugResolver resolver) {
+            CommandContext.save(ResolvedDependency.class, operations);
+            CommandContext.save(RugResolver.class, resolver);
         }
     }
 }

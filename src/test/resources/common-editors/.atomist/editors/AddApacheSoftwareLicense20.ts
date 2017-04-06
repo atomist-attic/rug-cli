@@ -17,14 +17,14 @@ class AddApacheSoftwareLicense20 implements EditProject {
 
     edit(project: Project) {
 
-        let eng: PathExpressionEngine = project.context().pathExpressionEngine();
+        let eng: PathExpressionEngine = project.context.pathExpressionEngine;
 
         let license = "ApacheSoftwareLicenseV20";
 
         let licenseFilename = "LICENSE";
 
         let p = project
-        p.copyEditorBackingFileOrFail(license, licenseFilename)
+        p.copyEditorBackingFilesOrFail(license, licenseFilename)
 
     }
 
