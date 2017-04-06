@@ -27,14 +27,14 @@ class AddChangeLog implements EditProject {
 
     edit(project: Project) {
 
-        let eng: PathExpressionEngine = project.context().pathExpressionEngine();
+        let eng: PathExpressionEngine = project.context.pathExpressionEngine;
 
         let changelogTemplate = "empty-changelog.md";
 
         let changelog = "CHANGELOG.md";
 
         let p = project
-        p.copyEditorBackingFileOrFail(changelogTemplate, changelog)
+        p.copyEditorBackingFilesOrFail(changelogTemplate, changelog)
         eng.with<File>(p, `//File()[@name='${changelog}']`, f => {
             f.replace("{{repo_slug}}", this.repo_slug)
         })

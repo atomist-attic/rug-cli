@@ -20,8 +20,8 @@ public class RugArchiveLifecycleTest extends AbstractCommandTest {
     @Test
     public void testAGenerate() throws Exception {
         assertSuccess("Successfully generated new project my-rug-archive", "generate",
-                "atomist-rugs:rug-project:NewRugProject", "my-rug-archive", "owner=atomist-rugs",
-                "version=0.1.0", "description=My first Rug Archive project", "-X", "-C", location);
+                "atomist-rugs:rug-editors:NewRugProject", "my-rug-archive", "owner=atomist-rugs",
+                "description=blabla", "-Xur", "-C", location);
     }
 
     @Test

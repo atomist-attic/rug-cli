@@ -13,6 +13,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import com.atomist.param.ParameterValues;
 import com.atomist.project.ProjectOperation;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
@@ -25,15 +26,13 @@ public abstract class GitUtils {
     private static Log log = new Log(GitUtils.class);
 
     public static void initializeRepoAndCommitFiles(ProjectGenerator generator,
-            ParameterValues arguments, File root) {
+            ParameterValues arguments, File root, RugResolver resolver) {
         try (Git git = Git.init().setDirectory(root).call()) {
             log.info("Initialized a new git repository at " + git.getRepository().getDirectory());
             git.add().addFilepattern(".").call();
-            RevCommit commit = git.commit().setAll(true)
-                    .setMessage(String.format("%s\n\n```%s```",
-                            StringUtils.capitalize(generator.description()),
-                            new ProvenanceInfoWriter().write(generator, arguments,
-                                    Constants.cliClient())))
+            RevCommit commit = git.commit().setAll(true).setMessage(String.format("%s\n\n```%s```",
+                    StringUtils.capitalize(generator.description()), new ProvenanceInfoWriter()
+                            .write(generator, arguments, Constants.cliClient(), resolver)))
                     .setAuthor("Atomist", "cli@atomist.com").call();
             log.info("Committed initial set of files to git repository (%s)",
                     commit.abbreviate(7).name());
@@ -43,8 +42,8 @@ public abstract class GitUtils {
         }
     }
 
-    public static void commitFiles(ProjectOperation operation, ParameterValues arguments,
-            File root) {
+    public static void commitFiles(ProjectOperation operation, ParameterValues arguments, File root,
+            RugResolver resolver) {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         try (Repository repository = builder.setGitDir(new File(root, ".git")).readEnvironment()
                 .findGitDir().build()) {
@@ -55,7 +54,7 @@ public abstract class GitUtils {
                         .setMessage(String.format("%s\n\n```\n%s```",
                                 StringUtils.capitalize(operation.description()),
                                 new ProvenanceInfoWriter().write(operation, arguments,
-                                        Constants.cliClient())))
+                                        Constants.cliClient(), resolver)))
                         .setAuthor("Atomist", "cli@atomist.com").call();
                 log.info("Committed changes to git repository (%s)", commit.abbreviate(7).name());
             }

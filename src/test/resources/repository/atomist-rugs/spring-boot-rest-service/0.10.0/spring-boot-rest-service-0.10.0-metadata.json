@@ -1,0 +1,94 @@
+{
+  "artifact" : "spring-boot-rest-service",
+  "generators" : [ {
+    "description" : "creates a new Spring Boot REST service project",
+    "name" : "NewSpringBootRestService",
+    "parameters" : [ {
+      "name" : "artifactId",
+      "description" : "Maven artifact identifier, i.e., the name of the jar without the version, it is often the same as the project name",
+      "pattern" : "^[a-z][-a-z0-9_]*$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "myartifact",
+      "valid_input_description" : "a valid Maven artifact ID, which starts with a lower-case letter and contains only alphanumeric, -, and _ characters",
+      "max_length" : 50,
+      "min_length" : 1,
+      "display_name" : "Maven Artifact ID"
+    }, {
+      "name" : "groupId",
+      "description" : "Maven group identifier, often used to provide a namespace for your project, e.g., com.pany.team",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "mygroup",
+      "valid_input_description" : "a valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters.",
+      "max_length" : 50,
+      "min_length" : 1,
+      "display_name" : "Maven Group ID"
+    }, {
+      "name" : "version",
+      "description" : "initial version of the project, e.g., 1.2.3-SNAPSHOT",
+      "pattern" : "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*)(?:\\.(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*))*)?(?:\\+[-A-Za-z\\d]+(?:\\.[-A-Za-z\\d]+)*)?$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "0.1.0-SNAPSHOT",
+      "valid_input_description" : "a valid semantic version, http://semver.org",
+      "max_length" : 50,
+      "min_length" : 1,
+      "display_name" : "Version"
+    }, {
+      "name" : "description",
+      "description" : "short descriptive text describing the new project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "My new project",
+      "valid_input_description" : "free text",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Project Description"
+    }, {
+      "name" : "rootPackage",
+      "description" : "root package for your generated source, often this will be namespaced under the group ID",
+      "pattern" : "^(?:(?:[A-Za-z_$][\\w$]*\\.)*[A-Za-z_$][\\w$]*)*$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "com.myorg",
+      "valid_input_description" : "a valid Java package name, which consists of period-separated identifiers which have only alphanumeric characters, $ and _ and do not start with a number",
+      "max_length" : 50,
+      "min_length" : 1,
+      "display_name" : "Root Package"
+    }, {
+      "name" : "serviceClassName",
+      "description" : "name for the service class",
+      "pattern" : "^[A-Za-z_$][\\w$]*$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "Test",
+      "valid_input_description" : "a valid Java class name, which contains only alphanumeric characters, $ and _ and does not start with a number",
+      "max_length" : 50,
+      "min_length" : 1,
+      "display_name" : "Class Name"
+    } ],
+    "tags" : [ {
+      "name" : "java",
+      "description" : "java"
+    }, {
+      "name" : "spring",
+      "description" : "spring"
+    }, {
+      "name" : "spring-boot",
+      "description" : "spring-boot"
+    }, {
+      "name" : "spring-rest",
+      "description" : "spring-rest"
+    } ]
+  } ],
+  "group" : "atomist-rugs",
+  "origin" : {
+    "branch" : "master",
+    "repo" : "git@github.com:atomist-rugs/spring-boot-rest-service.git",
+    "sha" : "751f826*"
+  },
+  "version" : "0.10.0"
+}

@@ -39,7 +39,7 @@ class AddProjectDependencyToMavenPom implements EditProject {
     version: string
 
     edit(project: Project) {
-        let eng: PathExpressionEngine = project.context().pathExpressionEngine()
+        let eng: PathExpressionEngine = project.context.pathExpressionEngine
         eng.with<Pom>(project, '//Pom()', p => {
             p.addOrReplaceDependencyOfVersion(this.group_id, this.artifact_id, this.version)
         })

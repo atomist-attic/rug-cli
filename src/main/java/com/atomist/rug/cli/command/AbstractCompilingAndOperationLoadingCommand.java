@@ -1,17 +1,18 @@
 package com.atomist.rug.cli.command;
 
 import java.io.File;
-import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.springframework.util.StringUtils;
 
-import com.atomist.project.archive.Rugs;
-import com.atomist.rug.BadRugException;
-import com.atomist.rug.RugRuntimeException;
+import com.atomist.project.archive.Coordinate;
+import com.atomist.project.archive.Dependency;
+import com.atomist.project.archive.ResolvedDependency;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
@@ -26,12 +27,10 @@ import com.atomist.rug.compiler.typescript.compilation.CompilerFactory;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
-import com.atomist.rug.resolver.UriBasedDependencyResolver;
-import com.atomist.rug.resolver.loader.ProvenanceAddingRugLoader;
-import com.atomist.rug.resolver.loader.RugLoader;
-import com.atomist.rug.resolver.loader.RugLoaderException;
-import com.atomist.rug.resolver.loader.RugLoaderRuntimeException;
 import com.atomist.source.ArtifactSource;
+
+import scala.Option;
+import scala.collection.JavaConverters;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 
@@ -41,18 +40,19 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
     protected Log log = new Log(getClass());
 
     @Override
-    protected final void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
+    protected final void run(ArtifactDescriptor artifact, CommandLine commandLine) {
         if (artifact != null && artifact.extension() == Extension.ZIP
                 && registry.findCommand(getClass()).loadArtifactSource()) {
             if (CommandContext.contains(ArtifactSource.class)
-                    && CommandContext.contains(Rugs.class)) {
+                    && CommandContext.contains(ResolvedDependency.class)) {
                 ArtifactSource source = CommandContext.restore(ArtifactSource.class);
+                RugResolver resolver = CommandContext.restore(RugResolver.class);
 
-                Rugs rugs = new ProgressReportingOperationRunner<Rugs>(
+                ResolvedDependency rugs = new ProgressReportingOperationRunner<ResolvedDependency>(
                         String.format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
-                                .run(indicator -> CommandContext.restore(Rugs.class));
+                                .run(indicator -> CommandContext.restore(ResolvedDependency.class));
 
-                run(rugs, artifact, source, commandLine);
+                run(rugs, artifact, source, resolver, commandLine);
             }
             else {
                 ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
@@ -63,14 +63,17 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 CommandEventListenerRegistry
                         .raiseEvent((c) -> c.artifactSourceCompiled(artifact, compiledSource));
 
-                Rugs rugs = loadRugs(artifact, compiledSource, createRugLoader(uri));
-                CommandEventListenerRegistry.raiseEvent((c) -> c.operationsLoaded(artifact, rugs));
+                RugResolver resolver = createRugResolver(artifact, compiledSource);
 
-                run(rugs, artifact, compiledSource, commandLine);
+                ResolvedDependency rugs = resolver.resolvedDependencies();
+                CommandEventListenerRegistry
+                        .raiseEvent((c) -> c.operationsLoaded(artifact, rugs, resolver));
+
+                run(rugs, artifact, compiledSource, resolver, commandLine);
             }
         }
         else {
-            run(null, artifact, null, commandLine);
+            run(null, artifact, null, null, commandLine);
         }
     }
 
@@ -133,60 +136,27 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         }
     }
 
-    private RugLoader createRugLoader(URI[] uri) {
-        ProvenanceAddingRugLoader loader = new ProvenanceAddingRugLoader(
-                new UriBasedDependencyResolver(uri,
-                        SettingsReader.read().getLocalRepository().path())) {
-            @Override
-            protected List<ArtifactDescriptor> postProcessArfifactDescriptors(
-                    ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
-                if (artifact instanceof LocalArtifactDescriptor) {
-                    dependencies.add(artifact);
-                }
-                return dependencies;
-            }
-        };
-        return loader;
-    }
-
-    private Rugs doLoadRugs(ArtifactDescriptor artifact, ArtifactSource source, RugLoader loader)
-            throws Exception {
-        try {
-            return loader.load(artifact, source);
-        }
-        catch (Exception e) {
-
-            if (e instanceof BadRugException) {
-                throw new CommandException("Failed to load archive: \n" + e.getMessage(), e);
-            }
-            else if (e instanceof RugLoaderException || e instanceof RugLoaderRuntimeException) {
-                if (e.getCause() instanceof BadRugException) {
-                    throw new CommandException(
-                            "Failed to load archive: \n" + e.getCause().getMessage(), e);
-                }
-                else if (e.getCause() instanceof RugRuntimeException) {
-                    throw new CommandException(
-                            "Failed to load archive: \n" + e.getCause().getMessage(), e);
-                }
-            }
-            throw e;
-        }
-    }
-
-    private Rugs loadRugs(ArtifactDescriptor artifact, ArtifactSource source, RugLoader loader) {
-        if (artifact == null || source == null) {
-            return null;
-        }
-
-        return new ProgressReportingOperationRunner<Rugs>(
+    private RugResolver createRugResolver(ArtifactDescriptor artifact, ArtifactSource source) {
+        return new ProgressReportingOperationRunner<RugResolver>(
                 String.format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run(indicator -> {
-                            return doLoadRugs(artifact, source, loader);
+                            Dependency root = processArtifact(artifact, source);
+                            return new RugResolver(root);
                         });
     }
 
-    protected abstract void run(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
-            CommandLine commandLine);
+    private Dependency processArtifact(ArtifactDescriptor node, ArtifactSource source) {
+        List<Dependency> children = node.dependencies().stream()
+                .filter(d -> d.extension() == Extension.ZIP)
+                .map(d -> processArtifact(d, ArtifactSourceUtils.createArtifactSource(d)))
+                .collect(Collectors.toList());
+        return new Dependency(source,
+                Option.apply(new Coordinate(node.group(), node.artifact(), node.version())),
+                JavaConverters.asScalaBufferConverter(children).asScala());
+    }
+
+    protected abstract void run(ResolvedDependency rugs, ArtifactDescriptor artifact,
+            ArtifactSource source, RugResolver resolver, CommandLine commandLine);
 
     private static class ReportingCompilerListener implements CompilerListener {
 

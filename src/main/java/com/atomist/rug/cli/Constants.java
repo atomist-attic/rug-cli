@@ -15,7 +15,7 @@ public class Constants {
     public static final String ARTIFACT = "rug-cli";
 
     public static final String RUG_ARTIFACT = "rug";
-    public static final String RUG_VERSION_RANGE = "[0.21.0,1.0.0)";
+    public static final String RUG_VERSION_RANGE = "[0.25.0-SNAPSHOT,1.0.0)";
 
     public static final String ATOMIST_ROOT = ".atomist";
     public static final String CLI_CONFIG_NAME = "cli.yml";
@@ -39,7 +39,7 @@ public class Constants {
     public static final String CLOSEST_MATCH_HINT = "Did you mean?";
 
     public static final String SHELL_ESCAPE = "/";
-
+    
     public static String cliClient() {
         return ARTIFACT + " " + VersionUtils.readVersion().orElse("0.0.0");
     }

@@ -21,6 +21,8 @@ import com.atomist.param.ParameterValue;
 import com.atomist.param.ParameterValues;
 import com.atomist.param.SimpleParameterValue;
 import com.atomist.param.SimpleParameterValues;
+import com.atomist.project.archive.ResolvedDependency;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.project.archive.Rugs;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.annotation.Argument;
@@ -87,12 +89,12 @@ public abstract class AbstractAnnotationBasedCommand
 
     private ParameterValues prepareArguments(Properties props) {
         List<ParameterValue> pvs = props.entrySet().stream()
-            .map(e -> new SimpleParameterValue((String) e.getKey(), clearQuotes(e.getValue())))
+                .map(e -> new SimpleParameterValue((String) e.getKey(), clearQuotes(e.getValue())))
                 .collect(Collectors.toList());
 
         return new SimpleParameterValues(asScalaBuffer(pvs));
     }
-    
+
     private Object clearQuotes(Object value) {
         if (value != null && value instanceof String) {
             String v = (String) value;
@@ -106,9 +108,10 @@ public abstract class AbstractAnnotationBasedCommand
         }
         return value;
     }
-    
-    private List<Object> prepareMethodArguments(Method method, Rugs rugs,
-            ArtifactDescriptor artifact, ArtifactSource source, CommandLine commandLine) {
+
+    private List<Object> prepareMethodArguments(Method method, ResolvedDependency rugs,
+            ArtifactDescriptor artifact, ArtifactSource source, RugResolver resolver,
+            CommandLine commandLine) {
 
         return Arrays.stream(method.getParameters()).map(p -> {
             Argument argument = AnnotationUtils.getAnnotation(p, Argument.class);
@@ -121,6 +124,12 @@ public abstract class AbstractAnnotationBasedCommand
                 return prepareOptionMethodArgument(commandLine, p, option);
             }
             else if (p.getType().equals(Rugs.class)) {
+                return rugs.rugs();
+            }
+            else if (p.getType().equals(RugResolver.class)) {
+                return resolver;
+            }
+            else if (p.getType().equals(ResolvedDependency.class)) {
                 return rugs;
             }
             else if (p.getType().equals(ArtifactDescriptor.class)) {
@@ -185,22 +194,21 @@ public abstract class AbstractAnnotationBasedCommand
                 com.atomist.rug.cli.command.annotation.Validator.class);
         if (validatorMethod.isPresent()) {
             List<Object> validatorArgs = prepareMethodArguments(validatorMethod.get(), null,
-                    artifact, null, commandLine);
+                    artifact, null, null, commandLine);
             invokeMethod(validatorMethod.get(), validatorArgs);
         }
     }
 
     @Override
-    protected final void run(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
-            CommandLine commandLine) {
+    protected final void run(ResolvedDependency rugs, ArtifactDescriptor artifact,
+            ArtifactSource source, RugResolver resolver, CommandLine commandLine) {
 
         Optional<Method> commandMethod = annotatedMethodWith(
                 com.atomist.rug.cli.command.annotation.Command.class);
 
         if (commandMethod.isPresent()) {
             List<Object> runArgs = prepareMethodArguments(commandMethod.get(), rugs, artifact,
-
-                    source, commandLine);
+                    source, resolver, commandLine);
             invokeMethod(commandMethod.get(), runArgs);
         }
         else {
