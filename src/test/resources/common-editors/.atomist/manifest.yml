@@ -1,7 +1,7 @@
 group: rug-cli-tests
 artifact: common-editors
 version: "0.8.0"
-requires: "(0.20.0,0.23.0)"
+requires: "(0.24.0,0.26.0)"
 dependencies:
 extensions:
 

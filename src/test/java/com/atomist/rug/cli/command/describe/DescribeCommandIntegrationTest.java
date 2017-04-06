@@ -81,28 +81,28 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersion() throws Exception {
-        assertSuccess("atomist-rugs:spring-boot-rest-service (0.8.0" + Constants.DOT + "zip)",
+        assertSuccess("atomist-rugs:spring-boot-rest-service (0.10.0" + Constants.DOT + "zip)",
                 "describe", "generator",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.8.0");
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.10.0");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionAndResolverReport() throws Exception {
         // delete the resolver plan file
         File file = new File(System.getProperty("user.home"),
-                ".atomist/repository-tests/atomist-rugs/spring-boot-rest-service/0.8.0/_resolver.plan");
+                ".atomist/repository-tests/atomist-rugs/spring-boot-rest-service/0.10.0/_resolver.plan");
         file.delete();
-        assertSuccess("Binary dependency report for atomist-rugs:spring-boot-rest-service (0.8.0)",
+        assertSuccess("Binary dependency report for atomist-rugs:spring-boot-rest-service (0.10.0)",
                 "describe", "generator",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.8.0",
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.10.0",
                 "-r");
     }
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionAndUpdate() throws Exception {
-        assertSuccess("Binary dependency report for atomist-rugs:spring-boot-rest-service (0.8.0)",
+        assertSuccess("Binary dependency report for atomist-rugs:spring-boot-rest-service (0.10.0)",
                 "describe", "generator",
-                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.8.0",
+                "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.10.0",
                 "-ru");
     }
 
@@ -111,7 +111,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
         assertCommandLine(0, () -> assertFalse(systemOutRule.getLog().contains("Downloading ")),
                 "describe", "generator",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-o", "-a",
-                "0.8.0");
+                "0.10.0");
     }
 
     @Test

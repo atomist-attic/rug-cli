@@ -24,6 +24,8 @@ import com.atomist.rug.resolver.maven.LogDependencyVisitor;
 import com.atomist.rug.resolver.maven.MavenBasedDependencyResolver;
 import com.atomist.rug.resolver.maven.MavenProperties;
 
+import scala.collection.immutable.Stream.Cons;
+
 public abstract class DependencyResolverFactory {
 
     public static DependencyResolver createDependencyResolver(ArtifactDescriptor artifact,
@@ -84,17 +86,18 @@ public abstract class DependencyResolverFactory {
 
                 private String artifactId = String.format("%s:%s (", artifact.group(),
                         artifact.artifact(), artifact.extension().toString().toLowerCase());
+                private String cliArtifact = "com.atomist:rug-cli-root (1.0.0" + Constants.DOT
+                        + "jar" + Constants.DOT + "compile)";
                 private boolean firstMessage = true;
 
                 @Override
                 public void info(String message) {
-                    if (message.contains("com.atomist:rug-cli-root:jar (1.0.0)")
-                            || (message.startsWith(artifactId) && message
-                                    .endsWith(artifact.extension().toString().toLowerCase()
-                                            + Constants.DOT + "compile)"))) {
+                    if (message.contains(cliArtifact) || (message.startsWith(artifactId)
+                            && message.endsWith(artifact.extension().toString().toLowerCase()
+                                    + Constants.DOT + "compile)"))) {
                         heading();
-                        message = message.replace("com.atomist:rug-cli-root:jar (1.0.0)",
-                                artifactId + artifact.version());
+                        message = message.replace(cliArtifact,
+                                artifactId + artifact.version() + ")");
                     }
                     indicator.report("  " + message);
                 }

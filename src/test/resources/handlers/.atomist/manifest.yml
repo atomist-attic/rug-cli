@@ -2,7 +2,7 @@ group: rug-cli-tests
 artifact: handlers
 version: "0.12.0"
 
-requires: "(0.20.0,1.0.0)"
+requires: "(0.24.0,0.26.0)"
 
 dependencies:
 

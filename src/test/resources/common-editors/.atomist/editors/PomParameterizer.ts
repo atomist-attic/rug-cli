@@ -53,9 +53,9 @@ class PomParameterizer implements EditProject {
     description: string
 
     edit(project: Project) {
-        let eng: PathExpressionEngine = project.context().pathExpressionEngine()
+        let eng: PathExpressionEngine = project.context.pathExpressionEngine
         eng.with<Pom>(project, '//Pom()', p => {
-            if (p.path() == "pom.xml") {
+            if (p.path == "pom.xml") {
                 p.setArtifactId(this.artifact_id)
                 p.setGroupId(this.group_id)
                 p.setVersion(this.version)

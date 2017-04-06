@@ -31,9 +31,9 @@ class ClassRenamer implements EditProject {
     new_class: string
 
     edit(project: Project) {
-        let eng: PathExpressionEngine = project.context().pathExpressionEngine()
+        let eng: PathExpressionEngine = project.context.pathExpressionEngine
         eng.with<JavaType>(project, '//JavaType()', c => {
-            if ( c.name().indexOf(this.old_class) >= 0 ) {
+            if ( c.name.indexOf(this.old_class) >= 0 ) {
                 c.renameByReplace(this.old_class, this.new_class)
             }
         })

@@ -15,7 +15,7 @@ public class ListCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void test1Setup() throws Exception {
         assertSuccess("", "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-a",
-                "0.8.0");
+                "0.10.0");
     }
 
     @Test
