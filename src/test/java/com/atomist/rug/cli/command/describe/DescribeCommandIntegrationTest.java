@@ -92,7 +92,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
         File file = new File(System.getProperty("user.home"),
                 ".atomist/repository-tests/atomist-rugs/spring-boot-rest-service/0.8.0/_resolver.plan");
         file.delete();
-        assertSuccess("Dependency report for atomist-rugs:spring-boot-rest-service (0.8.0)",
+        assertSuccess("Binary dependency report for atomist-rugs:spring-boot-rest-service (0.8.0)",
                 "describe", "generator",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.8.0",
                 "-r");
@@ -100,7 +100,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionAndUpdate() throws Exception {
-        assertSuccess("Dependency report for atomist-rugs:spring-boot-rest-service (0.8.0)",
+        assertSuccess("Binary dependency report for atomist-rugs:spring-boot-rest-service (0.8.0)",
                 "describe", "generator",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.8.0",
                 "-ru");

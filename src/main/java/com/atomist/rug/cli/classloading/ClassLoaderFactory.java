@@ -70,6 +70,7 @@ public abstract class ClassLoaderFactory {
      * J2V8 is not available from the system {@link ClassLoader} but we still want to delegate to
      * shared {@link ClassLoader} when we run the shell for different archives in one session.
      */
+    @SuppressWarnings("deprecation")
     public static void setupJ2V8ClassLoader(List<ArtifactDescriptor> dependencies) {
         // Check if the J2V8 ClassLoader has already been installed
         if (Thread.currentThread().getContextClassLoader() instanceof J2V8ClassLoader) {
@@ -80,8 +81,9 @@ public abstract class ClassLoaderFactory {
                 .filter(d -> d.group().equals("com.eclipsesource.j2v8")).findAny();
         if (j2v8.isPresent()) {
             try {
-                Thread.currentThread().setContextClassLoader(
-                        new J2V8ClassLoader(new URL[] { j2v8.get().uri().toURL() },
+                Thread.currentThread()
+                        .setContextClassLoader(new J2V8ClassLoader(
+                                new URL[] { new File(j2v8.get().uri()).toURL() },
                                 Thread.currentThread().getContextClassLoader()));
             }
             catch (MalformedURLException e) {

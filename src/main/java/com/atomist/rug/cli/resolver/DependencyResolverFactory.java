@@ -56,11 +56,19 @@ public abstract class DependencyResolverFactory {
                 }
                 else {
                     if (artifact.extension() == Extension.ZIP) {
-                        // add in the metadata.json for the root archive as dependency
-                        DefaultArtifactDescriptor metadataArtifact = new DefaultArtifactDescriptor(
-                                artifact.group(), artifact.artifact(), artifact.version(),
-                                Extension.JSON, Scope.COMPILE, "metadata", null);
-                        artifact.dependencies().add(metadataArtifact);
+                        if (!artifact.dependencies().stream()
+                                .anyMatch(d -> d.group().equals(artifact.group())
+                                        && d.artifact().equals(artifact.artifact())
+                                        && d.version().equals(artifact.version())
+                                        && d.scope().equals(Scope.COMPILE)
+                                        && d.extension().equals(Extension.JSON)
+                                        && d.classifier().equals("metadata"))) {
+                            // add in the metadata.json for the root archive as dependency
+                            DefaultArtifactDescriptor metadataArtifact = new DefaultArtifactDescriptor(
+                                    artifact.group(), artifact.artifact(), artifact.version(),
+                                    Extension.JSON, Scope.COMPILE, "metadata", null);
+                            artifact.dependencies().add(metadataArtifact);
+                        }
                     }
                     return super.createDependencyRoot(artifact);
                 }
@@ -74,23 +82,37 @@ public abstract class DependencyResolverFactory {
         if (CommandLineOptions.hasOption("r")) {
             resolver.addDependencyVisitor(new LogDependencyVisitor(new LogDependencyVisitor.Log() {
 
+                private String artifactId = String.format("%s:%s (", artifact.group(),
+                        artifact.artifact(), artifact.extension().toString().toLowerCase());
                 private boolean firstMessage = true;
 
                 @Override
                 public void info(String message) {
-                    firstMessage();
+                    if (message.contains("com.atomist:rug-cli-root:jar (1.0.0)")
+                            || (message.startsWith(artifactId) && message
+                                    .endsWith(artifact.extension().toString().toLowerCase()
+                                            + Constants.DOT + "compile)"))) {
+                        heading();
+                        message = message.replace("com.atomist:rug-cli-root:jar (1.0.0)",
+                                artifactId + artifact.version());
+                    }
                     indicator.report("  " + message);
                 }
 
-                private void firstMessage() {
+                private void heading() {
                     if (firstMessage) {
-                        indicator.report(String.format("Dependency report for %s:%s (%s)",
+                        indicator.report(String.format("Binary dependency report for %s:%s (%s)",
                                 artifact.group(), artifact.artifact(), artifact.version()));
                         firstMessage = false;
                     }
+                    else {
+                        indicator.report(String.format("Archive dependency report for %s:%s (%s)",
+                                artifact.group(), artifact.artifact(), artifact.version()));
+                    }
                 }
             }, Constants.TREE_NODE, Constants.LAST_TREE_NODE, Constants.TREE_CONNECTOR,
-                    Constants.TREE_NODE_WITH_CHILDREN, Constants.LAST_TREE_NODE_WITH_CHILDREN));
+                    Constants.TREE_NODE_WITH_CHILDREN, Constants.LAST_TREE_NODE_WITH_CHILDREN,
+                    Constants.DOT));
         }
         return wrapDependencyResolver(resolver, properties.getRepoLocation());
     }
@@ -106,12 +128,6 @@ public abstract class DependencyResolverFactory {
         }
         else {
             return new CachingDependencyResolver(resolver, repoHome) {
-
-                @Override
-                public String toString() {
-                    return super.toString() + "[Caching dependency resolver around " + resolver
-                            + "]";
-                }
 
                 @Override
                 protected boolean isOutdated(ArtifactDescriptor artifact, File file) {

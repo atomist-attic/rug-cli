@@ -142,7 +142,7 @@ public class ListCommand extends AbstractAnnotationBasedCommand {
                 // remaining segments are group
                 String g = StringUtils.collectionToDelimitedString(segments, ".");
                 return new DefaultArtifactDescriptor(g, a, v, Extension.ZIP, Scope.COMPILE,
-                        f.toURI());
+                        f.getAbsolutePath());
             }).collect(Collectors.toList());
         }
 

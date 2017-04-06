@@ -1,0 +1,471 @@
+{
+  "artifact" : "rug-editors",
+  "editors" : [ {
+    "description" : "adds an editor for modifying the local project, initiating a Rug archive if needed",
+    "name" : "AddLocalEditor",
+    "parameters" : [ {
+      "name" : "editorName",
+      "description" : "name for the new Rug editor",
+      "pattern" : "^[A-Z][A-Za-z0-9]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Rug name starting with a capital letter and containing only alphanumeric characters, from one to 100 characters long",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Name"
+    }, {
+      "name" : "description",
+      "description" : "description of the new Rug editor",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "an editor for modifying this project",
+      "valid_input_description" : "free text",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Description"
+    }, {
+      "name" : "groupId",
+      "description" : "Maven group identifier, often used to provide a namespace for your rugs, e.g., company-rugs, typically the GitHub owner",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : true,
+      "displayable" : true,
+      "default_value" : "local",
+      "valid_input_description" : "a valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Group ID"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    }, {
+      "name" : "typescript",
+      "description" : "typescript"
+    } ]
+  }, {
+    "description" : "adds a Rug archive manifest",
+    "name" : "AddManifestYml",
+    "parameters" : [ {
+      "name" : "archiveName",
+      "description" : "name of your new Rug Archive, typically the same as the repo name",
+      "pattern" : "^[-\\w.]+$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid GitHub repo name containing only alphanumeric, ., -, and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Name"
+    }, {
+      "name" : "groupId",
+      "description" : "Maven group identifier, often used to provide a namespace for your rugs, e.g., company-rugs, typically the GitHub owner",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Group ID"
+    }, {
+      "name" : "version",
+      "description" : "initial version of the project, e.g., 1.2.3",
+      "pattern" : "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*)(?:\\.(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*))*)?(?:\\+[-A-Za-z\\d]+(?:\\.[-A-Za-z\\d]+)*)?$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "0.1.0",
+      "valid_input_description" : "a valid semantic version, http://semver.org",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Version"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    } ]
+  }, {
+    "description" : "adds TypeScript supporting files to a Rug archive project",
+    "name" : "AddTypeScript",
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    }, {
+      "name" : "typescript",
+      "description" : "typescript"
+    } ]
+  }, {
+    "description" : "adds a TypeScript Rug event handler to a Rug project",
+    "name" : "AddTypeScriptCommandHandler",
+    "parameters" : [ {
+      "name" : "handlerName",
+      "description" : "name of new event handler to add to Rug project",
+      "pattern" : "^[A-Z][A-Za-z0-9]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Rug name starting with a capital letter and containing only alphanumeric characters, from one to 100 characters long",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Event Handler Name"
+    }, {
+      "name" : "description",
+      "description" : "short description of event handler to add to Rug project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "free text",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Handler Description"
+    }, {
+      "name" : "intent",
+      "description" : "Message the bot will associate with this command",
+      "pattern" : "^[A-Za-z][-\\w ]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a phrase starting with a letter and containing only word characters and spaces",
+      "max_length" : 200,
+      "min_length" : 1,
+      "display_name" : "Bot Intent"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    }, {
+      "name" : "typescript",
+      "description" : "typescript"
+    } ]
+  }, {
+    "description" : "adds a TypeScript Rug editor to a Rug project",
+    "name" : "AddTypeScriptEditor",
+    "parameters" : [ {
+      "name" : "editorName",
+      "description" : "name of new editor to add to Rug project",
+      "pattern" : "^[A-Z][A-Za-z0-9]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Rug name starting with a capital letter and containing only alphanumeric characters, from one to 100 characters long",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Editor Name"
+    }, {
+      "name" : "description",
+      "description" : "short description of editor to add to Rug project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "free text",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Editor Description"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    }, {
+      "name" : "typescript",
+      "description" : "typescript"
+    } ]
+  }, {
+    "description" : "adds a TypeScript Rug event handler to a Rug project",
+    "name" : "AddTypeScriptEventHandler",
+    "parameters" : [ {
+      "name" : "handlerName",
+      "description" : "name of new event handler to add to Rug project",
+      "pattern" : "^[A-Z][A-Za-z0-9]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Rug name starting with a capital letter and containing only alphanumeric characters, from one to 100 characters long",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Event Handler Name"
+    }, {
+      "name" : "description",
+      "description" : "short description of event handler to add to Rug project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "free text",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Handler Description"
+    }, {
+      "name" : "pathExpression",
+      "description" : "path expression to the event that will trigger this handler",
+      "pattern" : "^/[\\s\\S]*$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "/Tag()",
+      "valid_input_description" : "a valid path expression",
+      "max_length" : 200,
+      "min_length" : 1,
+      "display_name" : "Path Expression"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    }, {
+      "name" : "typescript",
+      "description" : "typescript"
+    } ]
+  }, {
+    "description" : "adds a TypeScript generator to a Rug project",
+    "name" : "AddTypeScriptGenerator",
+    "parameters" : [ {
+      "name" : "generatorName",
+      "description" : "name of generator to add to Rug archive project",
+      "pattern" : "^[A-Z][A-Za-z0-9]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Rug name starting with a capital letter and containing only alphanumeric characters, from one to 100 characters long",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Generator Name"
+    }, {
+      "name" : "description",
+      "description" : "description of generator to add to Rug archive project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "free text",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Generator Description"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    }, {
+      "name" : "typescript",
+      "description" : "typescript"
+    } ]
+  }, {
+    "description" : "converts and existing project to a Rug archive project with a basic Generator",
+    "name" : "ConvertExistingProjectToGenerator",
+    "parameters" : [ {
+      "name" : "archiveName",
+      "description" : "name of your new Rug Archive, typically the same as the repo name",
+      "pattern" : "^[-\\w.]+$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid GitHub repo name containing only alphanumeric, ., -, and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Name"
+    }, {
+      "name" : "groupId",
+      "description" : "Maven group identifier, often used to provide a namespace for your rugs, e.g., company-rugs, typically the GitHub owner",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Group ID"
+    }, {
+      "name" : "version",
+      "description" : "initial version of the project, e.g., 1.2.3",
+      "pattern" : "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*)(?:\\.(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*))*)?(?:\\+[-A-Za-z\\d]+(?:\\.[-A-Za-z\\d]+)*)?$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "0.1.0",
+      "valid_input_description" : "a valid semantic version, http://semver.org",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Version"
+    }, {
+      "name" : "generatorName",
+      "description" : "name of generator to add to Rug archive project",
+      "pattern" : "^[A-Z][A-Za-z0-9]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid generator name starting with a capital letter and consisting of alphanumeric characters from one to 100 characters long",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Generator Name"
+    }, {
+      "name" : "description",
+      "description" : "description of generator to add to Rug archive project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a string between one and 100 characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Generator Description"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    } ]
+  }, {
+    "description" : "converts an existing project to a Rug archive project",
+    "name" : "ConvertExistingProjectToRugArchive",
+    "parameters" : [ {
+      "name" : "archiveName",
+      "description" : "name of your new Rug Archive, typically the same as the repo name",
+      "pattern" : "^[-\\w.]+$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid GitHub repo name containing only alphanumeric, ., -, and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Name"
+    }, {
+      "name" : "groupId",
+      "description" : "Maven group identifier, often used to provide a namespace for your rugs, e.g., company-rugs, typically the GitHub owner",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Group ID"
+    }, {
+      "name" : "version",
+      "description" : "initial version of the project, e.g., 1.2.3",
+      "pattern" : "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*)(?:\\.(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*))*)?(?:\\+[-A-Za-z\\d]+(?:\\.[-A-Za-z\\d]+)*)?$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "0.1.0",
+      "valid_input_description" : "a valid semantic version, http://semver.org",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Archive Version"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    } ]
+  }, {
+    "description" : "adds access to path expression engine in a Rug editor",
+    "name" : "HavePathExpressionEngine",
+    "parameters" : [ {
+      "name" : "rugName",
+      "description" : "name of a TypeScript rug",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "an existing TypeScript rug in your repository",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Rug Editor to Modify"
+    } ],
+    "tags" : [ {
+      "name" : "atomist",
+      "description" : "atomist"
+    }, {
+      "name" : "rug",
+      "description" : "rug"
+    } ]
+  } ],
+  "generators" : [ {
+    "description" : "creates a minimal Rug archive project with metadata and no Rugs",
+    "name" : "NewRugProject",
+    "parameters" : [ {
+      "name" : "project_name",
+      "description" : "Name of your new project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid GitHub repo name containing only alphanumeric, ., -, and _ characters and 21 characters or less to avoid Slack truncating the name when creating a channel for the repo",
+      "max_length" : 21,
+      "min_length" : 1,
+      "display_name" : "Project Name"
+    }, {
+      "name" : "owner",
+      "description" : "Maven group identifier, often used to provide a namespace for your rugs, e.g., company-rugs, typically the GitHub owner",
+      "pattern" : "^(?:[A-Za-z_][\\w]*\\.)*[-A-Za-z_][-\\w]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "a valid Maven group ID, which starts with a letter, -, or _ and contains only alphanumeric, -, and _ characters and may having leading period separated identifiers starting with letters or underscores and containing only alphanumeric and _ characters",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Group ID"
+    }, {
+      "name" : "description",
+      "description" : "short descriptive text describing the new project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "free text",
+      "max_length" : 100,
+      "min_length" : 1,
+      "display_name" : "Project Description"
+    }, {
+      "name" : "version",
+      "description" : "initial version of the project, e.g., 1.2.3",
+      "pattern" : "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*)(?:\\.(?:[1-9]\\d*|[-A-Za-z\\d]*[-A-Za-z][-A-Za-z\\d]*))*)?(?:\\+[-A-Za-z\\d]+(?:\\.[-A-Za-z\\d]+)*)?$",
+      "required" : false,
+      "displayable" : true,
+      "default_value" : "0.1.0",
+      "valid_input_description" : "a valid semantic version, http://semver.org",
+      "max_length" : 100,
+      "min_length" : 5,
+      "display_name" : "Version"
+    } ],
+    "tags" : [ {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "atomist",
+      "description" : "atomist"
+    } ]
+  }, {
+    "description" : "creates a new Rug archive project using standard setup, sensible defaults, and starter Rugs",
+    "name" : "NewStarterRugProject",
+    "parameters" : [ {
+      "name" : "project_name",
+      "description" : "Name of your new project",
+      "pattern" : "^[\\s\\S]*$",
+      "required" : true,
+      "displayable" : true,
+      "valid_input_description" : "A valid GitHub repo name containing only alphanumeric, ., -, and _ characters and 21 characters or less to avoid Slack truncating the name when creating a channel for the repo",
+      "max_length" : 21,
+      "min_length" : 1,
+      "display_name" : "Project Name"
+    } ],
+    "tags" : [ {
+      "name" : "atomist",
+      "description" : "atomist"
+    }, {
+      "name" : "rug",
+      "description" : "rug"
+    }, {
+      "name" : "starter",
+      "description" : "starter"
+    } ]
+  } ],
+  "group" : "atomist-rugs",
+  "origin" : {
+    "branch" : "cff978c59d1635572a8de584f1a1daad5e8d7a68",
+    "repo" : "https://github.com/atomist-rugs/rug-editors.git",
+    "sha" : "cff978c"
+  },
+  "version" : "0.24.0"
+}

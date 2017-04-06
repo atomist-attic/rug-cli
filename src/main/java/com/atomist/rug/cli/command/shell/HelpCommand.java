@@ -1,7 +1,5 @@
 package com.atomist.rug.cli.command.shell;
 
-import java.net.URI;
-
 import org.apache.commons.cli.CommandLine;
 
 import com.atomist.rug.cli.Log;
@@ -17,7 +15,7 @@ public class HelpCommand extends AbstractCommand {
     private static final Log log = new Log(HelpCommand.class);
 
     @Override
-    protected void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
+    protected void run(ArtifactDescriptor artifact, CommandLine commandLine) {
         log.info(new CommandHelpFormatter().printHelp(new ServiceLoadingCommandInfoRegistry(),
                 new GestureRegistry(), CommandUtils.options()));
     }

@@ -39,7 +39,7 @@ public class Constants {
     public static final String CLOSEST_MATCH_HINT = "Did you mean?";
 
     public static final String SHELL_ESCAPE = "/";
-
+    
     public static String cliClient() {
         return ARTIFACT + " " + VersionUtils.readVersion().orElse("0.0.0");
     }

@@ -6,7 +6,8 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.atomist.project.archive.Rugs;
+import com.atomist.project.archive.ResolvedDependency;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandContext;
@@ -38,13 +39,13 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
             + " |_| \\_\\\\__,_|\\__, |  \\____|_____|___|\n" + " %s      |___/ %s";
 
     @Command
-    public void run(ArtifactSource source, ArtifactDescriptor artifact, Rugs operations,
-            Settings settings) {
+    public void run(ArtifactSource source, ArtifactDescriptor artifact,
+            ResolvedDependency operations, RugResolver resolver, Settings settings) {
 
         new ProgressReportingOperationRunner<Void>(String.format("Initializing shell for %s",
                 ArtifactDescriptorUtils.coordinates(artifact))).run((reporter) -> {
                     registerFileSystemWatcherEventListener(artifact, operations);
-                    registerOperationsEventListener(source, artifact, operations);
+                    registerOperationsEventListener(source, artifact, operations, resolver);
                     return null;
                 });
 
@@ -55,7 +56,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void registerFileSystemWatcherEventListener(ArtifactDescriptor artifact,
-            Rugs operations) {
+            ResolvedDependency operations) {
         if (artifact instanceof LocalArtifactDescriptor && operations != null) {
             CommandContext.save(FileWatcher.class,
                     ArtifactSourceFileWatcherFactory.create(artifact));
@@ -63,10 +64,10 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void registerOperationsEventListener(ArtifactSource source, ArtifactDescriptor artifact,
-            Rugs operations) {
+            ResolvedDependency operations, RugResolver resolver) {
 
         CommandEventListener listener = new OperationsLoadedEventListener(source);
-        listener.operationsLoaded(artifact, operations);
+        listener.operationsLoaded(artifact, operations, resolver);
         CommandEventListenerRegistry.register(listener);
     }
 
@@ -90,10 +91,11 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
         }
 
         @Override
-        public void operationsLoaded(ArtifactDescriptor artifact, Rugs operations) {
+        public void operationsLoaded(ArtifactDescriptor artifact, ResolvedDependency operations,
+                RugResolver resolver) {
             if (artifact != null && operations != null) {
-                FileArtifact file = MetadataWriter.createWithoutExcludes(operations, artifact,
-                        source, null);
+                FileArtifact file = MetadataWriter.createWithoutExcludes(operations.rugs(),
+                        artifact, source, null);
 
                 try {
                     FileUtils.write(ShellUtils.SHELL_OPERATIONS, file.content(),

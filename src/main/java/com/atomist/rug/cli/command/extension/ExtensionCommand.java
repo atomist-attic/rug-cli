@@ -98,10 +98,10 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
 
                             // Read direct dependencies to make sure the cli is compatible
                             List<ArtifactDescriptor> directDependencies = dependencyResolver
-                                    .resolveDirectDependencies(resolvedArtifact);
+                                    .resolveDependencies(ArtifactDescriptorFactory
+                                            .copyFrom(artifact, newVersion));
                             if (verifyVersionRange(resolvedArtifact, directDependencies)) {
-                                return dependencyResolver.resolveTransitiveDependencies(
-                                        ArtifactDescriptorFactory.copyFrom(artifact, newVersion));
+                                return directDependencies;
                             }
 
                             else {
@@ -220,20 +220,22 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
                     return true;
                 }
                 else {
-                    if(cliVersion.toString().endsWith("-SNAPSHOT")){
-                        Version cliSnapshotVersion = scheme.parseVersion(StringUtils.removeEnd(cliVersion.toString(), "-SNAPSHOT"));
-                        if(constraint.containsVersion(cliSnapshotVersion)){
-                            log.warn("Assuming this CLI SNAPSHOT is compatible with the extension...", extension.group(),
-                                    extension.artifact(), extension.version(), constraint.toString(),
-                                    Constants.GROUP, Constants.ARTIFACT, cliVersion);
+                    if (cliVersion.toString().endsWith("-SNAPSHOT")) {
+                        Version cliSnapshotVersion = scheme.parseVersion(
+                                StringUtils.removeEnd(cliVersion.toString(), "-SNAPSHOT"));
+                        if (constraint.containsVersion(cliSnapshotVersion)) {
+                            log.warn(
+                                    "Assuming this CLI SNAPSHOT is compatible with the extension...",
+                                    extension.group(), extension.artifact(), extension.version(),
+                                    constraint.toString(), Constants.GROUP, Constants.ARTIFACT,
+                                    cliVersion);
                             return true;
                         }
                     }
-                    log.warn("Extension %s:%s (%s) requires %s of %s:%s, but current version is %s", extension.group(),
-                            extension.artifact(), extension.version(), constraint.toString(),
-                            Constants.GROUP, Constants.ARTIFACT, cliVersion);
+                    log.warn("Extension %s:%s (%s) requires %s of %s:%s, but current version is %s",
+                            extension.group(), extension.artifact(), extension.version(),
+                            constraint.toString(), Constants.GROUP, Constants.ARTIFACT, cliVersion);
                     return false;
-
 
                 }
             }

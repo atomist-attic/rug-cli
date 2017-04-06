@@ -1,7 +1,5 @@
 package com.atomist.rug.cli.command;
 
-import java.io.File;
-import java.net.URI;
 import java.util.Optional;
 
 import org.apache.commons.cli.CommandLine;
@@ -12,13 +10,8 @@ import org.apache.commons.cli.ParseException;
 
 import com.atomist.rug.cli.command.utils.ParseExceptionProcessor;
 import com.atomist.rug.cli.output.ConsoleUtils;
-import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.resolver.ArtifactDescriptor;
-import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
-import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
-import com.atomist.rug.resolver.DefaultArtifactDescriptor;
-import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public abstract class AbstractCommand implements com.atomist.rug.cli.command.Command {
 
@@ -30,40 +23,17 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
         CommandLine commandLine = parseCommandLine(args);
 
         validate(null, commandLine);
-        run(null, null, commandLine);
+        run(null, commandLine);
     }
 
     @Override
-    public final void run(String group, String artifactId, String version, String extension,
-            boolean local, URI[] uri, String... args) {
+    public final void run(ArtifactDescriptor artifact, String... args) {
 
         ConsoleUtils.configureStreams();
         CommandLine commandLine = parseCommandLine(args);
 
-        ArtifactDescriptor artifact = createArtifactDescriptor(group, artifactId, version,
-                extension, local);
-
         validate(artifact, commandLine);
-        run(uri, artifact, commandLine);
-    }
-
-    private ArtifactDescriptor createArtifactDescriptor(String group, String artifactId,
-            String version, String extension, boolean local) {
-        ArtifactDescriptor artifact = null;
-        if (local) {
-            artifact = new LocalArtifactDescriptor(group, artifactId, version,
-                    Extension.valueOf(extension), Scope.COMPILE,
-                    CommandUtils.getRequiredWorkingDirectory().toURI());
-        }
-        else {
-            File archive = new File(SettingsReader.read().getLocalRepository().path(),
-                    group.replace(".", File.separator) + File.separator + artifactId
-                            + File.separator + version + File.separator + artifactId + "-" + version
-                            + "." + extension.toLowerCase());
-            artifact = new DefaultArtifactDescriptor(group, artifactId, version,
-                    Extension.valueOf(extension), Scope.COMPILE, archive.toURI());
-        }
-        return artifact;
+        run(artifact, commandLine);
     }
 
     private CommandLine parseCommandLine(String... args) {
@@ -91,5 +61,5 @@ public abstract class AbstractCommand implements com.atomist.rug.cli.command.Com
     protected void validate(ArtifactDescriptor artifact, CommandLine commandLine) {
     }
 
-    protected abstract void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine);
+    protected abstract void run(ArtifactDescriptor artifact, CommandLine commandLine);
 }

@@ -30,6 +30,7 @@ import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.rug.resolver.DependencyResolver;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
 
 public class ShellCommandRunner extends ReflectiveCommandRunner {
@@ -44,9 +45,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         this.commandRegistry = registry;
     }
 
-    protected List<ArtifactDescriptor> resolveDependencies(ArtifactDescriptor artifact,
-            ProgressReporter indicator) {
-        List<ArtifactDescriptor> dependencies = super.resolveDependencies(artifact, indicator);
+    @Override
+    protected List<ArtifactDescriptor> resolveDependencies(DependencyResolver resolver,
+            ArtifactDescriptor artifact, ProgressReporter indicator) {
+        List<ArtifactDescriptor> dependencies = super.resolveDependencies(resolver, artifact,
+                indicator);
 
         Optional<ArtifactDescriptor> rug = dependencies.stream()
                 .filter(d -> d.group().equals(Constants.GROUP)
@@ -115,7 +118,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void handleInput(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies,
             String line) {
-        
+
         line = prepareInput(line);
 
         if (Constants.isReload()) {
@@ -125,7 +128,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) {
                 exit(artifact, dependencies);
             }
-            else if (line.startsWith("shell") || line.startsWith("load") || line.startsWith("repl")) {
+            else if (line.startsWith("shell") || line.startsWith("load")
+                    || line.startsWith("repl")) {
                 reload(line, artifact, dependencies);
             }
             else {

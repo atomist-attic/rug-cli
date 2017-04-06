@@ -41,7 +41,7 @@ public class GenerateDotCommandIntegrationTest extends AbstractCommandTest {
             File root = new File(absLocation, name);
             assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                     .contains("Successfully generated new project " + name));
-            assertTrue(new File(root, "src/main/java/my/test/HomeController.java").exists());
+            assertTrue(new File(root, "src/main/java/com/myorg/HomeController.java").exists());
             assertTrue(new File(root, ".atomist.yml").exists());
             FileUtils.deleteQuietly(root);
         }, "generate", "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", name,

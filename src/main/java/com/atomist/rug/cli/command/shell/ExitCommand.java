@@ -1,10 +1,9 @@
 package com.atomist.rug.cli.command.shell;
 
-import java.net.URI;
-
 import org.apache.commons.cli.CommandLine;
 
-import com.atomist.project.archive.Rugs;
+import com.atomist.project.archive.ResolvedDependency;
+import com.atomist.project.archive.RugResolver;
 import com.atomist.rug.cli.command.AbstractCommand;
 import com.atomist.rug.cli.command.CommandContext;
 import com.atomist.rug.cli.command.fs.ArtifactSourceFileWatcherFactory.FileWatcher;
@@ -14,7 +13,7 @@ import com.atomist.source.ArtifactSource;
 public class ExitCommand extends AbstractCommand {
 
     @Override
-    protected void run(URI[] uri, ArtifactDescriptor artifact, CommandLine commandLine) {
+    protected void run(ArtifactDescriptor artifact, CommandLine commandLine) {
         // Shutdown file system watcher
         if (CommandContext.contains(FileWatcher.class)) {
             CommandContext.restore(FileWatcher.class).shutdown();
@@ -22,6 +21,7 @@ public class ExitCommand extends AbstractCommand {
         // Clear out context
         CommandContext.delete(FileWatcher.class);
         CommandContext.delete(ArtifactSource.class);
-        CommandContext.delete(Rugs.class);
+        CommandContext.delete(ResolvedDependency.class);
+        CommandContext.delete(RugResolver.class);
     }
 }
