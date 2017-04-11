@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.script.ScriptEngine;
 import javax.script.SimpleBindings;
 
 import org.springframework.util.ClassUtils;
@@ -19,6 +18,7 @@ import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
+import com.atomist.rug.cli.output.ConsoleLogger;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
@@ -47,9 +47,7 @@ import gherkin.ast.Step;
 import scala.Option;
 import scala.collection.JavaConverters;
 import scala.runtime.AbstractFunction1;
-import scala.runtime.BoxedUnit;
 
-@SuppressWarnings("restriction")
 public class TestCommand extends AbstractAnnotationBasedCommand {
 
     private Log log = new Log(getClass());
@@ -66,13 +64,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                             GherkinRunner runner = new GherkinRunner(
                                     new JavaScriptContext(source, DefaultAtomistConfig$.MODULE$,
                                             new SimpleBindings(),
-                                            new AbstractFunction1<ScriptEngine, BoxedUnit>() {
-
-                                                @Override
-                                                public BoxedUnit apply(ScriptEngine egnine) {
-                                                    return null;
-                                                }
-                                            }),
+                                            ConsoleLogger.consoleLogger()),
                                     Option.apply(operations),
                                     JavaConverters.asScalaBufferConverter(listeners).asScala());
 
