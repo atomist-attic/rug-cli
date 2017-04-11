@@ -24,8 +24,6 @@ import com.atomist.rug.resolver.maven.LogDependencyVisitor;
 import com.atomist.rug.resolver.maven.MavenBasedDependencyResolver;
 import com.atomist.rug.resolver.maven.MavenProperties;
 
-import scala.collection.immutable.Stream.Cons;
-
 public abstract class DependencyResolverFactory {
 
     public static DependencyResolver createDependencyResolver(ArtifactDescriptor artifact,

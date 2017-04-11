@@ -6,9 +6,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+
 import org.apache.commons.cli.CommandLine;
 import org.springframework.util.StringUtils;
 
+import com.atomist.project.archive.ArchiveRugResolver;
 import com.atomist.project.archive.Coordinate;
 import com.atomist.project.archive.Dependency;
 import com.atomist.project.archive.ResolvedDependency;
@@ -31,6 +36,8 @@ import com.atomist.source.ArtifactSource;
 
 import scala.Option;
 import scala.collection.JavaConverters;
+import scala.runtime.AbstractFunction1;
+import scala.runtime.BoxedUnit;
 
 public abstract class AbstractCompilingAndOperationLoadingCommand extends AbstractCommand {
 
@@ -141,10 +148,19 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 String.format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run(indicator -> {
                             Dependency root = processArtifact(artifact, source);
-                            return new RugResolver(root);
+                            return new ArchiveRugResolver(root, new AbstractFunction1<ScriptEngine, BoxedUnit>() {
+
+                                @Override
+                                public BoxedUnit apply(ScriptEngine engine) {
+                                    Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+                                    bindings.put("console", new ConsoleLogger());
+                                    engine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+                                    return null;
+                                }
+                            });
                         });
     }
-
+    
     private Dependency processArtifact(ArtifactDescriptor node, ArtifactSource source) {
         List<Dependency> children = node.dependencies().stream()
                 .filter(d -> d.extension() == Extension.ZIP)
@@ -184,5 +200,22 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
             }
         }
     }
+    
+    public static class ConsoleLogger {
+        
+        private Log log = new Log(ConsoleLogger.class);
+        
+        public void log(String msg) {
+            log.info(msg);
+        }
+        
+        public void warn(String msg) {
+            log.info(msg);
+        }
+        
+        public void error(String msg) {
+            log.error(msg);
+        }
+     }
 
 }

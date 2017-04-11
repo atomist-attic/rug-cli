@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.script.ScriptEngine;
 import javax.script.SimpleBindings;
 
 import org.springframework.util.ClassUtils;
@@ -46,7 +47,9 @@ import gherkin.ast.Step;
 import scala.Option;
 import scala.collection.JavaConverters;
 import scala.runtime.AbstractFunction1;
+import scala.runtime.BoxedUnit;
 
+@SuppressWarnings("restriction")
 public class TestCommand extends AbstractAnnotationBasedCommand {
 
     private Log log = new Log(getClass());
@@ -58,14 +61,18 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
         ArchiveTestResult result = new ProgressReportingOperationRunner<ArchiveTestResult>(
                 String.format("Running tests in %s", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run((indicator) -> {
-                            List<String> empty = Collections.emptyList();
                             List<GherkinExecutionListener> listeners = Collections
                                     .singletonList(new LoggingGherkinExecutionListener(indicator));
-
                             GherkinRunner runner = new GherkinRunner(
                                     new JavaScriptContext(source, DefaultAtomistConfig$.MODULE$,
                                             new SimpleBindings(),
-                                            JavaConverters.asScalaBufferConverter(empty).asScala()),
+                                            new AbstractFunction1<ScriptEngine, BoxedUnit>() {
+
+                                                @Override
+                                                public BoxedUnit apply(ScriptEngine egnine) {
+                                                    return null;
+                                                }
+                                            }),
                                     Option.apply(operations),
                                     JavaConverters.asScalaBufferConverter(listeners).asScala());
 
