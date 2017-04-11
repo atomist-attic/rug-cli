@@ -58,6 +58,7 @@ _rug() {
         path
         shell
         repositories
+        dependencies
     )
 
     local i command_re special special_index
@@ -92,7 +93,7 @@ _rug() {
        	-q --quiet
         --requires
     )
-    if [[ $special == @(describe|edit|generate) ]]; then
+    if [[ $special == @(describe|edit|generate|dependencies) ]]; then
         command_options+=( -a --archive-version )
         command_options+=( -l --local )
     fi
@@ -126,6 +127,9 @@ _rug() {
         command_options+=( -T --tag )
         command_options+=( --operations )
         command_options+=( --kind )
+    fi
+    if [[ $special == dependencies ]]; then
+        command_options+=( --operations )
     fi
     if [[ $special == shell ]]; then
         command_options+=( -l --local )
