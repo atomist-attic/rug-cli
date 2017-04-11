@@ -7,7 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.29.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.30.0...HEAD
+
+## [0.30.0] - 2017-04-11
+
+[0.30.0]: https://github.com/atomist/rug-cli/compare/0.29.0...0.30.0
+
+### Added
+
+- 	New `dependencies` command to print dependency tree of Rugs an Functions as per
+	https://github.com/atomist/rug-cli/issues/165
+
+### Changed
+
+- 	Upgraded to Rug 0.25.0
 
 ## [0.29.0] - 2017-03-31
 
