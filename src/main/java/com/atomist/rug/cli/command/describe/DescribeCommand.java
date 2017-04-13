@@ -266,9 +266,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         return (p.getDisplayName() != null ? "(" + p.getDisplayName() + ")" : "");
     }
 
-    private void describeInvoke(ArtifactDescriptor artifact, Rug info,
-
-            String command, String type) {
+    private void describeInvoke(ArtifactDescriptor artifact, Rug info, String command,
+            String type) {
         log.newline();
         log.info("To invoke the %s %s, run:", StringUtils.stripName(info.name(), artifact), type);
         StringBuilder invokeSb = new StringBuilder();
@@ -285,6 +284,12 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             asJavaCollection(parameterizedRug.parameters())
                     .forEach(p -> invokeSb.append(p.getName()).append("=VALUE "));
         }
+        
+        if (info instanceof MappedParameterizedRug) {
+            asJavaCollection(((MappedParameterizedRug) info).mappedParameters())
+                    .forEach(p -> invokeSb.append(p.localKey()).append("=VALUE "));
+        }
+
         if (Constants.isShell()) {
             log.info("  %s %s %s", command, StringUtils.stripName(info.name(), artifact),
                     invokeSb.toString());
