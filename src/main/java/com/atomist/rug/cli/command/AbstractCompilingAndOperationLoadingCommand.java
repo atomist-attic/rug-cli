@@ -175,7 +175,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
         @Override
         public void compileSucceeded(String path, String content) {
-            if (CommandLineOptions.hasOption("V")) {
+            if (CommandLineOptions.hasOption("V") && content != null) {
                 log.info("  Compiled " + Style.yellow(path) + " " + Style.green("succeeded"));
                 if (!path.endsWith(".js.map")) {
                     log.info("  " + content.replace("\n", "\n  "));
