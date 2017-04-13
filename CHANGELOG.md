@@ -7,7 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.30.2...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.31.0...HEAD
+
+## [0.31.0] - 2017-04-13
+
+[0.31.0]: https://github.com/atomist/rug-cli/compare/0.30.2...0.31.0
+
+### Fixed
+
+- 	Formatting issues for `console.log`
+-	`MappedParameters` show up in `describe` invoke output
+
+### Changed
+
+- 	Upgrade to Rug 0.25.3
 
 ## [0.30.2] - 2017-04-11
 
