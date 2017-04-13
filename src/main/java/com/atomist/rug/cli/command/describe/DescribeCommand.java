@@ -15,6 +15,7 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import com.atomist.param.Parameter;
 import com.atomist.param.Parameterized;
+import com.atomist.project.archive.Coordinate;
 import com.atomist.project.archive.Rugs;
 import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.generate.ProjectGenerator;
@@ -44,7 +45,9 @@ import com.atomist.rug.runtime.EventHandler;
 import com.atomist.rug.runtime.ParameterizedRug;
 import com.atomist.rug.runtime.ResponseHandler;
 import com.atomist.rug.runtime.Rug;
+import com.atomist.rug.runtime.plans.DefaultRugFunctionRegistry;
 import com.atomist.rug.spi.MappedParameterizedRug;
+import com.atomist.rug.spi.RugFunction;
 import com.atomist.rug.spi.SecretAwareRug;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
@@ -66,6 +69,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             "event-handler", "Event Handlers");
     private static final DescribeLabels RESPONSE_HANDLER_LABELS = new DescribeLabels("respond",
             "response-handler", "Response Handlers");
+    private static final DescribeLabels FUNCTION_LABELS = new DescribeLabels(null, "function",
+            "Functions");
 
     private static final Map<Class<?>, DescribeLabels> labelMapping;
 
@@ -77,9 +82,10 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         labelMapping.put(CommandHandler.class, COMMAND_HANDLER_LABELS);
         labelMapping.put(EventHandler.class, EVENT_HANDLER_LABELS);
         labelMapping.put(ResponseHandler.class, RESPONSE_HANDLER_LABELS);
+        labelMapping.put(RugFunction.class, FUNCTION_LABELS);
     }
 
-    private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, reviewer, command-handler, event-handler, or response-handler ";
+    private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, reviewer, command-handler, event-handler, response-handler or function ";
 
     @Validator
     public void validate(@Argument(index = 1, defaultValue = "") String kind,
@@ -91,6 +97,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         case "command-handler":
         case "event-handler":
         case "response-handler":
+        case "function":
             break;
         case "archive":
             validateFormat(format);
@@ -127,6 +134,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         case "response-handler":
             describeRugs(artifact, operationName, operations.responseHandlers(), source,
                     RESPONSE_HANDLER_LABELS);
+            break;
+        case "function":
+            describeRugs(artifact, operationName,
+                    JavaConverters.asScalaBufferConverter(JavaConverters
+                            .mapAsJavaMapConverter(DefaultRugFunctionRegistry.providerMap())
+                            .asJava().values().stream().collect(Collectors.toList())).asScala(),
+                    source, FUNCTION_LABELS);
             break;
         case "archive":
             describeArchive(operations, artifact, source, format);
@@ -244,7 +258,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
         String detail = sb.toString();
         sb = new StringBuilder();
-        if (p.description() != null && !p.name().equals(p.description())) {
+        if (p.description() != null && !"".equals(p.description())
+                && !p.name().equals(p.description())) {
             sb.append(
                     WordUtils.wrap(org.apache.commons.lang3.StringUtils.capitalize(p.description()),
                             Constants.WRAP_LENGTH, "\n    ", false).trim());
@@ -284,7 +299,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             asJavaCollection(parameterizedRug.parameters())
                     .forEach(p -> invokeSb.append(p.getName()).append("=VALUE "));
         }
-        
+
         if (info instanceof MappedParameterizedRug) {
             asJavaCollection(((MappedParameterizedRug) info).mappedParameters())
                     .forEach(p -> invokeSb.append(p.localKey()).append("=VALUE "));
@@ -317,7 +332,16 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         boolean excluded = ManifestUtils.excluded(info, manifest);
         log.info(Style.bold(Style.yellow(StringUtils.stripName(name, artifact)))
                 + (excluded ? Style.gray(" (excluded)") : ""));
-        log.info("%s", ArtifactDescriptorUtils.coordinates(artifact));
+
+        if (info instanceof RugFunction) {
+            Coordinate c = OperationUtils.extractFromUrl(
+                    info.getClass().getProtectionDomain().getCodeSource().getLocation());
+            log.info("%s:%s (%s)", c.group(), c.artifact(), c.version());
+        }
+        else {
+            log.info("%s", ArtifactDescriptorUtils.coordinates(artifact));
+        }
+
         log.info(org.apache.commons.lang3.StringUtils.capitalize(info.description()));
     }
 
@@ -462,11 +486,19 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         if (info instanceof EventHandler) {
             describeEventHandler((EventHandler) info);
         }
+        if (info instanceof RugFunction) {
+            describeSecrets((SecretAwareRug) info);
+        }
         describeTags(info);
         if (info instanceof ParameterizedRug) {
             describeParameters((ParameterizedRug) info);
         }
-        describeInvoke(artifact, info, command, type);
+        if (command != null) {
+            describeInvoke(artifact, info, command, type);
+        }
+        else {
+            log.newline();
+        }
 
     }
 
