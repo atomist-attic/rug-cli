@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.31.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.32.0...HEAD
+
+## [0.32.0] - 2017-04-14
+
+[0.32.0]: https://github.com/atomist/rug-cli/compare/0.31.0...0.32.0
+
+### Added
+
+- 	Ability to describe `RugFunction`s via `describe function <name>
 
 ## [0.31.0] - 2017-04-13
 
