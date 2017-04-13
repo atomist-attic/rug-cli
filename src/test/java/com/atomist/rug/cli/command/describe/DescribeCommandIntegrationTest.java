@@ -127,7 +127,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulDescribe() throws Exception {
         assertFailure(
-                "com.atomist.rug.cli.command.CommandException: Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, reviewer, command-handler, event-handler, or response-handler \n"
+                "com.atomist.rug.cli.command.CommandException: Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, reviewer, command-handler, event-handler, response-handler or function \n"
                         + "\n" + "Run the following command for usage help:\n"
                         + "  rug describe --help",
                 "describe", "-l");
