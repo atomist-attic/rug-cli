@@ -38,12 +38,7 @@ You can build, test, and install the project locally with [maven][].
 $ mvn install
 ```
 
-To create the Markdown source for the Rug CLI reference documentation,
-run the `main` method in `MkDocs`.
-
-```
-$ java -cp target/rug-cli-*-SNAPSHOT.jar com.atomist.rug.cli.command.MkDocs
-```
+## Release
 
 To create a new release of the project, simply push a tag of the form
 `M.N.P` where `M`, `N`, and `P` are integers that form the next
@@ -61,4 +56,28 @@ artifacts.
 
 [semver]: http://semver.org
 
-    
+To create the Markdown source for the Rug CLI reference documentation
+available at http://docs.atomist.com/reference/rug-cli/, first
+checkout the tag of the release for which you want to generate the
+documentation, execute at least up to the `package` phase of the
+build, and then run the `main` method in the `MkDocs` class,
+redirecting its output to the Rug CLI reference documentation file
+where you have the [end-user-documentation][doc] repository checked
+out.
+
+```
+$ git checkout M.N.P
+$ mvn package
+$ java -cp target/rug-cli-*-SNAPSHOT.jar com.atomist.rug.cli.command.MkDocs \
+    > ../path/to/end-user-documentation/docs/reference/rug-cli/index.md
+```
+
+You will then need to commit, push, and publish the end-user
+documentation.
+
+---
+Created by [Atomist][atomist].
+Need Help?  [Join our Slack team][slack].
+
+[atomist]: https://www.atomist.com/
+[slack]: https://join.atomist.com/
