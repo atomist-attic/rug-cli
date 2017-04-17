@@ -1,17 +1,24 @@
 package com.atomist.rug.cli.resolver;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.bouncycastle.openpgp.PGPException;
+import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.util.repository.ConservativeProxySelector;
 import org.eclipse.aether.util.repository.JreProxySelector;
 
 import com.atomist.rug.cli.Constants;
+import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
+import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
@@ -19,12 +26,22 @@ import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.CachingDependencyResolver;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.rug.resolver.DependencyResolver;
+import com.atomist.rug.resolver.DependencyVerificationFailedException;
+import com.atomist.rug.resolver.DependencyVerifier;
+import com.atomist.rug.resolver.GpgSignatureVerifier;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
 import com.atomist.rug.resolver.maven.LogDependencyVisitor;
 import com.atomist.rug.resolver.maven.MavenBasedDependencyResolver;
 import com.atomist.rug.resolver.maven.MavenProperties;
 
 public abstract class DependencyResolverFactory {
+
+    public static DependencyVerifier[] verifiers() {
+        if (!CommandLineOptions.hasOption("disable-extension-verification")) {
+            return new DependencyVerifier[] { new ReportingDependencyVerifier() };
+        }
+        return new DependencyVerifier[0];
+    }
 
     public static DependencyResolver createDependencyResolver(ArtifactDescriptor artifact,
             ProgressReporter indicator, String... exclusions) {
@@ -37,12 +54,6 @@ public abstract class DependencyResolverFactory {
                 CommandLineOptions.hasOption("offline"), !CommandLineOptions.hasOption("u"));
         MavenBasedDependencyResolver resolver = new MavenBasedDependencyResolver(
                 MavenPropertiesFactory.repositorySystem(), properties, executorService) {
-
-            @Override
-            public String toString() {
-                return super.toString() + "[MavenBasedDependencyResolver with dependency root "
-                        + artifact + "]";
-            }
 
             @Override
             protected Dependency createDependencyRoot(ArtifactDescriptor artifact) {
@@ -71,6 +82,26 @@ public abstract class DependencyResolverFactory {
                         }
                     }
                     return super.createDependencyRoot(artifact);
+                }
+            }
+
+            @Override
+            protected boolean shouldVerify(DependencyNode node, DependencyNode parent) {
+                if (parent == null) {
+                    return false;
+                }
+                Artifact parentArtifact = parent.getArtifact();
+                if (parentArtifact.getGroupId().equals("com.atomist")
+                        && parentArtifact.getArtifactId().equals("rug-cli-root")
+                        && node.getArtifact().getExtension().equals("jar")) {
+                    return true;
+                }
+                if (node.getArtifact().getExtension().equals("jar")
+                        && parent.getArtifact().getExtension().equals("zip")) {
+                    return true;
+                }
+                else {
+                    return false;
                 }
             }
         };
@@ -142,4 +173,43 @@ public abstract class DependencyResolverFactory {
         }
     }
 
+    private static class ReportingDependencyVerifier implements DependencyVerifier {
+
+        private DependencyVerifier verifier;
+        private Log log = new Log(ReportingDependencyVerifier.class);
+        private StringBuilder sb;
+
+        public ReportingDependencyVerifier() {
+            try {
+                this.verifier = new GpgSignatureVerifier();
+            }
+            catch (IOException | PGPException e) {
+                throw new RunnerException(e);
+            }
+        }
+
+        @Override
+        public boolean verify(ArtifactDescriptor artifact, ArtifactDescriptor signature,
+                ArtifactDescriptor pom, ArtifactDescriptor pomSignature) {
+            return verifier.verify(artifact, signature, pom, pomSignature);
+        }
+
+        @Override
+        public void prepare(String group, String artifact, String version) {
+            sb = new StringBuilder();
+            sb.append(String.format("  Verifying integrity of %s:%s (%s) ", group, artifact, version));
+        }
+
+        @Override
+        public void finish(boolean result) {
+            if (result) {
+                sb.append(Style.green("succeeded"));
+            }
+            else {
+                sb.append(Style.red("failed"));
+            }
+            log.info(sb.toString());
+        }
+
+    }
 }
