@@ -41,6 +41,7 @@ _rug() {
         -q --quiet
         -u --update
         --requires
+        --disable-extension-verification
     )
     local commands=(
         describe
@@ -92,6 +93,7 @@ _rug() {
        	-s --settings
        	-q --quiet
         --requires
+        --disable-extension-verification
     )
     if [[ $special == @(describe|edit|generate|dependencies) ]]; then
         command_options+=( -a --archive-version )

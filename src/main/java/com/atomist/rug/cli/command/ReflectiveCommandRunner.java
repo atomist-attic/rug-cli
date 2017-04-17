@@ -192,9 +192,10 @@ public class ReflectiveCommandRunner {
             // Add the rug dependency manually and make sure it is not resolved from the archive
             Optional<String> versionOverride = CommandLineOptions.getOptionValue("requires");
             if (versionOverride.isPresent()) {
-                dependencies.addAll(
-                        resolver.resolveDependencies(new DefaultArtifactDescriptor(Constants.GROUP,
-                                Constants.RUG_ARTIFACT, versionOverride.get(), Extension.JAR)));
+                dependencies.addAll(resolver.resolveDependencies(
+                        new DefaultArtifactDescriptor(Constants.GROUP, Constants.RUG_ARTIFACT,
+                                versionOverride.get(), Extension.JAR),
+                        DependencyResolverFactory.verifiers()));
 
                 // Creating a new resolver that excludes the rug dependency
                 resolver = DependencyResolverFactory.createDependencyResolver(artifact, indicator,
@@ -202,8 +203,9 @@ public class ReflectiveCommandRunner {
             }
 
             version = resolver.resolveVersion(artifact);
-            dependencies.addAll(resolver
-                    .resolveDependencies(ArtifactDescriptorFactory.copyFrom(artifact, version)));
+            dependencies.addAll(resolver.resolveDependencies(
+                    ArtifactDescriptorFactory.copyFrom(artifact, version),
+                    DependencyResolverFactory.verifiers()));
             return dependencies;
         }
         catch (DependencyResolverException e) {
