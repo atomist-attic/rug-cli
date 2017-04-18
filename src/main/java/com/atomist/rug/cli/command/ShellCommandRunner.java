@@ -190,8 +190,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         // Split commands by && and call them one after the other
         String[] cmds = line.trim().split("&&");
         for (int i = 0; i < cmds.length; i++) {
-            String cmd = cmds[i].trim();
-
+            String cmd = replaceWellKnownPlaceHolders(cmds[i].trim(), artifact);
+            
             if (cmd.startsWith("shell") || cmd.startsWith("load") || cmd.startsWith("repl")) {
                 // For shell reload it is important that we collect all remaining commands
                 if (i + 1 < cmds.length) {
@@ -221,6 +221,13 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 }
             }
         }
+    }
+    
+    private String replaceWellKnownPlaceHolders(String cmd, ArtifactDescriptor artifact) {
+        cmd = cmd.replaceAll("#\\{group\\}", artifact.group());
+        cmd = cmd.replaceAll("#\\{artifact\\}", artifact.artifact());
+        cmd = cmd.replaceAll("#\\{version\\}", artifact.version());
+        return cmd;
     }
 
     private void printGestureHelp(Gesture gesture) {
