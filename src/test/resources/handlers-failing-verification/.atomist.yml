@@ -1,0 +1,208 @@
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+
+---
+kind: "operation"
+client: "rug-cli n/a"
+editor:
+  name: "atomist-rugs.common-editors.AddReadme"
+  group: "atomist-rugs"
+  artifact: "common-editors"
+  version: "0.5.0"
+  origin:
+    repo: "atomist-rugs/common-editors.git"
+    branch: "jessitron/upgrade-to-rug-0-8"
+    sha: "6bcf871*"
+  parameters:
+    - "project_name": "TheName"
+    - "description": "SomeDescription"
+

@@ -1,5 +1,5 @@
 group: rug-cli-tests
-artifact: handlers
+artifact: handlers-failing-verification
 version: "0.12.0"
 
 requires: "(0.24.0,0.26.0)"
@@ -7,4 +7,4 @@ requires: "(0.24.0,0.26.0)"
 dependencies:
 
 extensions:
-  - "com.atomist.rug:rug-functions-github:0.14.2"
+  - "com.atomist.rug:rug-functions-github:0.14.1"
