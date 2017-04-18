@@ -7,13 +7,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.resolver.ArtifactDescriptor;
+import com.atomist.source.Artifact;
 import com.atomist.source.ArtifactSource;
+import com.atomist.source.DirectoryArtifact;
 import com.atomist.source.EmptyArtifactSource;
 import com.atomist.source.FileArtifact;
 import com.atomist.source.StringFileArtifact;
@@ -25,7 +28,31 @@ import com.atomist.source.filter.ArtifactFilter;
 import com.atomist.source.filter.AtomistIgnoreFileFilter;
 import com.atomist.source.filter.GitDirFilter;
 
+import scala.collection.JavaConverters;
+import scala.runtime.AbstractFunction1;
+
 public abstract class ArtifactSourceUtils {
+
+    public static ArtifactSource filterMetaInf(ArtifactSource source) {
+        return source.filter(new AbstractFunction1<DirectoryArtifact, Object>() {
+            @Override
+            public Object apply(DirectoryArtifact dir) {
+                // This is required to remove our maven packaging information
+                if (dir.name().equals("META-INF")) {
+                    Optional<Artifact> nonMavenArtifact = JavaConverters
+                            .asJavaCollectionConverter(dir.artifacts()).asJavaCollection().stream()
+                            .filter(a -> !a.path().startsWith("META-INF/maven")).findAny();
+                    return nonMavenArtifact.isPresent();
+                }
+                return (!dir.path().equals("META-INF/maven"));
+            }
+        }, new AbstractFunction1<FileArtifact, Object>() {
+            @Override
+            public Object apply(FileArtifact arg0) {
+                return true;
+            }
+        });
+    }
 
     public static ArtifactSource createManifestOnlyArtifactSource(File root) {
         ArtifactSource source = new EmptyArtifactSource(root.getName());

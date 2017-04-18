@@ -105,6 +105,8 @@ public class LocalGitProjectManagement implements ProjectManagement {
         // Add provenance info to output
         result = new ProvenanceInfoWriter().write(result, generator, arguments,
                 Constants.cliClient(), resolver);
+        // Filter out any META-INF/maven/ files
+        result = ArtifactSourceUtils.filterMetaInf(result);
 
         FileSystemArtifactSourceIdentifier fsid = new SimpleFileSystemArtifactSourceIdentifier(
                 root);
