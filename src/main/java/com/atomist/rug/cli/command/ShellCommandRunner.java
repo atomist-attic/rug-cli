@@ -16,6 +16,7 @@ import org.springframework.boot.loader.tools.RunProcess;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.ReloadException;
+import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.command.gesture.Gesture;
 import com.atomist.rug.cli.command.gesture.GestureRegistry;
 import com.atomist.rug.cli.command.shell.ArchiveNameCompleter;
@@ -271,7 +272,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         // Split multiple commands into several commands that we run one ofter the other
         String[] cmds = line.split("&&");
 
-        // Iterator all commands
+        // Iterate all commands
         Arrays.stream(cmds).forEach(c -> {
             String[] args = CommandUtils.splitCommandline(c);
 
@@ -295,6 +296,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             }
             catch (IOException e) {
                 log.error(e.getMessage());
+                throw new RunnerException(e);
             }
         });
     }
