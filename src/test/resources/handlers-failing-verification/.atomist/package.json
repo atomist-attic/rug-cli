@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@atomist/rugs": "^0.16.0"
+  },
+  "scripts": {
+    "rug-install": "rug install -urX",
+    "rug-test": "rug test -urX",
+    "rug-publish": "rug publish -urX"
+  }
+}
