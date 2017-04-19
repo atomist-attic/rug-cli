@@ -35,7 +35,7 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
         this.success = success;
         this.duration = duration;
         while (!additionalMessages.isEmpty()) {
-            sleep(20);
+            sleep(10);
         }
         this.showProgress = false;
         try {
@@ -44,7 +44,7 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
         catch (InterruptedException e) {
         }
     }
-    
+
     @Override
     public void detail(String detail) {
         this.detail = detail;
@@ -67,8 +67,8 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
             if (additionalMessages.isEmpty()) {
                 System.out.print("\r");
                 System.out.print(Ansi.eraseLine());
-                System.out.print(messsage() + " "
-                        + Style.yellow("" + anim.charAt(x++ % anim.length())) + " ");
+                System.out.print(message + " " + Style.yellow("" + anim.charAt(x++ % anim.length()))
+                        + " " + formatDetail());
             }
             else {
                 System.out.print("\r");
@@ -80,10 +80,10 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
                 }
                 System.out.print("\r");
                 System.out.print(Ansi.eraseLine());
-                System.out.print(messsage() + " "
-                        + Style.yellow("" + anim.charAt(x++ % anim.length())) + " ");
+                System.out.print(message + " " + Style.yellow("" + anim.charAt(x++ % anim.length()))
+                        + " " + formatDetail());
             }
-            sleep(80);
+            sleep(50);
         }
         System.out.print("\r");
         System.out.print(Ansi.eraseLine());
@@ -96,13 +96,13 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
                     + (duration > -1 ? " in " + String.format("%.2f", duration) + "s" : ""));
         }
     }
-    
-    private String messsage() {
+
+    private String formatDetail() {
         if (detail != null) {
-            return message + " (" + detail + ") ";
+            return Style.gray("(" + detail + ")") + " ";
         }
         else {
-            return message + " ";
+            return "";
         }
     }
 

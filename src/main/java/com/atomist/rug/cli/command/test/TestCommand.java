@@ -173,6 +173,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
         public void featureStarting(FeatureDefinition fd) {
             featureTimer = new Timing();
             reporter.report("Running test feature " + fd.feature().getName());
+            reporter.detail(fd.feature().getName());
         }
 
         @Override
@@ -201,6 +202,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                 msg = msg + " in " + duration + "s";
             }
             reporter.report(msg);
+            reporter.detail(null);
         }
 
         @Override

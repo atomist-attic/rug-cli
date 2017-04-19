@@ -76,7 +76,7 @@ public class RepositoriesCommand extends AbstractAnnotationBasedCommand {
         List<Repo> remoteRepos = new ProgressReportingOperationRunner<List<Repo>>(
                 "Configuring team-scoped repositories").run((indicator) -> {
                     return getRepoServiceUrls(settings).stream().map(s -> {
-                        indicator.report("  Querying " + s);
+                        indicator.detail(s);
                         return new ConfigureOperations().getForRepos(settings
                                 .getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class).get(), s);
                     }).flatMap(List::stream).distinct().collect(Collectors.toList());
