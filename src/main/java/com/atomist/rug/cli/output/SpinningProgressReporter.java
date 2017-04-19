@@ -3,6 +3,8 @@ package com.atomist.rug.cli.output;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.github.tomaslanger.chalk.Ansi;
+
 public class SpinningProgressReporter extends Thread implements ProgressReporter {
 
     private static final String animNix = org.apache.commons.lang3.StringUtils.reverse("⣾⣽⣻⢿⡿⣟⣯⣷");
@@ -12,6 +14,7 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
     private Queue<String> additionalMessages = new ConcurrentLinkedQueue<>();
     private String anim = null;
     private float duration = -1;
+    private String detail = null;
     private String message = null;
     private boolean showProgress = true;
     private boolean success = true;
@@ -41,6 +44,11 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
         catch (InterruptedException e) {
         }
     }
+    
+    @Override
+    public void detail(String detail) {
+        this.detail = detail;
+    }
 
     @Override
     public void report(String message) {
@@ -57,27 +65,28 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
         int x = 0;
         while (showProgress) {
             if (additionalMessages.isEmpty()) {
-                System.out.print("\r" + message + " "
+                System.out.print("\r");
+                System.out.print(Ansi.eraseLine());
+                System.out.print(messsage() + " "
                         + Style.yellow("" + anim.charAt(x++ % anim.length())) + " ");
             }
             else {
                 System.out.print("\r");
+                System.out.print(Ansi.eraseLine());
                 while (!additionalMessages.isEmpty()) {
                     String newMsg = additionalMessages.poll();
                     newMsg = newMsg.replace("\t", "  ");
-                    int diff = ConsoleUtils.width() - newMsg.length();
-                    while (diff > 0) {
-                        newMsg += " ";
-                        diff--;
-                    }
                     System.out.println(newMsg);
                 }
-                System.out.print("\r" + message + " "
+                System.out.print("\r");
+                System.out.print(Ansi.eraseLine());
+                System.out.print(messsage() + " "
                         + Style.yellow("" + anim.charAt(x++ % anim.length())) + " ");
             }
             sleep(80);
         }
         System.out.print("\r");
+        System.out.print(Ansi.eraseLine());
         if (success) {
             System.out.println(message + " " + Style.green("completed")
                     + (duration > -1 ? " in " + String.format("%.2f", duration) + "s" : ""));
@@ -85,6 +94,15 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
         else {
             System.out.println(message + " " + Style.red("failed")
                     + (duration > -1 ? " in " + String.format("%.2f", duration) + "s" : ""));
+        }
+    }
+    
+    private String messsage() {
+        if (detail != null) {
+            return message + " (" + detail + ") ";
+        }
+        else {
+            return message + " ";
         }
     }
 
