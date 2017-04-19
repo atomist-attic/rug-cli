@@ -29,7 +29,7 @@ public class DependenciesCommandInfo extends AbstractVersionCommandInfo implemen
     @Override
     public Options options() {
         Options options = super.options();
-        options.addOption(Option.builder().hasArg(false).desc("Show operations in search output")
+        options.addOption(Option.builder("O").hasArg(false).desc("List operations")
                 .longOpt("operations").optionalArg(true).build());
         return options;
     }

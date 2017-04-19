@@ -40,8 +40,8 @@ _rug() {
         -s --settings
         -q --quiet
         -u --update
+        -d --disable-verification
         --requires
-        --disable-extension-verification
     )
     local commands=(
         describe
@@ -93,7 +93,7 @@ _rug() {
        	-s --settings
        	-q --quiet
         --requires
-        --disable-extension-verification
+        -d --disable-verification
     )
     if [[ $special == @(describe|edit|generate|dependencies) ]]; then
         command_options+=( -a --archive-version )
@@ -127,11 +127,11 @@ _rug() {
     fi
     if [[ $special == search ]]; then
         command_options+=( -T --tag )
-        command_options+=( --operations )
-        command_options+=( --kind )
+        command_options+=( -O --operations )
+        command_options+=( -K --type )
     fi
     if [[ $special == dependencies ]]; then
-        command_options+=( --operations )
+        command_options+=( -O --operations )
     fi
     if [[ $special == shell ]]; then
         command_options+=( -l --local )
@@ -149,7 +149,7 @@ _rug() {
         command_options+=( --column )
     fi
     if [[ $special == describe ]]; then
-        command_options+=( -O --output )
+        command_options+=( --output )
     fi
 
     local command_args=()

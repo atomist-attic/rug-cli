@@ -37,7 +37,7 @@ import com.atomist.rug.resolver.maven.MavenProperties;
 public abstract class DependencyResolverFactory {
 
     public static DependencyVerifier[] verifiers() {
-        if (!CommandLineOptions.hasOption("disable-extension-verification")) {
+        if (!CommandLineOptions.hasOption("disable-verification")) {
             try {
                 return new DependencyVerifier[] { new GpgSignatureVerifier() };
             }

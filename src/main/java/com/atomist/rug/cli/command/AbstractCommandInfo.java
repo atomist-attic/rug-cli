@@ -21,8 +21,8 @@ public abstract class AbstractCommandInfo implements CommandInfo {
     @Override
     public final Options globalOptions() {
         Options options = new Options();
-        options.addOption("?", "help", false, "Print help information");
-        options.addOption("h", "help", false, "Print help information");
+        options.addOption("?", "help", false, "Print usage help");
+        options.addOption("h", "help", false, "Print usage help");
         options.addOption("X", "error", false, "Print stacktraces");
         options.addOption("V", "verbose", false, "Print verbose output");
         options.addOption(Option.builder("s").longOpt("settings").argName("FILE").hasArg(true)
@@ -35,7 +35,7 @@ public abstract class AbstractCommandInfo implements CommandInfo {
         options.addOption(Option.builder().longOpt("requires").argName("RUG_VERSION").hasArg(true)
                 .required(false).desc("Overwrite the Rug version to RUG_VERSION (Use with Caution)")
                 .build());
-        options.addOption(Option.builder().longOpt("disable-extension-verification").hasArg(false)
+        options.addOption(Option.builder().longOpt("disable-verification").hasArg(false)
                 .required(false).desc("Disable verification of extensions (Use with Caution)")
                 .build());
         return options;

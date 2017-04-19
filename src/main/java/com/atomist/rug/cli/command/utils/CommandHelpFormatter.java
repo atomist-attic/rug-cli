@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.Option;
@@ -58,7 +59,7 @@ public class CommandHelpFormatter {
         return sb.toString();
 
     }
-    
+
     public String printGestureHelp(Gesture gesture) {
         StringBuilder sb = new StringBuilder();
 
@@ -150,8 +151,28 @@ public class CommandHelpFormatter {
 
         sb.append(label).append(":\n");
         options.getOptions().stream().collect(Collectors.groupingBy(Option::getDescription))
-                .entrySet().stream()
-                .sorted(Comparator.comparing(o -> o.getValue().get(0).getLongOpt())).forEach(e -> {
+                .entrySet().stream().sorted(new Comparator<Map.Entry<String, List<Option>>>() {
+
+                    @Override
+                    public int compare(Entry<String, List<Option>> e1,
+                            Entry<String, List<Option>> e2) {
+                        Option o1 = e1.getValue().get(0);
+                        Option o2 = e2.getValue().get(0);
+
+                        if (o1.getOpt() == null && o2.getOpt() != null) {
+                            return 1;
+                        }
+                        else if (o1.getOpt() != null && o2.getOpt() == null) {
+                            return -1;
+                        }
+                        else if (o1.getOpt() == null && o2.getOpt() == null) {
+                            return o1.getLongOpt().compareTo(o2.getLongOpt());
+                        }
+                        else {
+                            return o1.getOpt().compareTo(o2.getOpt());
+                        }
+                    }
+                }).forEach(e -> {
                     Option opt = e.getValue().stream().findFirst().get();
                     String ops = e.getValue().stream()
                             .map(o -> (o.getOpt() != null ? "-" + o.getOpt() : null))
