@@ -61,7 +61,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         Map<String, List<Operation>> operations = new ProgressReportingOperationRunner<Map<String, List<Operation>>>(
                 "Searching catalogs").run(indicator -> {
                     List<Operation> results = getCatalogServiceUrls(settings).stream().map(u -> {
-                        indicator.report("  Searching " + u);
+                        indicator.detail(u);
                         return new SearchOperations().collectResults(u, search, type, tags,
                                 settings);
                     }).flatMap(List::stream).collect(Collectors.toList());

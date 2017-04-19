@@ -14,6 +14,8 @@ import com.atomist.project.archive.Rugs;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.output.ProgressReporter;
+import com.atomist.rug.cli.output.ProgressReporterUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.SettingsReader;
@@ -82,8 +84,16 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
 
         @Override
         public void metadataFileGenerated(FileArtifact file) {
-            log.info("  Created %s", file.path());
-
+            if (CommandLineOptions.hasOption("V")) {
+                log.info("  Created %s", file.path());
+            }
+            else {
+                Optional<ProgressReporter> indicator = ProgressReporterUtils
+                        .getActiveProgressReporter();
+                if (indicator.isPresent() && file != null) {
+                    indicator.get().detail(file.name());
+                }
+            }
         }
     }
 
