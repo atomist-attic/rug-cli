@@ -39,7 +39,7 @@ public class ProgressReportingOperationRunner<T> {
 
     private ProgressReporter createProgressReporter() {
         ProgressReporter indicator = null;
-        if (CommandLineOptions.hasOption("O") || CommandLineOptions.hasOption("q")
+        if (CommandLineOptions.hasOption("output") || CommandLineOptions.hasOption("q")
                 || (msg.length()) >= ConsoleUtils.width()) {
             indicator = new PassThroughProgressReporter(msg);
         }

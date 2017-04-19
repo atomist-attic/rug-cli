@@ -39,6 +39,6 @@ public class DescribeHandlersWithFailiingVerificationIntegrationTest extends Abs
                 "    Logs failed issue reopen attempts\n" + 
                 "  Kitties\n" + 
                 "    Prints out kitty urls",
-                "describe", "-lur", "archive", "--disable-extension-verification");
+                "describe", "-lur", "archive", "--disable-verification");
     }
 }

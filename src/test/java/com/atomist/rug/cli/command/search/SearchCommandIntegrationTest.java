@@ -29,7 +29,7 @@ public class SearchCommandIntegrationTest extends AbstractCommandTest {
         assertCommandLine(0,
                 () -> assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                         .contains("NewSpringBootRestService")),
-                "search", "spring", "--type", "generator", "--operations");
+                "search", "spring", "--type", "generator", "-O");
     }
 
     @Test

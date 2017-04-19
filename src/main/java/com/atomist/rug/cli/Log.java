@@ -383,7 +383,7 @@ public class Log implements Logger {
             indicator.get().report(message);
         }
         else {
-            if (!CommandLineOptions.hasOption("O")) {
+            if (!CommandLineOptions.hasOption("output")) {
                 System.out.println(message);
             }
             else {

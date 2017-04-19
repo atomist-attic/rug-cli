@@ -49,8 +49,8 @@ public abstract class CommandUtils {
     public static Options options() {
         Options options = new Options();
         options.addOption("v", "version", false, "Print version information");
-        options.addOption("?", "help", false, "Print help information");
-        options.addOption("h", "help", false, "Print help information");
+        options.addOption("?", "help", false, "Print usage help");
+        options.addOption("h", "help", false, "Print usage help");
         return options;
     }
 

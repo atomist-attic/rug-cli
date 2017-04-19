@@ -114,7 +114,6 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         Node node = new Node(null);
         addOperation(node, operations, "generator", "Generators");
         addOperation(node, operations, "editor", "Editors");
-        addOperation(node, operations, "reviewer", "Reviewers");
         addOperation(node, operations, "command_handler", "Command Handlers");
         addOperation(node, operations, "event_handler", "Event Handlers");
         addOperation(node, operations, "response_handler", "Response Handlers");

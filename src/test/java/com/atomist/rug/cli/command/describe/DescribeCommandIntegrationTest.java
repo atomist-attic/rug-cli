@@ -62,7 +62,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
                 assertTrue(stderr.contains("Loading"));
                 assertTrue(sysout.startsWith("{"));
             }
-        }, "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-O", "json");
+        }, "describe", "archive", "atomist-rugs:spring-boot-rest-service", "--output", "json");
     }
 
     @Test
@@ -76,7 +76,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
                 assertTrue(stderr.contains("Loading"));
                 assertTrue(sysout.startsWith("---"));
             }
-        }, "describe", "archive", "atomist-rugs:spring-boot-rest-service", "-O", "yaml");
+        }, "describe", "archive", "atomist-rugs:spring-boot-rest-service", "--output", "yaml");
     }
 
     @Test
