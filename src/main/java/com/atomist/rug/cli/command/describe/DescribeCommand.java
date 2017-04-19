@@ -19,7 +19,6 @@ import com.atomist.project.archive.Coordinate;
 import com.atomist.project.archive.Rugs;
 import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.generate.ProjectGenerator;
-import com.atomist.project.review.ProjectReviewer;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.CommandException;
@@ -61,8 +60,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             "Editors");
     private static final DescribeLabels GENERATOR_LABELS = new DescribeLabels("generate",
             "generator", "Generators");
-    private static final DescribeLabels REVIEWER_LABELS = new DescribeLabels("review", "reviewer",
-            "Reviewers");
     private static final DescribeLabels COMMAND_HANDLER_LABELS = new DescribeLabels("command",
             "command-handler", "Command Handlers");
     private static final DescribeLabels EVENT_HANDLER_LABELS = new DescribeLabels("trigger",
@@ -78,14 +75,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         labelMapping = new HashMap<>();
         labelMapping.put(ProjectEditor.class, EDITOR_LABELS);
         labelMapping.put(ProjectGenerator.class, GENERATOR_LABELS);
-        labelMapping.put(ProjectReviewer.class, REVIEWER_LABELS);
         labelMapping.put(CommandHandler.class, COMMAND_HANDLER_LABELS);
         labelMapping.put(EventHandler.class, EVENT_HANDLER_LABELS);
         labelMapping.put(ResponseHandler.class, RESPONSE_HANDLER_LABELS);
         labelMapping.put(RugFunction.class, FUNCTION_LABELS);
     }
 
-    private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, reviewer, command-handler, event-handler, response-handler or function ";
+    private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, command-handler, event-handler, response-handler or function ";
 
     @Validator
     public void validate(@Argument(index = 1, defaultValue = "") String kind,
@@ -93,7 +89,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         switch (kind) {
         case "editor":
         case "generator":
-        case "reviewer":
         case "command-handler":
         case "event-handler":
         case "response-handler":
@@ -119,9 +114,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         case "generator":
             describeRugs(artifact, operationName, operations.generators(), source,
                     GENERATOR_LABELS);
-            break;
-        case "reviewer":
-            describeRugs(artifact, operationName, operations.reviewers(), source, REVIEWER_LABELS);
             break;
         case "command-handler":
             describeRugs(artifact, operationName, operations.commandHandlers(), source,
@@ -169,7 +161,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             }
             else if (kind.split(":").length == 3) {
                 throw new CommandException(
-                        "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|reviewer|event-handler|command-handler|response-handler "
+                        "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|event-handler|command-handler|response-handler|function "
                                 + kind,
                         "describe");
             }
@@ -321,7 +313,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         log.info("To get more information on any of the Rugs listed above, run:");
         log.info(
-                "  %s%s editor|generator|reviewer|command-handler|event-handler|response-handler %s",
+                "  %s%s editor|generator|command-handler|event-handler|response-handler|function %s",
                 Constants.command(), "describe", (CommandLineOptions.hasOption("l") ? "NAME -l"
                         : artifact.group() + ":" + artifact.artifact() + ":NAME"));
     }
@@ -356,8 +348,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 .sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
         Collection<ProjectGenerator> generators = asJavaCollection(operations.generators()).stream()
                 .sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
-        Collection<ProjectReviewer> reviewers = asJavaCollection(operations.reviewers()).stream()
-                .sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
         Collection<CommandHandler> commandHandlers = asJavaCollection(operations.commandHandlers())
                 .stream().sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
         Collection<EventHandler> eventHandlers = asJavaCollection(operations.eventHandlers())
@@ -374,11 +364,6 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         if (!editors.isEmpty()) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Editors"));
             listOperations(artifact, editors, manifest);
-        }
-
-        if (!reviewers.isEmpty()) {
-            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Reviewers"));
-            listOperations(artifact, reviewers, manifest);
         }
 
         if (!commandHandlers.isEmpty()) {

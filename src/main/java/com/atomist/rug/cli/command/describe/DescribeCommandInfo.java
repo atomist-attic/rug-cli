@@ -15,8 +15,8 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 
 public class DescribeCommandInfo extends AbstractVersionCommandInfo implements CommandInfo {
 
-    private static List<String> commands = Arrays.asList("editor", "generator", "reviewer",
-            "archive", "command-handler", "event-handler", "response-handler", "function");
+    private static List<String> commands = Arrays.asList("editor", "generator", "archive", 
+            "command-handler", "event-handler", "response-handler", "function");
 
     public DescribeCommandInfo() {
         super(DescribeCommand.class, "describe", 2);
@@ -60,7 +60,7 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
 
     @Override
     public String detail() {
-        return "TYPE should be 'editor', 'generator', 'reviewer', 'command-handler', 'event-handler', 'response-handler', 'function' or 'archive' and ARTIFACT"
+        return "TYPE should be 'editor', 'generator', 'command-handler', 'event-handler', 'response-handler', 'function' or 'archive' and ARTIFACT"
                 + " should be the full name of an artifact, e.g., \"atomist:spring-service:Spring Microservice\".  "
                 + "If the name of the artifact has spaces in it, you need to put quotes around it.  "
                 + "FORMAT can be 'json' or 'yaml' and is only valid when describing an archive.";
