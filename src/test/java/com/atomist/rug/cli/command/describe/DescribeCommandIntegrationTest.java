@@ -47,7 +47,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulArchiveDescribe() throws Exception {
         assertSuccess(
-                "rug describe editor|generator|reviewer|command-handler|event-handler|response-handler atomist-rugs:spring-boot-rest-service:NAME",
+                "rug describe editor|generator|command-handler|event-handler|response-handler|function atomist-rugs:spring-boot-rest-service:NAME",
                 "describe", "archive", "atomist-rugs:spring-boot-rest-service");
     }
 
@@ -127,7 +127,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulDescribe() throws Exception {
         assertFailure(
-                "com.atomist.rug.cli.command.CommandException: Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, reviewer, command-handler, event-handler, response-handler or function \n"
+                "com.atomist.rug.cli.command.CommandException: Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, command-handler, event-handler, response-handler or function \n"
                         + "\n" + "Run the following command for usage help:\n"
                         + "  rug describe --help",
                 "describe", "-l");
@@ -148,7 +148,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
         String editorIWantedToDescribe = "atomist-rugs:spring-boot-rest-service:NewBootyThing";
         assertFailure(
                 "Please tell me what kind of thing to describe. Try:\n"
-                        + "  rug describe editor|generator|reviewer|event-handler|command-handler|response-handler "
+                        + "  rug describe editor|generator|event-handler|command-handler|response-handler|function "
                         + editorIWantedToDescribe + "\n" + "\n"
                         + "Run the following command for usage help:\n" + "  rug describe --help",
                 "describe", editorIWantedToDescribe);
