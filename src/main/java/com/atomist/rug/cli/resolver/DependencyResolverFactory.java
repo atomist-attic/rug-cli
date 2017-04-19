@@ -26,7 +26,7 @@ import com.atomist.rug.resolver.ArtifactDescriptor.Scope;
 import com.atomist.rug.resolver.CachingDependencyResolver;
 import com.atomist.rug.resolver.DefaultArtifactDescriptor;
 import com.atomist.rug.resolver.DependencyResolver;
-import com.atomist.rug.resolver.DependencyVerificationFailedException;
+import com.atomist.rug.resolver.DependencyVerificationListener;
 import com.atomist.rug.resolver.DependencyVerifier;
 import com.atomist.rug.resolver.GpgSignatureVerifier;
 import com.atomist.rug.resolver.LocalArtifactDescriptor;
@@ -38,7 +38,12 @@ public abstract class DependencyResolverFactory {
 
     public static DependencyVerifier[] verifiers() {
         if (!CommandLineOptions.hasOption("disable-extension-verification")) {
-            return new DependencyVerifier[] { new ReportingDependencyVerifier() };
+            try {
+                return new DependencyVerifier[] { new GpgSignatureVerifier() };
+            }
+            catch (IOException | PGPException e) {
+                throw new RunnerException(e);
+            }
         }
         return new DependencyVerifier[0];
     }
@@ -146,6 +151,8 @@ public abstract class DependencyResolverFactory {
                     Constants.TREE_NODE_WITH_CHILDREN, Constants.LAST_TREE_NODE_WITH_CHILDREN,
                     Constants.DOT));
         }
+        
+        resolver.addDependencyVerificationListener(new ReportingDependencyVerificationListener());     
         return wrapDependencyResolver(resolver, properties.getRepoLocation());
     }
 
@@ -173,41 +180,27 @@ public abstract class DependencyResolverFactory {
         }
     }
 
-    private static class ReportingDependencyVerifier implements DependencyVerifier {
+    private static class ReportingDependencyVerificationListener implements DependencyVerificationListener {
 
-        private DependencyVerifier verifier;
-        private Log log = new Log(ReportingDependencyVerifier.class);
+        private Log log = new Log(ReportingDependencyVerificationListener.class);
         private StringBuilder sb;
 
-        public ReportingDependencyVerifier() {
-            try {
-                this.verifier = new GpgSignatureVerifier();
-            }
-            catch (IOException | PGPException e) {
-                throw new RunnerException(e);
-            }
-        }
-
         @Override
-        public boolean verify(ArtifactDescriptor artifact, ArtifactDescriptor signature,
-                ArtifactDescriptor pom, ArtifactDescriptor pomSignature) {
-            return verifier.verify(artifact, signature, pom, pomSignature);
-        }
-
-        @Override
-        public void prepare(String group, String artifact, String version) {
+        public void starting(String group, String artifact, String version) {
             sb = new StringBuilder();
-            sb.append(String.format("  Verifying integrity of %s:%s (%s) ", group, artifact, version));
+            sb.append(String.format("  Verifying integrity of %s:%s (%s) ", group, artifact,
+                    version));
         }
 
         @Override
-        public void finish(boolean result) {
-            if (result) {
-                sb.append(Style.green("succeeded"));
-            }
-            else {
-                sb.append(Style.red("failed"));
-            }
+        public void succeeded(String group, String artifact, String version) {
+            sb.append(Style.green("succeeded"));
+            log.info(sb.toString());
+        }
+
+        @Override
+        public void failed(String group, String artifact, String version, Exception e) {
+            sb.append(Style.red("failed"));
             log.info(sb.toString());
         }
 
