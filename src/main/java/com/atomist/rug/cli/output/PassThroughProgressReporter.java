@@ -23,4 +23,9 @@ public class PassThroughProgressReporter implements ProgressReporter {
     public void report(String message) {
         log.info(message.replace("\t", "  "));
     }
+
+    @Override
+    public void detail(String detail) {
+        // no op
+    }
 }
