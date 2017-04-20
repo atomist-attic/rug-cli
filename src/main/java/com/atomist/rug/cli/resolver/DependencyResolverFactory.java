@@ -17,6 +17,7 @@ import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.output.ProgressReporter;
+import com.atomist.rug.cli.output.ProgressReporterUtils;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.CommandLineOptions;
@@ -36,6 +37,8 @@ import com.atomist.rug.resolver.maven.MavenProperties;
 
 public abstract class DependencyResolverFactory {
 
+    private static final Log log = new Log(DependencyResolverFactory.class);
+
     public static DependencyVerifier[] verifiers() {
         if (!CommandLineOptions.hasOption("disable-verification")) {
             try {
@@ -44,6 +47,10 @@ public abstract class DependencyResolverFactory {
             catch (IOException | PGPException e) {
                 throw new RunnerException(e);
             }
+        }
+        else {
+            log.info(Style.yellow(
+                    "Extension verification is disabled. Please use with extreme caution!"));
         }
         return new DependencyVerifier[0];
     }
@@ -151,8 +158,8 @@ public abstract class DependencyResolverFactory {
                     Constants.TREE_NODE_WITH_CHILDREN, Constants.LAST_TREE_NODE_WITH_CHILDREN,
                     Constants.DOT));
         }
-        
-        resolver.addDependencyVerificationListener(new ReportingDependencyVerificationListener());     
+
+        resolver.addDependencyVerificationListener(new ReportingDependencyVerificationListener());
         return wrapDependencyResolver(resolver, properties.getRepoLocation());
     }
 
@@ -180,7 +187,8 @@ public abstract class DependencyResolverFactory {
         }
     }
 
-    private static class ReportingDependencyVerificationListener implements DependencyVerificationListener {
+    private static class ReportingDependencyVerificationListener
+            implements DependencyVerificationListener {
 
         private Log log = new Log(ReportingDependencyVerificationListener.class);
         private StringBuilder sb;
@@ -195,7 +203,13 @@ public abstract class DependencyResolverFactory {
         @Override
         public void succeeded(String group, String artifact, String version) {
             sb.append(Style.green("succeeded"));
-            log.info(sb.toString());
+            if (CommandLineOptions.hasOption("V")) {
+                log.info(sb.toString());
+            }
+            else {
+                ProgressReporterUtils.detail(String.format("%s:%s (%s%sverified)", group, artifact,
+                        version, Constants.DOT));
+            }
         }
 
         @Override
@@ -203,6 +217,5 @@ public abstract class DependencyResolverFactory {
             sb.append(Style.red("failed"));
             log.info(sb.toString());
         }
-
     }
 }
