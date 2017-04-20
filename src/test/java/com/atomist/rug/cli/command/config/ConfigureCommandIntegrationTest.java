@@ -7,32 +7,32 @@ import org.junit.runners.MethodSorters;
 import com.atomist.rug.cli.AbstractCommandTest;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class DefaultCommandIntegrationTest extends AbstractCommandTest {
+public class ConfigureCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testAGlobalWrite() throws Exception {
         assertCommandLine(0, () -> {
-        }, "default", "save", "--global", "atomist:cd", "-a", "100.0.0");
+        }, "configure", "default", "archive","--global", "atomist:cd", "-a", "100.0.0", "-S");
     }
 
     @Test
     public void testBProjectWrite() throws Exception {
 
         assertCommandLine(0, () -> {
-        }, "default", "save", "atomist:cd", "-a", "100.0.0");
+        }, "configure", "default", "archive", "atomist:cd", "-a", "100.0.0", "-S");
     }
 
     @Test
     public void testCGlobalDelete() throws Exception {
 
         assertCommandLine(0, () -> {
-        }, "default", "delete", "--global");
+        }, "configure", "default", "archive", "--global", "-D");
     }
 
     @Test
     public void testDProjectDelete() throws Exception {
 
         assertCommandLine(0, () -> {
-        }, "default", "delete");
+        }, "configure", "default", "archive", "-D");
     }
 }
