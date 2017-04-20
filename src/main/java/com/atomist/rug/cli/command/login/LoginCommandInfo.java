@@ -1,6 +1,5 @@
-package com.atomist.rug.cli.command.repo;
+package com.atomist.rug.cli.command.login;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,26 +8,23 @@ import org.apache.commons.cli.Options;
 
 import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
-public class RepositoriesCommandInfo extends AbstractRugScopedCommandInfo {
+public class LoginCommandInfo extends AbstractRugScopedCommandInfo {
 
-    private static final List<String> commands = Arrays
-            .asList(new String[] { "login", "configure" });
-
-    public RepositoriesCommandInfo() {
-        super(RepositoriesCommand.class, "repositories");
+    public LoginCommandInfo() {
+        super(LoginCommand.class, "login");
     }
 
     @Override
     public String description() {
-        return "Login and configure team-scoped repositories";
+        return "Login using GitHub authentication";
     }
 
     @Override
     public String detail() {
         return "The Rug CLI uses your GitHub token to verify your membership in GitHub organizations "
                 + "and Slack teams that have the Atomist Bot enrolled.  Those teams have acccess to "
-                + "additional features, eg. team private Rug archives.  You can use the 'login' subcommand "
-                + "to login and then 'configure' to provision the list of repositories you have access to.";
+                + "additional features, eg. team private Rug archives.  Once you used the 'login' command, "
+                + "you can run 'configure repositories' to configure access to your team's artifact repositories.";
     }
 
     @Override
@@ -44,17 +40,12 @@ public class RepositoriesCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public int order() {
-        return -30;
+        return -40;
     }
 
     @Override
     public String usage() {
         return "repositories SUBCOMMAND [OPTION]...";
-    }
-
-    @Override
-    public List<String> subCommands() {
-        return commands;
     }
 
     @Override
@@ -64,6 +55,6 @@ public class RepositoriesCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public List<String> aliases() {
-        return Collections.singletonList("repo");
+        return Collections.singletonList("lg");
     }
 }

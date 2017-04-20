@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command.repo;
+package com.atomist.rug.cli.command.config;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import com.atomist.rug.cli.utils.HttpClientFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-public class ConfigureOperations {
+public class ConfigureRepositoriesHttpRequest {
 
     public List<Repo> getForRepos(String token, String url) {
 

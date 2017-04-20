@@ -39,15 +39,15 @@ public class ReflectiveCommandRunner {
         this.registry = registry;
     }
 
-    public int runCommand(String commandName, String[] args) {
+    public int runCommand(String[] args) {
 
         Timing timing = new Timing();
 
-        CommandInfo info = registry.findCommand(commandName);
+        CommandInfo info = registry.findCommand(args);
         CommandLine commandLine = CommandUtils.parseCommandline(info.name(), args, registry);
 
         if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
-            printCommandHelp(commandName);
+            printCommandHelp(args);
             return 0;
         }
 
@@ -56,7 +56,7 @@ public class ReflectiveCommandRunner {
         ArtifactDescriptor artifact = loadArtifactAndinitializeEnvironment(commandLine,
                 dependencies, info);
         try {
-            int rc = invokeCommand(commandName, args, artifact, dependencies, timing, false);
+            int rc = invokeCommand(args, artifact, dependencies, timing, false);
 
             commandCompleted(rc, args, info, artifact, dependencies);
 
@@ -152,7 +152,7 @@ public class ReflectiveCommandRunner {
         return artifact;
     }
 
-    private void printCommandHelp(String commandName) {
+    private void printCommandHelp(String[] commandName) {
         new Log(getClass()).info(
                 new CommandHelpFormatter().printCommandHelp(registry.findCommand(commandName)));
     }
@@ -230,17 +230,17 @@ public class ReflectiveCommandRunner {
             ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
     }
 
-    protected int invokeCommand(String commandName, String[] args, ArtifactDescriptor artifact,
+    protected int invokeCommand(String[] args, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
-        return invokeCommand(commandName, args, artifact, dependencies, new Timing(), true);
+        return invokeCommand(args, artifact, dependencies, new Timing(), true);
     }
 
-    protected int invokeCommand(String commandName, String[] args, ArtifactDescriptor artifact,
+    protected int invokeCommand(String[] args, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, Timing timing, boolean checkArtifact) {
 
         CommandLine commandLine = null;
         try {
-            CommandInfo info = registry.findCommand(commandName);
+            CommandInfo info = registry.findCommand(args);
             commandLine = CommandUtils.parseCommandline(info.name(), args, registry);
 
             // verify that command is enabled
@@ -252,7 +252,7 @@ public class ReflectiveCommandRunner {
             }
 
             if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
-                printCommandHelp(commandName);
+                printCommandHelp(args);
                 return 0;
             }
             else {

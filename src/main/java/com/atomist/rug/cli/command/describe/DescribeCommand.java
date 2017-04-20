@@ -16,6 +16,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import com.atomist.param.Parameter;
 import com.atomist.param.Parameterized;
 import com.atomist.project.archive.Coordinate;
+import com.atomist.project.archive.ResolvedDependency;
 import com.atomist.project.archive.Rugs;
 import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.generate.ProjectGenerator;
@@ -28,6 +29,7 @@ import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
@@ -81,7 +83,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         labelMapping.put(RugFunction.class, FUNCTION_LABELS);
     }
 
-    private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please tell me what you would like to describe: archive, editor, generator, command-handler, event-handler, response-handler or function ";
+    private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please use either archive, editor, generator, command-handler, event-handler, response-handler, function or dependencies.";
 
     @Validator
     public void validate(@Argument(index = 1, defaultValue = "") String kind,
@@ -93,6 +95,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         case "event-handler":
         case "response-handler":
         case "function":
+        case "dependencies":
             break;
         case "archive":
             validateFormat(format);
@@ -101,30 +104,32 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     @Command
-    public void run(Rugs operations, ArtifactDescriptor artifact, ArtifactSource source,
-            @Argument(index = 1, defaultValue = "") String kind, @Argument(index = 2) String name,
-            @Option("output") String format) {
+    public void run(ResolvedDependency resolvedRugs, ArtifactDescriptor artifact,
+            ArtifactSource source, @Argument(index = 1, defaultValue = "") String kind,
+            @Argument(index = 2) String name, @Option("output") String format,
+            @Option(value = "operations") boolean operations, Settings settings) {
 
         String operationName = OperationUtils.extractRugTypeName(name);
 
         switch (kind) {
         case "editor":
-            describeRugs(artifact, operationName, operations.editors(), source, EDITOR_LABELS);
+            describeRugs(artifact, operationName, resolvedRugs.rugs().editors(), source,
+                    EDITOR_LABELS);
             break;
         case "generator":
-            describeRugs(artifact, operationName, operations.generators(), source,
+            describeRugs(artifact, operationName, resolvedRugs.rugs().generators(), source,
                     GENERATOR_LABELS);
             break;
         case "command-handler":
-            describeRugs(artifact, operationName, operations.commandHandlers(), source,
+            describeRugs(artifact, operationName, resolvedRugs.rugs().commandHandlers(), source,
                     COMMAND_HANDLER_LABELS);
             break;
         case "event-handler":
-            describeRugs(artifact, operationName, operations.eventHandlers(), source,
+            describeRugs(artifact, operationName, resolvedRugs.rugs().eventHandlers(), source,
                     EVENT_HANDLER_LABELS);
             break;
         case "response-handler":
-            describeRugs(artifact, operationName, operations.responseHandlers(), source,
+            describeRugs(artifact, operationName, resolvedRugs.rugs().responseHandlers(), source,
                     RESPONSE_HANDLER_LABELS);
             break;
         case "function":
@@ -134,15 +139,24 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                             .asJava().values().stream().collect(Collectors.toList())).asScala(),
                     source, FUNCTION_LABELS);
             break;
+        case "dependencies":
+            new DependenciesOperations().run(artifact, resolvedRugs, settings, operations);
+            if (operations) {
+                describeInvokeArchive(artifact);
+            }
+            else {
+                log.newline();
+            }
+            break;
         case "archive":
-            describeArchive(operations, artifact, source, format);
+            describeArchive(resolvedRugs.rugs(), artifact, source, format);
             break;
         case "":
             throw new CommandException(INVALID_TYPE_MESSAGE, "describe");
         default:
             // If there is a unique match we don't need the kind
             String rugName = OperationUtils.extractRugTypeName(kind);
-            List<Rug> rugs = JavaConverters.asJavaCollectionConverter(operations.allRugs())
+            List<Rug> rugs = JavaConverters.asJavaCollectionConverter(resolvedRugs.rugs().allRugs())
                     .asJavaCollection().stream().filter(o -> o.name().equals(rugName))
                     .collect(Collectors.toList());
             if (rugs.size() == 1) {

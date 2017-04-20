@@ -82,7 +82,7 @@ public class Runner {
         if ((commandLine.hasOption("?") || commandLine.hasOption("h"))
                 && commandLine.getArgList().isEmpty()) {
             args = new String[] { "help" };
-            new ShellCommandRunner(registry).runCommand("help", args);
+            new ShellCommandRunner(registry).runCommand(args);
         }
         else if (commandLine.getArgList().isEmpty()) {
             log.error("Missing command argument.\n" + "\n"
@@ -90,8 +90,7 @@ public class Runner {
             return 1;
         }
         else {
-            return new ShellCommandRunner(registry).runCommand(commandLine.getArgList().get(0),
-                    args);
+            return new ShellCommandRunner(registry).runCommand(args);
         }
         return 0;
     }

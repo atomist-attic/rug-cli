@@ -12,6 +12,7 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.command.annotation.Validator;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.SettingsReader;
@@ -19,22 +20,45 @@ import com.atomist.rug.cli.settings.SettingsWriter;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.StringUtils;
 
-public class DefaultCommand extends AbstractAnnotationBasedCommand {
+public class ConfigureCommand extends AbstractAnnotationBasedCommand {
 
-    @Command
-    public void run(CommandLine commandLine, @Argument(index = 1) String command,
-            @Option("archive-version") String version, @Option("global") boolean global,
-            @Option("delete") boolean delete) {
-
+    @Validator
+    public void validate(CommandLine commandLine, @Argument(index = 1, defaultValue = "") String command) {
         switch (command) {
-        case "delete":
-            delete(global);
+        case "default":
+            if (commandLine.getArgList().size() > 2
+                    && !"archive".equals(commandLine.getArgList().get(2))) {
+                throw new CommandException("Invalid SUBCOMMAND provided. Please use either default archive or repositories.", "configure");
+            }
             break;
-        case "save":
-            configure(commandLine, global, version);
+        case "repositories":
             break;
         default:
-            throw new CommandException("No or invalid ACTION provided.", "default");
+            throw new CommandException("Invalid SUBCOMMAND provided. Please use either default archive or repositories.", "configure");
+        }
+    }
+
+    @Command
+    public void run(CommandLine commandLine, @Argument(index = 1, defaultValue = "") String command,
+            @Option("archive-version") String version, @Option("global") boolean global,
+            @Option("delete") boolean delete, @Option("save") boolean save, Settings settings) {
+
+        switch (command) {
+        case "default":
+            if (commandLine.getArgList().size() > 2
+                    && "archive".equals(commandLine.getArgList().get(2))) {
+                if (delete) {
+                    delete(global);
+                }
+                if (save) {
+                    configure(commandLine, global, version);
+                }
+            }
+            break;
+        case "repositories":
+            new ConfigureRepositoriesOperations().run(settings);
+            break;
+        default:
         }
     }
 
@@ -43,8 +67,8 @@ public class DefaultCommand extends AbstractAnnotationBasedCommand {
         String defaultArtifact = null;
         String defaultVersion = null;
 
-        if (commandLine.getArgList().size() > 2) {
-            String coordinates = commandLine.getArgList().get(2);
+        if (commandLine.getArgList().size() > 3) {
+            String coordinates = commandLine.getArgList().get(3);
             if (coordinates != null) {
                 String[] parts = coordinates.split(":");
                 if (parts.length >= 1) {

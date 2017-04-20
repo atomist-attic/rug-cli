@@ -216,7 +216,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             }
             else {
                 String[] args = CommandUtils.splitCommandline(cmd);
-                if (invokeCommand(args[0], args, artifact, dependencies) < 0) {
+                if (invokeCommand(args, artifact, dependencies) < 0) {
                     break;
                 }
             }
@@ -259,7 +259,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private void reload(String line, ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies) {
         // Exit the current shell
-        invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
+        invokeCommand(new String[] { "exit" }, artifact, dependencies);
 
         String[] args = CommandUtils.splitCommandline(line);
         CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
@@ -352,7 +352,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void exit(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
         // Exit the current shell
-        invokeCommand("exit", new String[] { "exit" }, artifact, dependencies);
+        invokeCommand(new String[] { "exit" }, artifact, dependencies);
         throw new EndOfFileException();
     }
 

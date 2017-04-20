@@ -112,14 +112,15 @@ public class CommandHelpFormatter {
         sb.append("\n");
         sb.append(Style.bold("Available commands:"));
         int length = registry.commands().stream()
-                .max(Comparator.comparingInt(o -> o.name().length())).get().name().length() + 1;
+                .max(Comparator.comparingInt(o -> o.niceName().length())).get().niceName().length()
+                + 1;
         String formatString = "  %-" + length + "s %s\n";
 
         Map<String, List<CommandInfo>> commands = registry.commands().stream()
                 .collect(Collectors.groupingBy(CommandInfo::group));
         commands.entrySet().forEach(e -> {
             sb.append("\n");
-            e.getValue().forEach(c -> sb.append(String.format(formatString, c.name(), WordUtils
+            e.getValue().forEach(c -> sb.append(String.format(formatString, c.niceName(), WordUtils
                     .wrap(c.description(), WRAP - length, createString(length + 3), false))));
         });
     }

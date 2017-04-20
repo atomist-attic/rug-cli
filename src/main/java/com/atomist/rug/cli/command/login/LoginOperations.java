@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command.repo;
+package com.atomist.rug.cli.command.login;
 
 import java.io.File;
 import java.util.UUID;
