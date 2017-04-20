@@ -56,10 +56,87 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
 
     @Override
     public void transferSucceeded(TransferEvent event) {
-        report(event);
+        if (CommandLineOptions.hasOption("V")) {
+            report(event);
+        }
+        else {
+            reportDetail(event);
+        }
     }
 
-    private void report(TransferEvent event) {
+    private void reportDetail(TransferEvent event) {
+        String[] parts = event.getResource().getResourceName().split("/");
+        String repo = repositories.getOrDefault(
+                sanitizeUrl(event.getResource().getRepositoryUrl()),
+                event.getResource().getRepositoryUrl());
+        if (!event.getResource().getResourceName().endsWith("maven-metadata.xml")) {
+            // [com, atomist, rug-cli-root, 1.0.0, rug-cli-root-1.0.0.pom]
+            String version = null;
+            String artifact = null;
+            String group = null;
+            String ext = null;
+            for (int i = parts.length - 1; i >= 0; i--) {
+                if (ext == null) {
+                    String name = parts[i];
+                    if (name.endsWith(".jar.asc")) {
+                        ext = "jar.asc";
+                    }
+                    else if (name.endsWith(".pom.asc")) {
+                        ext = "pom.asc";
+                    }
+                    else if (name.endsWith(".jar")) {
+                        ext = "jar";
+                    }
+                    else if (name.endsWith(".pom")) {
+                        ext = "pom";
+                    }
+                    else if (name.endsWith(".json")) {
+                        ext = "json";
+                    }
+                    else if (name.endsWith(".zip")) {
+                        ext = "json";
+                    }
+                    else {
+                        ext = name;
+                    }
+                }
+                else if (version == null) {
+                    version = parts[i];
+                }
+                else if (artifact == null) {
+                    artifact = parts[i];
+                }
+                else if (group == null) {
+                    group = parts[i];
+                }
+                else {
+                    group = parts[i] + "." + group;
+                }
+            }
+            ProgressReporterUtils.detail(group + ":" + artifact + " (" + version + Constants.DOT
+                    + ext + Constants.DOT + repo + ")");
+        }
+        else {
+            // [com, atomist, rug, rug-function-http, maven-metadata.xml]
+            String artifact = null;
+            String group = null;
+            for (int i = parts.length - 2; i >= 0; i--) {
+                if (artifact == null) {
+                    artifact = parts[i];
+                }
+                else if (group == null) {
+                    group = parts[i];
+                }
+                else {
+                    group = parts[i] + "." + group;
+                }
+            }
+            ProgressReporterUtils
+                    .detail(group + ":" + artifact + " (metadata" + Constants.DOT + repo + ")");
+        }
+    }
+
+    private synchronized void report(TransferEvent event) {
         String message = messageFrom(event);
         if (reportTitle) {
             indicator.report("Processing dependencies");

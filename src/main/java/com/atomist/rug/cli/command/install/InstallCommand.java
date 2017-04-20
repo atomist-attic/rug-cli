@@ -18,6 +18,7 @@ import com.atomist.rug.cli.command.AbstractRepositoryCommand;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.resolver.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
@@ -39,12 +40,23 @@ public class InstallCommand extends AbstractRepositoryCommand {
 
                                 @Override
                                 public void artifactInstalled(RepositoryEvent event) {
-                                    URI repo = session.getLocalRepository().getBasedir().toURI();
-                                    URI artifact = event.getFile().toURI();
 
-                                    indicator.report(String.format("  Installed %s %s %s",
-                                            repo.relativize(artifact), Constants.DIVIDER,
-                                            new File(repo).getAbsolutePath().toString()));
+                                    if (CommandLineOptions.hasOption("V")) {
+                                        URI repo = session.getLocalRepository().getBasedir()
+                                                .toURI();
+                                        URI artifact = event.getFile().toURI();
+
+                                        indicator.report(String.format("  Installed %s %s %s",
+                                                repo.relativize(artifact), Constants.DIVIDER,
+                                                new File(repo).getAbsolutePath().toString()));
+                                    }
+                                    else {
+                                        Artifact artifact = event.getArtifact();
+                                        indicator.detail(String.format("%s:%s (%s%s%s)",
+                                                artifact.getGroupId(), artifact.getArtifactId(),
+                                                artifact.getVersion(), Constants.DOT,
+                                                artifact.getExtension()));
+                                    }
                                 }
                             });
 

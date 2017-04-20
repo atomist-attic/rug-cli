@@ -3,6 +3,8 @@ package com.atomist.rug.cli.output;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.github.tomaslanger.chalk.Ansi;
 
 public class SpinningProgressReporter extends Thread implements ProgressReporter {
@@ -67,8 +69,8 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
             if (additionalMessages.isEmpty()) {
                 System.out.print("\r");
                 System.out.print(Ansi.eraseLine());
-                System.out.print(message + " " + Style.yellow("" + anim.charAt(x++ % anim.length()))
-                        + " " + formatDetail());
+                System.out.print(formatDetail(
+                        message + " " + Style.yellow("" + anim.charAt(x++ % anim.length())) + " "));
             }
             else {
                 System.out.print("\r");
@@ -80,8 +82,8 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
                 }
                 System.out.print("\r");
                 System.out.print(Ansi.eraseLine());
-                System.out.print(message + " " + Style.yellow("" + anim.charAt(x++ % anim.length()))
-                        + " " + formatDetail());
+                System.out.print(formatDetail(
+                        message + " " + Style.yellow("" + anim.charAt(x++ % anim.length())) + " "));
             }
             sleep(50);
         }
@@ -97,12 +99,13 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
         }
     }
 
-    private String formatDetail() {
-        if (detail != null) {
-            return Style.gray("(" + detail + ")") + " ";
+    private String formatDetail(String message) {
+        int diff = ConsoleUtils.width() - message.length() - 3; 
+        if (detail != null && diff > 0) {
+            return message + Style.gray(StringUtils.abbreviate(this.detail, diff)) + " ";
         }
         else {
-            return "";
+            return message;
         }
     }
 

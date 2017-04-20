@@ -13,11 +13,14 @@ import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.command.utils.OperationUtils;
+import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.tree.Node;
 import com.atomist.rug.cli.tree.Node.Type;
+import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
+import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.runtime.Rug;
 import com.atomist.rug.runtime.plans.DefaultRugFunctionRegistry;
 import com.atomist.rug.spi.RugFunction;
@@ -27,9 +30,17 @@ import scala.collection.JavaConverters;
 public class DependenciesCommand extends AbstractAnnotationBasedCommand {
 
     @Command
-    public void run(ResolvedDependency rugs, Settings settings,
+    public void run(ArtifactDescriptor artifact, ResolvedDependency rugs, Settings settings,
             @Option(value = "operations") boolean operations) {
         Coordinate coordinate = rugs.address().get();
+
+        Map<String, RugFunction> functions = new ProgressReportingOperationRunner<Map<String, RugFunction>>(
+                String.format("Loading extensions for %s", ArtifactDescriptorUtils.coordinates(artifact)))
+                        .run(indicator -> {
+                            return JavaConverters
+                                    .mapAsJavaMapConverter(DefaultRugFunctionRegistry.providerMap())
+                                    .asJava();
+                        });
 
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Dependencies"));
@@ -47,9 +58,6 @@ public class DependenciesCommand extends AbstractAnnotationBasedCommand {
         root.accept(visitor);
         visitor.log(log);
 
-        
-        Map<String, RugFunction> functions = JavaConverters
-                .mapAsJavaMapConverter(DefaultRugFunctionRegistry.providerMap()).asJava();
         Map<URL, List<RugFunction>> extensions = functions.values().stream().collect(Collectors
                 .groupingBy(f -> f.getClass().getProtectionDomain().getCodeSource().getLocation()));
 
