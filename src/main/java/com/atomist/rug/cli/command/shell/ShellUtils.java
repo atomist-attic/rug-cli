@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command.shell;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.jline.reader.Completer;
 import org.jline.reader.History;
@@ -53,7 +54,14 @@ public abstract class ShellUtils {
 
         return reader;
     }
-
+    
+    public static String removePrefix(String s, List<String> words) {
+        for (int i = 0; i < words.size() - 1; i++) {
+            s = s.replace(words.get(i), "");
+        }
+        return s.trim();
+    }
+    
     public static void shutdown(LineReader lineReader) {
         try {
             lineReader.getTerminal().close();

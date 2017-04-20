@@ -25,8 +25,23 @@ public class GestureRegistry {
         }
     }
 
-    public Optional<Gesture> findGesture(String name) {
-        return Optional.ofNullable(gestures.get(name));
+    public Optional<Gesture> findGesture(String[] args) {
+        String name = null;
+        for (int i = 0; i < args.length; i++) {
+            if (!args[i].startsWith("-")) {
+                if (name == null) {
+                    name = args[i];
+                }
+                else {
+                    name = name + " " + args[i];
+                }
+
+                if (gestures.containsKey(name)) {
+                    return Optional.of(gestures.get(name));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public Collection<String> gestureNames() {

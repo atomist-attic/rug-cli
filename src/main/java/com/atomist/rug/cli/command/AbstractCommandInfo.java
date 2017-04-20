@@ -43,6 +43,6 @@ public abstract class AbstractCommandInfo implements CommandInfo {
 
     @Override
     public String name() {
-        return commandName;
+        return commandName.replace('_', ' ');
     }
 }

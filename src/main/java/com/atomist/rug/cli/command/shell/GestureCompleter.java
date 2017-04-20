@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command.shell;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -30,19 +31,19 @@ public class GestureCompleter implements Completer {
                     .forEach(s -> candidates.add(new Candidate(s, s, null, null, null, s, true)));
         }
         else if (words.size() > 1) {
-            String word = words.get(0);
-
-            Optional<String> shortcut = registry.gestureNames().stream()
-                    .filter(s -> s.startsWith(word)).findFirst();
-            if (shortcut.isPresent()) {
-                Gesture s = registry.findGesture(shortcut.get()).get();
-
-                s.placeholders().stream()
+            Optional<Gesture> s = registry.findGesture(line.words().toArray(new String[0]));
+            if (s.isPresent()) {
+                s.get().placeholders().stream()
                         .filter(p -> !words.stream().filter(w -> w.startsWith(p + "=")).findAny()
                                 .isPresent())
                         .forEach(c -> candidates
                                 .add(new Candidate(c + "=", c, null, null, null, c, false)));
             }
+            registry.gestures().stream()
+                    .filter(n -> n.name().startsWith(StringUtils.join(words, " ")))
+                    .forEach(n -> candidates
+                            .add(new Candidate(ShellUtils.removePrefix(n.name(), words), n.name(),
+                                    null, null, null, n.name(), true)));
         }
     }
 }
