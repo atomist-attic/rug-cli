@@ -17,4 +17,15 @@ public class ProgressReporterUtils {
     public static void setActiveProgressReporter(ProgressReporter progressReporter) {
         threadLocal.set(progressReporter);
     }
+
+    public static boolean detail(String detail) {
+        Optional<ProgressReporter> indicator = ProgressReporterUtils.getActiveProgressReporter();
+        if (indicator.isPresent()) {
+            indicator.get().detail(detail);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

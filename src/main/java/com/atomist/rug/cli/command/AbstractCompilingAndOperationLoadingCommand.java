@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
@@ -17,7 +16,6 @@ import com.atomist.project.archive.RugResolver;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ConsoleLogger;
-import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReporterUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
@@ -169,21 +167,15 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
         @Override
         public void compileStarted(String path) {
-            Optional<ProgressReporter> indicator = ProgressReporterUtils
-                    .getActiveProgressReporter();
-            if (indicator.isPresent() && path != null) {
+            if (CommandLineOptions.hasOption("V") && path != null) {
                 int ix = path.lastIndexOf('/');
-                indicator.get().detail(path.substring(ix + 1));
+                ProgressReporterUtils.detail(path.substring(ix + 1));
             }
         }
 
         @Override
         public void compileSucceeded(String path, String content) {
-            Optional<ProgressReporter> indicator = ProgressReporterUtils
-                    .getActiveProgressReporter();
-            if (indicator.isPresent()) {
-                indicator.get().detail(null);
-            }
+            ProgressReporterUtils.detail(null);
             if (CommandLineOptions.hasOption("X") && content != null) {
                 log.info("  Compiled " + Style.yellow(path) + " " + Style.green("succeeded"));
                 if (!path.endsWith(".js.map")) {
