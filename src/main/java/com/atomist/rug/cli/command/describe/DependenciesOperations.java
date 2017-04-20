@@ -1,4 +1,4 @@
-package com.atomist.rug.cli.command.dependencies;
+package com.atomist.rug.cli.command.describe;
 
 import java.net.URL;
 import java.util.Collection;
@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 import com.atomist.project.archive.Coordinate;
 import com.atomist.project.archive.ResolvedDependency;
 import com.atomist.rug.cli.Constants;
-import com.atomist.rug.cli.command.AbstractAnnotationBasedCommand;
-import com.atomist.rug.cli.command.annotation.Command;
-import com.atomist.rug.cli.command.annotation.Option;
+import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.utils.OperationUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
@@ -27,16 +25,17 @@ import com.atomist.rug.spi.RugFunction;
 
 import scala.collection.JavaConverters;
 
-public class DependenciesCommand extends AbstractAnnotationBasedCommand {
+public class DependenciesOperations {
+    
+    private static final Log log = new Log(DependenciesOperations.class);
 
-    @Command
     public void run(ArtifactDescriptor artifact, ResolvedDependency rugs, Settings settings,
-            @Option(value = "operations") boolean operations) {
+            boolean operations) {
         Coordinate coordinate = rugs.address().get();
 
         Map<String, RugFunction> functions = new ProgressReportingOperationRunner<Map<String, RugFunction>>(
-                String.format("Loading extensions for %s", ArtifactDescriptorUtils.coordinates(artifact)))
-                        .run(indicator -> {
+                String.format("Loading extensions for %s",
+                        ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
                             return JavaConverters
                                     .mapAsJavaMapConverter(DefaultRugFunctionRegistry.providerMap())
                                     .asJava();
@@ -73,8 +72,6 @@ public class DependenciesCommand extends AbstractAnnotationBasedCommand {
             extenstionRoot.accept(visitor);
             visitor.log(log);
         }
-
-        log.newline();
     }
 
     private void processDependencies(Collection<ResolvedDependency> rugs, Node node,

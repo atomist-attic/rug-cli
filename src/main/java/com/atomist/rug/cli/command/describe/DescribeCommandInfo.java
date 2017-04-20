@@ -16,7 +16,7 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 public class DescribeCommandInfo extends AbstractVersionCommandInfo implements CommandInfo {
 
     private static List<String> commands = Arrays.asList("editor", "generator", "archive", 
-            "command-handler", "event-handler", "response-handler", "function");
+            "command-handler", "event-handler", "response-handler", "function", "dependencies");
 
     public DescribeCommandInfo() {
         super(DescribeCommand.class, "describe", 2);
@@ -60,7 +60,7 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
 
     @Override
     public String detail() {
-        return "TYPE should be 'editor', 'generator', 'command-handler', 'event-handler', 'response-handler', 'function' or 'archive' and ARTIFACT"
+        return "TYPE should be 'editor', 'generator', 'command-handler', 'event-handler', 'response-handler', 'function', 'dependencies' or 'archive' and ARTIFACT"
                 + " should be the full name of an artifact, e.g., \"atomist:spring-service:Spring Microservice\".  "
                 + "If the name of the artifact has spaces in it, you need to put quotes around it.  "
                 + "FORMAT can be 'json' or 'yaml' and is only valid when describing an archive.";
@@ -70,6 +70,8 @@ public class DescribeCommandInfo extends AbstractVersionCommandInfo implements C
         Options options = super.options();
         options.addOption(Option.builder().argName("FORMAT").desc("Specify output FORMAT")
                 .longOpt("output").hasArg(true).required(false).build());
+        options.addOption(Option.builder("O").hasArg(false).desc("List operations")
+                .longOpt("operations").optionalArg(true).build());
         return options;
     }
 

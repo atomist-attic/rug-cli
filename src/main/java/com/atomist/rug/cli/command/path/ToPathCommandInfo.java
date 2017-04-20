@@ -1,8 +1,5 @@
 package com.atomist.rug.cli.command.path;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
@@ -10,10 +7,8 @@ import com.atomist.rug.cli.command.AbstractRugScopedCommandInfo;
 
 public class ToPathCommandInfo extends AbstractRugScopedCommandInfo {
 
-    private static final List<String> aliases = Arrays.asList(new String[] { "to-tree" });
-
     public ToPathCommandInfo() {
-        super(ToPathCommand.class, "to-path");
+        super(ToPathCommand.class, "to_path");
     }
 
     @Override
@@ -55,10 +50,5 @@ public class ToPathCommandInfo extends AbstractRugScopedCommandInfo {
     @Override
     public String group() {
         return "3";
-    }
-
-    @Override
-    public List<String> aliases() {
-        return aliases;
     }
 }

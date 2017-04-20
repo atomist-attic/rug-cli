@@ -58,7 +58,7 @@ public class ToPathCommand extends AbstractAnnotationBasedCommand {
     }
 
     @Command
-    public void run(@Argument(index = 1, defaultValue = "") String path,
+    public void run(@Argument(index = 2, defaultValue = "") String path,
             @Option("change-dir") String rootName, @Option("kind") String kind,
             @Option("line") int line, @Option("column") int col) {
 

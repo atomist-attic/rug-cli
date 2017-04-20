@@ -3,14 +3,13 @@ com.atomist.rug.cli.command.path.PathCommandInfo
 com.atomist.rug.cli.command.path.ToPathCommandInfo
 com.atomist.rug.cli.command.search.SearchCommandInfo
 com.atomist.rug.cli.command.list.ListCommandInfo
-com.atomist.rug.cli.command.dependencies.DependenciesCommandInfo
 com.atomist.rug.cli.command.describe.DescribeCommandInfo
 com.atomist.rug.cli.command.generate.GenerateCommandInfo
 com.atomist.rug.cli.command.edit.EditCommandInfo
 com.atomist.rug.cli.command.test.TestCommandInfo
 com.atomist.rug.cli.command.install.InstallCommandInfo
 com.atomist.rug.cli.command.publish.PublishCommandInfo
-com.atomist.rug.cli.command.config.DefaultCommandInfo
+com.atomist.rug.cli.command.config.ConfigureCommandInfo
 
 com.atomist.rug.cli.command.extension.ExtensionCommandInfo
 
@@ -18,4 +17,4 @@ com.atomist.rug.cli.command.shell.ExitCommandInfo
 com.atomist.rug.cli.command.shell.ShellCommandInfo
 com.atomist.rug.cli.command.shell.HelpCommandInfo
 
-com.atomist.rug.cli.command.repo.RepositoriesCommandInfo
+com.atomist.rug.cli.command.login.LoginCommandInfo

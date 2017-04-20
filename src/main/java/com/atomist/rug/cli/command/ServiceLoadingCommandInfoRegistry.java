@@ -45,14 +45,32 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
         return commands;
     }
 
-    public CommandInfo findCommand(String name) {
-        Optional<CommandInfo> helper = commands.stream()
-                .filter(c -> c.name().equals(name) || c.aliases().contains(name)).findFirst();
-        if (helper.isPresent()) {
-            return helper.get();
+    public CommandInfo findCommand(String[] args) {
+        String name = null;
+        for (int i = 0; i < args.length; i++) {
+            if (!args[i].startsWith("-")) {
+                if (name == null) {
+                    name = args[i];
+                }
+                else {
+                    name = name + "_" + args[i];
+                }
+
+                Optional<CommandInfo> info = findCommand(name);
+                if (info.isPresent()) {
+                    return info.get();
+                }
+            }
         }
-        throw new CommandException(String.format("%s is not a recognized command.%s", name,
-                getAddtionalHelpMessage(name)), (String) null);
+
+        throw new CommandException(
+                String.format("No recognized command provided.%s", getAddtionalHelpMessage(args)),
+                (String) null);
+    }
+
+    private Optional<CommandInfo> findCommand(String name) {
+        return commands.stream().filter(c -> c.name().equals(name) || c.aliases().contains(name))
+                .findFirst();
     }
 
     private void init() {
@@ -62,13 +80,26 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
                 .collect(toList());
     }
 
-    private String getAddtionalHelpMessage(String commandName) {
-        Optional<String> closestMatch = StringUtils.computeClosestMatch(commandName,
-                commands.stream().map(CommandInfo::name).collect(toList()));
-        return closestMatch
-                .map(s -> new StringBuilder().append("\n\nDid you mean?\n").append("  ")
-                        .append(Constants.command()).append(s).append(" ").append("").toString())
-                .orElse("");
+    private String getAddtionalHelpMessage(String[] args) {
+        String name = null;
+
+        for (int i = 0; i < args.length; i++) {
+            if (i == 0) {
+                name = args[i];
+            }
+            else {
+                name = name + " " + args[i];
+            }
+
+            Optional<String> closestMatch = StringUtils.computeClosestMatch(name,
+                    commands.stream().map(CommandInfo::niceName).collect(toList()));
+            if (closestMatch.isPresent()) {
+                return closestMatch.map(s -> new StringBuilder().append("\n\nDid you mean?\n")
+                        .append("  ").append(Constants.command()).append(s).append(" ").append("")
+                        .toString()).orElse("");
+            }
+        }
+        return "";
     }
 
     @Override

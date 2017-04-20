@@ -14,5 +14,5 @@ public interface CommandInfoRegistry {
 
     CommandInfo findCommand(Class<? extends Command> obj);
 
-    CommandInfo findCommand(String name);
+    CommandInfo findCommand(String[] args);
 }
