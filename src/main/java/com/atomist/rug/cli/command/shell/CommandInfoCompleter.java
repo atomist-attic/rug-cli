@@ -50,7 +50,8 @@ public class CommandInfoCompleter implements Completer {
             if (info.isPresent()) {
 
                 String remaining = ShellUtils.removePrefix(info.get().name(), words);
-                if (remaining != null && remaining.length() > 0) {
+                if (remaining != null && remaining.length() > 0
+                        && !info.get().aliases().contains(word)) {
                     candidates.add(new Candidate(remaining, info.get().name(), null, null, null,
                             null, true));
                 }
