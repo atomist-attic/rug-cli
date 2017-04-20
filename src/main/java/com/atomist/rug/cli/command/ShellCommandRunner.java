@@ -168,10 +168,10 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             List<ArtifactDescriptor> dependencies, String line) {
         String[] args = CommandUtils.splitCommandline(line);
         CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
-        if (gestureRegistry != null
-                && gestureRegistry.findGesture(commandLine.getArgList().get(0)).isPresent()) {
+        if (gestureRegistry != null && !commandLine.getArgList().isEmpty()
+                && gestureRegistry.findGesture(commandLine.getArgs()).isPresent()) {
 
-            Gesture gesture = gestureRegistry.findGesture(commandLine.getArgList().get(0)).get();
+            Gesture gesture = gestureRegistry.findGesture(commandLine.getArgs()).get();
 
             if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
                 printGestureHelp(gesture);
@@ -334,8 +334,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                 if (!(artifact.group().equals(newArtifact.group())
                         && artifact.artifact().equals(newArtifact.artifact()))) {
                     throw new CommandException(String.format(
-                            "Fully-qualified archive or Rug names are not allowed "
-                                    + "within a shell session.\nTo load an archive into the shell, run:\n  shell %s:%s",
+                            "Fully-qualified archive or Rug names are not supporte "
+                                    + "within a shell session.\n\nTo load an archive into the shell, run:\n  shell %s:%s",
                             newArtifact.group(), newArtifact.artifact()), info.name());
                 }
             }

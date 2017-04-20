@@ -49,8 +49,4 @@ public interface CommandInfo {
     default String group() {
         return "rug";
     }
-    
-    default String niceName() {
-        return name().replace("_", " ");
-    }
 }

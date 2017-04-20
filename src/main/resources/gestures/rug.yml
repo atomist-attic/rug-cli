@@ -1,4 +1,4 @@
-generate-rug-project:
+generate_rug_project:
   usage: "generate-rug-archive [project_name=PROJECT_NAME] [owner=OWNER] [description=DESCRIPTION]"
   description: "Generate a new Rug project with TypeScript support"
   detail: "PROJECT_NAME should be a valid project name. OWNER should be the name of the owner \
@@ -19,7 +19,7 @@ generate-rug-project:
     - "shell -l"
     - "desc archive"
 
-clone-rug-project:
+clone_rug_project:
   usage: clone-rug-project owner=OWNER repository=REPOSITORY 
   description: "Clone an existing Rug project from GitHub and set up TypeScript support"
   detail: "OWNER should be the owner of the GitHub repository; can either be your login or the name \

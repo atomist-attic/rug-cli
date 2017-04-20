@@ -53,7 +53,7 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
                     name = args[i];
                 }
                 else {
-                    name = name + "_" + args[i];
+                    name = name + " " + args[i];
                 }
 
                 Optional<CommandInfo> info = findCommand(name);
@@ -92,7 +92,7 @@ public class ServiceLoadingCommandInfoRegistry implements CommandInfoRegistry {
             }
 
             Optional<String> closestMatch = StringUtils.computeClosestMatch(name,
-                    commands.stream().map(CommandInfo::niceName).collect(toList()));
+                    commands.stream().map(CommandInfo::name).collect(toList()));
             if (closestMatch.isPresent()) {
                 return closestMatch.map(s -> new StringBuilder().append("\n\nDid you mean?\n")
                         .append("  ").append(Constants.command()).append(s).append(" ").append("")

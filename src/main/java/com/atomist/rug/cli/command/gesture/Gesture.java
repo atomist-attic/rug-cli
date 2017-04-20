@@ -57,9 +57,9 @@ public class Gesture {
         this.description = description;
         this.detail = detail;
     }
-
+    
     public String name() {
-        return name;
+        return name.replace('_', ' ');
     }
 
     public List<String> commands() {
