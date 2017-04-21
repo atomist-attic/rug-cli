@@ -18,20 +18,20 @@ public class GestureReaderTest {
         Map<String, Gesture> shortcuts = GestureReader
                 .readFromDirectory(new File("src/main/resources/gestures"));
         assertEquals(2, shortcuts.size());
-        assertTrue(shortcuts.containsKey("generate-rug-project"));
-        assertTrue(shortcuts.containsKey("clone-rug-project"));
-        assertEquals(13, shortcuts.get("generate-rug-project").commands().size());
-        assertEquals(3, shortcuts.get("generate-rug-project").placeholders().size());
+        assertTrue(shortcuts.containsKey("generate rug project"));
+        assertTrue(shortcuts.containsKey("clone rug project"));
+        assertEquals(13, shortcuts.get("generate rug project").commands().size());
+        assertEquals(3, shortcuts.get("generate rug project").placeholders().size());
     }
 
     @Test
     public void testGestureReadingFromClasspath() {
         Map<String, Gesture> shortcuts = GestureReader.readFromClasspath();
         assertEquals(2, shortcuts.size());
-        assertTrue(shortcuts.containsKey("generate-rug-project"));
-        assertTrue(shortcuts.containsKey("clone-rug-project"));
-        assertEquals(13, shortcuts.get("generate-rug-project").commands().size());
-        assertEquals(3, shortcuts.get("generate-rug-project").placeholders().size());
+        assertTrue(shortcuts.containsKey("generate rug project"));
+        assertTrue(shortcuts.containsKey("clone rug project"));
+        assertEquals(13, shortcuts.get("generate rug project").commands().size());
+        assertEquals(3, shortcuts.get("generate rug project").placeholders().size());
     }
 
 }
