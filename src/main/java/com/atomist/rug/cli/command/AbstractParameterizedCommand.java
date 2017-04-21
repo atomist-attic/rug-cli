@@ -53,7 +53,8 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                 String defaultValue = (pv != null ? pv.getValue().toString()
                         : parameter.getDefaultValue());
 
-                log.info("  " + WordUtils.wrap(capitalizeFirstLetter(parameter.getDescription()), Constants.WRAP_LENGTH,
+                String description = org.apache.commons.lang3.StringUtils.capitalize(parameter.getDescription());
+                log.info("  " + WordUtils.wrap(description, Constants.WRAP_LENGTH,
                         "\n  ", false));
 
                 pv = readParameter(reader, parameter, defaultValue);
@@ -86,16 +87,6 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
             ShellUtils.shutdown(reader);
         }
         return arguments;
-    }
-
-    private String capitalizeFirstLetter(String str) {
-        if (org.apache.commons.lang3.StringUtils.isBlank(str)) {
-            return str;
-        } else {
-            final char[] buffer = str.toCharArray();
-            buffer[0] = Character.toTitleCase(buffer[0]);
-            return new String(buffer);
-        }
     }
 
     private boolean isInvalid(ParameterizedRug rug, ParameterValue pv) {
