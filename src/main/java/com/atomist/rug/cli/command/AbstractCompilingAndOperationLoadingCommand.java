@@ -13,6 +13,7 @@ import com.atomist.project.archive.Coordinate;
 import com.atomist.project.archive.Dependency;
 import com.atomist.project.archive.ResolvedDependency;
 import com.atomist.project.archive.RugResolver;
+import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ConsoleLogger;
@@ -169,7 +170,8 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         public void compileStarted(String path) {
             if (!CommandLineOptions.hasOption("V") && path != null) {
                 int ix = path.lastIndexOf('/');
-                ProgressReporterUtils.detail(path.substring(ix + 1));
+                ProgressReporterUtils
+                        .detail(path.substring(ix + 1) + " (" + path.substring(0, ix) + ")");
             }
         }
 
