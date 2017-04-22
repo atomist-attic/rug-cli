@@ -37,7 +37,7 @@ public class ConfigureCommand extends AbstractAnnotationBasedCommand {
         case "repositories":
             if (!settings.getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class).isPresent()) {
                 throw new CommandException(
-                        "No token configured. Please run repositories login before running this command.",
+                        "No token configured. Please run the login command before running this command.",
                         "repositories configure");
             }
             break;
