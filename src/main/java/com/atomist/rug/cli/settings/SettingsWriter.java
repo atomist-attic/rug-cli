@@ -37,15 +37,15 @@ public abstract class SettingsWriter {
             FileUtils.setPermissionsToOwnerOnly(settingsFile);
         }
         catch (JsonParseException e) {
-            throw new SettingsException(String.format("Error parsing configuration at '%s'",
+            throw new SettingsException(String.format("Error writing configuration at '%s'",
                     settingsFile.getAbsolutePath().toString()), e);
         }
         catch (JsonMappingException e) {
-            throw new SettingsException(String.format("Error mapping configuration at '%s'",
+            throw new SettingsException(String.format("Error writing configuration at '%s'",
                     settingsFile.getAbsolutePath().toString()), e);
         }
         catch (IOException e) {
-            throw new SettingsException(String.format("Cannot load configuration at '%s'",
+            throw new SettingsException(String.format("Cannot writing configuration at '%s'",
                     settingsFile.getAbsolutePath().toString()), e);
         }
     }
