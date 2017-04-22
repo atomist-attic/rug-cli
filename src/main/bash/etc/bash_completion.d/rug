@@ -40,7 +40,7 @@ _rug() {
         -s --settings
         -q --quiet
         -u --update
-        -d --disable-verification
+        --disable-verification
         --requires
     )
     local commands=(
@@ -52,14 +52,13 @@ _rug() {
         clean
         install
         publish
-        default
         extension
         search
-        to-path
+        to path
         path
         shell
-        repositories
-        dependencies
+        configure
+        login
     )
 
     local i command_re special special_index
@@ -93,13 +92,13 @@ _rug() {
        	-s --settings
        	-q --quiet
         --requires
-        -d --disable-verification
+        --disable-verification
     )
-    if [[ $special == @(describe|edit|generate|dependencies) ]]; then
+    if [[ $special == @(describe|edit|generate) ]]; then
         command_options+=( -a --archive-version )
         command_options+=( -l --local )
     fi
-    if [[ $special == @(edit|generate|test|path|to-path) ]]; then
+    if [[ $special == @(edit|generate|test|path|to path) ]]; then
        command_options+=( -C --change-dir )
     fi
     if [[ $special == edit ]]; then
@@ -115,9 +114,11 @@ _rug() {
     if [[ $special == generate ]]; then
         command_options+=( -F --overwrite )
     fi
-    if [[ $special == default ]]; then
+    if [[ $special == configure ]]; then
         command_options+=( -g --global )
         command_options+=( -a --archive-version )
+        command_options+=( -S --save )
+        command_options+=( -D --delete )
     fi
     if [[ $special == publish ]]; then
         command_options+=( -i --id )
@@ -129,9 +130,6 @@ _rug() {
         command_options+=( -T --tag )
         command_options+=( -O --operations )
         command_options+=( -K --type )
-    fi
-    if [[ $special == dependencies ]]; then
-        command_options+=( -O --operations )
     fi
     if [[ $special == shell ]]; then
         command_options+=( -l --local )
@@ -150,6 +148,7 @@ _rug() {
     fi
     if [[ $special == describe ]]; then
         command_options+=( --output )
+        command_options+=( -O --operations )
     fi
 
     local command_args=()
@@ -159,8 +158,9 @@ _rug() {
         command-handler
         event-handler
         response-handler
-        reviewer
         archive
+        function
+		dependencies        
     )
     local describe_re describe_arg_found=
     describe_re=$(IFS='|'; echo "${describe_args[*]}")
@@ -175,20 +175,20 @@ _rug() {
         fi
     fi
 
-	local default_args=(
-        save
-        delete
+	local configure_args=(
+        default archive
+        respositories
     )
-    local default_re default_arg_found=
-    default_re=$(IFS='|'; echo "${default_args[*]}")
-    if [[ $special == default ]]; then
+    local configure_args_re configure_args_arg_found=
+    configure_re=$(IFS='|'; echo "${configure_args[*]}")
+    if [[ $special == configure ]]; then
         for (( i=$special_index+1; i < ${#words[@]}-1; i++ )); do
-            if [[ ${words[i]} == @($default_re) ]]; then
-                default_arg_found=true
+            if [[ ${words[i]} == @($configure_re) ]]; then
+                configure_arg_found=true
             fi
         done
-        if [[ ! $default_arg_found ]]; then
-            command_args+=( "${default_args[@]}" )
+        if [[ ! $configure_arg_found ]]; then
+            command_args+=( "${configure_args[@]}" )
         fi
     fi
 
@@ -209,23 +209,6 @@ _rug() {
             command_args+=( "${extension_args[@]}" )
         fi
     fi
-
-    local repositories_args=(
-          login
-          configure
-      )
-      local repositories_re repositories_arg_found=
-      repositories_re=$(IFS='|'; echo "${repositories_args[*]}")
-      if [[ $special == repositories ]]; then
-          for (( i=$special_index+1; i < ${#words[@]}-1; i++ )); do
-              if [[ ${words[i]} == @($repositories_re) ]]; then
-                  repositories_arg_found=true
-              fi
-          done
-          if [[ ! $repositories_arg_found ]]; then
-              command_args+=( "${repositories_args[@]}" )
-          fi
-      fi
 
     if [[ $cur == -* ]]; then
         COMPREPLY=( $( compgen -W "${command_options[*]}" -- "$cur" ) )
