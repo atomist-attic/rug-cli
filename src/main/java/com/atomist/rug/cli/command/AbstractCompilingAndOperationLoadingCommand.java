@@ -167,7 +167,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
         @Override
         public void compileStarted(String path) {
-            if (CommandLineOptions.hasOption("V") && path != null) {
+            if (!CommandLineOptions.hasOption("V") && path != null) {
                 int ix = path.lastIndexOf('/');
                 ProgressReporterUtils.detail(path.substring(ix + 1));
             }
