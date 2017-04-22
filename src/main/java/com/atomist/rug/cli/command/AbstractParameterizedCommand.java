@@ -53,7 +53,8 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                 String defaultValue = (pv != null ? pv.getValue().toString()
                         : parameter.getDefaultValue());
 
-                log.info("  " + WordUtils.wrap(parameter.getDescription(), Constants.WRAP_LENGTH,
+                String description = org.apache.commons.lang3.StringUtils.capitalize(parameter.getDescription());
+                log.info("  " + WordUtils.wrap(description, Constants.WRAP_LENGTH,
                         "\n  ", false));
 
                 pv = readParameter(reader, parameter, defaultValue);
