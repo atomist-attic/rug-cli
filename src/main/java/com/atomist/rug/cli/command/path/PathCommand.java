@@ -20,8 +20,8 @@ import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.tree.TreeNodeTreeCreator;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
-import com.atomist.rug.kind.DefaultTypeRegistry$;
 import com.atomist.rug.kind.core.ProjectMutableView;
+import com.atomist.rug.runtime.js.DefaultExecutionContext$;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.EmptyArtifactSource;
 import com.atomist.tree.TreeNode;
@@ -70,7 +70,7 @@ public class PathCommand extends AbstractAnnotationBasedCommand {
                     TreeNode pmv = new ProjectMutableView(new EmptyArtifactSource(""), source);
 
                     Either<String, Seq<GraphNode>> result = pxe.evaluate(pmv, pathExpression,
-                            DefaultTypeRegistry$.MODULE$, Option$.MODULE$.apply(null));
+                            DefaultExecutionContext$.MODULE$, Option$.MODULE$.apply(null));
 
                     return JavaConverters.asJavaCollectionConverter(result.right().get())
                             .asJavaCollection();

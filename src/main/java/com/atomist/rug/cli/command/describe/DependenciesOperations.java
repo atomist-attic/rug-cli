@@ -106,9 +106,6 @@ public class DependenciesOperations {
         addOperation(node,
                 JavaConverters.asJavaCollectionConverter(r.rugs().editors()).asJavaCollection(),
                 "Editors");
-        addOperation(node,
-                JavaConverters.asJavaCollectionConverter(r.rugs().reviewers()).asJavaCollection(),
-                "Reviewers");
         addOperation(node, JavaConverters.asJavaCollectionConverter(r.rugs().commandHandlers())
                 .asJavaCollection(), "Command Handlers");
         addOperation(node, JavaConverters.asJavaCollectionConverter(r.rugs().eventHandlers())
