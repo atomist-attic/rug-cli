@@ -9,7 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.1...HEAD
 
+## [0.33.2] - 2017-04-22
+
+[0.33.2]: https://github.com/atomist/rug-cli/compare/0.33.1...0.33.2
+
+### Fixed
+
+-	ClassLoader error with writing settings
+
 ## [0.33.1] - 2017-04-22
+
+[0.33.1]: https://github.com/atomist/rug-cli/compare/0.33.0...0.33.1
 
 ### Fixed
 
