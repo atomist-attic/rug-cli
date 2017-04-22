@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.32.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.0...HEAD
+
+## [0.33.0] - 2017-04-22
+
+[0.33.0]: https://github.com/atomist/rug-cli/compare/0.32.0...0.32.0
+
+### Changed
+
+- 	Upgrade to Rug 0.26.0
+-	**BREAKING** Changed some command and option names as per 
+	https://github.com/atomist/rug-cli/issues/172
+-	**BREAKING** Signature verification for all extensions specified in
+	`manifest.yml` as per https://github.com/atomist/rug-resolver/issues/26 and 
+	https://github.com/atomist/rug-cli/issues/171  
+-	**BREAKING** Removed support for `ProjectReviewer`s from all the 
+	`describe` commands.
+-	Made console output less verbose. To get more information use `-V`
+	and `-X	
 
 ## [0.32.0] - 2017-04-14
 
