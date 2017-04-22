@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.slf4j.helpers.NOPLoggerFactory;
+import org.springframework.util.ClassUtils;
 
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReporterUtils;
@@ -14,7 +16,18 @@ import com.atomist.rug.cli.utils.CommandLineOptions;
 public class Log implements Logger {
 
     // There is a performance hit to have a logger per clazz
-    private static final Logger logger = LoggerFactory.getLogger(Log.class.getName());
+    private static final Logger logger;
+
+    static {
+
+        if (ClassUtils.isPresent("ch.qos.logback.classic.LoggerContext",
+                Thread.currentThread().getContextClassLoader())) {
+            logger = LoggerFactory.getLogger(Log.class.getName());
+        }
+        else {
+            logger = new NOPLoggerFactory().getLogger(Log.class.getName());
+        }
+    }
 
     public Log(Class<?> clazz) {
 
