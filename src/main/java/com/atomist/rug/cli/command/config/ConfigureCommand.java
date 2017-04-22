@@ -23,18 +23,28 @@ import com.atomist.rug.cli.utils.StringUtils;
 public class ConfigureCommand extends AbstractAnnotationBasedCommand {
 
     @Validator
-    public void validate(CommandLine commandLine, @Argument(index = 1, defaultValue = "") String command) {
+    public void validate(Settings settings, CommandLine commandLine,
+            @Argument(index = 1, defaultValue = "") String command) {
         switch (command) {
         case "default":
             if (commandLine.getArgList().size() > 2
                     && !"archive".equals(commandLine.getArgList().get(2))) {
-                throw new CommandException("Invalid SUBCOMMAND provided. Please use either default archive or repositories.", "configure");
+                throw new CommandException(
+                        "Invalid SUBCOMMAND provided. Please use either default archive or repositories.",
+                        "configure");
             }
             break;
         case "repositories":
+            if (!settings.getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class).isPresent()) {
+                throw new CommandException(
+                        "No token configured. Please run repositories login before running this command.",
+                        "repositories configure");
+            }
             break;
         default:
-            throw new CommandException("Invalid SUBCOMMAND provided. Please use either default archive or repositories.", "configure");
+            throw new CommandException(
+                    "Invalid SUBCOMMAND provided. Please use either default archive or repositories.",
+                    "configure");
         }
     }
 

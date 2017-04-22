@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
-import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.annotation.Command;
 import com.atomist.rug.cli.command.config.ConfigureRepositoriesHttpRequest.Repo;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
@@ -27,14 +26,6 @@ public class ConfigureRepositoriesOperations {
     public static final String REPO_SERVICE_KEY = "repositories_service_urls";
     public static final List<String> REPO_SERVICE_URL = Arrays
             .asList("https://api.atomist.com/user/team");
-
-    public void validate(Settings settings) {
-        if (!settings.getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class).isPresent()) {
-            throw new CommandException(
-                    "No token configured. Please run repositories login before running this command.",
-                    "repositories configure");
-        }
-    }
 
     @Command
     public void run(Settings settings) {
