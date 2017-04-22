@@ -79,6 +79,9 @@ public class PathCommand extends AbstractAnnotationBasedCommand {
                                 "path");
                     }
 
+                    if (result.isLeft()) {
+                        throw new RuntimeException("Failure evaluating exception:" + result.left().get());
+                    }
                     return JavaConverters.asJavaCollectionConverter(result.right().get())
                             .asJavaCollection();
                 });
