@@ -16,8 +16,6 @@ import com.atomist.project.edit.NoModificationNeeded;
 import com.atomist.project.edit.ProjectEditor;
 import com.atomist.project.edit.SuccessfulModification;
 import com.atomist.project.generate.ProjectGenerator;
-import com.atomist.project.review.ProjectReviewer;
-import com.atomist.project.review.ReviewResult;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.CommandException;
@@ -323,11 +321,5 @@ public class LocalGitProjectManagement implements ProjectManagement {
                 log.info("  " + diff);
             }
         });
-    }
-
-    @Override
-    public ReviewResult review(ProjectReviewer reviewer, ParameterValues arguments,
-            String projectName) {
-        return null;
     }
 }
