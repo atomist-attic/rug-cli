@@ -7,11 +7,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.1...HEAD
+
+## [0.33.1] - 2017-04-22
+
+### Fixed
+
+-	Compiler step wasn't printing output in normal mode
+
+[0.33.1]: https://github.com/atomist/rug-cli/compare/0.33.0...0.33.1
 
 ## [0.33.0] - 2017-04-22
 
-[0.33.0]: https://github.com/atomist/rug-cli/compare/0.32.0...0.32.0
+[0.33.0]: https://github.com/atomist/rug-cli/compare/0.32.0...0.33.0
 
 ### Changed
 
