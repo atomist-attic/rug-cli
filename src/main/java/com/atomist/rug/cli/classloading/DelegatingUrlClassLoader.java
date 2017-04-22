@@ -17,7 +17,8 @@ class DelegatingUrlClassLoader extends URLClassLoader {
     private static final String[] DEFAULT_DELEGATING_PACKAGES_AND_SUBPACKAGES = new String[] { "org.slf4j",
             "jdk.nashorn", "javax.scripting", "com.eclipsesource.v8" };
 
-    private static final String[] DEFAULT_DELEGATING_PACKAGES = new String[] { "com.atomist.rug.resolver" };
+    private static final String[] DEFAULT_DELEGATING_PACKAGES = new String[] { "com.atomist.rug.resolver", 
+            "com.atomist.rug.cli.settings", "com.atomist.rug.cli" };
 
     private List<String> delegatingPackagesAndSubPackages = Arrays.asList(DEFAULT_DELEGATING_PACKAGES_AND_SUBPACKAGES);
     private List<String> delegatingPackages = Arrays.asList(DEFAULT_DELEGATING_PACKAGES);
