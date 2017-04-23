@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomist</groupId>
 	<artifactId>rug-cli</artifactId>
-	<version>0.34.0-SNAPSHOT</version>
+	<version>0.33.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>rug-cli</name>
 	<description>CLI for creating and running Rugs</description>
