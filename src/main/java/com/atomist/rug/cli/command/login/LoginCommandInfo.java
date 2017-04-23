@@ -45,7 +45,7 @@ public class LoginCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String usage() {
-        return "repositories SUBCOMMAND [OPTION]...";
+        return "login [OPTION]...";
     }
 
     @Override
