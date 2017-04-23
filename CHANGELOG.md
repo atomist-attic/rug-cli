@@ -7,7 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.1...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.3...HEAD
+
+## [0.33.3] - 2017-04-23
+
+[0.33.3]: https://github.com/atomist/rug-cli/compare/0.33.2...0.33.3
+
+### Fixed
+
+-	Typo in usage of `login` command
+- 	Update `rug.yml` gesture to reflect new group of `rug-editor
+
+###	Changed
+
+-	Don't attempt to load a logger if logback isn't around
 
 ## [0.33.2] - 2017-04-22
 
