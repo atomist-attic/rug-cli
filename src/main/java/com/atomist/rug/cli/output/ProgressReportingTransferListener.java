@@ -56,7 +56,7 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
 
     @Override
     public void transferSucceeded(TransferEvent event) {
-        if (CommandLineOptions.hasOption("V")) {
+        if (CommandLineOptions.hasOption("V") || CommandLineOptions.hasOption("q")) {
             report(event);
         }
         else {
