@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomist</groupId>
 	<artifactId>rug-cli</artifactId>
-	<version>0.33.4-SNAPSHOT</version>
+	<version>0.34.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>rug-cli</name>
 	<description>CLI for creating and running Rugs</description>
@@ -15,8 +15,8 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<java.version>1.8</java.version>
 		<maven.version>3.3.9</maven.version>
-		<rug.version>0.26.0</rug.version>
-		<rug-resolver.version>(0.19.0,0.21.0)</rug-resolver.version>
+		<rug.version>0.26.1</rug.version>
+		<rug-resolver.version>0.20.0</rug-resolver.version>
 	</properties>
 	<licenses>
 		<license>
