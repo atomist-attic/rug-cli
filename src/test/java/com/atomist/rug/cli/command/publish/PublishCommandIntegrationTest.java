@@ -30,7 +30,7 @@ public class PublishCommandIntegrationTest extends AbstractCommandTest {
     public void testSuccessfulPublish() throws Exception {
         assertCommandLine(0, () -> {
             assertVersion("rug-cli-tests", "common-editors", "0.8.0");
-        }, "publish");
+        }, "publish", "-F");
     }
 
     @Test
@@ -38,7 +38,7 @@ public class PublishCommandIntegrationTest extends AbstractCommandTest {
         assertCommandLine(0, () -> {
             assertVersion("test-group", "test-artifact", "4.0.0");
         }, "publish", "--archive-group", "test-group", "--archive-artifact", "test-artifact", "-a",
-                "4.0.0");
+                "4.0.0", "-F");
     }
 
     private void assertVersion(String group, String artifact, String version) {
