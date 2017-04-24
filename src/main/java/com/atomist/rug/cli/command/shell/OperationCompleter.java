@@ -12,6 +12,7 @@ import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
+import com.atomist.rug.cli.output.Style;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.ReadContext;
@@ -21,7 +22,6 @@ import com.jayway.jsonpath.ReadContext;
  */
 public class OperationCompleter implements Completer {
 
-    // TODO add commands for new handlers
     private static final List<String> COMMANDS = Arrays.asList("edit", "ed", "generate", "gen",
             "describe", "desc", "command", "trigger");
 
@@ -118,7 +118,7 @@ public class OperationCompleter implements Completer {
         parameterNames.stream()
                 .filter(p -> words.stream().noneMatch(w -> w.startsWith(p + "=")))
                 .forEach(n -> candidates
-                        .add(new Candidate(n + "=", n, null, null, null, null, false)));
+                        .add(new Candidate(n + "=", Style.underline(n), null, null, null, null, false)));
     }
 
     private void init() {
