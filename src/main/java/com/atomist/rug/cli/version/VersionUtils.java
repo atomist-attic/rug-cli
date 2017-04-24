@@ -79,9 +79,9 @@ public abstract class VersionUtils {
                 VersionRange range = versionScheme.parseVersionRange(Constants.RUG_VERSION_RANGE);
                 if (!range.containsVersion(version)) {
                     throw new VersionException(String.format(
-                            "Installed version of rug-cli is not compatible with archive %s.\n"
-                                    + "The archive depends on %s:%s (%s) which is incompatible with rug-cli (compatible version range %s).\n"
-                                    + "Please update to a more recent version of rug-cli or change the Rug archive to use a supported Rug version.",
+                            "Installed version of Rug CLI is not compatible with archive %s.\n\n"
+                                    + "The archive depends on %s:%s (%s) which is incompatible with Rug CLI (compatible version range %s).\n"
+                                    + "Please update to a more recent version of Rug CLI or change the Rug archive to use a supported Rug version.",
                             ArtifactDescriptorUtils.coordinates(artifact), Constants.GROUP,
                             Constants.RUG_ARTIFACT, version.toString(), range.toString()));
                 }
