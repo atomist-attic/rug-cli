@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.4...HEAD
 
+### Changed
+
+-	Upgrade to Rug 0.26.1
+
+### Added
+
+-	Prevent `publish` on uncommitted changes as per 
+	https://github.com/atomist/rug-cli/issues/168
+
 ## [0.33.4] - 2017-04-24
 
 [0.33.4]: https://github.com/atomist/rug-cli/compare/0.33.3...0.33.4
