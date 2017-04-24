@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.3...HEAD
 
+### Added
+
+-	New flag `-n` to get more progress updates. Now `-V` can be used to 
+	dump the contents of `ArtifactSource` and the compiled JavaScript code
+	if needed
+
 ## [0.33.3] - 2017-04-23
 
 [0.33.3]: https://github.com/atomist/rug-cli/compare/0.33.2...0.33.3

@@ -13,7 +13,6 @@ import com.atomist.project.archive.Coordinate;
 import com.atomist.project.archive.Dependency;
 import com.atomist.project.archive.ResolvedDependency;
 import com.atomist.project.archive.RugResolver;
-import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.command.utils.ArtifactSourceUtils;
 import com.atomist.rug.cli.output.ConsoleLogger;
@@ -163,7 +162,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
         @Override
         public void compileFailed(String path) {
-            log.info("  Compiled " + path + " " + Style.red("failed"));
+            log.info("Compiled " + path + " " + Style.red("failed"));
         }
 
         @Override
@@ -178,16 +177,15 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         @Override
         public void compileSucceeded(String path, String content) {
             ProgressReporterUtils.detail(null);
-            if (CommandLineOptions.hasOption("X") && content != null) {
-                log.info("  Compiled " + Style.yellow(path) + " " + Style.green("succeeded"));
+            if (CommandLineOptions.hasOption("V") && content != null) {
+                log.info("Compiled " + Style.yellow(path) + " " + Style.green("succeeded"));
                 if (!path.endsWith(".js.map")) {
-                    log.info("  " + content.replace("\n", "\n  "));
+                    log.info(content);
                 }
             }
-            else if (CommandLineOptions.hasOption("V")) {
-                log.info("  Compiled " + path + " " + Style.green("succeeded"));
+            else if (CommandLineOptions.hasOption("n") && content != null) {
+                log.info("Compiled " + path + " " + Style.green("succeeded"));
             }
         }
     }
-
 }

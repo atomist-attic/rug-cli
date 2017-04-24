@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.output;
 
+import java.io.PrintStream;
+
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.Timing;
@@ -39,14 +41,15 @@ public class ProgressReportingOperationRunner<T> {
 
     private ProgressReporter createProgressReporter() {
         ProgressReporter indicator = null;
+        PrintStream stream = (CommandLineOptions.hasOption("output") ? System.err : System.out);
         if (CommandLineOptions.hasOption("output") || CommandLineOptions.hasOption("q")
                 || (msg.length()) >= ConsoleUtils.width()) {
-            indicator = new PassThroughProgressReporter(msg);
+            indicator = new PassThroughProgressReporter(msg, stream);
         }
         else {
-            indicator = new SpinningProgressReporter(msg);
-            ProgressReporterUtils.setActiveProgressReporter(indicator);
+            indicator = new SpinningProgressReporter(msg, stream);
         }
+        ProgressReporterUtils.setActiveProgressReporter(indicator);
         return indicator;
     }
 

@@ -203,7 +203,7 @@ public abstract class DependencyResolverFactory {
         @Override
         public void succeeded(String group, String artifact, String version) {
             sb.append(Style.green("succeeded"));
-            if (CommandLineOptions.hasOption("V")) {
+            if (CommandLineOptions.hasOption("n")) {
                 log.info(sb.toString());
             }
             else {

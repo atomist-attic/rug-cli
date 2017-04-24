@@ -1,5 +1,6 @@
 package com.atomist.rug.cli.output;
 
+import java.io.PrintStream;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -20,9 +21,11 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
     private String message = null;
     private boolean showProgress = true;
     private boolean success = true;
+    private PrintStream stream;
 
-    public SpinningProgressReporter(String msg) {
+    public SpinningProgressReporter(String msg, PrintStream stream) {
         this.message = msg;
+        this.stream = stream;
         if (isWindows) {
             anim = animWin32;
         }
@@ -67,34 +70,34 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
         int x = 0;
         while (showProgress) {
             if (additionalMessages.isEmpty()) {
-                System.out.print("\r");
-                System.out.print(Ansi.eraseLine());
-                System.out.print(formatDetail(
+                stream.print("\r");
+                stream.print(Ansi.eraseLine());
+                stream.print(formatDetail(
                         message + " " + Style.yellow("" + anim.charAt(x++ % anim.length())) + " "));
             }
             else {
-                System.out.print("\r");
-                System.out.print(Ansi.eraseLine());
+                stream.print("\r");
+                stream.print(Ansi.eraseLine());
                 while (!additionalMessages.isEmpty()) {
                     String newMsg = additionalMessages.poll();
                     newMsg = newMsg.replace("\t", "  ");
-                    System.out.println(newMsg);
+                    stream.println(newMsg);
                 }
-                System.out.print("\r");
-                System.out.print(Ansi.eraseLine());
-                System.out.print(formatDetail(
+                stream.print("\r");
+                stream.print(Ansi.eraseLine());
+                stream.print(formatDetail(
                         message + " " + Style.yellow("" + anim.charAt(x++ % anim.length())) + " "));
             }
             sleep(50);
         }
-        System.out.print("\r");
-        System.out.print(Ansi.eraseLine());
+        stream.print("\r");
+        stream.print(Ansi.eraseLine());
         if (success) {
-            System.out.println(message + " " + Style.green("completed")
+            stream.println(message + " " + Style.green("completed")
                     + (duration > -1 ? " in " + String.format("%.2f", duration) + "s" : ""));
         }
         else {
-            System.out.println(message + " " + Style.red("failed")
+            stream.println(message + " " + Style.red("failed")
                     + (duration > -1 ? " in " + String.format("%.2f", duration) + "s" : ""));
         }
     }
