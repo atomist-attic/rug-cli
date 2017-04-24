@@ -64,7 +64,7 @@ public abstract class GitUtils {
         }
     }
 
-    public static void isClean(File root) {
+    public static void isClean(File root, String command) {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         try (Repository repository = builder.setGitDir(new File(root, ".git")).readEnvironment()
                 .findGitDir().build()) {
@@ -72,8 +72,8 @@ public abstract class GitUtils {
                 Status status = git.status().call();
                 if (!status.isClean()) {
                     throw new CommandException(String.format(
-                            "Working tree at %s not clean.\nPlease commit or stash your changes before running an editor with -R.",
-                            root.getAbsolutePath()), "edit");
+                            "Working tree at %s not clean.\nPlease commit or stash your changes before running this command.",
+                            root.getAbsolutePath()), command);
                 }
             }
         }

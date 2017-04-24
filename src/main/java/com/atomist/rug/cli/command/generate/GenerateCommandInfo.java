@@ -32,7 +32,7 @@ public class GenerateCommandInfo extends AbstractVersionCommandInfo {
         Options options = super.options();
         options.addOption("R", "repo", false,
                 "Initialize and commit files to a new git repository");
-        options.addOption("F", "overwrite", false,
+        options.addOption("F", "force", false,
                 "Force overwrite if target directory already exists");
         options.addOption(Option.builder("C").longOpt("change-dir").argName("DIR")
                 .desc("Create project in directory DIR, default is '.'").hasArg(true)

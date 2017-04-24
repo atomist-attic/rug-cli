@@ -41,7 +41,7 @@ public class GenerateCommand extends AbstractParameterizedCommand {
     public void run(Rugs rugs, ArtifactDescriptor artifact,
             @Argument(index = 1) String fqArtifactName, @Argument(index = 2) String projectName,
             @Argument(start = 3) ParameterValues arguments, @Option("change-dir") String root,
-            @Option("repo") boolean createRepo, @Option("overwrite") boolean overwrite,
+            @Option("repo") boolean createRepo, @Option("force") boolean overwrite,
             RugResolver resolver) {
 
         String generatorName = OperationUtils.extractRugTypeName(fqArtifactName);
