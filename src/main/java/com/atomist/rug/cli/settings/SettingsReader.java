@@ -38,7 +38,6 @@ public abstract class SettingsReader {
 
         Settings settings = settingsFromFile(settingsFile);
         readProjectSettings(settings);
-
         return settings;
     }
 
