@@ -11,7 +11,7 @@
     <dependency>
       <groupId>com.atomist</groupId>
       <artifactId>rug</artifactId>
-      <version>[0.25.2,1.0.0)</version>
+      <version>[0.26.1,1.0.0)</version>
     </dependency>
   </dependencies>
 </project>
