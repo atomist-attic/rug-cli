@@ -28,6 +28,7 @@ public abstract class AbstractCommandInfo implements CommandInfo {
         options.addOption(Option.builder("s").longOpt("settings").argName("FILE").hasArg(true)
                 .required(false).desc("Use settings file FILE").build());
         options.addOption("q", "quiet", false, "Do not display progress messages");
+        options.addOption("n", "noisy", false, "Display more progress messages");
         options.addOption("o", "offline", false, "Use only downloaded archives");
         options.addOption("t", "timer", false, "Print timing information");
         options.addOption("r", "resolver-report", false, "Print dependency tree");

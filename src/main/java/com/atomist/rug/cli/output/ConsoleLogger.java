@@ -46,6 +46,6 @@ public class ConsoleLogger {
     }
     
     public static AbstractFunction1<ScriptEngine, BoxedUnit> consoleLogger() {
-        return consoleLogger(Constants.LEFT_PADDING);
+        return consoleLogger("");
     }
  }

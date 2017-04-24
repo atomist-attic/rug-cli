@@ -42,21 +42,21 @@ public class ProgressReportingTransferListener extends AbstractTransferListener 
 
     @Override
     public void transferCorrupted(TransferEvent event) throws TransferCancelledException {
-        if (CommandLineOptions.hasOption("V")) {
+        if (CommandLineOptions.hasOption("n")) {
             report(event);
         }
     }
 
     @Override
     public void transferFailed(TransferEvent event) {
-        if (CommandLineOptions.hasOption("V")) {
+        if (CommandLineOptions.hasOption("n")) {
             report(event);
         }
     }
 
     @Override
     public void transferSucceeded(TransferEvent event) {
-        if (CommandLineOptions.hasOption("V") || CommandLineOptions.hasOption("q")) {
+        if (CommandLineOptions.hasOption("n") || CommandLineOptions.hasOption("q")) {
             report(event);
         }
         else {
