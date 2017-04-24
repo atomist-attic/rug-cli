@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -66,7 +67,11 @@ public abstract class GitUtils {
 
     public static void isClean(File root, String command) {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        try (Repository repository = builder.findGitDir(root).readEnvironment().build()) {
+        builder.findGitDir(root).readEnvironment();
+        if (builder.getGitDir() == null) {
+            builder.setGitDir(root);
+        }
+        try (Repository repository = builder.build()) {
             try (Git git = new Git(repository)) {
                 Status status = git.status().call();
                 if (!status.isClean()) {
@@ -75,6 +80,9 @@ public abstract class GitUtils {
                             root.getAbsolutePath()), command);
                 }
             }
+        }
+        catch (NoWorkTreeException e) {
+            // do nothing
         }
         catch (IllegalStateException | IOException | GitAPIException e) {
             throw new RunnerException(e);
