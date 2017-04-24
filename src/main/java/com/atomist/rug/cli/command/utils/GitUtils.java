@@ -66,8 +66,7 @@ public abstract class GitUtils {
 
     public static void isClean(File root, String command) {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        try (Repository repository = builder.setGitDir(new File(root, ".git")).readEnvironment()
-                .findGitDir().build()) {
+        try (Repository repository = builder.findGitDir(root).readEnvironment().build()) {
             try (Git git = new Git(repository)) {
                 Status status = git.status().call();
                 if (!status.isClean()) {
