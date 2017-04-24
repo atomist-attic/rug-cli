@@ -484,12 +484,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         }
         if (info instanceof EventHandler) {
             describeEventHandler((EventHandler) info);
+            describeSecrets((SecretAwareRug) info);
         }
         if (info instanceof RugFunction) {
             describeSecrets((SecretAwareRug) info);
         }
         describeTags(info);
-        if (info instanceof ParameterizedRug) {
+        if (info instanceof ParameterizedRug && !(info instanceof EventHandler)) {
             describeParameters((ParameterizedRug) info);
         }
         if (command != null) {
