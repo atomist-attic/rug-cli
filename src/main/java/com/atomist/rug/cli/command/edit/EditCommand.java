@@ -47,7 +47,7 @@ public class EditCommand extends AbstractParameterizedCommand {
                     projectName), "edit");
         }
         if (repo) {
-            GitUtils.isClean(root);
+            GitUtils.isClean(root, "edit");
         }
     }
 

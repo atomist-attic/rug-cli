@@ -1,8 +1,9 @@
 package com.atomist.rug.cli.command.publish;
 
+import java.io.File;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
@@ -17,6 +18,9 @@ import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractRepositoryCommand;
 import com.atomist.rug.cli.command.CommandException;
+import com.atomist.rug.cli.command.CommandUtils;
+import com.atomist.rug.cli.command.annotation.Validator;
+import com.atomist.rug.cli.command.utils.GitUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
 import com.atomist.rug.cli.output.Style;
@@ -30,6 +34,11 @@ import com.atomist.rug.resolver.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
 public class PublishCommand extends AbstractRepositoryCommand {
+    
+    @Validator
+    public void validate(CommandLine commandLine) {
+        verifyWorkingTree(commandLine);
+    }
 
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
             ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,
@@ -37,7 +46,7 @@ public class PublishCommand extends AbstractRepositoryCommand {
 
         org.eclipse.aether.repository.RemoteRepository deployRepository = getDeployRepository(
                 commandLine.getOptionValue("i"));
-
+        
         String artifactUrl = new ProgressReportingOperationRunner<String>(
                 "Publishing archive into remote repository").run(indicator -> {
                     String[] url = new String[1];
@@ -77,6 +86,14 @@ public class PublishCommand extends AbstractRepositoryCommand {
         log.newline();
         log.info(Style.green("Successfully published archive for %s:%s (%s)", manifest.group(),
                 manifest.artifact(), manifest.version()));
+    }
+
+    private void verifyWorkingTree(CommandLine commandLine) {
+        boolean force = commandLine.hasOption("force");
+        File projectRoot = CommandUtils.getRequiredWorkingDirectory();
+        if (!force) {
+            GitUtils.isClean(projectRoot, "publish");
+        }
     }
 
     private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {

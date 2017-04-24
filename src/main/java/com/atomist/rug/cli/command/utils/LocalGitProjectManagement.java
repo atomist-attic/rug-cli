@@ -137,7 +137,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
         File root = FileUtils.createProjectRoot(projectName);
 
         if (commit) {
-            GitUtils.isClean(root);
+            GitUtils.isClean(root, "edit");
         }
 
         ArtifactSource source = ArtifactSourceUtils.createArtifactSource(root);
