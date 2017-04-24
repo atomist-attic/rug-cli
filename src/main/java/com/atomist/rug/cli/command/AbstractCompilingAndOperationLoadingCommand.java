@@ -83,20 +83,17 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         // Only compile local archives
         if (artifact instanceof LocalArtifactDescriptor) {
 
-            // Get all registered and supported compilers
-            Collection<Compiler> compilers = loadCompilers(artifact, source);
-
-            if (!compilers.isEmpty()) {
-
-                return new ProgressReportingOperationRunner<ArtifactSource>(
-                        "Invoking compilers on project sources").run(indicator -> {
-                            ArtifactSource compiledSource = source;
-                            for (Compiler compiler : compilers) {
-                                return compiler.compile(compiledSource);
-                            }
-                            return compiledSource;
-                        });
-            }
+            return new ProgressReportingOperationRunner<ArtifactSource>(
+                    "Invoking compilers on project sources").run(indicator -> {
+                        // Get all registered and supported compilers
+                        Collection<Compiler> compilers = loadCompilers(artifact, source);
+                        
+                        ArtifactSource compiledSource = source;
+                        for (Compiler compiler : compilers) {
+                            compiledSource = compiler.compile(compiledSource);
+                        }
+                        return compiledSource;
+                    });
         }
         return source;
     }

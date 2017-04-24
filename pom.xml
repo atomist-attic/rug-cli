@@ -140,6 +140,10 @@
 			<version>4.6</version>
 		</dependency>
 		<dependency>
+  			<groupId>com.fasterxml.jackson.dataformat</groupId>
+  			<artifactId>jackson-dataformat-yaml</artifactId>
+  		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
