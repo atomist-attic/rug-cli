@@ -159,7 +159,7 @@ public class SearchOperations {
         }
 
         public String scope() {
-            return !"global".equals(scope) ? scope.toLowerCase() : "public";
+            return scope.toLowerCase();
         }
     }
 

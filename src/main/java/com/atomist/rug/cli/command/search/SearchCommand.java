@@ -26,6 +26,7 @@ import com.atomist.rug.cli.command.search.SearchOperations.Operation;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.tree.Node;
 import com.atomist.rug.cli.tree.Node.Type;
@@ -85,7 +86,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         }
         else {
             operations.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
-                    .forEach(a -> printArchive(a.getValue(), showOps));
+                    .forEach(a -> printArchive(a.getValue(), showOps, settings.getRemoteRepositories()));
             if (Constants.isShell()) {
                 log.info("\nFor more information on specific archive version, run:\n"
                         + "  shell ARCHIVE -a VERSION\nfollowed by:\n  describe archive");
@@ -97,12 +98,19 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
         }
     }
 
-    private void printArchive(List<Operation> operations, boolean showOps) {
+    private void printArchive(List<Operation> operations, boolean showOps,
+            Map<String, RemoteRepository> repos) {
         Operation op = operations.get(0);
         Archive archive = op.archive();
-        log.info("  %s %s(%s)", Style.yellow("%s:%s", archive.group(), archive.artifact()),
-                (archive.scope() != null ? Style.gray("[" + archive.scope() + "]") + " " : ""),
-                archive.version().value());
+        String scope = archive.scope();
+        
+        if (repos.containsKey(scope) && repos.get(scope).getName() != null) {
+            scope = repos.get(scope).getName() + Constants.DOT + archive.scope();
+        }
+        
+        log.info("  %s (%s)%s", Style.yellow("%s:%s", archive.group(), archive.artifact()),
+                archive.version().value(),
+                (scope != null ? Style.gray(" [" + scope + "]") : ""));
         if (showOps) {
             printOperations(operations);
         }
