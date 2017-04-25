@@ -24,7 +24,7 @@ public class ExtensionCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String detail() {
-        return "SUBCOMMAND is either install, uninstall or list.  EXTENSION should be a valid extension"
+        return "SUBCOMMAND is either 'install', 'uninstall' or 'list'.  EXTENSION should be a valid extension"
                 + " identifier of form GROUP:ARTIFACT.  If no version EV is provided with -a, the "
                 + "latest version of the extension is installed.";
     }

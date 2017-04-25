@@ -23,11 +23,11 @@ public class ConfigureCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String detail() {
-        return "SUBCOMMAND can either be default archive or repositories.  The repositories command "
+        return "SUBCOMMAND can either be 'default archive' or 'repositories'.  The 'repositories' command "
                 + "uses your GitHub authentication to configure all of your "
                 + "private Rug archive repositories and enables them for publication with the publish "
-                + "command.  Please execute the login command before configuring repositories."
-                + "The default archive command sets a global or project specific Rug archive so "
+                + "command.  Please execute the login command before configuring repositories.  "
+                + "The 'default archive' command sets a global or project specific Rug archive so "
                 + "that Rugs can be invoked without a fully qualified coordinate.  ARCHIVE should be"
                 + " a valid archive coordinate of form GROUP:ARTIFACT or just GROUP.  At any time "
                 + "those defaults can be overriden by specifying GROUP:ARTIFACT and -a from the "
