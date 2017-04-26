@@ -15,7 +15,7 @@ public class Constants {
     public static final String ARTIFACT = "rug-cli";
 
     public static final String RUG_ARTIFACT = "rug";
-    public static final String RUG_VERSION_RANGE = "[0.26.1,1.0.0)";
+    public static final String RUG_VERSION_RANGE = "[0.27.0,1.0.0)";
 
     public static final String ATOMIST_ROOT = ".atomist";
     public static final String CLI_CONFIG_NAME = "cli.yml";
