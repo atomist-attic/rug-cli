@@ -166,18 +166,25 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
     private void invokePotentialGestureCommand(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, String line) {
-        String[] args = CommandUtils.splitCommandline(line);
-        CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
-        if (gestureRegistry != null && !commandLine.getArgList().isEmpty()
-                && gestureRegistry.findGesture(commandLine.getArgs()).isPresent()) {
+        // Make sure it is not a / command
+        if (!line.startsWith(Constants.SHELL_ESCAPE)) {
+            String[] args = CommandUtils.splitCommandline(line);
+            CommandLine commandLine = CommandUtils.parseInitialCommandline(args, commandRegistry);
+            // Now test if it is a gesture
+            if (gestureRegistry != null && !commandLine.getArgList().isEmpty()
+                    && gestureRegistry.findGesture(commandLine.getArgs()).isPresent()) {
 
-            Gesture gesture = gestureRegistry.findGesture(commandLine.getArgs()).get();
+                Gesture gesture = gestureRegistry.findGesture(commandLine.getArgs()).get();
 
-            if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
-                printGestureHelp(gesture);
+                if (commandLine.hasOption("?") || commandLine.hasOption("h")) {
+                    printGestureHelp(gesture);
+                }
+                else {
+                    invokeChainedCommands(artifact, dependencies, gesture.toCommand(commandLine));
+                }
             }
             else {
-                invokeChainedCommands(artifact, dependencies, gesture.toCommand(commandLine));
+                invokeChainedCommands(artifact, dependencies, line);
             }
         }
         else {
@@ -191,7 +198,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         String[] cmds = line.trim().split("&&");
         for (int i = 0; i < cmds.length; i++) {
             String cmd = replaceWellKnownPlaceHolders(cmds[i].trim(), artifact);
-            
+
             if (cmd.startsWith("shell") || cmd.startsWith("load") || cmd.startsWith("repl")) {
                 // For shell reload it is important that we collect all remaining commands
                 if (i + 1 < cmds.length) {
@@ -222,7 +229,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             }
         }
     }
-    
+
     private String replaceWellKnownPlaceHolders(String cmd, ArtifactDescriptor artifact) {
         cmd = cmd.replaceAll("#\\{group\\}", artifact.group());
         cmd = cmd.replaceAll("#\\{artifact\\}", artifact.artifact());
