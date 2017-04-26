@@ -6,7 +6,7 @@ generate_rug_project:
     as OWNER.  DESCRIPTION should be a short introduction to what your new rug project is about." 
   commands:
     - "/echo ${cyan}${divider}${/cyan} ${bold}Loading generator${/bold}"
-    - "shell atomist:rug-editors:latest"
+    - "shell atomist:rug-rugs:latest"
     - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Generating new rug project${/bold}"
     - "generate NewRugProject ${project_name:my-rug-archive} owner=${owner:my-rugs} description=${description:\"My first Rug archive\"} -R"
     - "/cd ${project_name:my-rug-archive}"

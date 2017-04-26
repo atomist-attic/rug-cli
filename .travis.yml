@@ -36,6 +36,8 @@ notifications:
     on_success: always
     on_failure: always
     on_start: always
+    on_cancel: always
+    on_error: always
     urls:
     - https://webhook.atomist.com/travis
 cache:
@@ -51,7 +53,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$
+    condition: $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+(-(m|rc)\.[0-9]+)?$
 after_deploy:
 - bash src/main/scripts/update-brew.bash $HOMEBREW_TAP $GITHUB_TOKEN
 - bash src/main/scripts/update-brew.bash atomisthq/s3-images $GITHUB_TOKEN images/Formula

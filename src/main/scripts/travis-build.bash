@@ -19,7 +19,7 @@ function main() {
 
     local mvn="mvn --settings .settings.xml -B -V -U"
     local project_version
-    if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+(-(m|rc)\.[0-9]+)?$ ]]; then
         if ! $mvn build-helper:parse-version versions:set -DnewVersion="$TRAVIS_TAG" versions:commit; then
             err "failed to set project version"
             return 1
@@ -53,7 +53,7 @@ function main() {
    		return 1
 	fi
 
-    if [[ $TRAVIS_BRANCH == master || $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    if [[ $TRAVIS_BRANCH == master || $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+(-(m|rc)\.[0-9]+)?$ ]]; then
         msg "version is $project_version"
         local mvn_deploy_args
         if [[ $TRAVIS_BRANCH == master ]]; then
@@ -83,7 +83,7 @@ function main() {
         fi
 
         # Build the Docker image only on releases
-        if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+(-(m|rc)\.[0-9]+)$ ]]; then
             if ! $mvn docker:build -DpushImageTag; then
                 err "maven docker build or push failed"
                 return 1
