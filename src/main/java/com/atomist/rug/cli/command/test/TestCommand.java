@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.script.SimpleBindings;
 
@@ -22,6 +23,7 @@ import com.atomist.rug.cli.output.ConsoleLogger;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.tree.Node;
 import com.atomist.rug.cli.tree.Node.Type;
@@ -37,6 +39,7 @@ import com.atomist.rug.test.gherkin.FeatureDefinition;
 import com.atomist.rug.test.gherkin.FeatureResult;
 import com.atomist.rug.test.gherkin.GherkinExecutionListener;
 import com.atomist.rug.test.gherkin.GherkinRunner;
+import com.atomist.rug.test.gherkin.GherkinRunnerConfig;
 import com.atomist.rug.test.gherkin.PathExpressionEvaluation;
 import com.atomist.rug.test.gherkin.ScenarioResult;
 import com.atomist.rug.test.gherkin.TestReport;
@@ -54,7 +57,9 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(Rugs operations, ArtifactDescriptor artifact, ArtifactSource source,
-            @Argument(index = 1) String test) {
+            Settings settings, @Argument(index = 1) String test) {
+        
+        Optional<String> token = settings.getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class);
 
         ArchiveTestResult result = new ProgressReportingOperationRunner<ArchiveTestResult>(
                 String.format("Running tests in %s", ArtifactDescriptorUtils.coordinates(artifact)))
@@ -63,10 +68,10 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                                     .singletonList(new LoggingGherkinExecutionListener(indicator));
                             GherkinRunner runner = new GherkinRunner(
                                     new JavaScriptContext(source, DefaultAtomistConfig$.MODULE$,
-                                            new SimpleBindings(),
-                                            ConsoleLogger.consoleLogger()),
+                                            new SimpleBindings(), ConsoleLogger.consoleLogger()),
                                     Option.apply(operations),
-                                    JavaConverters.asScalaBufferConverter(listeners).asScala());
+                                    JavaConverters.asScalaBufferConverter(listeners).asScala(),
+                                    new GherkinRunnerConfig(Option.apply(token.orElse(null))));
 
                             return runner
                                     .execute(new AbstractFunction1<FeatureDefinition, Object>() {
