@@ -14,11 +14,14 @@ addons:
     - jq
     - rpm
     - zip
+    - openssl
+    - gnupg
 branches:
   except:
   - /\+travis\d+$/
 install: true
-script: docker login -u $ATOMIST_REPO_USER -p $ATOMIST_REPO_TOKEN $ATOMIST_DOCKER_REGISTRY && bash src/main/scripts/travis-build.bash
+script: docker login -u $ATOMIST_REPO_USER -p $ATOMIST_REPO_TOKEN $ATOMIST_DOCKER_REGISTRY
+  && bash src/main/scripts/travis-build.bash
 env:
   global:
   - ATOMIST_DOCKER_REGISTRY=atomist-docker.jfrog.io
@@ -26,6 +29,7 @@ env:
   - secure: Q7r5ixdPcGkPHU5UrtuGRv5+Rv2chiJbO8ZhCLxz2RC5JR15Qxs5yKe3sYq0KZ6C2K7D6bTVAuC2CROb3Q+mzoO2Deqbvw8qBMYDsAw3rfp+Dt8K8Y379vXcDx3TzhGx7s4c1vca3NE15FkGMRBM06KKSQL4m+r6YQC3M/vu6yqm8B6CRH4csPB1s+dZAviX1QHgyMtlGlmRbt5+d0+NXjJLle1rBV9PBvaxmuaJzApfaC/hLwkqqNQYpbokhpbwqjOQxjk8B885zk1k+hfYNwdUg/hXwzD7hfJroS1KoQNEZoG4n6rjkmljn+iOQy7pnYTRL3vfN3tQJZOj7FQB9KvwgLLD9A57DzEmi0YUrFoQomM8jHUdw7y+1YjnwHInMC5TpI7ne7GeM3gQtH5qDJTfHbOmgPRs/+dS3ZMjET6WXiRVkwr7785tjDxSCM3mBtEMPqHq22BZPKp+KiUbvx2V9lgmsiwJv11fPlTzog1+/0QsjMN3yd/4qo5mN3cjDvMX/XPO5MNjPOjhA2biyhkAa2f4rO559vKu3HtPV0AHSP8QAFo2zv+4ZorpokThf+dmP3q8HNIjlkTNL1sB98qqNrVlRcJhsAsrX1paGHaNzYXQKQwtWBzrS8v2udkOIJNXtfVqVnaQ/Blcn2QL13IWFGtRmwhkC8RM8xAYR9g=
   - HOMEBREW_TAP=atomist/homebrew-tap
   - secure: M1hhlZDQP0POjiBZrynY6MSAABdmR5/LDJnXMRB3eDZyDo886EhbbmesnCZCq6Z7iUxItz5OhWE0flgulEN1HRW7URq2vFY0zn2dBmjUKPDxxsBIFaYQNHCH1WylQuMmydU0/ssiClEteEdjTCXc2iEvHvEK6hYJm7G6SuJuBSQ2DPO+T5lc84mvoyZyoOQx2YmQe+dfCtmHEzj1YI+Ksp+Ag6HvKkcWkbE+fasPSKSX1leWefa46xjotzQ9ruhr/K8kiTH/mSzkdv1CeDE02m4DGJxMr99tdiuXsSra6JmflPfukERNrsm7OiNi1GzDfaoVEg7hfDCkwk++IFTnOXIFGx3q3DMNBF56efFcpQrbA+gjAa/TM5FUADVIUWW+325qkW7vVfDL591jZx546BbCbsAlMy5X2a4Sduql+5h6XmfXHJpqvVdxk94TnqD/c5+4nPrp3HyT73Qoj/SbPbN6Tms83JBmLTh40Uflb/xIDJCEsFn7KgoL9hBsPmpDAGCWDBPxu5eUWFXmpVHEjVFkomilmaZFBrR0vEkLRZWvUnXb+Wt61ygR61Bx0bRl4opnkFhQSLILX9IGFwM9gUKVIUVOOxBeI89vWdCUDeBM3lqpt2AEQuzBp53oJlx6pSCAGT1XN4YDbHc1LPgRX2Mb5sz26V0dLaJ6M1I6xCk=
+  - secure: e+KxZ/imTaKpBysnPPNZHVrUApz25me1aBfk2XgLUbwfi6rS/s31Z7KHpUE7UyyH52xzVPPRtUPwe/1EnvVW3OeFZNPWgNAsRQjIBJZuC3swasW/UZ6X4xbfsyIApKK327CSlsJna3WFLOtumRi9q61LphkBUeOuNIqypEfv4QV3ZQ5hj79jKFCrVVmAO1aXZlDOur8jrmAOV2KorqwIsmyurt7MHjwQCz9uHpvPxW8jAlrxmeVKS3Fd1viOJtpT7CG/YhSvqTM5822J+SwBYpLoFb64r4hb+f/4biZYt75CckD2NaSdGRSe9Fgovu3UEHYnKdDhsTWfSTdlt0DKqocXDBQX/tGBmsDmzy7zZip7FUJW27iYvh+93agjOPKvUu9Pn8192wLKt4o8ZJ+ZwS4PXzabfOwwaNAZMpQNCqzgW9NIIypakuj8fkAeyyoRf5ubZTKAUxZ/FvJA9o1LXNQUxnGy0Kw6Iq3hQqGVV/eoCAyCFT7f87v+p0+qG0ZgZSHVGg8PGJXICG+FZ8wwuIftKMe4m+7Au3iSI9fSCygqcBImuQkKHp2JcvDplWnY0vhniK52XsG2o9/MLDQFIneqM74la1GAbAGGeclZED1UXOcp80KVSkGqDAtPYXcOdcO5sDxGv2mTm+pw93PVFzz8P0fR9PpVMRrB3GBjBbs=
 notifications:
   email: false
   webhooks:
@@ -54,3 +58,6 @@ after_deploy:
 - bash src/main/scripts/deb-package.bash
 - bash src/main/scripts/rpm-package.bash
 - bash src/main/scripts/chocolatey-package.bash
+before_install:
+- openssl aes-256-cbc -K $encrypted_e08ba7a2b3e3_key -iv $encrypted_e08ba7a2b3e3_iv
+  -in atomist_sec.gpg.enc -out atomist_sec.gpg -d
