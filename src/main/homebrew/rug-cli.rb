@@ -4,6 +4,7 @@ class RugCli < Formula
   url "https://atomist.jfrog.io/atomist/libs-release/com/atomist/rug-cli/${project.version}/rug-cli-${project.version}-bin.tar.gz"
   sha256 "${checksum}"
   head "https://github.com/atomist/rug-cli.git"
+  version "${project.version}"
 
   bottle :unneeded
 
