@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/0.33.4...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/1.0.0-m.1...HEAD
+
+## [1.0.0-m.1] - 2017-04-26
+
+Initial milestone 1 release
+
+[1.0.0-m.1]: https://github.com/atomist/rug-cli/compare/0.34.0...1.0.0-m.1
+
+### Changed
+
+-	Upgrade all Atomist dependencies to 1.0.0-m.1
+
+## [0.34.0] - 2017-04-24
+
+[0.34.0]: https://github.com/atomist/rug-cli/compare/0.33.4...0.34.0
 
 ### Changed
 
