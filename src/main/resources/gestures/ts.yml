@@ -1,0 +1,6 @@
+tslint:
+  usage: "tslint"
+  description: "Run tslint on all TypeScript files in .atomist"
+  commands:
+    - "/echo ${cyan}${divider}${/cyan} ${bold}Running tslint${/bold}"
+    - "/tslint '**/*.ts?(x)' -e 'node_modules/**' -t stylish"
