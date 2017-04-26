@@ -112,8 +112,7 @@ public class CommandHelpFormatter {
         sb.append("\n");
         sb.append(Style.bold("Available commands:"));
         int length = registry.commands().stream()
-                .max(Comparator.comparingInt(o -> o.name().length())).get().name().length()
-                + 1;
+                .max(Comparator.comparingInt(o -> o.name().length())).get().name().length() + 1;
         String formatString = "  %-" + length + "s %s\n";
 
         Map<String, List<CommandInfo>> commands = registry.commands().stream()
@@ -133,10 +132,11 @@ public class CommandHelpFormatter {
                 .max(Comparator.comparingInt(o -> o.name().length())).get().name().length() + 1;
         String formatString = "  %-" + length + "s %s\n";
 
-        registry.gestures().forEach(g -> {
-            sb.append(String.format(formatString, g.name(), WordUtils.wrap(g.description(),
-                    WRAP - length, createString(length + 3), false)));
-        });
+        registry.gestures().stream().sorted((g1, g2) -> g1.name().compareTo(g2.name()))
+                .forEach(g -> {
+                    sb.append(String.format(formatString, g.name(), WordUtils.wrap(g.description(),
+                            WRAP - length, createString(length + 3), false)));
+                });
     }
 
     private void printOptions(Options options, StringBuilder sb, String label) {
