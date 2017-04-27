@@ -65,7 +65,7 @@ public class Runner {
 
     private void printNewVersion() {
         if (versionThread.getVersion().isPresent()) {
-            log.info(Style.yellow("Newer version of rug %s is available",
+            log.info(Style.yellow("Newer version of Rug CLI %s is available",
                     versionThread.getVersion().get()));
         }
     }
