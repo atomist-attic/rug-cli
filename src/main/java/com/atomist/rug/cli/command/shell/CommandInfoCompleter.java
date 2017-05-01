@@ -38,8 +38,9 @@ public class CommandInfoCompleter implements Completer {
             candidates.add(new Candidate("exit", "exit", null, null, null, "q", true));
             candidates.add(new Candidate("quit", "quit", null, null, null, "q", true));
             candidates.add(new Candidate("q", "q", null, null, null, "q", true));
-            candidates.add(new Candidate("clear", "clear", null, null, null, "cls", true));
-            candidates.add(new Candidate("cls", "cls", null, null, null, "cls", true));
+            candidates.add(new Candidate("/clear", "/clear", null, null, null, "cls", true));
+            candidates.add(new Candidate("/cls", "/cls", null, null, null, "cls", true));
+            candidates.add(new Candidate("/echo", "/echo", null, null, null, "echo", true));
         }
         else if (words.size() > 1) {
             String word = words.get(0);
