@@ -32,18 +32,21 @@ public class LoginOperations {
                 String.format(BODY, Constants.hostName(), UUID.randomUUID().toString()));
 
         HttpResponse response = HttpClientFactory.execute(client, post);
-
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+        int sc = response.getStatusLine().getStatusCode();
+        
+        if (sc == HttpStatus.SC_CREATED) {
             String token = HttpClientFactory.jsonValue(response, "$.token").orElse(null);
             settings.setConfigValue(Settings.GIHUB_TOKEN_KEY, token);
             SettingsWriter.write(settings, new File(SettingsReader.PATH));
             return Status.OK;
         }
-        else if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+        else if (sc == HttpStatus.SC_UNAUTHORIZED || sc == HttpStatus.SC_FORBIDDEN) {
             String message = HttpClientFactory.jsonValue(response, "$.message").orElse(null);
 
             // "Bad credentials"
-            if ("Bad credentials".equals(message) || "Requires authentication".equals(message)) {
+            if ("Bad credentials".equals(message) || "Requires authentication".equals(message)
+                    || "This API can only be accessed with username and password Basic Auth"
+                            .equals(message)) {
                 return Status.BAD_CREDENTIALS;
             }
             // "Must specify two-factor authentication OTP code."
