@@ -63,7 +63,7 @@ public abstract class DependencyResolverFactory {
             return t;
         });
         MavenProperties properties = MavenPropertiesFactory.create(
-                CommandLineOptions.hasOption("offline"), !CommandLineOptions.hasOption("u"));
+                CommandLineOptions.hasOption("offline"), !CommandLineOptions.hasOption("update"));
         MavenBasedDependencyResolver resolver = new MavenBasedDependencyResolver(
                 MavenPropertiesFactory.repositorySystem(), properties, executorService) {
 
@@ -122,7 +122,7 @@ public abstract class DependencyResolverFactory {
         resolver.setProxySelector(new ConservativeProxySelector(new JreProxySelector()));
         addExclusions(resolver, exclusions);
 
-        if (CommandLineOptions.hasOption("r")) {
+        if (CommandLineOptions.hasOption("resolver-report")) {
             resolver.addDependencyVisitor(new LogDependencyVisitor(new LogDependencyVisitor.Log() {
 
                 private String artifactId = String.format("%s:%s (", artifact.group(),
@@ -177,7 +177,7 @@ public abstract class DependencyResolverFactory {
 
                 @Override
                 protected boolean isOutdated(ArtifactDescriptor artifact, File file) {
-                    if (CommandLineOptions.hasOption("u")) {
+                    if (CommandLineOptions.hasOption("update")) {
                         return true;
                     }
                     return super.isOutdated(artifact, file);
@@ -203,7 +203,7 @@ public abstract class DependencyResolverFactory {
         @Override
         public void succeeded(String group, String artifact, String version) {
             sb.append(Style.green("succeeded"));
-            if (CommandLineOptions.hasOption("n")) {
+            if (CommandLineOptions.hasOption("noisy")) {
                 log.info(sb.toString());
             }
             else {

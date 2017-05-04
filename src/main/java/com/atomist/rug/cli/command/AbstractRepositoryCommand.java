@@ -64,7 +64,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
             Artifact pom, Artifact metadata, CommandLine commandLine);
 
     protected void printTree(ArtifactSource source) {
-        if (CommandLineOptions.hasOption("V")) {
+        if (CommandLineOptions.hasOption("verbose")) {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Contents"));
             LogVisitor visitor = new LogVisitor();
@@ -84,7 +84,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
 
         @Override
         public void metadataFileGenerated(FileArtifact file) {
-            if (CommandLineOptions.hasOption("V")) {
+            if (CommandLineOptions.hasOption("verbose")) {
                 log.info("  Created %s", file.path());
             }
             else {

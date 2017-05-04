@@ -192,7 +192,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
             String duration = String.format("%.2f", scenarioTimer.duration());
             String msg = "  Completed test scenario " + sd.getName() + " "
                     + (sr.passed() ? Style.green("passed") : Style.red("failed"));
-            if (CommandLineOptions.hasOption("t")) {
+            if (CommandLineOptions.hasOption("timer")) {
                 msg = msg + " in " + duration + "s";
             }
             reporter.report(msg);
@@ -203,7 +203,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
             String duration = String.format("%.2f", featureTimer.duration());
             String msg = "Completed test feature " + fd.feature().getName() + " "
                     + (fr.passed() ? Style.green("passed") : Style.red("failed"));
-            if (CommandLineOptions.hasOption("t")) {
+            if (CommandLineOptions.hasOption("timer")) {
                 msg = msg + " in " + duration + "s";
             }
             reporter.report(msg);
@@ -216,7 +216,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
         @Override
         public void stepFailed(Step s, Throwable t) {
-            if (CommandLineOptions.hasOption("X")) {
+            if (CommandLineOptions.hasOption("error")) {
                 StringWriter errors = new StringWriter();
                 t.printStackTrace(new PrintWriter(errors));
                 reporter.report("    Step " + s.getText() + " " + Style.red("failed") + ":\n"

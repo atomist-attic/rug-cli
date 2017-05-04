@@ -33,7 +33,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
 
     private ParameterValues collectParameters(ParameterizedRug rug, ParameterValues arguments) {
         Collection<Parameter> parameters = asJavaCollection(rug.parameters());
-        if (CommandLineOptions.hasOption("I") && !parameters.isEmpty()) {
+        if (CommandLineOptions.hasOption("interactive") && !parameters.isEmpty()) {
 
             LineReader reader = ShellUtils.lineReader(ShellUtils.INTERACTIVE_HISTORY);
 
@@ -127,7 +127,7 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         Collection<Parameter> missing = asJavaCollection(rug.findMissingParameters(arguments));
 
         if (!invalid.isEmpty() || !missing.isEmpty()) {
-            if (!CommandLineOptions.hasOption("I")) {
+            if (!CommandLineOptions.hasOption("interactive")) {
                 log.newline();
             }
 

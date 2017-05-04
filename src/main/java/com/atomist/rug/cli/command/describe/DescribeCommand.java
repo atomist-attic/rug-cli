@@ -319,7 +319,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             log.info("  %s%s \"%s:%s:%s\" -a %s%s %s", Constants.command(), command,
                     artifact.group(), artifact.artifact(),
                     StringUtils.stripName(info.name(), artifact), artifact.version(),
-                    (CommandLineOptions.hasOption("l") ? " -l" : ""), invokeSb.toString());
+                    (CommandLineOptions.hasOption("local") ? " -l" : ""), invokeSb.toString());
         }
     }
 
@@ -328,7 +328,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.info("To get more information on any of the Rugs listed above, run:");
         log.info(
                 "  %s%s editor|generator|command-handler|event-handler|response-handler|function %s",
-                Constants.command(), "describe", (CommandLineOptions.hasOption("l") ? "NAME -l"
+                Constants.command(), "describe", (CommandLineOptions.hasOption("local") ? "NAME -l"
                         : artifact.group() + ":" + artifact.artifact() + ":NAME"));
     }
 

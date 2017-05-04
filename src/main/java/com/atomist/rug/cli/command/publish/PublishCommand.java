@@ -45,7 +45,7 @@ public class PublishCommand extends AbstractRepositoryCommand {
             CommandLine commandLine) {
 
         org.eclipse.aether.repository.RemoteRepository deployRepository = getDeployRepository(
-                commandLine.getOptionValue("i"));
+                commandLine.getOptionValue("id"));
         
         String artifactUrl = new ProgressReportingOperationRunner<String>(
                 "Publishing archive into remote repository").run(indicator -> {

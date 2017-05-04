@@ -39,6 +39,9 @@ public abstract class AbstractCommandInfo implements CommandInfo {
         options.addOption(Option.builder().longOpt("disable-verification").hasArg(false)
                 .required(false).desc("Disable verification of extensions (Use with Caution)")
                 .build());
+        options.addOption(Option.builder().longOpt("disable-version-check").hasArg(false)
+                .required(false).desc("Disable version compatibility check (Use with Caution)")
+                .build());
         return options;
     }
 
