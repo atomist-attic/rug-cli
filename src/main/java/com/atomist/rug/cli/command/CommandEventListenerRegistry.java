@@ -43,7 +43,7 @@ public abstract class CommandEventListenerRegistry {
         }
 
         private void printArtifactSource(ArtifactDescriptor artifact, ArtifactSource source) {
-            if (CommandLineOptions.hasOption("V") && source != null) {
+            if (CommandLineOptions.hasOption("verbose") && source != null) {
                 log.info("Loaded archive sources for %s",
                         ArtifactDescriptorUtils.coordinates(artifact));
                 log.info("  " + FileUtils.relativize(new File(artifact.uri()).toURI()));

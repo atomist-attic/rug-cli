@@ -37,7 +37,7 @@ public class ExtensionCommand extends AbstractAnnotationBasedCommand {
     @Command
     public void run(CommandLine commandLine,
             @Argument(index = 1, defaultValue = "") String subcommand,
-            @Argument(index = 2) String ext, @Option("a") String version) {
+            @Argument(index = 2) String ext, @Option("extension-version") String version) {
 
         switch (subcommand) {
         case "install":

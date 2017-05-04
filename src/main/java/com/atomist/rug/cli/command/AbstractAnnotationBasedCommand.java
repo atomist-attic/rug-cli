@@ -29,6 +29,7 @@ import com.atomist.rug.cli.command.annotation.Argument;
 import com.atomist.rug.cli.command.annotation.Option;
 import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.StringUtils;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.ArtifactSource;
@@ -151,7 +152,7 @@ public abstract class AbstractAnnotationBasedCommand
     private Object prepareOptionMethodArgument(CommandLine commandLine, Parameter p,
             Option option) {
         if (p.getType().equals(boolean.class)) {
-            return commandLine.hasOption(option.value());
+            return CommandLineOptions.hasOption(option.value());
         }
         else if (p.getType().equals(Properties.class)) {
             return commandLine.getOptionProperties(option.value());
@@ -160,13 +161,17 @@ public abstract class AbstractAnnotationBasedCommand
             return prepareArguments(commandLine.getOptionProperties(option.value()));
         }
         else {
-            String value = commandLine.getOptionValue(option.value());
-            if (value == null) {
-                value = (option.defaultValue().equals(Argument.DEFAULT_NONE) ? null
+            Optional<String> value = CommandLineOptions.getOptionValue(option.value());
+            String v = null;
+            if (!value.isPresent()) {
+                v = (option.defaultValue().equals(Argument.DEFAULT_NONE) ? null
                         : option.defaultValue());
             }
-            value = StringUtils.expandEnvironmentVars(value);
-            return convert(p.getType(), value);
+            else {
+                v = value.get();
+            }
+            v = StringUtils.expandEnvironmentVars(v);
+            return convert(p.getType(), v);
         }
     }
 

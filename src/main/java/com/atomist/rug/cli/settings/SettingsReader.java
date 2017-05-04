@@ -28,12 +28,12 @@ public abstract class SettingsReader {
 
     public static Settings read() {
         File settingsFile = new File(PATH);
-        if (!CommandLineOptions.hasOption("s") && !settingsFile.exists()) {
+        if (!CommandLineOptions.hasOption("settings") && !settingsFile.exists()) {
             createDefaultSettingsFile(settingsFile);
         }
-        else if (CommandLineOptions.hasOption("s")) {
+        else if (CommandLineOptions.hasOption("settings")) {
             settingsFile = new File(StringUtils
-                    .expandEnvironmentVars(CommandLineOptions.getOptionValue("s").get()));
+                    .expandEnvironmentVars(CommandLineOptions.getOptionValue("settings").get()));
         }
 
         Settings settings = settingsFromFile(settingsFile);
@@ -130,7 +130,7 @@ public abstract class SettingsReader {
     }
 
     private static void readProjectSettings(Settings settings) {
-        if (!CommandLineOptions.hasOption("s")) {
+        if (!CommandLineOptions.hasOption("settings")) {
             Settings projectSettings = null;
             Optional<File> userDir = FileUtils.getWorkingDirectory();
             if (userDir.isPresent() && userDir.get().exists()) {

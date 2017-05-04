@@ -29,7 +29,7 @@ public class ProgressReportingOperationRunner<T> {
             throw new RunnerException(e);
         }
         finally {
-            if (CommandLineOptions.hasOption("t")) {
+            if (CommandLineOptions.hasOption("timer")) {
                 indicator.finish(success, timing.duration());
             }
             else {
@@ -42,7 +42,7 @@ public class ProgressReportingOperationRunner<T> {
     private ProgressReporter createProgressReporter() {
         ProgressReporter indicator = null;
         PrintStream stream = (CommandLineOptions.hasOption("output") ? System.err : System.out);
-        if (CommandLineOptions.hasOption("output") || CommandLineOptions.hasOption("q")
+        if (CommandLineOptions.hasOption("output") || CommandLineOptions.hasOption("quiet")
                 || (msg.length()) >= ConsoleUtils.width()) {
             indicator = new PassThroughProgressReporter(msg, stream);
         }

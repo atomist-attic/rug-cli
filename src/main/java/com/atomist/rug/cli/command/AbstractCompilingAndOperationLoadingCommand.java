@@ -164,7 +164,7 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
         @Override
         public void compileStarted(String path) {
-            if (!CommandLineOptions.hasOption("V") && path != null) {
+            if (!CommandLineOptions.hasOption("verbose") && path != null) {
                 int ix = path.lastIndexOf('/');
                 ProgressReporterUtils
                         .detail(path.substring(ix + 1) + " (" + path.substring(0, ix) + ")");
@@ -174,13 +174,13 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         @Override
         public void compileSucceeded(String path, String content) {
             ProgressReporterUtils.detail(null);
-            if (CommandLineOptions.hasOption("V") && content != null) {
+            if (CommandLineOptions.hasOption("verbose") && content != null) {
                 log.info("Compiled " + Style.yellow(path) + " " + Style.green("succeeded"));
                 if (!path.endsWith(".js.map")) {
                     log.info(content);
                 }
             }
-            else if (CommandLineOptions.hasOption("n") && content != null) {
+            else if (CommandLineOptions.hasOption("noisy") && content != null) {
                 log.info("Compiled " + path + " " + Style.green("succeeded"));
             }
         }
