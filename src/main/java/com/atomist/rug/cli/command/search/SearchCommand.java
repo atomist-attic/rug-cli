@@ -39,7 +39,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
             .asList("https://api.atomist.com/catalog/operation/search");
     public static final String CATALOG_URL_KEY = "catalog_service_urls";
 
-    private static final List<String> TYPES = Arrays.asList("editor", "generator", "reviewer",
+    private static final List<String> TYPES = Arrays.asList("editor", "generator",
             "event_handler", "command_handler", "response_handler");
 
     private ObjectMapper mapper = new ObjectMapper();

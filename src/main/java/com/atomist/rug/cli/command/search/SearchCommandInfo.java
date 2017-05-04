@@ -18,7 +18,7 @@ public class SearchCommandInfo extends AbstractRugScopedCommandInfo {
 
     @Override
     public String detail() {
-        return "SEARCH could be any text used to search the catalog.  TAG can be any valid tag, eg. spring or elm.  TYPE can be either 'editor', 'generator', 'executor' or 'reviewer'.";
+        return "SEARCH could be any text used to search the catalog.  TAG can be any valid tag, eg. spring or elm.  TYPE can be either 'editor', 'generator', 'command_handler', 'event_handler' or 'response_handler'.";
     }
 
     @Override
