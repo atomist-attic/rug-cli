@@ -23,7 +23,7 @@ public class EditCommandInfo extends AbstractVersionCommandInfo {
     public String detail() {
         return "EDITOR is a Rug editor, e.g., \"atomist:common-editors:AddReadme\".  If the name of "
                 + "the editor has spaces in it, you need to put quotes around it.  To pass parameters to the "
-                + "editor you can specify multiple PARAMETERs in \"form NAME=VALUE\".";
+                + "editor you can specify multiple PARAMETERs in  form of \"NAME=VALUE\".";
     }
 
     @Override
