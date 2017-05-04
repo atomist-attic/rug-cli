@@ -120,7 +120,9 @@ public class ReflectiveCommandRunner {
                             });
 
             // Validate that this CLI version is compatible with declared version of Rug
-            VersionUtils.validateRugCompatibility(rootArtifact, dependencies);
+            if (!CommandLineOptions.hasOption("disable-version-check")) {
+                VersionUtils.validateRugCompatibility(rootArtifact, dependencies);
+            }
 
             ClassLoaderFactory.setupJ2V8ClassLoader(dependencies);
 
