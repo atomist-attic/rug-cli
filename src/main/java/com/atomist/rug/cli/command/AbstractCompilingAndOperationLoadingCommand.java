@@ -41,61 +41,33 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
 
     protected Log log = new Log(getClass());
 
-    @Override
-    protected final void run(ArtifactDescriptor artifact, CommandLine commandLine) {
-        if (artifact != null && artifact.extension() == Extension.ZIP
-                && registry.findCommand(getClass()).loadArtifactSource()) {
-            if (CommandContext.contains(ArtifactSource.class)
-                    && CommandContext.contains(ResolvedDependency.class)) {
-                ArtifactSource source = CommandContext.restore(ArtifactSource.class);
-                RugResolver resolver = CommandContext.restore(RugResolver.class);
-
-                ResolvedDependency rugs = new ProgressReportingOperationRunner<ResolvedDependency>(
-                        String.format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
-                                .run(indicator -> CommandContext.restore(ResolvedDependency.class));
-
-                run(rugs, artifact, source, resolver, commandLine);
-            }
-            else {
-                ArtifactSource source = ArtifactSourceUtils.createArtifactSource(artifact);
-                CommandEventListenerRegistry
-                        .raiseEvent((c) -> c.artifactSourceLoaded(artifact, source));
-
-                ArtifactSource compiledSource = compile(artifact, source);
-                CommandEventListenerRegistry
-                        .raiseEvent((c) -> c.artifactSourceCompiled(artifact, compiledSource));
-
-                RugResolver resolver = createRugResolver(artifact, compiledSource);
-
-                ResolvedDependency rugs = resolver.resolvedDependencies();
-                CommandEventListenerRegistry
-                        .raiseEvent((c) -> c.operationsLoaded(artifact, rugs, resolver));
-
-                run(rugs, artifact, compiledSource, resolver, commandLine);
-            }
-        }
-        else {
-            run(null, artifact, null, null, commandLine);
-        }
-    }
-
     private ArtifactSource compile(ArtifactDescriptor artifact, ArtifactSource source) {
         // Only compile local archives
         if (artifact instanceof LocalArtifactDescriptor) {
 
-            return new ProgressReportingOperationRunner<ArtifactSource>(
-                    "Invoking compilers on project sources").run(indicator -> {
-                        // Get all registered and supported compilers
-                        Collection<Compiler> compilers = loadCompilers(artifact, source);
-                        
-                        ArtifactSource compiledSource = source;
-                        for (Compiler compiler : compilers) {
-                            compiledSource = compiler.compile(compiledSource);
-                        }
-                        return compiledSource;
-                    });
+            return new ProgressReportingOperationRunner<ArtifactSource>(String.format(
+                    "Compiling source files of %s", ArtifactDescriptorUtils.coordinates(artifact)))
+                            .run(indicator -> {
+                                // Get all registered and supported compilers
+                                Collection<Compiler> compilers = loadCompilers(artifact, source);
+
+                                ArtifactSource compiledSource = source;
+                                for (Compiler compiler : compilers) {
+                                    compiledSource = compiler.compile(compiledSource);
+                                }
+                                return compiledSource;
+                            });
         }
         return source;
+    }
+
+    private RugResolver createRugResolver(ArtifactDescriptor artifact, ArtifactSource source) {
+        return new ProgressReportingOperationRunner<RugResolver>(
+                String.format("Loading rugs of %s", ArtifactDescriptorUtils.coordinates(artifact)))
+                        .run(indicator -> {
+                            Dependency root = processArtifact(artifact, source);
+                            return new ArchiveRugResolver(root, ConsoleLogger.consoleLogger());
+                        });
     }
 
     private Collection<Compiler> loadCompilers(ArtifactDescriptor artifact, ArtifactSource source) {
@@ -131,15 +103,6 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         }
     }
 
-    private RugResolver createRugResolver(ArtifactDescriptor artifact, ArtifactSource source) {
-        return new ProgressReportingOperationRunner<RugResolver>(
-                String.format("Loading %s", ArtifactDescriptorUtils.coordinates(artifact)))
-                        .run(indicator -> {
-                            Dependency root = processArtifact(artifact, source);
-                            return new ArchiveRugResolver(root, ConsoleLogger.consoleLogger());
-                        });
-    }
-
     private Dependency processArtifact(ArtifactDescriptor node, ArtifactSource source) {
         List<Dependency> children = node.dependencies().stream()
                 .filter(d -> d.extension() == Extension.ZIP)
@@ -148,6 +111,60 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
         return new Dependency(source,
                 Option.apply(new Coordinate(node.group(), node.artifact(), node.version())),
                 JavaConverters.asScalaBufferConverter(children).asScala());
+    }
+
+    protected ArtifactSource create(ArtifactDescriptor artifact) {
+        if (artifact instanceof LocalArtifactDescriptor) {
+            return ArtifactSourceUtils.createArtifactSource(artifact);
+        }
+        else {
+            return new ProgressReportingOperationRunner<ArtifactSource>(
+                    String.format("Reading %s structure of %s",
+                            (artifact instanceof LocalArtifactDescriptor ? "project" : "archive"),
+                            ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
+                                return ArtifactSourceUtils.createArtifactSource(artifact);
+                            });
+        }
+    }
+
+    @Override
+    protected final void run(ArtifactDescriptor artifact, CommandLine commandLine) {
+        if (artifact != null && artifact.extension() == Extension.ZIP
+                && registry.findCommand(getClass()).loadArtifactSource()) {
+            if (CommandContext.contains(ArtifactSource.class)
+                    && CommandContext.contains(ResolvedDependency.class)) {
+                ArtifactSource source = CommandContext.restore(ArtifactSource.class);
+                RugResolver resolver = CommandContext.restore(RugResolver.class);
+
+                ResolvedDependency rugs = new ProgressReportingOperationRunner<ResolvedDependency>(
+                        String.format("Loading rugs of %s",
+                                ArtifactDescriptorUtils.coordinates(artifact)))
+                                        .run(indicator -> CommandContext
+                                                .restore(ResolvedDependency.class));
+
+                run(rugs, artifact, source, resolver, commandLine);
+            }
+            else {
+                ArtifactSource source = create(artifact);
+                CommandEventListenerRegistry
+                        .raiseEvent((c) -> c.artifactSourceLoaded(artifact, source));
+
+                ArtifactSource compiledSource = compile(artifact, source);
+                CommandEventListenerRegistry
+                        .raiseEvent((c) -> c.artifactSourceCompiled(artifact, compiledSource));
+
+                RugResolver resolver = createRugResolver(artifact, compiledSource);
+
+                ResolvedDependency rugs = resolver.resolvedDependencies();
+                CommandEventListenerRegistry
+                        .raiseEvent((c) -> c.operationsLoaded(artifact, rugs, resolver));
+
+                run(rugs, artifact, compiledSource, resolver, commandLine);
+            }
+        }
+        else {
+            run(null, artifact, null, null, commandLine);
+        }
     }
 
     protected abstract void run(ResolvedDependency rugs, ArtifactDescriptor artifact,
