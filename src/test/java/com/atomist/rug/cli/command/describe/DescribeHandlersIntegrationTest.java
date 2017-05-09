@@ -21,7 +21,7 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
                 + "→ Event Handlers\n" + "  ClosedIssueReopener\n" + "    Reopens closed issues\n"
                 + "  SayThankYou\n"
                 + "    Send a thank you message to a slack channel after an issue was closed\n"
-                + "→ Response Handlers\n" + "  CreateIssue\n"
+                + "→ Response Handlers\n" + "  CreateIssueResponseHandler\n"
                 + "    Prints out the response message\n" + "  IssueClosedResponder\n"
                 + "    Logs failed issue reopen attempts\n" + "  Kitties\n"
                 + "    Prints out kitty urls", "describe", "-l", "archive");
@@ -65,7 +65,7 @@ public class DescribeHandlersIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulResponseHandlerDescribe() throws Exception {
-        assertSuccess("→ Response Handlers\n" + "  CreateIssue\n"
+        assertSuccess("→ Response Handlers\n" + "  CreateIssueResponseHandler\n"
                 + "    Prints out the response message\n" + "  IssueClosedResponder\n"
                 + "    Logs failed issue reopen attempts\n" + "  Kitties\n"
                 + "    Prints out kitty urls", "describe", "-l", "response-handler");
