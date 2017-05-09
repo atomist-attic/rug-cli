@@ -31,6 +31,7 @@ import com.atomist.rug.kind.core.ChangeLogEntry;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.project.ProvenanceInfoWriter;
 import com.atomist.rug.runtime.plans.ProjectManagement;
+import com.atomist.rug.spi.Handlers;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.ByteArrayFileArtifact;
 import com.atomist.source.Delta;
@@ -45,6 +46,7 @@ import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 
 import difflib.DiffUtils;
+import scala.Option;
 import scala.collection.JavaConverters;
 
 /**
@@ -133,7 +135,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
 
     @Override
     public ModificationAttempt edit(ProjectEditor editor, ParameterValues arguments,
-            String projectName) {
+                                    String projectName, Option<Handlers.EditorTarget> target) {
         File root = FileUtils.createProjectRoot(projectName);
 
         if (commit) {

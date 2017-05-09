@@ -90,6 +90,6 @@ public class EditCommand extends AbstractParameterizedCommand {
 
         LocalGitProjectManagement management = new LocalGitProjectManagement(artifact, rootName,
                 false, false, commit, dryRun, resolver);
-        management.edit(editor, arguments, rootName);
+        management.edit(editor, arguments, rootName, scala.Option.apply(null));
     }
 }
