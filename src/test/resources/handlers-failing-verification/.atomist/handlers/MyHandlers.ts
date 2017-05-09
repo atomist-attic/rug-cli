@@ -158,14 +158,14 @@ class CreateIssue implements HandleCommand {
     let result = new Plan()
     result.add({instruction: {name: "create-issue", kind: "execute", parameters:
        {title: this.title, repo: this.repo, owner: this.owner, body: this.body}},
-       onSuccess: { kind: "respond", name: "CreateIssue" }})
+       onSuccess: { kind: "respond", name: "CreateIssueResponseHandler" }})
     return result;
   }
 }
 
 export let issueCreator = new CreateIssue();
 
-@ResponseHandler("CreateIssue", "Prints out the response message")
+@ResponseHandler("CreateIssueResponseHandler", "Prints out the response message")
 class CreateIssueResponder implements HandleResponse<string>{
   handle(response: Response<string>) : Plan {
     let result = response as any

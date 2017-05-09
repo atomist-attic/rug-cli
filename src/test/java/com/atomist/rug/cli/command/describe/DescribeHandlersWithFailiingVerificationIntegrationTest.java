@@ -33,7 +33,7 @@ public class DescribeHandlersWithFailiingVerificationIntegrationTest extends Abs
                 "  SayThankYou\n" + 
                 "    Send a thank you message to a slack channel after an issue was closed\n" + 
                 "→ Response Handlers\n" + 
-                "  CreateIssue\n" + 
+                "  CreateIssueResponseHandler\n" + 
                 "    Prints out the response message\n" + 
                 "  IssueClosedResponder\n" + 
                 "    Logs failed issue reopen attempts\n" + 
