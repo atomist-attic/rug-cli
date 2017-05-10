@@ -15,7 +15,8 @@ class DelegatingUrlClassLoader extends URLClassLoader {
     // J2V8 also doesn't like to be loaded by different class loaders and for the shell reload
     // we end up doing that.
     private static final String[] DEFAULT_DELEGATING_PACKAGES_AND_SUBPACKAGES = new String[] {
-            "org.slf4j", "jdk.nashorn", "javax.scripting", "com.eclipsesource.v8" };
+            "org.slf4j", "jdk.nashorn", "javax.scripting", "com.eclipsesource.v8",
+            "org.apache.http" };
 
     private static final String[] DEFAULT_DELEGATING_PACKAGES = new String[] {
             "com.atomist.rug.resolver", "com.atomist.rug.cli", "com.atomist.rug.cli.settings" };
