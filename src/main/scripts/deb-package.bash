@@ -149,7 +149,7 @@ function upload_to_repository() {
     fi
 
     local debian_repo_url="https://atomist.jfrog.io/atomist/debian/pool"
-    local distributions="deb.distribution=trusty;deb.distribution=wheezy;deb.distribution=jessie;deb.distribution=yakkety;deb.distribution=xenial;deb.distribution=wily;deb.distribution=vivid"
+    local distributions="deb.distribution=trusty;deb.distribution=wheezy;deb.distribution=jessie;deb.distribution=yakkety;deb.distribution=xenial;deb.distribution=wily;deb.distribution=vivid;deb.distribution=zesty"
     local components="deb.component=main"
     local arch="deb.architecture=all"
     local checksum=$(sha1sum $package | awk '{ print $1 }')
