@@ -45,6 +45,13 @@ function update_resources() {
     fi
     shift
 
+    local valid_nuget_project_version=$1
+    if [[ ! $valid_nuget_project_version ]]; then
+        err "missing required argument: valid_nuget_project_version"
+        return 10
+    fi
+    shift
+
     local zippkg=$1
     if [[ ! $zippkg ]]; then
         err "missing required argument: zippkg"
@@ -54,12 +61,12 @@ function update_resources() {
     local dest_dir="target/windows/chocolatey"
     local checksum=$(sha256sum $zippkg | awk '{ print $1 }')
 
-    if ! sed -i "s/__VERSION__/$project_version/g" $dest_dir/rug-cli.nuspec; then
+    if ! sed -i "s/__VERSION__/$valid_nuget_project_version/g" $dest_dir/rug-cli.nuspec; then
         err "failed to set version in rug-cli.nuspec"
         return 1
     fi
 
-    if ! sed -i "s/__VERSION__/$project_version/g" $dest_dir/package/services/metadata/core-properties/3ba78ce3f3be4369bde7c8c4b4dee032.psmdcp; then
+    if ! sed -i "s/__VERSION__/$valid_nuget_project_version/g" $dest_dir/package/services/metadata/core-properties/3ba78ce3f3be4369bde7c8c4b4dee032.psmdcp; then
         err "failed to set version in psmdcp file"
         return 1
     fi
@@ -152,12 +159,20 @@ function main() {
         return 1
     fi
 
-    if ! update_resources $project_version target/rug-cli-${project_version}-bin.zip; then
+    # nuget does not support periods in pre-release sections of semantic versions
+    local valid_nuget_project_version
+    valid_nuget_project_version=$(echo $project_version | sed -E 's/([^-]+)-(m|rc)\.([0-9]+)/\1-\2\3/')
+    if [[ $? -ne 0 || ! $valid_nuget_project_version ]]; then
+        err "failed to create valid nuget version from $project_version: $valid_nuget_project_version"
+        return 1
+    fi
+
+    if ! update_resources $project_version $valid_nuget_project_version target/rug-cli-${project_version}-bin.zip; then
         err "failed updating chocolatey resources"
         return 1
     fi
 
-    if ! create_package $project_version; then
+    if ! create_package $valid_nuget_project_version; then
         err "failed to create chocolatey package"
         return 1
     fi
