@@ -23,8 +23,7 @@ public class InstallCommandInfo extends AbstractLocalArtifactDescriptorProvider
 
     @Override
     public String detail() {
-        return "Create and install an archive from the current project in the local repository.  Ensure that there "
-                + "is a manifest.yml descriptor in the .atomist directory.";
+        return "Create and install an archive from the current project in the local repository.";
     }
 
     @Override

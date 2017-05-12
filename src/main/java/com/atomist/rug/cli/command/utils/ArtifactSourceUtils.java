@@ -70,6 +70,20 @@ public abstract class ArtifactSourceUtils {
                 throw new CommandException("Error reading manifest.yml.", e);
             }
         }
+        File packageJson = new File(root, ".atomist" + File.separator + "package.json");
+        if (packageJson.exists()) {
+            try (InputStream is = new FileInputStream(packageJson)) {
+                FileArtifact packageJsonFileArtifact = new StringFileArtifact("package.json",
+                        ".atomist", IOUtils.toString(is, StandardCharsets.UTF_8));
+                source = source.plus(packageJsonFileArtifact);
+            }
+            catch (FileNotFoundException e) {
+                throw new CommandException("Error reading package.json.", e);
+            }
+            catch (IOException e) {
+                throw new CommandException("Error reading package.json.", e);
+            }
+        }
         return source;
     }
 

@@ -1,4 +1,6 @@
 {
+  "name": "@rug-cli-tests/handlers",
+  "version": "0.12.0",
   "dependencies": {
     "@atomist/rugs": "^0.16.0"
   },
@@ -6,5 +8,11 @@
     "rug-install": "rug install -urX",
     "rug-test": "rug test -urX",
     "rug-publish": "rug publish -urX"
+  },
+  "atomist": {
+    "requires": "[1.0.0-m.1,2.0.0)",
+    "extensions": {
+      "com.atomist.rug:rug-functions-github": "0.14.2"
+    }
   }
 }

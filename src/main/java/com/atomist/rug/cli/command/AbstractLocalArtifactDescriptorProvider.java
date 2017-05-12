@@ -26,7 +26,7 @@ public abstract class AbstractLocalArtifactDescriptorProvider extends AbstractCo
         Optional<ArtifactDescriptor> artifact = localArtifactDescriptor(commandLine);
 
         return artifact.orElseThrow(() -> new CommandException(
-                "No manifest.yml found in .atomist folder. Please add a manifest.yml file and run the command again.",
+                "No manifest.yml or package.json found in .atomist folder. Please add a manifest.yml or package.json file and run the command again.",
                 (String) null));
     }
 

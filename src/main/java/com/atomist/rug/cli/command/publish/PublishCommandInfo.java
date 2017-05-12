@@ -24,7 +24,6 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
     @Override
     public String detail() {
         return "Create a Rug archive from the current repo and publish it in a remote repository.  "
-                + "Ensure that there is a manifest.yml descriptor in the .atomist directory.  "
                 + "Use -i to specify what repository configuration should be used to publish.  "
                 + "ID should refer to a repository name in cli.yml";
     }

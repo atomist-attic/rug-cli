@@ -104,6 +104,11 @@ class ArtifactSourceFileWatcherThread extends Thread implements FileWatcher {
                         && f.getParentFile().getName().equals(".atomist")) {
                     Constants.setReload(true);
                 }
+                // Special case for changes to package.json
+                if (f.getName().equals("package.json") && f.getParentFile() != null
+                        && f.getParentFile().getName().equals(".atomist")) {
+                    Constants.setReload(true);
+                }
             });
 
             boolean valid = key.reset(); // IMPORTANT: The key must be reset after processed
