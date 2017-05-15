@@ -17,7 +17,7 @@ public class GestureReaderTest {
     public void testGestureReadingFromDirectory() {
         Map<String, Gesture> shortcuts = GestureReader
                 .readFromDirectory(new File("src/main/resources/gestures"));
-        assertEquals(3, shortcuts.size());
+        assertEquals(4, shortcuts.size());
         assertTrue(shortcuts.containsKey("generate rug project"));
         assertTrue(shortcuts.containsKey("clone rug project"));
         assertEquals(13, shortcuts.get("generate rug project").commands().size());
@@ -27,7 +27,7 @@ public class GestureReaderTest {
     @Test
     public void testGestureReadingFromClasspath() {
         Map<String, Gesture> shortcuts = GestureReader.readFromClasspath();
-        assertEquals(3, shortcuts.size());
+        assertEquals(4, shortcuts.size());
         assertTrue(shortcuts.containsKey("generate rug project"));
         assertTrue(shortcuts.containsKey("clone rug project"));
         assertEquals(13, shortcuts.get("generate rug project").commands().size());
