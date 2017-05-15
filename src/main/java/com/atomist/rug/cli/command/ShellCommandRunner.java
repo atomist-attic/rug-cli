@@ -287,6 +287,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
             log.info(Style.yellow("%s", FileUtils.relativize(SystemUtils.getUserDir()))
                     + Style.gray(" (%s)", rugVersion));
         }
+        // reset interrupt signal
+        interrupt = false;
         return ShellUtils.DEFAULT_PROMPT;
     }
 
