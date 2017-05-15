@@ -57,8 +57,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(Rugs operations, ArtifactDescriptor artifact, ArtifactSource source,
-            Settings settings, @Argument(index = 1) String test) {
-        
+            Settings settings, @Argument(index = 1) String testToRun) {
         Optional<String> token = settings.getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class);
 
         ArchiveTestResult result = new ProgressReportingOperationRunner<ArchiveTestResult>(
@@ -77,12 +76,14 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                                     .execute(new AbstractFunction1<FeatureDefinition, Object>() {
                                         @Override
                                         public Object apply(FeatureDefinition fd) {
-                                            if (test == null) {
+                                            if (testToRun == null) {
                                                 return true;
                                             }
                                             else {
-                                                return test.equals(fd.feature().getName())
-                                                        || test.equals(fd.definition().name());
+                                                return (testToRun + ".feature")
+                                                        .equals(fd.feature().getName())
+                                                        || testToRun.equals(fd.feature().getName())
+                                                        || testToRun.equals(fd.definition().name());
                                             }
                                         }
                                     });
