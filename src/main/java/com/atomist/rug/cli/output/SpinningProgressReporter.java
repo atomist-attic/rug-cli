@@ -103,8 +103,9 @@ public class SpinningProgressReporter extends Thread implements ProgressReporter
     }
 
     private String formatDetail(String message) {
-        int diff = ConsoleUtils.width() - message.length() - 3; 
-        if (detail != null && diff > 0) {
+        String cleanMsg = message.replaceAll("\u001B\\[[\\d;]*[^\\d;]","");
+        int diff = ConsoleUtils.width() - cleanMsg.length(); 
+        if (detail != null && diff > 3) {
             return message + Style.gray(StringUtils.abbreviate(this.detail, diff)) + " ";
         }
         else {
