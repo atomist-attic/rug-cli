@@ -226,13 +226,22 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.info(Style.yellow("  %s", manifest.requires()));
         if (manifest.dependencies().size() > 0) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Dependencies"));
-            manifest.dependencies().forEach(d -> log
-                    .info(Style.yellow("  %s:%s (%s)", d.group(), d.artifact(), d.version())));
+            manifest.dependencies().forEach(d -> log.info(Style.yellow("  %s:%s %s", d.group(),
+                    d.artifact(), formatVersion(d.version()))));
         }
         if (manifest.extensions().size() > 0) {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Extensions"));
-            manifest.extensions().forEach(d -> log
-                    .info(Style.yellow("  %s:%s (%s)", d.group(), d.artifact(), d.version())));
+            manifest.extensions().forEach(d -> log.info(Style.yellow("  %s:%s %s", d.group(),
+                    d.artifact(), formatVersion(d.version()))));
+        }
+    }
+
+    private String formatVersion(String version) {
+        if (version.startsWith("(") || version.startsWith("[")) {
+            return version;
+        }
+        else {
+            return "(" + version + ")";
         }
     }
 
