@@ -1,5 +1,7 @@
 package com.atomist.rug.cli.command.login;
 
+import java.util.Optional;
+
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
@@ -30,7 +32,7 @@ public class LoginCommand extends AbstractAnnotationBasedCommand {
     private void login(String username, String code, Settings settings) {
         printBanner();
 
-        LineReader reader = ShellUtils.lineReader(null);
+        LineReader reader = ShellUtils.lineReader(null, Optional.empty());
         try {
             if (username == null) {
                 username = reader.readLine(getPrompt("Username"));

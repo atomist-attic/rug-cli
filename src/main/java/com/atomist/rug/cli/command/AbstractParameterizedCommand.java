@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.jline.reader.EndOfFileException;
@@ -35,7 +36,8 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
         Collection<Parameter> parameters = asJavaCollection(rug.parameters());
         if (CommandLineOptions.hasOption("interactive") && !parameters.isEmpty()) {
 
-            LineReader reader = ShellUtils.lineReader(ShellUtils.INTERACTIVE_HISTORY);
+            LineReader reader = ShellUtils.lineReader(ShellUtils.INTERACTIVE_HISTORY,
+                    Optional.empty());
 
             List<ParameterValue> newValues = new ArrayList<>();
 
@@ -53,9 +55,9 @@ public abstract class AbstractParameterizedCommand extends AbstractAnnotationBas
                 String defaultValue = (pv != null ? pv.getValue().toString()
                         : parameter.getDefaultValue());
 
-                String description = org.apache.commons.lang3.StringUtils.capitalize(parameter.getDescription());
-                log.info("  " + WordUtils.wrap(description, Constants.WRAP_LENGTH,
-                        "\n  ", false));
+                String description = org.apache.commons.lang3.StringUtils
+                        .capitalize(parameter.getDescription());
+                log.info("  " + WordUtils.wrap(description, Constants.WRAP_LENGTH, "\n  ", false));
 
                 pv = readParameter(reader, parameter, defaultValue);
 

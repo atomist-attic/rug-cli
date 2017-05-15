@@ -3,6 +3,7 @@ package com.atomist.rug.cli.command.shell;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.jline.reader.Completer;
 import org.jline.reader.History;
@@ -14,6 +15,7 @@ import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.history.DefaultHistory;
 import org.jline.terminal.Terminal;
+import org.jline.terminal.Terminal.SignalHandler;
 import org.jline.terminal.TerminalBuilder;
 
 import com.atomist.rug.cli.Constants;
@@ -38,13 +40,14 @@ public abstract class ShellUtils {
     public static final String DEFAULT_PROMPT = Style.bold((Constants.RUG_ARTIFACT)) + " "
             + Style.cyan(Constants.DIVIDER) + " ";
 
-    public static LineReader lineReader(File historyPath, Completer... completers) {
+    public static LineReader lineReader(File historyPath, Optional<SignalHandler> handler,
+            Completer... completers) {
         // Protect the history file as may contain sensitive information
         FileUtils.setPermissionsToOwnerOnly(historyPath);
 
         // Create JLine LineReader
         History history = new DefaultHistory();
-        LineReader reader = LineReaderBuilder.builder().terminal(terminal()).history(history)
+        LineReader reader = LineReaderBuilder.builder().terminal(terminal(handler)).history(history)
                 .parser(new DefaultParser()).variable(LineReader.HISTORY_FILE, historyPath)
                 .completer(new AggregateCompleter(completers)).highlighter(new DefaultHighlighter())
                 .build();
@@ -54,14 +57,14 @@ public abstract class ShellUtils {
 
         return reader;
     }
-    
+
     public static String removePrefix(String s, List<String> words) {
         for (int i = 0; i < words.size() - 1; i++) {
             s = s.replace(words.get(i), "");
         }
         return s.trim();
     }
-    
+
     public static void shutdown(LineReader lineReader) {
         try {
             lineReader.getTerminal().close();
@@ -83,9 +86,18 @@ public abstract class ShellUtils {
         reader.unsetOpt(Option.INSERT_TAB);
     }
 
-    private static Terminal terminal() {
+    private static Terminal terminal(Optional<SignalHandler> handler) {
         try {
-            return TerminalBuilder.builder().build();
+            Terminal terminal = null;
+            if (handler.isPresent()) {
+                terminal = TerminalBuilder.builder().nativeSignals(true)
+                        .signalHandler(Terminal.SignalHandler.SIG_IGN).build();
+                terminal.handle(Terminal.Signal.INT, handler.get());
+            }
+            else {
+                terminal = TerminalBuilder.builder().build();
+            }
+            return terminal;
         }
         catch (IOException e) {
             throw new CommandException("Error creating terminal for Shell.", e);

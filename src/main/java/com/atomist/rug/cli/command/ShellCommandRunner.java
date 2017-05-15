@@ -12,6 +12,8 @@ import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.LineReaderImpl;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.Terminal.SignalHandler;
 import org.springframework.boot.loader.tools.RunProcess;
 
 import com.atomist.rug.cli.Constants;
@@ -40,6 +42,7 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     private GestureRegistry gestureRegistry;
     private LineReader reader;
     private String rugVersion;
+    private boolean interrupt;
 
     public ShellCommandRunner(CommandInfoRegistry registry) {
         super(registry);
@@ -69,6 +72,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         // On finishing a single command from the command line, we want to start the shell if the
         // shell command was invoked
         if (rc == 0 && "shell".equals(info.name())) {
+
+            // set up registry and line reader
+            this.gestureRegistry = new GestureRegistry();
+            this.reader = lineReader();
+
             // We might invoke this with some additional commands, primarily from reload but also
             // as part of shortcuts/aliasing
             String line = org.springframework.util.StringUtils.arrayToDelimitedString(args, " ");
@@ -82,9 +90,6 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     private void commandLoop(ArtifactDescriptor artifact, List<ArtifactDescriptor> dependencies) {
-
-        this.gestureRegistry = new GestureRegistry();
-        this.reader = lineReader();
 
         String line = null;
         try {
@@ -192,40 +197,55 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
         }
     }
 
+    private boolean isInterrupted() {
+        boolean isInterrupted = interrupt;
+        interrupt = false;
+        return isInterrupted;
+    }
+
+    private void markInterrupted() {
+        interrupt = true;
+    }
+
     private void invokeChainedCommands(ArtifactDescriptor artifact,
             List<ArtifactDescriptor> dependencies, String line) {
         // Split commands by && and call them one after the other
         String[] cmds = line.trim().split("&&");
         for (int i = 0; i < cmds.length; i++) {
-            String cmd = replaceWellKnownPlaceHolders(cmds[i].trim(), artifact);
+            if (!isInterrupted()) {
+                String cmd = replaceWellKnownPlaceHolders(cmds[i].trim(), artifact);
 
-            if (cmd.startsWith("shell") || cmd.startsWith("load") || cmd.startsWith("repl")) {
-                // For shell reload it is important that we collect all remaining commands
-                if (i + 1 < cmds.length) {
-                    for (int j = i + 1; j < cmds.length; j++) {
-                        cmd = cmd + " && " + cmds[j];
+                if (cmd.startsWith("shell") || cmd.startsWith("load") || cmd.startsWith("repl")) {
+                    // For shell reload it is important that we collect all remaining commands
+                    if (i + 1 < cmds.length) {
+                        for (int j = i + 1; j < cmds.length; j++) {
+                            cmd = cmd + " && " + cmds[j];
+                        }
+                    }
+                    reload(cmd, artifact, dependencies);
+                }
+
+                if ("exit".equals(cmd) || "quit".equals(cmd) || "q".equals(cmd)) {
+                    exit(artifact, dependencies);
+                }
+                else if ("/clear".equals(cmd) || "/cls".equals(cmd)) {
+                    clear();
+                }
+                else if (cmd.startsWith("/echo")) {
+                    echo(cmd);
+                }
+                else if (cmd.startsWith(Constants.SHELL_ESCAPE)) {
+                    sh(cmd);
+                }
+                else {
+                    String[] args = CommandUtils.splitCommandline(cmd);
+                    if (invokeCommand(args, artifact, dependencies) < 0) {
+                        break;
                     }
                 }
-                reload(cmd, artifact, dependencies);
-            }
-
-            if ("exit".equals(cmd) || "quit".equals(cmd) || "q".equals(cmd)) {
-                exit(artifact, dependencies);
-            }
-            else if ("/clear".equals(cmd) || "/cls".equals(cmd)) {
-                clear();
-            }
-            else if (cmd.startsWith("/echo")) {
-                echo(cmd);
-            }
-            else if (cmd.startsWith(Constants.SHELL_ESCAPE)) {
-                sh(cmd);
             }
             else {
-                String[] args = CommandUtils.splitCommandline(cmd);
-                if (invokeCommand(args, artifact, dependencies) < 0) {
-                    break;
-                }
+                break;
             }
         }
     }
@@ -242,9 +262,16 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
     }
 
     private LineReader lineReader() {
-        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY, new FileAndDirectoryNameCompleter(),
-                new OperationCompleter(), new CommandInfoCompleter(commandRegistry),
-                new ArchiveNameCompleter(), new GestureCompleter(gestureRegistry));
+        return ShellUtils.lineReader(ShellUtils.SHELL_HISTORY, Optional.of(signalHandler()),
+                new FileAndDirectoryNameCompleter(), new OperationCompleter(),
+                new CommandInfoCompleter(commandRegistry), new ArchiveNameCompleter(),
+                new GestureCompleter(gestureRegistry));
+    }
+
+    private SignalHandler signalHandler() {
+        return s -> {
+            markInterrupted();
+        };
     }
 
     private String prompt(ArtifactDescriptor artifact) {
@@ -307,12 +334,17 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                         }
                     }
                 }
+                else if (rc > 0) {
+                    throw new CommandException("Command excited with " + rc + " return code");
+                }
             }
             catch (IOException e) {
                 log.error(e.getMessage());
                 throw new RunnerException(e);
             }
         });
+        // After a shell command we need to restore the signal handler
+        lineReader().getTerminal().handle(Terminal.Signal.INT, signalHandler());
     }
 
     @Override
