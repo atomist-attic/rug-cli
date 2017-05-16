@@ -321,9 +321,8 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
 
             RunProcess process = new RunProcess(SystemUtils.getUserDir(), args[0]);
             try {
-                int rc = process.run(true, Arrays.copyOfRange(args, 1, args.length));
                 // Change the working directory of this shell
-                if (rc == 0 && "cd".equals(args[0])) {
+                if ("cd".equals(args[0])) {
                     if (args.length > 1) {
                         String path = args[1];
                         File p = new File(path);
@@ -336,8 +335,11 @@ public class ShellCommandRunner extends ReflectiveCommandRunner {
                         }
                     }
                 }
-                else if (rc > 0) {
-                    throw new CommandException("Command excited with " + rc + " return code");
+                else {
+                    int rc = process.run(true, Arrays.copyOfRange(args, 1, args.length));
+                     if (rc > 0) {
+                        throw new CommandException("Command excited with " + rc + " return code");
+                    }
                 }
             }
             catch (IOException e) {
