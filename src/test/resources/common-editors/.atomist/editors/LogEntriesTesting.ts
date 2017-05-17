@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { ProjectEditor } from '@atomist/rug/operations/ProjectEditor'
+import { EditProject } from '@atomist/rug/operations/ProjectEditor'
 import { Project } from '@atomist/rug/model/Core'
 import { Result, Status } from '@atomist/rug/operations/RugOperation'
+import { Editor, Tags, Parameter } from '@atomist/rug/operations/Decorators'
 
-class LogEntriesTesting implements ProjectEditor {
-    tags: string[] = ["log", "entries"]
-    name: string = "LogEntriesTesting"
-    description: string = "Test log entries"
+@Editor("LogEntriesTesting", "test log entries")
+@Tags("log", "entries")
+class LogEntriesTesting implements EditProject {
     edit(project: Project): Result {
       let p = project as any
       p.addFile("src/main/whitespace", "      \t\n    \t")

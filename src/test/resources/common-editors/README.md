@@ -1,3 +1,3 @@
-# TheName
+# $project_name
 
-SomeDescription
+$description

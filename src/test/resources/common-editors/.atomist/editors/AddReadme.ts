@@ -35,7 +35,7 @@ class AddReadme implements EditProject {
 
     edit(project: Project) {
         let eng: PathExpressionEngine = project.context.pathExpressionEngine
-        let readme = "readme.vm"
+        let readme = "README.md.mustache"
         let readmeFilename = "README.md"
         let p = project
 
