@@ -18,7 +18,7 @@ public class LoginOperations {
 
     private static final String GITHUB_ENDPOINT = "https://api.github.com/authorizations";
 
-    private static final String BODY = "{\n" + "  \"scopes\": [\n" + "    \"read:org\"\n" + "  ],\n"
+    private static final String BODY = "{\n" + "  \"scopes\": [ \"read:org\", \"repo\" ],\n"
             + "  \"note\": \"Rug CLI on %s\",\n"
             + "  \"note_url\": \"https://github.com/atomist/rug-cli\",\n"
             + "  \"fingerprint\": \"%s\"\n" + "}";

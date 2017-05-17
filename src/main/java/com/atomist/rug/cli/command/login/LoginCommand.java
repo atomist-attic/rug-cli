@@ -18,7 +18,7 @@ import com.atomist.rug.cli.settings.Settings;
 
 public class LoginCommand extends AbstractAnnotationBasedCommand {
 
-    private static final String BANNER = "The command will create a GitHub Personal Access Token with scope 'read:org'\n"
+    private static final String BANNER = "The command will create a GitHub Personal Access Token with scopes 'repo, read:org'\n"
             + "which you can revoke any time on https://github.com/settings/tokens.  Your\n"
             + "password will not be displayed or stored.  Your sensitive information will not\n"
             + "be sent to Atomist; only to api.github.com.";

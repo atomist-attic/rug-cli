@@ -6,8 +6,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.atomist.graph.GraphNode;
 import com.atomist.param.ParameterValues;
 import com.atomist.project.archive.RugResolver;
 import com.atomist.project.edit.FailedModificationAttempt;
@@ -22,17 +24,26 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.output.ProgressReporter;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.Style;
+import com.atomist.rug.cli.settings.Settings;
+import com.atomist.rug.cli.settings.SettingsReader;
 import com.atomist.rug.cli.tree.ArtifactSourceTreeCreator;
 import com.atomist.rug.cli.tree.LogVisitor;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
+import com.atomist.rug.kind.DefaultTypeRegistry$;
 import com.atomist.rug.kind.core.ChangeLogEntry;
+import com.atomist.rug.kind.core.ProjectContext;
+import com.atomist.rug.kind.core.RepoResolver;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.project.ProvenanceInfoWriter;
+import com.atomist.rug.runtime.js.RugContext;
+import com.atomist.rug.runtime.js.interop.jsPathExpressionEngine;
 import com.atomist.rug.runtime.plans.ProjectManagement;
 import com.atomist.rug.spi.Handlers;
+import com.atomist.rug.spi.TypeRegistry;
 import com.atomist.source.ArtifactSource;
+import com.atomist.source.ArtifactSourceCreationException;
 import com.atomist.source.ByteArrayFileArtifact;
 import com.atomist.source.Delta;
 import com.atomist.source.FileAdditionDelta;
@@ -44,6 +55,10 @@ import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.FileSystemArtifactSourceIdentifier;
 import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
+import com.atomist.source.git.GitRepositoryCloner;
+import com.atomist.tree.IdentityTreeMaterializer$;
+import com.atomist.tree.TreeMaterializer;
+import com.atomist.tree.pathexpression.PathExpressionEngine;
 
 import difflib.DiffUtils;
 import scala.Option;
@@ -100,7 +115,8 @@ public class LocalGitProjectManagement implements ProjectManagement {
         ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
                 String.format("Running generator %s of %s", generator.name(),
                         ArtifactDescriptorUtils.coordinates(artifact)))
-                                .run(indicator -> generator.generate(projectName, arguments));
+                                .run(indicator -> generator.generate(projectName, arguments,
+                                        new ProjectContext(new LocalRugContext())));
 
         // Add provenance info to output
         result = new ProvenanceInfoWriter().write(result, generator, arguments,
@@ -135,7 +151,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
 
     @Override
     public ModificationAttempt edit(ProjectEditor editor, ParameterValues arguments,
-                                    String projectName, Option<Handlers.EditorTarget> target) {
+            String projectName, Option<Handlers.EditorTarget> target) {
         File root = FileUtils.createProjectRoot(projectName);
 
         if (commit) {
@@ -323,5 +339,86 @@ public class LocalGitProjectManagement implements ProjectManagement {
                 log.info("  " + diff);
             }
         });
+    }
+
+    private static class LocalRugContext implements RugContext {
+
+        @Override
+        public Option<RepoResolver> repoResolver() {
+            Optional<String> token = SettingsReader.read().getConfigValue(Settings.GIHUB_TOKEN_KEY,
+                    String.class);
+            String url = SettingsReader.read().getConfigValue("git_url", "https://github.com");
+            if (!token.isPresent()) {
+                throw new CommandException(
+                        "No GitHub token configured. Please run the login command before running this generator.",
+                        "generate");
+            }
+            return Option.apply(new LocalRepoResolver(token.get(), url));
+        }
+
+        @Override
+        public TypeRegistry typeRegistry() {
+            return DefaultTypeRegistry$.MODULE$;
+        }
+
+        @Override
+        public GraphNode contextRoot() {
+            return null;
+        }
+
+        @Override
+        public jsPathExpressionEngine pathExpressionEngine() {
+            return new jsPathExpressionEngine(this, typeRegistry(), new PathExpressionEngine());
+        }
+
+        @Override
+        public String teamId() {
+            return null;
+        }
+
+        @Override
+        public TreeMaterializer treeMaterializer() {
+            return IdentityTreeMaterializer$.MODULE$;
+        }
+
+    }
+
+    private static class LocalRepoResolver implements RepoResolver {
+
+        private static final Log log = new Log(LocalRepoResolver.class);
+
+        private final GitRepositoryCloner cloner;
+
+        public LocalRepoResolver(String token, String url) {
+            this.cloner = new GitRepositoryCloner(token, Option.apply(url));
+        }
+
+        @Override
+        public ArtifactSource resolveBranch(String owner, String repo, String branch) {
+            log.info(String.format("Cloning %s/%s#%s", owner, repo, branch));
+            try {
+                return cloner.clone(repo, owner, Option.apply(branch), Option.empty(), Option.empty(),
+                        10);
+            }
+            catch (ArtifactSourceCreationException e) {
+                throw new CommandException("Failed to clone repository", e);
+            }
+        }
+
+        @Override
+        public ArtifactSource resolveSha(String owner, String repo, String sha) {
+            log.info(String.format("Cloning %s/%s#%s", owner, repo, sha));
+            try {
+                return cloner.clone(repo, owner, Option.empty(), Option.apply(sha), Option.empty(), 10);
+            }
+            catch (ArtifactSourceCreationException e) {
+                throw new CommandException("Failed to clone repository", e);
+            }
+        }
+
+        @Override
+        public String resolveBranch$default$3() {
+            return "master";
+        }
     }
 }
