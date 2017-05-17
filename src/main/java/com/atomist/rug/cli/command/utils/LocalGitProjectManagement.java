@@ -345,15 +345,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
 
         @Override
         public Option<RepoResolver> repoResolver() {
-            Optional<String> token = SettingsReader.read().getConfigValue(Settings.GIHUB_TOKEN_KEY,
-                    String.class);
-            String url = SettingsReader.read().getConfigValue("git_url", "https://github.com");
-            if (!token.isPresent()) {
-                throw new CommandException(
-                        "No GitHub token configured. Please run the login command before running this generator.",
-                        "generate");
-            }
-            return Option.apply(new LocalRepoResolver(token.get(), url));
+            return Option.apply(new LocalRepoResolver());
         }
 
         @Override
@@ -387,15 +379,12 @@ public class LocalGitProjectManagement implements ProjectManagement {
 
         private static final Log log = new Log(LocalRepoResolver.class);
 
-        private final GitRepositoryCloner cloner;
-
-        public LocalRepoResolver(String token, String url) {
-            this.cloner = new GitRepositoryCloner(token, Option.apply(url));
-        }
+        private GitRepositoryCloner cloner;
 
         @Override
         public ArtifactSource resolveBranch(String owner, String repo, String branch) {
             log.info(String.format("Cloning %s/%s#%s", owner, repo, branch));
+            init();
             try {
                 return cloner.clone(repo, owner, Option.apply(branch), Option.empty(), Option.empty(),
                         10);
@@ -408,6 +397,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
         @Override
         public ArtifactSource resolveSha(String owner, String repo, String sha) {
             log.info(String.format("Cloning %s/%s#%s", owner, repo, sha));
+            init();
             try {
                 return cloner.clone(repo, owner, Option.empty(), Option.apply(sha), Option.empty(), 10);
             }
@@ -419,6 +409,18 @@ public class LocalGitProjectManagement implements ProjectManagement {
         @Override
         public String resolveBranch$default$3() {
             return "master";
+        }
+        
+        private void init() {
+            Optional<String> token = SettingsReader.read().getConfigValue(Settings.GIHUB_TOKEN_KEY,
+                    String.class);
+            String url = SettingsReader.read().getConfigValue("git_url", "https://github.com");
+            if (!token.isPresent()) {
+                throw new CommandException(
+                        "No GitHub token configured. Please run the login command before running this generator.",
+                        "generate");
+            }
+            this.cloner = new GitRepositoryCloner(token.get(), Option.apply(url));
         }
     }
 }
