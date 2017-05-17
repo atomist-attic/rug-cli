@@ -26,14 +26,14 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulEditorDescribe() throws Exception {
-        assertSuccess("rug edit \"atomist-rugs:common-editors:AddChangeLog\"", "describe", "editor",
-                "atomist-rugs:common-editors:AddChangeLog");
+        assertSuccess("rug edit \"rug-cli-tests:common-editors:AddChangeLog\"", "describe", "editor",
+                "atomist-rugs:common-editors:AddChangeLog", "-l");
     }
 
     @Test
     public void testSuccessfulEditorDescribeWithNumberInName() throws Exception {
-        assertSuccess("rug edit \"atomist-rugs:common-editors:AddApacheSoftwareLicense20\"",
-                "describe", "editor", "atomist-rugs:common-editors:AddApacheSoftwareLicense20");
+        assertSuccess("rug edit \"rug-cli-tests:common-editors:AddApacheSoftwareLicense20\"",
+                "describe", "editor", "atomist-rugs:common-editors:AddApacheSoftwareLicense20", "-l");
     }
 
     @Test
