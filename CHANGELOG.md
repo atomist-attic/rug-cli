@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-cli/compare/1.0.0-m.2...HEAD
 
+### Added
+
+-   Support for Rug Integration Tests
+
 ## [1.0.0-m.2] - 2017-05-09
 
 Initial milestone 2 release

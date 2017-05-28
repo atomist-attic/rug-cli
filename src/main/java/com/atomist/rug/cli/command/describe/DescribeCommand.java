@@ -1,7 +1,5 @@
 package com.atomist.rug.cli.command.describe;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
@@ -10,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.text.WordUtils;
 
 import com.atomist.param.Parameter;
 import com.atomist.param.Parameterized;
@@ -46,15 +42,19 @@ import com.atomist.rug.runtime.EventHandler;
 import com.atomist.rug.runtime.ParameterizedRug;
 import com.atomist.rug.runtime.ResponseHandler;
 import com.atomist.rug.runtime.Rug;
+import com.atomist.rug.runtime.RugScopes;
+import com.atomist.rug.runtime.js.JavaScriptCommandHandler;
 import com.atomist.rug.runtime.plans.DefaultRugFunctionRegistry;
 import com.atomist.rug.spi.MappedParameterizedRug;
 import com.atomist.rug.spi.RugFunction;
 import com.atomist.rug.spi.SecretAwareRug;
 import com.atomist.source.ArtifactSource;
 import com.atomist.source.FileArtifact;
-
+import org.apache.commons.lang3.text.WordUtils;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
+
+import static scala.collection.JavaConversions.asJavaCollection;
 
 public class DescribeCommand extends AbstractAnnotationBasedCommand {
 
@@ -68,10 +68,13 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             "event-handler", "Event Handlers");
     private static final DescribeLabels RESPONSE_HANDLER_LABELS = new DescribeLabels("respond",
             "response-handler", "Response Handlers");
+    private static final DescribeLabels INTEGRATION_TEST_LABELS = new DescribeLabels("integration-test",
+            "integration-test", "Integration Tests");
     private static final DescribeLabels FUNCTION_LABELS = new DescribeLabels(null, "function",
             "Functions");
 
     private static final Map<Class<?>, DescribeLabels> labelMapping;
+    private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please use either archive, editor, generator, command-handler, event-handler, response-handler, integration-test, function or dependencies.";
 
     static {
         labelMapping = new HashMap<>();
@@ -83,110 +86,113 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         labelMapping.put(RugFunction.class, FUNCTION_LABELS);
     }
 
-    private static final String INVALID_TYPE_MESSAGE = "Invalid TYPE provided. Please use either archive, editor, generator, command-handler, event-handler, response-handler, function or dependencies.";
-
     @Validator
     public void validate(@Argument(index = 1, defaultValue = "") String kind,
-            @Argument(index = 2) String name, @Option("output") String format) {
+                         @Argument(index = 2) String name, @Option("output") String format) {
         switch (kind) {
-        case "editor":
-        case "generator":
-        case "command-handler":
-        case "event-handler":
-        case "response-handler":
-        case "function":
-        case "dependencies":
-            break;
-        case "archive":
-            validateFormat(format);
-            break;
+            case "editor":
+            case "generator":
+            case "command-handler":
+            case "event-handler":
+            case "response-handler":
+            case "integration-test":
+            case "function":
+            case "dependencies":
+                break;
+            case "archive":
+                validateFormat(format);
+                break;
         }
     }
 
     @Command
     public void run(ResolvedDependency resolvedRugs, ArtifactDescriptor artifact,
-            ArtifactSource source, @Argument(index = 1, defaultValue = "") String kind,
-            @Argument(index = 2) String name, @Option("output") String format,
-            @Option(value = "operations") boolean operations, Settings settings) {
+                    ArtifactSource source, @Argument(index = 1, defaultValue = "") String kind,
+                    @Argument(index = 2) String name, @Option("output") String format,
+                    @Option(value = "operations") boolean operations, Settings settings) {
 
         String operationName = OperationUtils.extractRugTypeName(name);
 
         switch (kind) {
-        case "editor":
-            describeRugs(artifact, operationName, resolvedRugs.rugs().editors(), source,
-                    EDITOR_LABELS);
-            break;
-        case "generator":
-            describeRugs(artifact, operationName, resolvedRugs.rugs().generators(), source,
-                    GENERATOR_LABELS);
-            break;
-        case "command-handler":
-            describeRugs(artifact, operationName, resolvedRugs.rugs().commandHandlers(), source,
-                    COMMAND_HANDLER_LABELS);
-            break;
-        case "event-handler":
-            describeRugs(artifact, operationName, resolvedRugs.rugs().eventHandlers(), source,
-                    EVENT_HANDLER_LABELS);
-            break;
-        case "response-handler":
-            describeRugs(artifact, operationName, resolvedRugs.rugs().responseHandlers(), source,
-                    RESPONSE_HANDLER_LABELS);
-            break;
-        case "function":
-            describeRugs(artifact, operationName,
-                    JavaConverters.asScalaBufferConverter(JavaConverters
-                            .mapAsJavaMapConverter(DefaultRugFunctionRegistry.providerMap())
-                            .asJava().values().stream().collect(Collectors.toList())).asScala(),
-                    source, FUNCTION_LABELS);
-            break;
-        case "dependencies":
-            new DependenciesOperations().run(artifact, resolvedRugs, settings, operations);
-            if (operations) {
-                describeInvokeArchive(artifact);
-            }
-            else {
-                log.newline();
-            }
-            break;
-        case "archive":
-            describeArchive(resolvedRugs.rugs(), artifact, source, format);
-            break;
-        case "":
-            throw new CommandException(INVALID_TYPE_MESSAGE, "describe");
-        default:
-            // If there is a unique match we don't need the kind
-            String rugName = OperationUtils.extractRugTypeName(kind);
-            List<Rug> rugs = JavaConverters.asJavaCollectionConverter(resolvedRugs.rugs().allRugs())
-                    .asJavaCollection().stream().filter(o -> o.name().equals(rugName))
-                    .collect(Collectors.toList());
-            if (rugs.size() == 1) {
-                Rug rug = rugs.get(0);
-                DescribeLabels label = labelMapping.entrySet().stream()
-                        .filter(lm -> lm.getKey().isAssignableFrom(rug.getClass())).findFirst()
-                        .get().getValue();
-                log.newline();
-                describeRug(artifact, rug, source, label.label(), label.command());
-            }
-            else if (kind.split(":").length == 2) {
-                throw new CommandException(
-                        "It looks like you're trying to describe an archive. Please try:\n  rug describe archive "
-                                + kind,
-                        "describe");
-            }
-            else if (kind.split(":").length == 3) {
-                throw new CommandException(
-                        "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|event-handler|command-handler|response-handler|function "
-                                + kind,
-                        "describe");
-            }
-            else {
+            case "editor":
+                describeRugs(artifact, operationName, resolvedRugs.rugs().editors(), source,
+                        EDITOR_LABELS);
+                break;
+            case "generator":
+                describeRugs(artifact, operationName, resolvedRugs.rugs().generators(), source,
+                        GENERATOR_LABELS);
+                break;
+            case "command-handler":
+                describeRugs(artifact, operationName, resolvedRugs.rugs().commandHandlers(), source,
+                        COMMAND_HANDLER_LABELS);
+                break;
+            case "event-handler":
+                describeRugs(artifact, operationName, resolvedRugs.rugs().eventHandlers(), source,
+                        EVENT_HANDLER_LABELS);
+                break;
+            case "response-handler":
+                describeRugs(artifact, operationName, resolvedRugs.rugs().responseHandlers(), source,
+                        RESPONSE_HANDLER_LABELS);
+                break;
+            case "function":
+                describeRugs(artifact, operationName,
+                        JavaConverters.asScalaBufferConverter(JavaConverters
+                                .mapAsJavaMapConverter(DefaultRugFunctionRegistry.providerMap())
+                                .asJava().values().stream().collect(Collectors.toList())).asScala(),
+                        source, FUNCTION_LABELS);
+                break;
+
+            case "integration-test":
+                describeRugs(artifact, operationName, resolvedRugs.rugs().commandHandlers(), source,
+                        INTEGRATION_TEST_LABELS);
+            case "dependencies":
+                new DependenciesOperations().run(artifact, resolvedRugs, settings, operations);
+                if (operations) {
+                    describeInvokeArchive(artifact);
+                }
+                else {
+                    log.newline();
+                }
+                break;
+            case "archive":
+                describeArchive(resolvedRugs.rugs(), artifact, source, format);
+                break;
+            case "":
                 throw new CommandException(INVALID_TYPE_MESSAGE, "describe");
-            }
+            default:
+                // If there is a unique match we don't need the kind
+                String rugName = OperationUtils.extractRugTypeName(kind);
+                List<Rug> rugs = JavaConverters.asJavaCollectionConverter(resolvedRugs.rugs().allRugs())
+                        .asJavaCollection().stream().filter(o -> o.name().equals(rugName))
+                        .collect(Collectors.toList());
+                if (rugs.size() == 1) {
+                    Rug rug = rugs.get(0);
+                    DescribeLabels label = labelMapping.entrySet().stream()
+                            .filter(lm -> lm.getKey().isAssignableFrom(rug.getClass())).findFirst()
+                            .get().getValue();
+                    log.newline();
+                    describeRug(artifact, rug, source, label.label(), label.command());
+                }
+                else if (kind.split(":").length == 2) {
+                    throw new CommandException(
+                            "It looks like you're trying to describe an archive. Please try:\n  rug describe archive "
+                                    + kind,
+                            "describe");
+                }
+                else if (kind.split(":").length == 3) {
+                    throw new CommandException(
+                            "Please tell me what kind of thing to describe. Try:\n  rug describe editor|generator|event-handler|command-handler|response-handler|function "
+                                    + kind,
+                            "describe");
+                }
+                else {
+                    throw new CommandException(INVALID_TYPE_MESSAGE, "describe");
+                }
         }
     }
 
     private void describeArchive(ArtifactDescriptor artifact, ArtifactSource source,
-            Rugs operationsAndHandlers) {
+                                 Rugs operationsAndHandlers) {
         log.newline();
         Manifest manifest = ManifestFactory.read(source);
         describeName(manifest);
@@ -198,7 +204,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeArchive(Rugs rugs, ArtifactDescriptor artifact, ArtifactSource source,
-            String format) {
+                                 String format) {
         if (format != null) {
             validateFormat(format);
 
@@ -297,7 +303,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeInvoke(ArtifactDescriptor artifact, Rug info, String command,
-            String type) {
+                                String type) {
         log.newline();
         log.info("To invoke the %s %s, run:", StringUtils.stripName(info.name(), artifact), type);
         StringBuilder invokeSb = new StringBuilder();
@@ -336,7 +342,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         log.newline();
         log.info("To get more information on any of the Rugs listed above, run:");
         log.info(
-                "  %s%s editor|generator|command-handler|event-handler|response-handler|function %s",
+                "  %s%s editor|generator|command-handler|event-handler|response-handler|integration-test|function %s",
                 Constants.command(), "describe", (CommandLineOptions.hasOption("local") ? "NAME -l"
                         : artifact.group() + ":" + artifact.artifact() + ":NAME"));
     }
@@ -372,12 +378,32 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
         Collection<ProjectGenerator> generators = asJavaCollection(operations.generators()).stream()
                 .sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
         Collection<CommandHandler> commandHandlers = asJavaCollection(operations.commandHandlers())
-                .stream().sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
+                .stream().filter(c -> {
+                    if (c instanceof JavaScriptCommandHandler) {
+                        JavaScriptCommandHandler jsc = (JavaScriptCommandHandler) c;
+                        return jsc.testDescriptor().isEmpty();
+                    }
+                    else {
+                        return false;
+                    }
+                }).sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
+
+        Collection<CommandHandler> testHandlers = asJavaCollection(operations.commandHandlers())
+                .stream().filter(c -> {
+                    if (c instanceof JavaScriptCommandHandler) {
+                        JavaScriptCommandHandler jsc = (JavaScriptCommandHandler) c;
+                        return jsc.testDescriptor().nonEmpty() && jsc.testDescriptor().get().kind().equals("integration");
+                    }
+                    else {
+                        return false;
+                    }
+                }).sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
+
         Collection<EventHandler> eventHandlers = asJavaCollection(operations.eventHandlers())
                 .stream().sorted(Comparator.comparing(Rug::name)).collect(Collectors.toList());
         Collection<ResponseHandler> responseHandlers = asJavaCollection(
-                operations.responseHandlers()).stream().sorted(Comparator.comparing(Rug::name))
-                        .collect(Collectors.toList());
+                operations.responseHandlers()).stream().filter(r -> r.scope() == RugScopes.DEFAULT$.MODULE$).sorted(Comparator.comparing(Rug::name))
+                .collect(Collectors.toList());
         log.newline();
 
         if (!generators.isEmpty()) {
@@ -403,11 +429,16 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Response Handlers"));
             listOperations(artifact, responseHandlers, manifest);
         }
+
+        if (!testHandlers.isEmpty()) {
+            log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Integration Tests"));
+            listOperations(artifact, testHandlers, manifest);
+        }
     }
 
     @SuppressWarnings("unchecked")
     private void describeRugs(ArtifactDescriptor artifact, String name, Seq<?> operations,
-            ArtifactSource source, DescribeLabels labels) {
+                              ArtifactSource source, DescribeLabels labels) {
         Collection<Rug> ops = (Collection<Rug>) asJavaCollection(operations);
         String fqName = artifact.group() + "." + artifact.artifact() + "." + name;
         Optional<Rug> opt = ops.stream().filter(g -> g.name().equals(name)).findFirst();
@@ -427,8 +458,8 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
                 ops.forEach(e -> log.info("  "
                         + Style.yellow(StringUtils.stripName(e.name(), artifact)) + "\n    "
                         + WordUtils.wrap(
-                                org.apache.commons.lang3.StringUtils.capitalize(e.description()),
-                                Constants.WRAP_LENGTH, "\n    ", false)));
+                        org.apache.commons.lang3.StringUtils.capitalize(e.description()),
+                        Constants.WRAP_LENGTH, "\n    ", false)));
             }
             else {
                 log.info(Style.yellow("  No %s found", labels.label.toLowerCase()));
@@ -483,7 +514,7 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void describeRug(ArtifactDescriptor artifact, Rug info, ArtifactSource source,
-            String type, String command) {
+                             String type, String command) {
         describeName(artifact, info, source);
         log.newline();
         if (info instanceof CommandHandler) {
@@ -553,15 +584,15 @@ public class DescribeCommand extends AbstractAnnotationBasedCommand {
     }
 
     private void listOperations(ArtifactDescriptor artifact, Collection<?> operations,
-            Manifest manifest) {
+                                Manifest manifest) {
         operations.forEach(e -> {
             Rug info = (Rug) e;
             boolean excluded = ManifestUtils.excluded(info, manifest);
             log.info("  " + Style.yellow(StringUtils.stripName(info.name(), artifact))
                     + (excluded ? Style.gray(" (excluded)") : "") + "\n    "
                     + WordUtils.wrap(
-                            org.apache.commons.lang3.StringUtils.capitalize(info.description()),
-                            Constants.WRAP_LENGTH, "\n    ", false));
+                    org.apache.commons.lang3.StringUtils.capitalize(info.description()),
+                    Constants.WRAP_LENGTH, "\n    ", false));
         });
     }
 

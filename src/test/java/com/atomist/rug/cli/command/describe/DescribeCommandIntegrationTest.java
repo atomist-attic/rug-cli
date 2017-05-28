@@ -45,7 +45,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testSuccessfulArchiveDescribe() throws Exception {
         assertSuccess(
-                "rug describe editor|generator|command-handler|event-handler|response-handler|function atomist-rugs:spring-boot-rest-service:NAME",
+                "rug describe editor|generator|command-handler|event-handler|response-handler|integration-test|function atomist-rugs:spring-boot-rest-service:NAME",
                 "describe", "archive", "atomist-rugs:spring-boot-rest-service");
     }
 
@@ -121,7 +121,7 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
     @Test
     public void testUnSuccessfulDescribe() throws Exception {
         assertFailure(
-                "Invalid TYPE provided. Please use either archive, editor, generator, command-handler, event-handler, response-handler, function or dependencies."
+                "Invalid TYPE provided. Please use either archive, editor, generator, command-handler, event-handler, response-handler, integration-test, function or dependencies."
                         + "\n\n" + "Run the following command for usage help:\n"
                         + "  rug describe --help",
                 "describe", "-l");
