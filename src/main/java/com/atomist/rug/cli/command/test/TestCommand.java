@@ -81,7 +81,7 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                                             }
                                             else {
                                                 return (testToRun + ".feature")
-                                                        .equals(fd.feature().getName())
+                                                        .equals(fd.definition().name())
                                                         || testToRun.equals(fd.feature().getName())
                                                         || testToRun.equals(fd.definition().name());
                                             }
@@ -217,15 +217,18 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
         @Override
         public void stepFailed(Step s, Throwable t) {
-            if (CommandLineOptions.hasOption("error")) {
-                StringWriter errors = new StringWriter();
-                t.printStackTrace(new PrintWriter(errors));
-                reporter.report("    Step " + s.getText() + " " + Style.red("failed") + ":\n"
-                        + errors.toString());
-            }
-            else {
-                reporter.report("    Step " + s.getText() + " " + Style.red("failed") + ":    \n"
-                        + t.getMessage());
+            // The additional " " is expected
+            if (!"When ".equals(s.getKeyword())) {
+                if (CommandLineOptions.hasOption("error")) {
+                    StringWriter errors = new StringWriter();
+                    t.printStackTrace(new PrintWriter(errors));
+                    reporter.report("    Step " + s.getText() + " " + Style.red("failed") + ":\n"
+                            + errors.toString());
+                }
+                else {
+                    reporter.report("    Step " + s.getText() + " " + Style.red("failed")
+                            + ":    \n" + t.getMessage());
+                }
             }
         }
 

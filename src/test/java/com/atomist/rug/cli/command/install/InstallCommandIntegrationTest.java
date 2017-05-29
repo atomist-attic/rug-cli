@@ -16,8 +16,7 @@ public class InstallCommandIntegrationTest extends AbstractCommandTest {
 
     @Before
     public void cleanUp() throws IOException {
-        FileUtils.deleteDirectory(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository" + File.separator + "rug-cli-tests"));
+        FileUtils.deleteDirectory(getRepoDir());
     }
 
     @Test
@@ -56,7 +55,7 @@ public class InstallCommandIntegrationTest extends AbstractCommandTest {
     private static File getRepoDir() throws IOException {
         File file = new File(SystemUtils.getUserDir() + File.separator + ".." + File.separator
                 + ".." + File.separator + ".." + File.separator + ".." + File.separator + "target"
-                + File.separator + "repository-publish").getCanonicalFile();
+                + File.separator + "repository-tests").getCanonicalFile();
         return file;
     }
 }
