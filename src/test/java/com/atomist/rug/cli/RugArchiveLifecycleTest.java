@@ -1,10 +1,7 @@
 package com.atomist.rug.cli;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.FixMethodOrder;
@@ -39,8 +36,6 @@ public class RugArchiveLifecycleTest extends AbstractCommandTest {
 
     @Test
     public void testDDescribe() throws Exception {
-        IOUtils.copy(new FileInputStream(new File("src/test/resources/cli.yml")),
-                new FileOutputStream(new File(location, "cli.yml")));
         setCWD(location + File.separator + "my-rug-archive");
         assertSuccess("To get more information on any of the Rugs listed above, run", "describe",
                 "archive", "-l");

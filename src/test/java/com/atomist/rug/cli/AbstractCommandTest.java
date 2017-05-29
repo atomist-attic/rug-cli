@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -28,6 +29,8 @@ import com.atomist.source.ArtifactSource;
 import com.github.tomaslanger.chalk.Chalk;
 
 public abstract class AbstractCommandTest {
+    
+    private static File cliYml = new File(SystemUtils.getUserDir(), "target/test-classes/cli.yml");
 
     private static String startingUserDir = getCWD();
 
@@ -99,10 +102,10 @@ public abstract class AbstractCommandTest {
     }
 
     protected String[] commandLine(boolean includeConf, String... tokens) throws IOException {
-        File config = new File(getCWD(), "../cli.yml");
+        File config = cliYml;
         if (!config.exists()) {
             throw new RuntimeException(
-                    "Config file missing at ../cli.yml\nLook, if you're running tests locally, try setting your working directory to src/test/resources/common-editors");
+                    "Config file missing at " + config.getCanonicalPath() + "\nPlease mvn clean install first");
         }
 
         List<String> commandLine = new ArrayList<>(Arrays.asList(tokens));

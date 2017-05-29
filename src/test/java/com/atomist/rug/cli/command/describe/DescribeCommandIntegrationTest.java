@@ -3,8 +3,6 @@ package com.atomist.rug.cli.command.describe;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 
@@ -88,14 +86,10 @@ public class DescribeCommandIntegrationTest extends AbstractCommandTest {
 
     @Test
     public void testSuccessfulGeneratorDescribeWithVersionAndResolverReport() throws Exception {
-        // delete the resolver plan file
-        File file = new File(System.getProperty("user.home"),
-                ".atomist/repository-tests/atomist-rugs/spring-boot-rest-service/0.10.0/_resolver.plan");
-        file.delete();
         assertSuccess("Binary dependency report for atomist-rugs:spring-boot-rest-service (0.10.0)",
                 "describe", "generator",
                 "atomist-rugs:spring-boot-rest-service:NewSpringBootRestService", "-a", "0.10.0",
-                "-r");
+                "-ur");
     }
 
     @Test

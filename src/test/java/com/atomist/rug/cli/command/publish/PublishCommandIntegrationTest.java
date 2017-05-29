@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,14 +16,7 @@ public class PublishCommandIntegrationTest extends AbstractCommandTest {
 
     @Before
     public void cleanUp() throws IOException {
-        FileUtils.deleteDirectory(new File(FileUtils.getUserDirectory(), ".atomist" + File.separator
-                + "repository-publish" + File.separator + "rug-cli-tests"));
-    }
-
-    @AfterClass
-    public static void deleteRepo() throws IOException {
-        FileUtils.deleteDirectory(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository-publish"));
+        FileUtils.deleteDirectory(new File(getRepoDir(), "rug-cli-tests"));
     }
 
     @Test
@@ -41,20 +34,23 @@ public class PublishCommandIntegrationTest extends AbstractCommandTest {
                 "4.0.0", "-F");
     }
 
-    private void assertVersion(String group, String artifact, String version) {
+    private void assertVersion(String group, String artifact, String version) throws IOException {
         assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
-                .contains(group + ":" + artifact + " (" + version +")"));
+                .contains(group + ":" + artifact + " (" + version + ")"));
         assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                 .contains("Successfully published archive for " + group + ":" + artifact + " ("
                         + version + ")"));
-        assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository-publish" + File.separator + group
-                        + File.separator + artifact + File.separator + version + File.separator
-                        + artifact + "-" + version + ".zip").exists());
-        assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository-publish" + File.separator + group
-                        + File.separator + artifact + File.separator + version + File.separator
-                        + artifact + "-" + version + ".pom").exists());
+        assertTrue(new File(getRepoDir(), group + File.separator + artifact + File.separator
+                + version + File.separator + artifact + "-" + version + ".zip").exists());
+        assertTrue(new File(getRepoDir(), group + File.separator + artifact + File.separator
+                + version + File.separator + artifact + "-" + version + ".pom").exists());
 
+    }
+
+    private static File getRepoDir() throws IOException {
+        File file = new File(SystemUtils.getUserDir() + File.separator + ".." + File.separator
+                + ".." + File.separator + ".." + File.separator + ".." + File.separator + "target"
+                + File.separator + "repository-publish").getCanonicalFile();
+        return file;
     }
 }
