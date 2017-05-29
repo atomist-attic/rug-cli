@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,25 +34,29 @@ public class InstallCommandIntegrationTest extends AbstractCommandTest {
         }, "install", "-a", "4.0.0", "-Vur");
     }
 
-    private void assertVersion(String version) {
+    private void assertVersion(String version) throws IOException {
         assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                 .contains("rug-cli-tests:common-editors (" + version + ")"));
         assertTrue(systemOutRule.getLogWithNormalizedLineSeparator()
                 .contains("Successfully installed archive for rug-cli-tests:common-editors ("
                         + version + ")"));
-        assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository-tests" + File.separator + "rug-cli-tests"
+        assertTrue(new File(getRepoDir(), "rug-cli-tests"
                         + File.separator + "common-editors" + File.separator + version
                         + File.separator + "common-editors-" + version + ".zip").exists());
-        assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository-tests" + File.separator + "rug-cli-tests"
+        assertTrue(new File(getRepoDir(), "rug-cli-tests"
                         + File.separator + "common-editors" + File.separator + version
                         + File.separator + "common-editors-" + version + ".pom").exists());
-        assertTrue(new File(FileUtils.getUserDirectory(),
-                ".atomist" + File.separator + "repository-tests" + File.separator + "rug-cli-tests"
+        assertTrue(new File(getRepoDir(), "rug-cli-tests"
                         + File.separator + "common-editors" + File.separator + version
                         + File.separator + "common-editors-" + version + "-metadata.json")
                                 .exists());
 
+    }
+    
+    private static File getRepoDir() throws IOException {
+        File file = new File(SystemUtils.getUserDir() + File.separator + ".." + File.separator
+                + ".." + File.separator + ".." + File.separator + ".." + File.separator + "target"
+                + File.separator + "repository-publish").getCanonicalFile();
+        return file;
     }
 }
