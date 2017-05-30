@@ -12,6 +12,7 @@ import com.atomist.rug.cli.Log;
 import com.atomist.rug.cli.RunnerException;
 import com.atomist.rug.cli.classloading.ClassLoaderFactory;
 import com.atomist.rug.cli.classloading.ClasspathEntryProvider;
+import com.atomist.rug.cli.command.error.ErrorInterpreterRegistry;
 import com.atomist.rug.cli.command.utils.CommandHelpFormatter;
 import com.atomist.rug.cli.command.utils.DependencyResolverExceptionProcessor;
 import com.atomist.rug.cli.output.ProgressReporter;
@@ -171,7 +172,7 @@ public class ReflectiveCommandRunner {
             log.error(e);
         }
         else {
-            log.error(e.getMessage());
+            log.error(new ErrorInterpreterRegistry().interpret(e));
         }
     }
 

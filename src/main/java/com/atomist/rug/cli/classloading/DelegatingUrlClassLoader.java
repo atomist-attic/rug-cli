@@ -19,7 +19,8 @@ class DelegatingUrlClassLoader extends URLClassLoader {
             "org.apache.http" };
 
     private static final String[] DEFAULT_DELEGATING_PACKAGES = new String[] {
-            "com.atomist.rug.resolver", "com.atomist.rug.cli", "com.atomist.rug.cli.settings" };
+            "com.atomist.rug.resolver", "com.atomist.rug.cli", "com.atomist.rug.cli.command.error",
+            "com.atomist.rug.cli.settings" };
 
     private List<String> delegatingPackagesAndSubPackages = Arrays
             .asList(DEFAULT_DELEGATING_PACKAGES_AND_SUBPACKAGES);

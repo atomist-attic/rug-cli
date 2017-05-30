@@ -1,0 +1,3 @@
+com.atomist.rug.cli.command.error.DefaultErrorInterpreter
+com.atomist.rug.cli.command.error.PublishErrorInterpreter
+com.atomist.rug.cli.command.error.TypeScriptCompilerErrorInterpreter
