@@ -16,7 +16,7 @@ import com.atomist.rug.resolver.ArtifactDescriptor;
 public class DescribeCommandInfo extends AbstractVersionCommandInfo implements CommandInfo {
 
     private static List<String> commands = Arrays.asList("editor", "generator", "archive", 
-            "command-handler", "event-handler", "response-handler", "function", "dependencies");
+            "command-handler", "event-handler", "response-handler", "integration-test", "function", "dependencies");
 
     public DescribeCommandInfo() {
         super(DescribeCommand.class, "describe", 2);
