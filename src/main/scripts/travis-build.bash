@@ -47,7 +47,7 @@ function main() {
         msg "not publishing or tagging pull request"
         return 0
     fi
-    
+
     if ! gpg --allow-secret-key-import --import atomist_sec.gpg; then
    		err "Error import gpg keys"
    		return 1
