@@ -19,6 +19,18 @@ Milestone 3 release
 
 -	Upgrade to Rug 1.0.0-m.4
 
+- 	Replaced `manifest.yml` with `package.json` as per
+	https://github.com/atomist/rug-cli/issues/197
+	
+- 	Don't display failed on tests steps that fail intentionally as per
+	https://github.com/atomist/rug-cli/issues/201
+	
+- 	Better error message when trying to publish already published archive as per
+	https://github.com/atomist/rug-cli/issues/204
+
+- 	Print warning if TypeScript compilation fails because `node_modules` are missing as per
+	https://github.com/atomist/rug-cli/issues/202
+
 ### Added
 
 -   Support for Rug Integration Tests
