@@ -178,7 +178,7 @@ function main() {
     fi
 
     # let's push to the nuget repository
-    if ! upload_to_repository "target/windows/chocolatey/rug-cli.$project_version.nupkg"; then
+    if ! upload_to_repository "target/windows/chocolatey/rug-cli.$valid_nuget_project_version.nupkg"; then
         err "failed to upload package to repository"
         return 1
     fi
