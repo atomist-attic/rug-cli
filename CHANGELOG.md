@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/1.0.0-m.2...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/1.0.0-m.3...HEAD
+
+## [1.0.0-m.3] - 2017-06-01
+
+Milestone 3 release
+
+[1.0.0-m.3]: https://github.com/atomist/rug-cli/compare/1.0.0-m.2...1.0.0-m.3
+
+### Changed
+
+-	Upgrade to Rug 1.0.0-m.4
 
 ### Added
 
@@ -15,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.0.0-m.2] - 2017-05-09
 
-Initial milestone 2 release
+Milestone 2 release
 
 [1.0.0-m.2]: https://github.com/atomist/rug-cli/compare/1.0.0-m.1...1.0.0-m.2
 
