@@ -40,7 +40,7 @@ convert_manifest:
   commands:
     - "/echo ${cyan}${divider}${/cyan} ${bold}Loading editor${/bold}"
     - "shell atomist:rug-rugs:latest"
-    - "/echo ${cyan}${divider}${/cyan} ${bold}Running editor to convert manifest.yml${/bold}"
+    - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Running editor to convert manifest.yml${/bold}"
     - "edit ConvertManifestToPackageJson"
     - "/echo \n${line}\n\n${cyan}${divider}${/cyan} ${bold}Loading rug project into shell${/bold}"
     - "shell -l"
