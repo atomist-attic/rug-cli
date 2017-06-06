@@ -95,19 +95,24 @@ class ArtifactSourceFileWatcherThread extends Thread implements FileWatcher {
                 if (f.isDirectory()) {
                     register.accept(absPath);
                 }
-                // There was a modification to the filesystem, trigger reload of ArtifactSource
-                CommandContext.delete(ArtifactSource.class);
-                CommandContext.delete(Rugs.class);
 
-                // Special case for changes to manifest.yml
-                if (f.getName().equals("manifest.yml") && f.getParentFile() != null
-                        && f.getParentFile().getName().equals(".atomist")) {
-                    Constants.setReload(true);
-                }
-                // Special case for changes to package.json
-                if (f.getName().equals("package.json") && f.getParentFile() != null
-                        && f.getParentFile().getName().equals(".atomist")) {
-                    Constants.setReload(true);
+                String path = f.getAbsolutePath();
+                if (!path.contains(".atomist/target") && !path.contains(".git")) {
+
+                    // There was a modification to the filesystem, trigger reload of ArtifactSource
+                    CommandContext.delete(ArtifactSource.class);
+                    CommandContext.delete(Rugs.class);
+
+                    // Special case for changes to manifest.yml
+                    if (f.getName().equals("manifest.yml") && f.getParentFile() != null
+                            && f.getParentFile().getName().equals(".atomist")) {
+                        Constants.setReload(true);
+                    }
+                    // Special case for changes to package.json
+                    if (f.getName().equals("package.json") && f.getParentFile() != null
+                            && f.getParentFile().getName().equals(".atomist")) {
+                        Constants.setReload(true);
+                    }
                 }
             });
 
