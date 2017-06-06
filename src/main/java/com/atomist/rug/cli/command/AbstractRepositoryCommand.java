@@ -1,7 +1,9 @@
 package com.atomist.rug.cli.command;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.apache.commons.cli.CommandLine;
@@ -74,10 +76,16 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
     }
 
     private void prepareTargetDirectory(File zipFile) {
-        FileUtils.deleteQuietly(zipFile.getParentFile());
         if (!zipFile.getParentFile().exists()) {
             zipFile.getParentFile().mkdirs();
         }
+        Arrays.stream(zipFile.getParentFile().listFiles(new FileFilter() {
+          
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isFile();
+            }
+        })).forEach(f -> FileUtils.deleteQuietly(f));
     }
 
     private class ReportingDeployerEventListener extends DefaultDeployerEventListener {
