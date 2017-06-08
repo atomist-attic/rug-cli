@@ -1,6 +1,9 @@
 package com.atomist.rug.cli.command.publish;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -34,7 +37,7 @@ import com.atomist.rug.resolver.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
 public class PublishCommand extends AbstractRepositoryCommand {
-    
+
     @Validator
     public void validate(CommandLine commandLine) {
         verifyWorkingTree(commandLine);
@@ -44,33 +47,41 @@ public class PublishCommand extends AbstractRepositoryCommand {
             ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,
             CommandLine commandLine) {
 
-        org.eclipse.aether.repository.RemoteRepository deployRepository = getDeployRepository(
+        List<org.eclipse.aether.repository.RemoteRepository> deployRepositorys = getDeployRepositories(
                 commandLine.getOptionValue("id"));
-        
+        deployRepositorys.forEach(
+                r -> publishToRepository(system, session, source, manifest, zip, pom, metadata, r));
+    }
+
+    private void publishToRepository(RepositorySystem system, RepositorySystemSession session,
+            ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,
+            org.eclipse.aether.repository.RemoteRepository deployRepository) {
         String artifactUrl = new ProgressReportingOperationRunner<String>(
-                "Publishing archive into remote repository").run(indicator -> {
-                    String[] url = new String[1];
-                    ((DefaultRepositorySystemSession) session).setTransferListener(
-                            new ProgressReportingTransferListener(indicator, false) {
+                String.format("Publishing archive into repository %s", deployRepository.getId()))
+                        .run(indicator -> {
+                            String[] url = new String[1];
+                            ((DefaultRepositorySystemSession) session).setTransferListener(
+                                    new ProgressReportingTransferListener(indicator, false) {
 
-                                @Override
-                                public void transferSucceeded(TransferEvent event) {
-                                    super.transferSucceeded(event);
-                                    if (event.getResource().getResourceName().endsWith(".zip")) {
-                                        url[0] = event.getResource().getRepositoryUrl()
-                                                + event.getResource().getResourceName();
-                                    }
-                                }
-                            });
+                                        @Override
+                                        public void transferSucceeded(TransferEvent event) {
+                                            super.transferSucceeded(event);
+                                            if (event.getResource().getResourceName()
+                                                    .endsWith(".zip")) {
+                                                url[0] = event.getResource().getRepositoryUrl()
+                                                        + event.getResource().getResourceName();
+                                            }
+                                        }
+                                    });
 
-                    DeployRequest deployRequest = new DeployRequest();
-                    deployRequest.addArtifact(zip).addArtifact(pom).addArtifact(metadata);
-                    deployRequest.setRepository(deployRepository);
+                            DeployRequest deployRequest = new DeployRequest();
+                            deployRequest.addArtifact(zip).addArtifact(pom).addArtifact(metadata);
+                            deployRequest.setRepository(deployRepository);
 
-                    system.deploy(session, deployRequest);
+                            system.deploy(session, deployRequest);
 
-                    return url[0];
-                });
+                            return url[0];
+                        });
 
         log.newline();
         log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Archive"));
@@ -96,8 +107,21 @@ public class PublishCommand extends AbstractRepositoryCommand {
         }
     }
 
-    private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId) {
+    private List<org.eclipse.aether.repository.RemoteRepository> getDeployRepositories(
+            String repoId) {
         Settings settings = SettingsReader.read();
+        if (repoId != null && repoId.contains(",")) {
+            return Arrays.stream(repoId.split(","))
+                    .map(r -> getDeployRepository(r.trim(), settings))
+                    .collect(Collectors.toList());
+        }
+        else {
+            return Collections.singletonList(getDeployRepository(repoId, settings));
+        }
+    }
+
+    private org.eclipse.aether.repository.RemoteRepository getDeployRepository(String repoId,
+            Settings settings) {
         Map<String, RemoteRepository> deployRepositories = settings.getRemoteRepositories()
                 .entrySet().stream().filter(e -> e.getValue().isPublish())
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));

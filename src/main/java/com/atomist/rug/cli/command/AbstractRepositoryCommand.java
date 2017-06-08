@@ -2,6 +2,7 @@ package com.atomist.rug.cli.command;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
@@ -80,7 +81,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
             zipFile.getParentFile().mkdirs();
         }
         Arrays.stream(zipFile.getParentFile().listFiles(new FileFilter() {
-          
+
             @Override
             public boolean accept(File pathname) {
                 return pathname.isFile();
@@ -93,7 +94,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         @Override
         public void metadataFileGenerated(FileArtifact file) {
             if (CommandLineOptions.hasOption("verbose")) {
-                log.info("  Created %s", file.path());
+                log.info("Created %s", file.path());
             }
             else {
                 Optional<ProgressReporter> indicator = ProgressReporterUtils
@@ -148,6 +149,22 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
                     "Generating archive metadata").run(indicator -> {
                         return super.generateMetadata(operationsAndHandlers, artifact, source,
                                 manifest);
+                    });
+        }
+
+        @Override
+        protected void writeArtifactSourceToZip(File zipFile, ArtifactSource source)
+                throws FileNotFoundException {
+            new ProgressReportingOperationRunner<ArtifactSource>("Packaging archive")
+                    .run(indicator -> {
+                        if (CommandLineOptions.hasOption("verbose")) {
+                            log.info("Packaging %s", zipFile.getAbsolutePath());
+                        }
+                        else {
+                            ProgressReporterUtils.detail(zipFile.getName());
+                        }
+                        super.writeArtifactSourceToZip(zipFile, source);
+                        return null;
                     });
         }
     }
