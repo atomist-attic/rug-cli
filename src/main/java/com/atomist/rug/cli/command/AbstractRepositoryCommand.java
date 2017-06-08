@@ -59,7 +59,7 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
         prepareTargetDirectory(archive);
 
         Deployer deployer = new RepositoryCommandMavenDeployer(commandLine, projectRoot);
-        deployer.deploy(operationsAndHandlers, source, artifact, projectRoot);
+        deployer.deploy(operationsAndHandlers, source, artifact, projectRoot, Constants.cliClient());
     }
 
     protected abstract void doWithRepositorySession(RepositorySystem system,
@@ -144,11 +144,11 @@ public abstract class AbstractRepositoryCommand extends AbstractAnnotationBasedC
 
         @Override
         protected ArtifactSource generateMetadata(Rugs operationsAndHandlers,
-                ArtifactDescriptor artifact, ArtifactSource source, Manifest manifest) {
+                ArtifactDescriptor artifact, ArtifactSource source, Manifest manifest, String clientId) {
             return new ProgressReportingOperationRunner<ArtifactSource>(
                     "Generating archive metadata").run(indicator -> {
                         return super.generateMetadata(operationsAndHandlers, artifact, source,
-                                manifest);
+                                manifest, clientId);
                     });
         }
 

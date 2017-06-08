@@ -95,7 +95,7 @@ public class ShellCommand extends AbstractAnnotationBasedCommand {
                 RugResolver resolver) {
             if (artifact != null && operations != null) {
                 FileArtifact file = MetadataWriter.createWithoutExcludes(operations.rugs(),
-                        artifact, source, null);
+                        artifact, source, null, Constants.cliClient());
 
                 try {
                     FileUtils.write(ShellUtils.SHELL_OPERATIONS, file.content(),
