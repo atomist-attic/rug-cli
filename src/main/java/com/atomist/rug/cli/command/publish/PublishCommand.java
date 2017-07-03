@@ -1,12 +1,13 @@
 package com.atomist.rug.cli.command.publish;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
@@ -17,12 +18,16 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.deployment.DeployRequest;
 import org.eclipse.aether.transfer.TransferEvent;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
+import org.eclipse.aether.version.Version;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.command.AbstractRepositoryCommand;
 import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.command.CommandUtils;
 import com.atomist.rug.cli.command.annotation.Validator;
+import com.atomist.rug.cli.command.search.SearchCommand;
+import com.atomist.rug.cli.command.search.SearchOperations.Archive;
+import com.atomist.rug.cli.command.search.SearchOperations.Operation;
 import com.atomist.rug.cli.command.utils.GitUtils;
 import com.atomist.rug.cli.output.ProgressReportingOperationRunner;
 import com.atomist.rug.cli.output.ProgressReportingTransferListener;
@@ -31,8 +36,10 @@ import com.atomist.rug.cli.settings.Settings;
 import com.atomist.rug.cli.settings.Settings.Authentication;
 import com.atomist.rug.cli.settings.Settings.RemoteRepository;
 import com.atomist.rug.cli.settings.SettingsReader;
+import com.atomist.rug.cli.utils.CommandLineOptions;
 import com.atomist.rug.cli.utils.FileUtils;
 import com.atomist.rug.cli.utils.StringUtils;
+import com.atomist.rug.cli.version.VersionUtils;
 import com.atomist.rug.resolver.manifest.Manifest;
 import com.atomist.source.ArtifactSource;
 
@@ -46,9 +53,31 @@ public class PublishCommand extends AbstractRepositoryCommand {
     protected void doWithRepositorySession(RepositorySystem system, RepositorySystemSession session,
             ArtifactSource source, Manifest manifest, Artifact zip, Artifact pom, Artifact metadata,
             CommandLine commandLine) {
+        Set<String> ids = org.springframework.util.StringUtils
+                .commaDelimitedListToSet(CommandLineOptions.getOptionValue("id").orElse(""));
+
+        if (CommandLineOptions.hasOption("U")) {
+            String group = manifest.group();
+            String artifact = manifest.artifact();
+            Version version = VersionUtils.parseVersion(manifest.version());
+
+            SearchCommand search = new SearchCommand();
+            Map<String, List<Operation>> operations = search.search(SettingsReader.read(), null,
+                    new Properties(), null);
+
+            operations.values().stream().filter(ops -> ops.size() > 0).forEach(ops -> {
+                Archive archive = ops.get(0).archive();
+                if (archive.group().equals(group) && archive.artifact().equals(artifact)) {
+                    if (version
+                            .compareTo(VersionUtils.parseVersion(archive.version().value())) > 0) {
+                        ids.add(archive.scope());
+                    }
+                }
+            });
+        }
 
         List<org.eclipse.aether.repository.RemoteRepository> deployRepositorys = getDeployRepositories(
-                commandLine.getOptionValue("id"));
+                ids);
         deployRepositorys.forEach(
                 r -> publishToRepository(system, session, source, manifest, zip, pom, metadata, r));
     }
@@ -108,15 +137,14 @@ public class PublishCommand extends AbstractRepositoryCommand {
     }
 
     private List<org.eclipse.aether.repository.RemoteRepository> getDeployRepositories(
-            String repoId) {
+            Set<String> repoIds) {
         Settings settings = SettingsReader.read();
-        if (repoId != null && repoId.contains(",")) {
-            return Arrays.stream(repoId.split(","))
-                    .map(r -> getDeployRepository(r.trim(), settings))
+        if (repoIds.size() > 0) {
+            return repoIds.stream().map(r -> getDeployRepository(r.trim(), settings))
                     .collect(Collectors.toList());
         }
         else {
-            return Collections.singletonList(getDeployRepository(repoId, settings));
+            return Collections.singletonList(getDeployRepository(null, settings));
         }
     }
 
@@ -142,14 +170,12 @@ public class PublishCommand extends AbstractRepositoryCommand {
         }
 
         if (deployRepositories.size() > 1) {
-            throw new CommandException(
-                    String.format(
-                            "More than one repository enabled for publishing.\nPlease review your ~/.atomist/cli.yml or specify a repository with --id ID.\n\nValid repository ID values are:\n  %s",
-                            org.springframework.util.StringUtils.collectionToDelimitedString(
-                                    deployRepositories.entrySet().stream().map(
-                                            e -> e.getValue().getName() + " (" + e.getKey() + ")")
-                                            .collect(Collectors.toList()),
-                                    ",\n  ")),
+            throw new CommandException(String.format(
+                    "More than one repository enabled for publishing.\nPlease review your ~/.atomist/cli.yml or specify a repository with --id ID.\n\nValid repository ID values are:\n  %s",
+                    org.springframework.util.StringUtils
+                            .collectionToDelimitedString(deployRepositories.entrySet().stream()
+                                    .map(e -> e.getValue().getName() + " (" + e.getKey() + ")")
+                                    .collect(Collectors.toList()), ",\n  ")),
                     "publish");
         }
         else if (deployRepositories.size() == 0) {

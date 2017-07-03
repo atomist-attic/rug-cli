@@ -26,6 +26,7 @@ import org.eclipse.aether.version.VersionScheme;
 
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
+import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.cli.output.Style;
 import com.atomist.rug.cli.utils.ArtifactDescriptorUtils;
 import com.atomist.rug.cli.utils.HttpClientFactory;
@@ -40,6 +41,8 @@ public abstract class VersionUtils {
     private static final String URL = "https://static.atomist.com/Formula/rug-cli.rb";
 
     private static final String VERSION_PATTERN_STRING = "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-(0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(\\.(0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\\+[0-9a-zA-Z-]+(\\.[0-9a-zA-Z-]+)*)?";
+
+    private static final VersionScheme VERSION_SCHEME = new GenericVersionScheme();
 
     public static void validateJdkVersion() {
         boolean warn = false;
@@ -73,10 +76,9 @@ public abstract class VersionUtils {
                         && f.artifact().equals(Constants.RUG_ARTIFACT))
                 .findAny();
         if (rugArtifact.isPresent()) {
-            VersionScheme versionScheme = new GenericVersionScheme();
             try {
-                Version version = versionScheme.parseVersion(rugArtifact.get().version());
-                VersionRange range = versionScheme.parseVersionRange(Constants.RUG_VERSION_RANGE);
+                Version version = VERSION_SCHEME.parseVersion(rugArtifact.get().version());
+                VersionRange range = VERSION_SCHEME.parseVersionRange(Constants.RUG_VERSION_RANGE);
                 if (!range.containsVersion(version)) {
                     throw new VersionException(String.format(
                             "Installed version of Rug CLI is not compatible with archive %s.\n\n"
@@ -98,7 +100,8 @@ public abstract class VersionUtils {
             Version runningVersion = scheme.parseVersion(readVersion().orElse("0.0.0"));
             Version onlineVersion = scheme.parseVersion(readOnlineVersion().orElse("0.0.0"));
             return (onlineVersion.compareTo(runningVersion) > 0
-                    ? Optional.of(onlineVersion.toString()) : Optional.empty());
+                    ? Optional.of(onlineVersion.toString())
+                    : Optional.empty());
         }
         catch (InvalidVersionSpecificationException e) {
         }
@@ -151,6 +154,16 @@ public abstract class VersionUtils {
         String date = properties.getProperty("git.commit.time", "n/a");
 
         return new VersionInformation(Constants.command(), version, repo, version, sha, date);
+    }
+
+    public static Version parseVersion(String version) {
+        try {
+            return VERSION_SCHEME.parseVersion(version);
+        }
+        catch (InvalidVersionSpecificationException e) {
+            throw new CommandException(
+                    String.format("Unable to parse version number '%s'", version), e);
+        }
     }
 
     private static boolean isOutdated() {

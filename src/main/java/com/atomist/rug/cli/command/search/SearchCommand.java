@@ -59,16 +59,7 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
             @Option("tag") Properties tags, @Option("type") String type,
             @Option("operations") boolean showOps) {
 
-        Map<String, List<Operation>> operations = new ProgressReportingOperationRunner<Map<String, List<Operation>>>(
-                "Searching catalogs").run(indicator -> {
-                    List<Operation> results = getCatalogServiceUrls(settings).stream().map(u -> {
-                        indicator.detail(u);
-                        return new SearchOperations().collectResults(u, search, type, tags,
-                                settings);
-                    }).flatMap(List::stream).collect(Collectors.toList());
-
-                    return results.stream().collect(Collectors.groupingBy(o -> o.archive().key()));
-                });
+        Map<String, List<Operation>> operations = search(settings, search, tags, type);
 
         log.newline();
         log.info(
@@ -96,6 +87,20 @@ public class SearchCommand extends AbstractAnnotationBasedCommand {
                         + "  %sdescribe archive ARCHIVE -a VERSION", Constants.command());
             }
         }
+    }
+
+    public Map<String, List<Operation>> search(Settings settings, String search, Properties tags,
+            String type) {
+        return new ProgressReportingOperationRunner<Map<String, List<Operation>>>(
+                "Searching catalogs").run(indicator -> {
+                    List<Operation> results = getCatalogServiceUrls(settings).stream().map(u -> {
+                        indicator.detail(u);
+                        return new SearchOperations().collectResults(u, search, type, tags,
+                                settings);
+                    }).flatMap(List::stream).collect(Collectors.toList());
+
+                    return results.stream().collect(Collectors.groupingBy(o -> o.archive().key()));
+                });
     }
 
     private void printArchive(List<Operation> operations, boolean showOps,
