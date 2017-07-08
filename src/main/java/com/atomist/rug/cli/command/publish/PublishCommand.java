@@ -67,7 +67,8 @@ public class PublishCommand extends AbstractRepositoryCommand {
 
             operations.values().stream().filter(ops -> ops.size() > 0).forEach(ops -> {
                 Archive archive = ops.get(0).archive();
-                if (archive.group().equals(group) && archive.artifact().equals(artifact)) {
+                if (archive.group().equals(group) && archive.artifact().equals(artifact)
+                        && !"global".equals(archive.scope())) {
                     if (version
                             .compareTo(VersionUtils.parseVersion(archive.version().value())) > 0) {
                         ids.add(archive.scope());
