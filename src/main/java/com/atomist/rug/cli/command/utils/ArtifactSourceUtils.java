@@ -16,6 +16,7 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.Artifact;
 import com.atomist.source.ArtifactSource;
+import com.atomist.source.ArtifactSourceCreationException;
 import com.atomist.source.DirectoryArtifact;
 import com.atomist.source.EmptyArtifactSource;
 import com.atomist.source.FileArtifact;
@@ -59,7 +60,7 @@ public abstract class ArtifactSourceUtils {
         File manifest = new File(root, ".atomist" + File.separator + "manifest.yml");
         if (manifest.exists()) {
             try (InputStream is = new FileInputStream(manifest)) {
-                FileArtifact manifestFileArtifact = new StringFileArtifact("manifest.yml",
+                FileArtifact manifestFileArtifact = StringFileArtifact.apply("manifest.yml",
                         ".atomist", IOUtils.toString(is, StandardCharsets.UTF_8));
                 source = source.plus(manifestFileArtifact);
             }
@@ -73,7 +74,7 @@ public abstract class ArtifactSourceUtils {
         File packageJson = new File(root, ".atomist" + File.separator + "package.json");
         if (packageJson.exists()) {
             try (InputStream is = new FileInputStream(packageJson)) {
-                FileArtifact packageJsonFileArtifact = new StringFileArtifact("package.json",
+                FileArtifact packageJsonFileArtifact = StringFileArtifact.apply("package.json",
                         ".atomist", IOUtils.toString(is, StandardCharsets.UTF_8));
                 source = source.plus(packageJsonFileArtifact);
             }
@@ -108,6 +109,9 @@ public abstract class ArtifactSourceUtils {
             }
         }
         catch (FileNotFoundException e) {
+            throw new RunnerException(e);
+        }
+        catch (ArtifactSourceCreationException e) {
             throw new RunnerException(e);
         }
     }

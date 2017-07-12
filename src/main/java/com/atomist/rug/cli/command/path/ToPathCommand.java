@@ -48,7 +48,7 @@ public class ToPathCommand extends AbstractAnnotationBasedCommand {
         scala.Option<Typed> type = DefaultTypeRegistry$.MODULE$.findByName(kind);
         if (type.isEmpty()) {
             String kinds = StringUtils.collectionToDelimitedString(JavaConverters
-                    .asJavaCollectionConverter(DefaultTypeRegistry$.MODULE$.providerMap().keySet())
+                    .asJavaCollectionConverter(DefaultTypeRegistry$.MODULE$.typeNames().toBuffer())
                     .asJavaCollection(), ", ");
             throw new CommandException(
                     String.format("Provided kind %s is not valid.\nKnown kinds are:\n  %s", kind,

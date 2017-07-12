@@ -7,7 +7,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/1.0.0-m.3...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/1.0.0-m.4...HEAD
+
+## [1.0.0-m.4] - 2017-07-11
+
+Milestone 4 release
+
+[1.0.0-m.4]: https://github.com/atomist/rug-cli/compare/1.0.0-m.3...1.0.0-m.4
+
+### Changed
+
+-	Upgrade to Rug 1.0.0-m.5
+
+### Fixed
+
+-	Correctly write git info without `manifest.yml`
+
+### Added
+
+-   Support for Rug Integration Tests
+
+-	Added `-U` flag and ability to publish into more than one repo to 
+ 	`publish` command
 
 ## [1.0.0-m.3] - 2017-06-01
 

@@ -38,12 +38,12 @@ import com.atomist.rug.kind.core.RepoResolver;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.project.ProvenanceInfoWriter;
 import com.atomist.rug.runtime.js.RugContext;
+import com.atomist.rug.runtime.js.interop.jsGitProjectLoader;
 import com.atomist.rug.runtime.js.interop.jsPathExpressionEngine;
 import com.atomist.rug.runtime.plans.ProjectManagement;
 import com.atomist.rug.spi.Handlers;
 import com.atomist.rug.spi.TypeRegistry;
 import com.atomist.source.ArtifactSource;
-import com.atomist.source.ArtifactSourceCreationException;
 import com.atomist.source.ByteArrayFileArtifact;
 import com.atomist.source.Delta;
 import com.atomist.source.FileAdditionDelta;
@@ -54,11 +54,13 @@ import com.atomist.source.SimpleSourceUpdateInfo;
 import com.atomist.source.file.FileSystemArtifactSource;
 import com.atomist.source.file.FileSystemArtifactSourceIdentifier;
 import com.atomist.source.file.FileSystemArtifactSourceWriter;
+import com.atomist.source.file.NamedFileSystemArtifactSourceIdentifier;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
-import com.atomist.source.git.GitRepositoryCloner;
+import com.atomist.source.git.FileSystemGitArtifactSource;
 import com.atomist.tree.IdentityTreeMaterializer$;
 import com.atomist.tree.TreeMaterializer;
 import com.atomist.tree.pathexpression.PathExpressionEngine;
+import com.atomist.util.GitRepositoryCloner;
 
 import difflib.DiffUtils;
 import scala.Option;
@@ -373,6 +375,11 @@ public class LocalGitProjectManagement implements ProjectManagement {
             return IdentityTreeMaterializer$.MODULE$;
         }
 
+        @Override
+        public Object gitProjectLoader() {
+            return new jsGitProjectLoader(repoResolver());
+        }
+
     }
 
     private static class LocalRepoResolver implements RepoResolver {
@@ -385,32 +392,28 @@ public class LocalGitProjectManagement implements ProjectManagement {
         public ArtifactSource resolveBranch(String owner, String repo, String branch) {
             log.info(String.format("Cloning %s/%s#%s", owner, repo, branch));
             init();
-            try {
-                return cloner.clone(repo, owner, Option.apply(branch), Option.empty(), Option.empty(),
-                        10);
-            }
-            catch (ArtifactSourceCreationException e) {
-                throw new CommandException("Failed to clone repository", e);
-            }
+            Option<File> file = cloner.clone(repo, owner, Option.apply(branch), Option.empty(),
+                    Option.empty(), 10);
+            return new FileSystemGitArtifactSource(
+                    new NamedFileSystemArtifactSourceIdentifier(repo, file.get()));
         }
 
         @Override
         public ArtifactSource resolveSha(String owner, String repo, String sha) {
             log.info(String.format("Cloning %s/%s#%s", owner, repo, sha));
             init();
-            try {
-                return cloner.clone(repo, owner, Option.empty(), Option.apply(sha), Option.empty(), 10);
-            }
-            catch (ArtifactSourceCreationException e) {
-                throw new CommandException("Failed to clone repository", e);
-            }
+            Option<File> file = cloner.clone(repo, owner, Option.empty(), Option.apply(sha),
+                    Option.empty(), 10);
+            return new FileSystemGitArtifactSource(
+                    new NamedFileSystemArtifactSourceIdentifier(repo, file.get()));
+
         }
 
         @Override
         public String resolveBranch$default$3() {
             return "master";
         }
-        
+
         private void init() {
             Optional<String> token = SettingsReader.read().getConfigValue(Settings.GIHUB_TOKEN_KEY,
                     String.class);
@@ -420,7 +423,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
                         "No GitHub token configured. Please run the login command before running this generator.",
                         "generate");
             }
-            this.cloner = new GitRepositoryCloner(token.get(), Option.apply(url));
+            this.cloner = new GitRepositoryCloner(token.get(), url);
         }
     }
 }
