@@ -23,7 +23,7 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
 
     @Override
     public String detail() {
-        return "Create a Rug archive from the current repo and publish it in a remote repository.  "
+        return "Create a Rug archive from the current repo and publish it into a remote repository.  "
                 + "Use -i to specify what repository configuration should be used to publish.  "
                 + "ID should refer to a repository name in cli.yml";
     }
@@ -39,8 +39,8 @@ public class PublishCommandInfo extends AbstractLocalArtifactDescriptorProvider
                 .required(false).desc("Override archive version with AV").build());
         options.addOption(Option.builder("i").longOpt("id").argName("ID").hasArg(true)
                 .required(false).desc("ID identifying the repository to publish into").build());
-        options.addOption(Option.builder("U").longOpt("update-all").hasArg(false)
-                .required(false).desc("Update archive in all repositories it exists").build());
+        options.addOption(Option.builder("P").longOpt("publish-all").hasArg(false)
+                .required(false).desc("Publish archive into all repositories it exists").build());
         options.addOption("F", "force", false,
                 "Force publish if working tree isn't clean");
 
