@@ -57,7 +57,8 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
 
     @Command
     public void run(Rugs operations, ArtifactDescriptor artifact, ArtifactSource source,
-            Settings settings, @Argument(index = 1) String testToRun) {
+            Settings settings, @Argument(index = 1) String testToRun,
+            @com.atomist.rug.cli.command.annotation.Option("disable-console-log") boolean disableConsoleLog) {
         Optional<String> token = settings.getConfigValue(Settings.GIHUB_TOKEN_KEY, String.class);
 
         ArchiveTestResult result = new ProgressReportingOperationRunner<ArchiveTestResult>(
@@ -67,7 +68,8 @@ public class TestCommand extends AbstractAnnotationBasedCommand {
                                     .singletonList(new LoggingGherkinExecutionListener(indicator));
                             GherkinRunner runner = new GherkinRunner(
                                     new JavaScriptContext(source, DefaultAtomistConfig$.MODULE$,
-                                            new SimpleBindings(), ConsoleLogger.consoleLogger()),
+                                            new SimpleBindings(),
+                                            ConsoleLogger.consoleLogger(!disableConsoleLog)),
                                     Option.apply(operations),
                                     JavaConverters.asScalaBufferConverter(listeners).asScala(),
                                     new GherkinRunnerConfig(Option.apply(token.orElse(null))));

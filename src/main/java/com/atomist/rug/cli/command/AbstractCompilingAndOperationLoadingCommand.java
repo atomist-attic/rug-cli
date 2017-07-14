@@ -66,7 +66,8 @@ public abstract class AbstractCompilingAndOperationLoadingCommand extends Abstra
                 String.format("Loading rugs of %s", ArtifactDescriptorUtils.coordinates(artifact)))
                         .run(indicator -> {
                             Dependency root = processArtifact(artifact, source);
-                            return new ArchiveRugResolver(root, ConsoleLogger.consoleLogger());
+                            return new ArchiveRugResolver(root, ConsoleLogger.consoleLogger(
+                                    !CommandLineOptions.hasOption("disable-console-log")));
                         });
     }
 

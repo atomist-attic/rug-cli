@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/atomist/rug-cli/compare/1.0.0-m.5...HEAD
+[Unreleased]: https://github.com/atomist/rug-cli/compare/1.0.0-m.6...HEAD
+
+## [1.0.0-m.6] - 2017-07-14
+
+Milestone 6 release
+
+[1.0.0-m.5]: https://github.com/atomist/rug-cli/compare/1.0.0-m.5...1.0.0-m.6
+
+### Added
+
+-	Added `--disable-console-log` for `test` command
 
 ## [1.0.0-m.5] - 2017-07-11
 

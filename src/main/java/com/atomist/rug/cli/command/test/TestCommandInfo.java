@@ -1,5 +1,8 @@
 package com.atomist.rug.cli.command.test;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+
 import com.atomist.rug.cli.command.AbstractLocalArtifactDescriptorProvider;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.rug.resolver.ArtifactDescriptor.Extension;
@@ -24,6 +27,14 @@ public class TestCommandInfo extends AbstractLocalArtifactDescriptorProvider {
     @Override
     public int order() {
         return 50;
+    }
+    
+    @Override
+    public Options options() {
+        Options options = super.options();
+        options.addOption(Option.builder().hasArg(false).desc("Disable console logging")
+                .longOpt("disable-console-log").optionalArg(true).build());
+        return options;
     }
 
     @Override
