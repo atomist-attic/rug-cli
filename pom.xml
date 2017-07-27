@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>com.atomist</groupId>
 			<artifactId>artifact-source</artifactId>
-		<version>1.0.0-m.11</version>
+			<version>1.0.0-20170726105857</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>

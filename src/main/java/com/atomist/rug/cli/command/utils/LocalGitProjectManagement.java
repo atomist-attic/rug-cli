@@ -57,10 +57,10 @@ import com.atomist.source.file.FileSystemArtifactSourceWriter;
 import com.atomist.source.file.NamedFileSystemArtifactSourceIdentifier;
 import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
 import com.atomist.source.git.FileSystemGitArtifactSource;
+import com.atomist.source.git.GitRepositoryCloner;
 import com.atomist.tree.IdentityTreeMaterializer$;
 import com.atomist.tree.TreeMaterializer;
 import com.atomist.tree.pathexpression.PathExpressionEngine;
-import com.atomist.util.GitRepositoryCloner;
 
 import difflib.DiffUtils;
 import scala.Option;
