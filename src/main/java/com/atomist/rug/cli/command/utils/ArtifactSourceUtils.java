@@ -16,7 +16,7 @@ import com.atomist.rug.cli.command.CommandException;
 import com.atomist.rug.resolver.ArtifactDescriptor;
 import com.atomist.source.Artifact;
 import com.atomist.source.ArtifactSource;
-import com.atomist.source.ArtifactSourceCreationException;
+import com.atomist.source.ArtifactSourceException;
 import com.atomist.source.DirectoryArtifact;
 import com.atomist.source.EmptyArtifactSource;
 import com.atomist.source.FileArtifact;
@@ -111,7 +111,7 @@ public abstract class ArtifactSourceUtils {
         catch (FileNotFoundException e) {
             throw new RunnerException(e);
         }
-        catch (ArtifactSourceCreationException e) {
+        catch (ArtifactSourceException e) {
             throw new RunnerException(e);
         }
     }
@@ -121,8 +121,7 @@ public abstract class ArtifactSourceUtils {
         private String prefix;
 
         public TargetDirFilter(File root) {
-            this.prefix = root.getAbsolutePath() + File.separator + ".atomist" + File.separator
-                    + "target";
+            prefix = root.getAbsolutePath() + File.separator + ".atomist" + File.separator + "target";
         }
 
         @Override

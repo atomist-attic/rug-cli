@@ -1,22 +1,9 @@
 package com.atomist.rug.cli.command.utils;
 
-import static scala.collection.JavaConversions.asJavaCollection;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.atomist.graph.GraphNode;
 import com.atomist.param.ParameterValues;
 import com.atomist.project.archive.RugResolver;
-import com.atomist.project.edit.FailedModificationAttempt;
-import com.atomist.project.edit.ModificationAttempt;
-import com.atomist.project.edit.NoModificationNeeded;
-import com.atomist.project.edit.ProjectEditor;
-import com.atomist.project.edit.SuccessfulModification;
+import com.atomist.project.edit.*;
 import com.atomist.project.generate.ProjectGenerator;
 import com.atomist.rug.cli.Constants;
 import com.atomist.rug.cli.Log;
@@ -43,28 +30,25 @@ import com.atomist.rug.runtime.js.interop.jsPathExpressionEngine;
 import com.atomist.rug.runtime.plans.ProjectManagement;
 import com.atomist.rug.spi.Handlers;
 import com.atomist.rug.spi.TypeRegistry;
-import com.atomist.source.ArtifactSource;
-import com.atomist.source.ByteArrayFileArtifact;
-import com.atomist.source.Delta;
-import com.atomist.source.FileAdditionDelta;
-import com.atomist.source.FileArtifact;
-import com.atomist.source.FileDeletionDelta;
-import com.atomist.source.FileUpdateDelta;
-import com.atomist.source.SimpleSourceUpdateInfo;
-import com.atomist.source.file.FileSystemArtifactSource;
-import com.atomist.source.file.FileSystemArtifactSourceIdentifier;
-import com.atomist.source.file.FileSystemArtifactSourceWriter;
-import com.atomist.source.file.NamedFileSystemArtifactSourceIdentifier;
-import com.atomist.source.file.SimpleFileSystemArtifactSourceIdentifier;
+import com.atomist.source.*;
+import com.atomist.source.file.*;
 import com.atomist.source.git.FileSystemGitArtifactSource;
 import com.atomist.source.git.GitRepositoryCloner;
 import com.atomist.tree.IdentityTreeMaterializer$;
 import com.atomist.tree.TreeMaterializer;
 import com.atomist.tree.pathexpression.PathExpressionEngine;
-
 import difflib.DiffUtils;
 import scala.Option;
 import scala.collection.JavaConverters;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static scala.collection.JavaConversions.asJavaCollection;
 
 /**
  * Save artifact sources in local git
@@ -82,8 +66,8 @@ public class LocalGitProjectManagement implements ProjectManagement {
     private final RugResolver resolver;
 
     public LocalGitProjectManagement(ArtifactDescriptor artifact, String rootPath,
-            boolean createRepo, boolean overwrite, boolean commit, boolean dryRun,
-            RugResolver resolver) {
+                                     boolean createRepo, boolean overwrite, boolean commit, boolean dryRun,
+                                     RugResolver resolver) {
         this.artifact = artifact;
         this.rootPath = rootPath;
         this.createRepo = createRepo;
@@ -104,21 +88,20 @@ public class LocalGitProjectManagement implements ProjectManagement {
         }
         if (!root.getParentFile().exists()) {
             root.getParentFile().mkdirs();
-
         }
         return root;
     }
 
     @Override
     public ArtifactSource generate(ProjectGenerator generator, ParameterValues arguments,
-            String projectName) {
+                                   String projectName) {
         final File root = createProjectRoot(rootPath, projectName, overwrite);
 
         ArtifactSource result = new ProgressReportingOperationRunner<ArtifactSource>(
                 String.format("Running generator %s of %s", generator.name(),
                         ArtifactDescriptorUtils.coordinates(artifact)))
-                                .run(indicator -> generator.generate(projectName, arguments,
-                                        new ProjectContext(new LocalRugContext())));
+                .run(indicator -> generator.generate(projectName, arguments,
+                        new ProjectContext(new LocalRugContext())));
 
         // Add provenance info to output
         result = new ProvenanceInfoWriter().write(result, generator, arguments,
@@ -153,7 +136,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
 
     @Override
     public ModificationAttempt edit(ProjectEditor editor, ParameterValues arguments,
-            String projectName, Option<Handlers.EditorTarget> target) {
+                                    String projectName, Option<Handlers.EditorTarget> target) {
         File root = FileUtils.createProjectRoot(projectName);
 
         if (commit) {
@@ -166,12 +149,12 @@ public class LocalGitProjectManagement implements ProjectManagement {
                 String.format("Running editor %s of %s",
                         StringUtils.stripName(editor.name(), artifact),
                         ArtifactDescriptorUtils.coordinates(artifact))).run(indicator -> {
-                            ModificationAttempt r = editor.modify(source, arguments);
+            ModificationAttempt r = editor.modify(source, arguments);
 
-                            printLogEntries(indicator, r);
+            printLogEntries(indicator, r);
 
-                            return r;
-                        });
+            return r;
+        });
 
         if (result instanceof SuccessfulModification) {
 
@@ -197,16 +180,14 @@ public class LocalGitProjectManagement implements ProjectManagement {
 
             log.newline();
             log.info(Style.green("Successfully edited project %s", root.getName()));
-        }
-        else if (result instanceof NoModificationNeeded) {
+        } else if (result instanceof NoModificationNeeded) {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
             log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
                     FileUtils.sizeOf(root), source.allFiles().size());
             log.newline();
             log.info(Style.yellow("Editor made no changes to project %s", root.getName()));
-        }
-        else if (result instanceof FailedModificationAttempt) {
+        } else if (result instanceof FailedModificationAttempt) {
             log.newline();
             log.info(Style.cyan(Constants.DIVIDER) + " " + Style.bold("Project"));
             log.info("  %s (%s in %s files)", Style.underline(FileUtils.relativize(root)),
@@ -229,7 +210,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
     }
 
     protected void iterateDeltas(Collection<Delta> deltas, ArtifactSource source,
-            ArtifactSource resultSource, File root, boolean dryRun) {
+                                 ArtifactSource resultSource, File root, boolean dryRun) {
         FileSystemArtifactSourceWriter writer = new FileSystemArtifactSourceWriter();
         Delta lastDelta = deltas.stream().reduce((d1, d2) -> d2).orElse(null);
 
@@ -240,8 +221,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
                     writer.write(delta.newFile(), root);
                     logOperation("created", null, delta.newFile().path(), root,
                             delta.equals(lastDelta));
-                }
-                else if (!(delta.newFile() instanceof ByteArrayFileArtifact)) {
+                } else if (!(delta.newFile() instanceof ByteArrayFileArtifact)) {
                     scala.Option<FileArtifact> opt = source.findFile(delta.newFile().path());
                     String existingContent = "";
                     if (opt.isDefined()) {
@@ -251,8 +231,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
                     logPatch(delta.newFile().path(), delta.newFile().path(), existingContent,
                             newContent);
                 }
-            }
-            else if (d instanceof FileUpdateDelta) {
+            } else if (d instanceof FileUpdateDelta) {
                 FileUpdateDelta delta = ((FileUpdateDelta) d);
                 if (!dryRun) {
                     File file = new File(root, delta.oldFile().path());
@@ -260,8 +239,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
                     writer.write(delta.updatedFile(), root);
                     logOperation("updated", delta.oldFile().path(), delta.updatedFile().path(),
                             root, delta.equals(lastDelta));
-                }
-                else if (!(delta.updatedFile() instanceof ByteArrayFileArtifact)) {
+                } else if (!(delta.updatedFile() instanceof ByteArrayFileArtifact)) {
                     scala.Option<FileArtifact> opt = source.findFile(delta.updatedFile().path());
                     String existingContent = "";
                     if (opt.isDefined()) {
@@ -270,15 +248,13 @@ public class LocalGitProjectManagement implements ProjectManagement {
                     String newContent = delta.updatedFile().content();
                     logPatch(delta.path(), delta.updatedFile().path(), existingContent, newContent);
                 }
-            }
-            else if (d instanceof FileDeletionDelta) {
+            } else if (d instanceof FileDeletionDelta) {
                 FileDeletionDelta delta = (FileDeletionDelta) d;
                 if (!dryRun) {
                     File file = new File(root, d.path());
                     file.delete();
                     logOperation("deleted", d.path(), null, root, delta.equals(lastDelta));
-                }
-                else if (!(delta.oldFile() instanceof ByteArrayFileArtifact)) {
+                } else if (!(delta.oldFile() instanceof ByteArrayFileArtifact)) {
                     scala.Option<FileArtifact> opt = source.findFile(delta.oldFile().path());
                     String existingContent = "";
                     if (opt.isDefined()) {
@@ -292,25 +268,22 @@ public class LocalGitProjectManagement implements ProjectManagement {
     }
 
     protected void logOperation(String operation, String oldPath, String newPath, File root,
-            boolean last) {
+                                boolean last) {
         oldPath = (oldPath == null ? "" : oldPath);
         newPath = (newPath == null ? "" : newPath);
 
         StringBuilder sb = new StringBuilder();
         if (last) {
             sb.append("  ").append(Constants.LAST_TREE_NODE);
-        }
-        else {
+        } else {
             sb.append("  ").append(Constants.TREE_NODE);
         }
         if (!oldPath.equals("") && !newPath.equals("") && !oldPath.equals(newPath)) {
             sb.append(Style.yellow(oldPath)).append(" ").append(Constants.DIVIDER).append(" ")
                     .append(Style.yellow(newPath)).append(" ").append(operation);
-        }
-        else if (!"".equals(newPath)) {
+        } else if (!"".equals(newPath)) {
             sb.append(Style.yellow(newPath)).append(" ").append(operation);
-        }
-        else {
+        } else {
             sb.append(Style.yellow(oldPath)).append(" ").append(operation);
         }
         if (root != null) {
@@ -322,7 +295,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
     }
 
     protected void logPatch(String oldPath, String newPath, String existingContent,
-            String newContent) {
+                            String newContent) {
         difflib.Patch<String> patch = DiffUtils.diff(Arrays.asList(existingContent.split("\n")),
                 Arrays.asList(newContent.split("\n")));
         List<String> diffs = DiffUtils.generateUnifiedDiff(oldPath, newPath,
@@ -330,14 +303,11 @@ public class LocalGitProjectManagement implements ProjectManagement {
         diffs.forEach(diff -> {
             if (diff.startsWith("+")) {
                 log.info("  " + Style.green(diff));
-            }
-            else if (diff.startsWith("-")) {
+            } else if (diff.startsWith("-")) {
                 log.info("  " + Style.red(diff));
-            }
-            else if (diff.startsWith("@@")) {
+            } else if (diff.startsWith("@@")) {
                 log.info("  " + Style.cyan(diff));
-            }
-            else {
+            } else {
                 log.info("  " + diff);
             }
         });
@@ -379,7 +349,6 @@ public class LocalGitProjectManagement implements ProjectManagement {
         public Object gitProjectLoader() {
             return new jsGitProjectLoader(repoResolver());
         }
-
     }
 
     private static class LocalRepoResolver implements RepoResolver {
@@ -392,21 +361,26 @@ public class LocalGitProjectManagement implements ProjectManagement {
         public ArtifactSource resolveBranch(String owner, String repo, String branch) {
             log.info(String.format("Cloning %s/%s#%s", owner, repo, branch));
             init();
-            Option<File> file = cloner.clone(repo, owner, Option.apply(branch), Option.empty(),
-                    Option.empty(), 10);
-            return new FileSystemGitArtifactSource(
-                    new NamedFileSystemArtifactSourceIdentifier(repo, file.get()));
+            try {
+                File file = cloner.clone(repo, owner, Option.apply(branch), Option.empty(),
+                        Option.empty(), 10);
+                return new FileSystemGitArtifactSource(new NamedFileSystemArtifactSourceIdentifier(repo, file));
+            } catch (ArtifactSourceException e) {
+                throw new RuntimeException("Failed to resolve branch", e);
+            }
         }
 
         @Override
         public ArtifactSource resolveSha(String owner, String repo, String sha) {
             log.info(String.format("Cloning %s/%s#%s", owner, repo, sha));
             init();
-            Option<File> file = cloner.clone(repo, owner, Option.empty(), Option.apply(sha),
-                    Option.empty(), 10);
-            return new FileSystemGitArtifactSource(
-                    new NamedFileSystemArtifactSourceIdentifier(repo, file.get()));
-
+            try {
+                File file = cloner.clone(repo, owner, Option.empty(), Option.apply(sha),
+                        Option.empty(), 10);
+                return new FileSystemGitArtifactSource(new NamedFileSystemArtifactSourceIdentifier(repo, file));
+            } catch (ArtifactSourceException e) {
+                throw new RuntimeException("Failed to resolve sha", e);
+            }
         }
 
         @Override
@@ -423,7 +397,7 @@ public class LocalGitProjectManagement implements ProjectManagement {
                         "No GitHub token configured. Please run the login command before running this generator.",
                         "generate");
             }
-            this.cloner = new GitRepositoryCloner(token.get(), url);
+            cloner = new GitRepositoryCloner(token.get(), url);
         }
     }
 }
