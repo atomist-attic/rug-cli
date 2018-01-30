@@ -1,4 +1,4 @@
-# Atomist 'rug-cli'
+# DEPRECATED 'rug-cli'
 
 [![Build Status](https://travis-ci.org/atomist/rug-cli.svg?branch=master)](https://travis-ci.org/atomist/rug-cli)
 
